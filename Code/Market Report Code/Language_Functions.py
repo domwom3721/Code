@@ -1,4 +1,4 @@
-import pandas as pd
+
 import numpy as np
 
 #Langauge for overview section
@@ -773,7 +773,7 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
         submarket_decade_rent_growth         = "{:,.1f}%".format(abs(submarket_decade_rent_growth))
         submarket_decade_rent_growth_annual  = "{:,.1f}%".format(abs(submarket_decade_rent_growth_annual))
         submarket_yoy_growth                 = "{:,.1f}%".format(abs(submarket_yoy_growth))
-        submarket_qoq_growth                 = "{:,.1f}%".format(abs(submarket_qoq_growth))
+        submarket_qoq_growth                 = "{:,.1f}%".format(submarket_qoq_growth)
         submarket_year_ago_yoy_growth        = "{:,.1f}%".format(submarket_year_ago_yoy_growth)
         submarket_pre_pandemic_yoy_growth    = "{:,.1f}%".format(submarket_pre_pandemic_yoy_growth)
         market_decade_rent_growth            = "{:,.1f}%".format(abs(market_decade_rent_growth))
@@ -794,7 +794,7 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
         submarket_decade_rent_growth         = "{:,.1f}%".format(abs(submarket_decade_rent_growth))
         submarket_decade_rent_growth_annual  = "{:,.1f}%".format(abs(submarket_decade_rent_growth_annual))
         submarket_yoy_growth                 = "{:,.1f}%".format(abs(submarket_yoy_growth))
-        submarket_qoq_growth                 = "{:,.1f}%".format(abs(submarket_qoq_growth))
+        submarket_qoq_growth                 = "{:,.1f}%".format(submarket_qoq_growth)
         submarket_year_ago_yoy_growth        = "{:,.1f}%".format(submarket_year_ago_yoy_growth)
         submarket_pre_pandemic_yoy_growth    = "{:,.1f}%".format(submarket_pre_pandemic_yoy_growth)
         market_decade_rent_growth            = "{:,.1f}%".format(abs(market_decade_rent_growth))
@@ -918,7 +918,7 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
             ', where rents expanded ' +
             market_decade_rent_growth_annual +
             ' per annum during that time. ' +
-            'Prior to ' +
+            'Leading up to ' +
             'the pandemic' +
             ', rents in the '+
             market_or_submarket +
@@ -926,7 +926,7 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
             submarket_pre_pandemic_yoy_growth_description +  
             ' with annual growth of '+
             submarket_pre_pandemic_yoy_growth +
-            '. Shutdowns occurred in March, slowing demand and softening rent growth over the course of the year.' +
+            '. Despite//With shutdowns occuring in March and April 2020, demand picked up//slowed, accelerating//softening rent growth over the course of the year//temporarily.' +
             ' Rent growth has ' +
             'picked up/slowed/remained steady' +
             ' over the first half of 2021' +
@@ -970,7 +970,7 @@ def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,p
 
     #Determine if the supply pipeline is active or not    
     if under_construction > 0:
-        active_or_inactive = '(very) active'
+        active_or_inactive = 'active'
         empty_or_active    = 'active'
         upward_or_limited  = 'upward'
         well_or_poorly     = 'poorly'
@@ -1202,20 +1202,13 @@ def CreateSaleLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
             ' in this ' +
             submarket_or_market +
             '. ' +
-            'Over the past 3 years, there have been ' +
+            'Going back three years, investors have closed ' +
             three_year_avg_transaction_count +
-            ' transactions ' +
-            'with a sales volume of ' +
+            ' transactions per annum' +
+            ' representing an annual sales average of ' +
             three_year_avg_sale_volume +
-            ' per year on average. ' + 
-            'In ' +
-            current_period +
-            ', there were ' +
-            current_transaction_count +
-            ' sales for a total sales volume of ' +
-            current_sale_volume +
-            '.' +
-            ' Over the past year, there were '+
+            '. ' +
+           'Over the past year, there were '+
             over_last_year_transactions +
             ' transactions across ' +
             over_last_year_units +
@@ -1224,6 +1217,13 @@ def CreateSaleLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
            ', representing ' +
            over_last_year_sale_volume +
            ' in dollar volume.' +
+            ' In ' +
+            current_period +
+            ', there were ' +
+            current_transaction_count +
+            ' sales for a total sales volume of ' +
+            current_sale_volume +
+            '.' +
             ' At '+
             asset_value +
             '/'+
@@ -1234,8 +1234,8 @@ def CreateSaleLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
             asset_value_change_description +
             ' ' +
             asset_value_change + 
-            ' over the past year. ' +
-            'Meanwhile, the market cap rate has ' +
+            ' over the past year, ' +
+            'while the market cap rate has ' +
             cap_rate_change_description +
             ' over the past year, ' +
             cap_rate_change_description2 +

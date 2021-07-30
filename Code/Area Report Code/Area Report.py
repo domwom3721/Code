@@ -48,14 +48,14 @@ data_export = True
 data_export = False
 
 #Declare API Key for FRED and Census
-# fred = Fred(api_key='7ab383546af7583fae8a058915edc868')   #Bowery key
-fred = Fred(api_key='9875b149440961806f0df696105fe12c') #mjmleahy key
+fred = Fred(api_key='7ab383546af7583fae8a058915edc868')   #Bowery key
+# fred = Fred(api_key='9875b149440961806f0df696105fe12c') #mjmleahy key
 
 c    = Census('18335344cf4a0242ae9f7354489ef2f8860a9f61')
 
-bls  = RequestBLS(key='2b8d15c77bda4527b101a2b1c98551cf') #bowery email key
+# bls  = RequestBLS(key='2b8d15c77bda4527b101a2b1c98551cf') #bowery email key
 # bls  = RequestBLS(key='9f0492293ac04ade8f2e72576d3822db') #mjmleahy key
-# bls  = RequestBLS(key='708e9d690b604a7ebda9ff55fe634bc3') #ccc key 
+bls  = RequestBLS(key='708e9d690b604a7ebda9ff55fe634bc3') #ccc key 
 # bls  = RequestBLS(key='c993e3b3877845b3a60c8bce507acec6')   #dom key
 
 
@@ -178,6 +178,7 @@ def GetCountyPCI(fips,observation_start):
     county_pci_df = fred.get_series(series_id = county_pci_series_code, observation_start=observation_start)
     county_pci_df = county_pci_df.to_frame().reset_index()
     county_pci_df.columns = ['Period','Per Capita Personal Income']
+    # print(county_pci_df)
     if data_export == True:
         county_pci_df.to_csv(os.path.join(county_folder,'County Per Capita Personal Income.csv'))
     return(county_pci_df)
@@ -334,19 +335,47 @@ def GetCountyData():
     global county_unemployment_rate,county_employment,county_unemployment
     global county_resident_pop,county_industry_breakdown
     global county_mlp
-    county_gdp                    = GetCountyGDP(fips = fips,observation_start = observation_start)
-    county_unemployment_rate      = GetCountyUnemploymentRate(fips = fips,start_year=start_year,end_year=end_year)
-    county_employment             = GetCountyEmployment(fips = fips,start_year=start_year,end_year=end_year)
-    county_pci                    = GetCountyPCI(fips=fips, observation_start=observation_start)
-    county_resident_pop           = GetCountyResidentPopulation(fips = fips,observation_start=observation_start)
-    county_industry_breakdown     = GetCountyIndustryBreakdown(fips=fips,year=qcew_year,qtr=qcew_qtr)
+
+    try:
+        county_gdp                    = GetCountyGDP(fips = fips,observation_start = observation_start)
+    except:
+        print('Unable to Get County GDP Data')
+        county_gdp                    = ''
+
+    try:
+        county_unemployment_rate      = GetCountyUnemploymentRate(fips = fips,start_year=start_year,end_year=end_year)
+    except:
+        print('Unable to Get County Unemployment Rate Data')
+        county_unemployment_rate      = ''
+
+    try:
+        county_employment             = GetCountyEmployment(fips = fips,start_year=start_year,end_year=end_year)
+    except:
+        print('Unable to Get County Employment Data')
+        county_employment             = ''
+
+    try:
+        county_pci                    = GetCountyPCI(fips=fips, observation_start=observation_start)
+    except:
+        print('Unable to Get County Per Capita Income Data')
+        county_pci                    = ''
+
+    try:
+        county_resident_pop           = GetCountyResidentPopulation(fips = fips,observation_start=observation_start)
+    except:
+        print('Unable to Get County Population Data')
+        county_resident_pop           = ''
     
+    try:    
+        county_industry_breakdown     = GetCountyIndustryBreakdown(fips=fips,year=qcew_year,qtr=qcew_qtr)
+    except:
+        print('Unable to get County Industry Breakdown')
+        county_industry_breakdown     = ''
+
     try:  
-        pass
         county_mlp                    = GetCountyMedianListPrice(fips = fips,observation_start = observation_start)
     except Exception as e: 
         print('No median home list data price available')
-        # print(e)
         county_mlp                = ''
 
 #MSA Data
@@ -367,6 +396,7 @@ def GetMSAResidentPopulation(cbsa,observation_start):
     resident_population_series_names = pd.read_excel(os.path.join(data_location,'GeoFRED_Resident_Population_by_Metropolitan_Statistical_Area_Thousands_of_Persons.xls'),
                 dtype={'Region Code': object
                       })
+    resident_population_series_names['Region Code'] = resident_population_series_names['Region Code'].astype(str)
     resident_population_series_names = resident_population_series_names.loc[resident_population_series_names['Region Code'] == cbsa]
     msa_pop_series_code = resident_population_series_names['Series ID'].iloc[0]
     
@@ -582,6 +612,7 @@ def GetNationalPCI(observation_start):
     usa_pci_df = fred.get_series(series_id = usa_pci_series_code,observation_start = observation_start,frequency = 'a')
     usa_pci_df = usa_pci_df.to_frame().reset_index()
     usa_pci_df.columns = ['Period','Per Capita Personal Income']
+    usa_pci_df         = usa_pci_df.loc[usa_pci_df['Per Capita Personal Income'] >= 0]
     if data_export == True:
         usa_pci_df.to_csv(os.path.join(county_folder,'National Per Capita Personal Income.csv'))
     return(usa_pci_df)
@@ -616,10 +647,10 @@ def GetNationalData():
     national_pci                       = GetNationalPCI(observation_start = observation_start)
     national_resident_pop              = GetNationalResidentPopulation(observation_start=observation_start)
     national_mlp                       = GetNationalMedianListPrice(observation_start=observation_start)
-
+    
 #Graph Functions
 def CreateUnemploymentRateEmploymentGrowthGraph(folder):
-
+    print('Creating Unemployment Rate and Employment Growth Graph')
     fig = make_subplots(rows=1, cols=2,subplot_titles=("Unemployment Rate", "Annual Employment Growth"),horizontal_spacing = horizontal_spacing)
 
     #County unemployment rate
@@ -627,7 +658,7 @@ def CreateUnemploymentRateEmploymentGrowthGraph(folder):
     go.Scatter(x=county_unemployment_rate['period'],
             y=county_unemployment_rate['unemployment_rate'],
             name=county,
-            line=dict(color="#4160D3"))
+            line=dict(color="#4160D3", width = 3))
     ,secondary_y=False,row=1, col=1)
 
     #MSA unemployment rate if applicable
@@ -636,7 +667,7 @@ def CreateUnemploymentRateEmploymentGrowthGraph(folder):
         go.Scatter(x=msa_unemployment_rate['period'],
                 y=msa_unemployment_rate['unemployment_rate'],
                 name=cbsa_name + ' (MSA)',
-                line=dict(color="#B3C3FF"))
+                line=dict(color="#B3C3FF", width = 1))
         ,secondary_y=False,row=1, col=1)
 
     #State unemployment rate
@@ -645,7 +676,7 @@ def CreateUnemploymentRateEmploymentGrowthGraph(folder):
         go.Scatter(x=state_unemployment_rate['period'],
                 y=state_unemployment_rate['unemployment_rate'],
                 name=state_name,
-                line=dict(color="#A6B0BF"))
+                line=dict(color="#A6B0BF", width = 1))
         ,secondary_y=False,row=1, col=1)
 
     
@@ -654,7 +685,7 @@ def CreateUnemploymentRateEmploymentGrowthGraph(folder):
     go.Scatter(x=county_employment['period'],
             y=county_employment['Employment Growth'],
             name=county,
-            line=dict(color="#4160D3"),showlegend=False)
+            line=dict(color="#4160D3", width = 3),showlegend=False)
     ,secondary_y=False,row=1, col=2,)
 
     #MSA employment growth
@@ -663,7 +694,7 @@ def CreateUnemploymentRateEmploymentGrowthGraph(folder):
         go.Scatter(x=msa_employment['period'],
                 y=msa_employment['Employment Growth'],
                 name=cbsa_name + ' (MSA)',
-                line=dict(color="#B3C3FF"),showlegend=False)
+                line=dict(color="#B3C3FF", width = 1),showlegend=False)
         ,secondary_y=False,row=1, col=2,)
 
     #State employment growth
@@ -672,7 +703,7 @@ def CreateUnemploymentRateEmploymentGrowthGraph(folder):
     go.Scatter(x=state_employment['period'],
             y=state_employment['Employment Growth'],
             name=state_name,
-            line=dict(color="#A6B0BF"),showlegend=False)
+            line=dict(color="#A6B0BF", width = 1),showlegend=False)
     ,secondary_y=False,row=1, col=2,)
 
 
@@ -749,7 +780,7 @@ def CreateUnemploymentRateGraph(folder):
     go.Scatter(x=county_unemployment_rate['period'],
             y=county_unemployment_rate['unemployment_rate'],
             name=county,
-            line=dict(color="#4160D3"))
+            line=dict(color="#4160D3", width = 3))
     ,secondary_y=False)
 
     #MSA unemployment rate if applicable
@@ -758,7 +789,7 @@ def CreateUnemploymentRateGraph(folder):
         go.Scatter(x=msa_unemployment_rate['period'],
                 y=msa_unemployment_rate['unemployment_rate'],
                 name=cbsa_name + ' (MSA)',
-                line=dict(color="#B3C3FF"))
+                line=dict(color="#B3C3FF", width = 1))
         ,secondary_y=False)
 
     #State unemployment rate
@@ -766,7 +797,7 @@ def CreateUnemploymentRateGraph(folder):
     go.Scatter(x=state_unemployment_rate['period'],
             y=state_unemployment_rate['unemployment_rate'],
             name=state_name,
-            line=dict(color="#A6B0BF"))
+            line=dict(color="#A6B0BF", width = 1))
     ,secondary_y=False)
 
     #Set formatting 
@@ -922,30 +953,34 @@ def CreateEmploymentGrowthGraph(folder):
     fig.write_image(os.path.join(folder,'employment_growth.png'),engine='kaleido',scale=scale)
 
 def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_data_frame,folder):
-
+    print("Creating PCI graph")
     fig = make_subplots(specs=[[{"secondary_y": True}, {"secondary_y": False}]],rows=1, cols=2,subplot_titles=("Per Capita Personal Income", "Annualized Income Growth"),horizontal_spacing = horizontal_spacing)
 
     #Add county PCI
-    fig.add_trace(
-    go.Scatter(x=county_data_frame['Period'],
-            y=county_data_frame['Per Capita Personal Income'],
-            name=county,
-            line = dict(color="#4160D3"),
-            showlegend=False),
-            secondary_y=False,
-            row = 1,
-            col = 1)
+    if  (isinstance(county_data_frame, pd.DataFrame) == True):
+        fig.add_trace(
+        go.Scatter(x=county_data_frame['Period'],
+                y=county_data_frame['Per Capita Personal Income'],
+                name=county,
+                line = dict(color="#4160D3",width = 3),
+                showlegend=False),
+                secondary_y=False,
+                row = 1,
+                col = 1)
+        
 
    #Add MSA PCI if applicable
-    if cbsa != '':
+    if   (isinstance(msa_data_frame, pd.DataFrame) == True):
         fig.add_trace(
         go.Scatter(x=msa_data_frame['Period'],
                 y=msa_data_frame['Per Capita Personal Income'],
                 name=cbsa_name + ' (MSA)',
-                line = dict(color="#B3C3FF"),
+                line = dict(color="#B3C3FF",width = 1),
                 showlegend=False)
-        ,secondary_y=False, row = 1,
-            col = 1)
+                ,secondary_y=False, 
+                row = 1,
+                col = 1)
+        
     else:
         #Add state PCI
         fig.add_trace(
@@ -954,25 +989,35 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
                 name=state_name,
                 line=dict(color='#A6B0BF'),
                 showlegend=False)
-        ,secondary_y=False,
-         row = 1,
-            col = 1)
+                ,secondary_y=False,
+                row = 1,
+                col = 1)
     
     #Add Growth Subfigure
-
+    print('Adding Growth Component of PCI Graph')
     
     #Calculate annualized growth rates for the county, msa (if available), and state dataframes
-    county_data_frame['Per Capita Personal Income_1year_growth'] =  (((county_data_frame['Per Capita Personal Income']/county_data_frame['Per Capita Personal Income'].shift(1))  - 1) * 100)/1
-    county_data_frame['Per Capita Personal Income_3year_growth'] =  (((county_data_frame['Per Capita Personal Income']/county_data_frame['Per Capita Personal Income'].shift(3))   - 1) * 100)/3
-    county_data_frame['Per Capita Personal Income_5year_growth'] =  (((county_data_frame['Per Capita Personal Income']/county_data_frame['Per Capita Personal Income'].shift(5))   - 1) * 100)/5
+    if (isinstance(county_data_frame, pd.DataFrame) == True):
+        county_data_frame['Per Capita Personal Income_1year_growth'] =  (((county_data_frame['Per Capita Personal Income']/county_data_frame['Per Capita Personal Income'].shift(1))  - 1) * 100)/1
+        county_data_frame['Per Capita Personal Income_3year_growth'] =  (((county_data_frame['Per Capita Personal Income']/county_data_frame['Per Capita Personal Income'].shift(3))   - 1) * 100)/3
+        county_data_frame['Per Capita Personal Income_5year_growth'] =  (((county_data_frame['Per Capita Personal Income']/county_data_frame['Per Capita Personal Income'].shift(5))   - 1) * 100)/5
 
-    county_1y_growth  = county_data_frame.iloc[-1]['Per Capita Personal Income_1year_growth'] 
-    county_3y_growth  = county_data_frame.iloc[-1]['Per Capita Personal Income_3year_growth'] 
-    county_5y_growth  = county_data_frame.iloc[-1]['Per Capita Personal Income_5year_growth'] 
+        county_1y_growth  = county_data_frame.iloc[-1]['Per Capita Personal Income_1year_growth'] 
+        county_3y_growth  = county_data_frame.iloc[-1]['Per Capita Personal Income_3year_growth'] 
+        county_5y_growth  = county_data_frame.iloc[-1]['Per Capita Personal Income_5year_growth']
+    else:
+        county_1y_growth = 0
+        county_3y_growth = 0
+        county_5y_growth = 0 
+
+
+        
+
     
-    if cbsa != '':
+    if (isinstance(msa_data_frame, pd.DataFrame) == True):
         #Make sure we are comparing same years for calculating growth rates for county and msa
-        msa_data_frame = msa_data_frame.loc[msa_data_frame['Period'] <= (county_data_frame['Period'].max())]
+        if (isinstance(county_data_frame, pd.DataFrame) == True):
+            msa_data_frame = msa_data_frame.loc[msa_data_frame['Period'] <= (county_data_frame['Period'].max())]
         msa_data_frame['Per Capita Personal Income_1year_growth'] =  (((msa_data_frame['Per Capita Personal Income']/msa_data_frame['Per Capita Personal Income'].shift(1))  - 1) * 100)/1
         msa_data_frame['Per Capita Personal Income_3year_growth'] =  (((msa_data_frame['Per Capita Personal Income']/msa_data_frame['Per Capita Personal Income'].shift(3))   - 1) * 100)/3
         msa_data_frame['Per Capita Personal Income_5year_growth'] =  (((msa_data_frame['Per Capita Personal Income']/msa_data_frame['Per Capita Personal Income'].shift(5))   - 1) * 100)/5
@@ -982,7 +1027,8 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
         msa_5y_growth  = msa_data_frame.iloc[-1]['Per Capita Personal Income_5year_growth'] 
 
     #Make sure we are comparing same years for calculating growth rates for county and state
-    state_data_frame = state_data_frame.loc[state_data_frame['Period'] <= (county_data_frame['Period'].max())]
+    if (isinstance(county_data_frame, pd.DataFrame) == True):
+        state_data_frame = state_data_frame.loc[state_data_frame['Period'] <= (county_data_frame['Period'].max())]
     state_data_frame['Per Capita Personal Income_1year_growth'] =  (((state_data_frame['Per Capita Personal Income']/state_data_frame['Per Capita Personal Income'].shift(1))  - 1) * 100)/1
     state_data_frame['Per Capita Personal Income_3year_growth'] =  (((state_data_frame['Per Capita Personal Income']/state_data_frame['Per Capita Personal Income'].shift(3))   - 1) * 100)/3
     state_data_frame['Per Capita Personal Income_5year_growth'] =  (((state_data_frame['Per Capita Personal Income']/state_data_frame['Per Capita Personal Income'].shift(5))   - 1) * 100)/5
@@ -992,7 +1038,8 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
     state_5y_growth  = state_data_frame.iloc[-1]['Per Capita Personal Income_5year_growth'] 
 
     #Make sure we are comparing same years for calculating growth rates for county and state
-    national_data_frame = national_data_frame.loc[national_data_frame['Period'] <= (county_data_frame['Period'].max())]
+    if  (isinstance(county_data_frame, pd.DataFrame) == True):
+        national_data_frame = national_data_frame.loc[national_data_frame['Period'] <= (county_data_frame['Period'].max())]
     national_data_frame['Per Capita Personal Income_1year_growth'] =  (((national_data_frame['Per Capita Personal Income']/national_data_frame['Per Capita Personal Income'].shift(1))  - 1) * 100)/1
     national_data_frame['Per Capita Personal Income_3year_growth'] =  (((national_data_frame['Per Capita Personal Income']/national_data_frame['Per Capita Personal Income'].shift(3))   - 1) * 100)/3
     national_data_frame['Per Capita Personal Income_5year_growth'] =  (((national_data_frame['Per Capita Personal Income']/national_data_frame['Per Capita Personal Income'].shift(5))   - 1) * 100)/5
@@ -1006,23 +1053,26 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
     years=['5 Years', '3 Years','1 Year']
     annotation_position = 'outside'
     
-    if cbsa != '':
-        
-       fig.add_trace( go.Bar(
-            name = 'United States',  
-            x=years, 
-            y=[national_5y_growth, national_3y_growth, national_1y_growth],
-            marker_color ="#000F44",
-            text = [national_5y_growth, national_3y_growth, national_1y_growth],
-            texttemplate = "%{value:.2f}%",
-            textposition = annotation_position,
-            cliponaxis =  False
-            ),
-            row = 1,
-            col = 2
-       )
+    
+    #MSA PCI is available, but county is not
+    if (isinstance(msa_data_frame, pd.DataFrame) == True)  and (isinstance(county_data_frame, pd.DataFrame) == False):
+        print('MSA PCI Available, County PCI is NOT')
+        #Add National Growth 
+        fig.add_trace( go.Bar(
+                name = 'United States',  
+                x=years, 
+                y=[national_5y_growth, national_3y_growth, national_1y_growth],
+                marker_color ="#000F44",
+                text = [national_5y_growth, national_3y_growth, national_1y_growth],
+                texttemplate = "%{value:.2f}%",
+                textposition = annotation_position,
+                cliponaxis =  False
+                ),
+                row = 1,
+                col = 2)
 
-       fig.add_trace( go.Bar(
+        #Add MSA Growth
+        fig.add_trace( go.Bar(
             name = cbsa_name + ' (MSA)',  
             x=years, 
             y=[msa_5y_growth, msa_3y_growth, msa_1y_growth],
@@ -1033,10 +1083,43 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
             cliponaxis =  False
             ),
             row = 1,
-            col = 2
-       )
+            col = 2)
 
-       fig.add_trace(go.Bar(
+
+    
+    #MSA PCI is unavailable, but county is
+    elif (isinstance(msa_data_frame, pd.DataFrame) == False)  and (isinstance(county_data_frame, pd.DataFrame) == True):
+        print('MSA PCI Unavailable, County PCI is available')
+        #Add National Growth
+        fig.add_trace( go.Bar(
+        name = 'United States',  
+        x=years, 
+        y=[national_5y_growth, national_3y_growth, national_1y_growth],
+        marker_color ="#000F44",
+        text = [national_5y_growth, national_3y_growth, national_1y_growth],
+        texttemplate = "%{value:.2f}%",
+        textposition = annotation_position,
+        cliponaxis =  False
+        ),
+        row = 1,
+        col = 2)
+
+        # Add State Growth
+        fig.add_trace(go.Bar(
+        name=state_name,  
+        x=years, 
+        y=[state_5y_growth, state_3y_growth, state_1y_growth],
+        marker_color ="#A6B0BF",
+        text = [state_5y_growth, state_3y_growth, state_1y_growth],
+        texttemplate = "%{value:.2f}%",
+        textposition = annotation_position,
+        cliponaxis =  False
+        ),
+        row = 1,
+        col = 2)
+
+        #Add County Growth
+        fig.add_trace(go.Bar(
             name=county,      
             x=years, 
             y=[county_5y_growth,county_3y_growth,county_1y_growth],
@@ -1047,60 +1130,54 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
             cliponaxis =  False
         ),
         row = 1,
-        col = 2
-       )
-        
+        col = 2)
 
+
+    #MSA and County are available
     else:
+        print('MSA PCI Available, County PCI is available')
+        #Add National Growth
+        fig.add_trace( go.Bar(
+                name = 'United States',  
+                x=years, 
+                y=[national_5y_growth, national_3y_growth, national_1y_growth],
+                marker_color ="#000F44",
+                text = [national_5y_growth, national_3y_growth, national_1y_growth],
+                texttemplate = "%{value:.2f}%",
+                textposition = annotation_position,
+                cliponaxis =  False
+                ),
+                row = 1,
+                col = 2)
 
-        fig.add_trace(go.Bar(
-            name = 'United States',  
+
+        #Add MSA Growth
+        fig.add_trace( go.Bar(
+            name = cbsa_name + ' (MSA)',  
             x=years, 
-            y=[national_5y_growth, national_3y_growth, national_1y_growth],
-            marker_color ="#000F44",
-            text = [national_5y_growth, national_3y_growth, national_1y_growth],
+            y=[msa_5y_growth, msa_3y_growth, msa_1y_growth],
+            marker_color ="#B3C3FF",
+            text = [msa_5y_growth, msa_3y_growth, msa_1y_growth],
             texttemplate = "%{value:.2f}%",
             textposition = annotation_position,
             cliponaxis =  False
             ),
             row = 1,
-            col = 2
-       )
-       
+            col = 2)
 
+        #Add County Growth
         fig.add_trace(go.Bar(
-                name=state_name,  
-                x=years, 
-                y=[state_5y_growth, state_3y_growth, state_1y_growth],
-                marker_color ="#A6B0BF",
-                text = [state_5y_growth, state_3y_growth, state_1y_growth],
-                texttemplate = "%{value:.2f}%",
-                textposition = annotation_position,
-                cliponaxis =  False
+                    name=county,      
+                    x=years, 
+                    y=[county_5y_growth,county_3y_growth,county_1y_growth],
+                    marker_color="#4160D3",
+                    text = [county_5y_growth,county_3y_growth,county_1y_growth],
+                    texttemplate = "%{value:.2f}%",
+                    textposition = annotation_position,
+                    cliponaxis =  False
                 ),
                 row = 1,
-                col = 2
-        )
-
-        fig.add_trace(go.Bar(
-                name=county,      
-                x=years, 
-                y=[county_5y_growth,county_3y_growth,county_1y_growth],
-                marker_color="#4160D3",
-                text = [county_5y_growth,county_3y_growth,county_1y_growth],
-                texttemplate = "%{value:.2f}%",
-                textposition = annotation_position,
-                cliponaxis =  False
-                ),
-                row = 1,
-                col = 2
-        )
-
-
-        
-
-    
-
+                col = 2)
 
     #Change the bar mode
     fig.update_layout(barmode='group')
@@ -1179,28 +1256,47 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
     fig.write_image(os.path.join(folder,'per_capita_income_and_growth.png'),engine='kaleido',scale=scale)
 
 def CreateGDPGraph(county_data_frame,msa_data_frame,state_data_frame,folder):
-
+    print('Creating GDP Graph')
     fig = make_subplots(specs=[[{"secondary_y": True}]])
 
     #Add county GDP
-    fig.add_trace(
-    go.Scatter(x=county_data_frame['Period'],
-            y=county_data_frame['GDP'],
-            name=county+' (L)',
-            line = dict(color="#4160D3")
-            )
-    ,secondary_y=False)
-
-   #Add MSA GDP if applicable
-    if cbsa != '':
+    if (isinstance(county_data_frame, pd.DataFrame) == True):
         fig.add_trace(
-        go.Scatter(x=msa_data_frame['Period'],
-                y=msa_data_frame['GDP'],
-                name=cbsa_name + ' (MSA)' + ' (R)',
-                line = dict(color="#B3C3FF"),
+        go.Scatter(x=county_data_frame['Period'],
+                y=county_data_frame['GDP'],
+                name=county+' (L)',
+                line = dict(color="#4160D3", width = 3)
                 )
-        ,secondary_y=True)
+        ,secondary_y=False)
+
+    #Add MSA GDP if applicable
+        if (isinstance(msa_data_frame, pd.DataFrame) == True):
+            fig.add_trace(
+            go.Scatter(x=msa_data_frame['Period'],
+                    y=msa_data_frame['GDP'],
+                    name=cbsa_name + ' (MSA)' + ' (R)',
+                    line = dict(color="#B3C3FF", width = 1),
+                    )
+            ,secondary_y=True)
+        else:
+            #Add state GDP
+            fig.add_trace(
+            go.Scatter(x=state_data_frame['Period'],
+                    y=state_data_frame['GDP'],
+                    name=state_name+' (R)',
+                    line=dict(color='#A6B0BF', width = 1),
+                    )
+            ,secondary_y=True)
     else:
+        if (isinstance(msa_data_frame, pd.DataFrame) == True):
+            fig.add_trace(
+            go.Scatter(x=msa_data_frame['Period'],
+                    y=msa_data_frame['GDP'],
+                    name=cbsa_name + ' (MSA)' + ' (L)',
+                    line = dict(color="#B3C3FF"),
+                    )
+            ,secondary_y=False)
+        
         #Add state GDP
         fig.add_trace(
         go.Scatter(x=state_data_frame['Period'],
@@ -1209,6 +1305,7 @@ def CreateGDPGraph(county_data_frame,msa_data_frame,state_data_frame,folder):
                 line=dict(color='#A6B0BF'),
                 )
         ,secondary_y=True)
+
 
     #Set X-Axis Format
     fig.update_xaxes(
@@ -1275,6 +1372,7 @@ def CreateGDPGraph(county_data_frame,msa_data_frame,state_data_frame,folder):
     fig.write_image(os.path.join(folder,'gdp.png'),engine='kaleido',scale=scale)
 
 def CreatePopulationOverTimeWithGrowthGraph(county_resident_pop,state_resident_pop,msa_resident_pop,national_resident_pop,folder):
+    print('Creating Population Graph')
     # Create figure with secondary y-axis
     fig = make_subplots(specs=[[{"secondary_y": True}, {"secondary_y": False}]],rows=1, cols=2,subplot_titles=("Population", "Annualized Population Growth"),horizontal_spacing = horizontal_spacing)
 
@@ -1283,7 +1381,7 @@ def CreatePopulationOverTimeWithGrowthGraph(county_resident_pop,state_resident_p
     go.Scatter(x=county_resident_pop['Period'],
             y=county_resident_pop['Resident Population'],
             name=county + ' (L)',
-            line=dict(color="#4160D3"),
+            line=dict(color="#4160D3", width = 3),
             showlegend=False
                                     )      
     ,secondary_y=False,row=1, col=1,)
@@ -1294,7 +1392,7 @@ def CreatePopulationOverTimeWithGrowthGraph(county_resident_pop,state_resident_p
         go.Scatter(x=msa_resident_pop['Period'],
                 y=msa_resident_pop['Resident Population'],
                 name=cbsa_name + ' (MSA)' + ' (R)',
-                line=dict(color ="#B3C3FF"),
+                line=dict(color ="#B3C3FF", width = 1),
                 showlegend=False
                 )
         ,secondary_y=True,row=1, col=1,)
@@ -1304,7 +1402,7 @@ def CreatePopulationOverTimeWithGrowthGraph(county_resident_pop,state_resident_p
         go.Scatter(x=state_resident_pop['Period'],
                 y=state_resident_pop['Resident Population'],
                 name=state_name + ' (R)',
-                line = dict(color="#A6B0BF"),
+                line = dict(color="#A6B0BF", width = 1),
                 showlegend=False
                 )
         ,secondary_y=True,row=1, col=1,)   
@@ -1527,6 +1625,7 @@ def CreatePopulationOverTimeWithGrowthGraph(county_resident_pop,state_resident_p
     fig.write_image(os.path.join(folder,'resident_population_and_growth.png'),engine='kaleido',scale=scale)
 
 def CreateEmploymentByIndustryGraph(county_data_frame,folder):
+    print('Creating Employment by Industry Breakdown Graph')
     def format(x):
         return "Weekly Wage: ${:,.0f}".format(x)
     # county_data_frame['avg_wkly_wage_string'] = county_data_frame['avg_wkly_wage'].astype(str)
@@ -1582,7 +1681,7 @@ def CreateEmploymentByIndustryGraph(county_data_frame,folder):
     fig.write_image(os.path.join(folder,'employment_by_industry.png'),engine='kaleido',scale=scale)
 
 def CreateEmploymentGrowthByIndustryGraph(county_data_frame,folder):
-
+    print('Creating Employment Growth by Industry Graph')
     annotation_position = 'outside'
     county_data_frame  = county_data_frame.loc[county_data_frame['industry_code'] != 'Unclassified'] 
 
@@ -1670,6 +1769,7 @@ def CreateEmploymentGrowthByIndustryGraph(county_data_frame,folder):
     fig.write_image(os.path.join(folder,'employment_growth_by_industry.png'),engine='kaleido',scale=scale)
 
 def CreateMLPGraph(county_data_frame,msa_data_frame,folder):
+    print('Creating Median List Price Graph')
     if (isinstance(county_data_frame, pd.DataFrame) == False): 
         return('')
 
@@ -1682,7 +1782,7 @@ def CreateMLPGraph(county_data_frame,msa_data_frame,folder):
             y=county_data_frame['Median List Price'],
             name=county,
             mode='lines',
-            line = dict(color="#4160D3")
+            line = dict(color="#4160D3",width = 3)
             )
     ,secondary_y=False)
 
@@ -1695,7 +1795,7 @@ def CreateMLPGraph(county_data_frame,msa_data_frame,folder):
                 y=msa_data_frame['Median List Price'],
                 name = cbsa_name + ' (MSA)',
                 mode = 'lines',
-                line = dict(color = "#B3C3FF")
+                line = dict(color = "#B3C3FF",width = 1)
                 )
         ,secondary_y=False)
     
@@ -1706,7 +1806,7 @@ def CreateMLPGraph(county_data_frame,msa_data_frame,folder):
             y=national_mlp['Median List Price'],
             name='United States',
             mode='lines',
-            line = dict(color="#000F44")
+            line = dict(color="#000F44",width = 1)
             )
     ,secondary_y=False)
 
@@ -1821,9 +1921,9 @@ def OverviewLanguage():
                    ', as social distancing protocols were put in place and ' + 
                    'operating restrictions were imposed. ' +
                    state_name +
-                   ' was/was not a hotspot for the virus ' + 
+                   ' [was/was] not a hotspot for the virus ' + 
                    'and policymakers imposed a ' +
-                   'relatively harsh/relaxed' +
+                   'relatively [harsh/relaxed]' +
                    ' lockdown across the state. ' + 
                    'With vaccinations ramping up and new case counts falling sharply, restrictions' 
                    ' are easing, and the economy is reopening. ' +
@@ -1880,7 +1980,7 @@ def EmploymentBreakdownLanguage(county_industry_breakdown):
     return('The employment sector in ' +
            county +
            ' is ' + 
-           'fairly diversified/diversified/concentrated' +
+           '[fairly diversified/diversified/concentrated]' +
            ', with ' +
            largest_industry +
            ', ' +
@@ -2101,13 +2201,13 @@ def EmploymentGrowthLanguage(county_industry_breakdown):
             ' Quarterly Census of Employment and Wages, ' +
             county +
             ' has seen employment '+
-            'expand/compress' +
+            '[expand/compress]' +
             ' ' +
             five_year_county_employment_growth_pct +
              ' (' +
              five_year_county_employment_growth +
              ') ' +
-            'in total. ' +
+            'in total over the last five years. ' +
             'During that time, the ' +
             fastest_growing_industry_5y +
             ', ' +
@@ -2127,7 +2227,7 @@ def EmploymentGrowthLanguage(county_industry_breakdown):
             slowest_growth_industry_5y +
             ' over the previous five years.'
              ' Over the past year, the pandemic has caused ' +
-             'all/most/some' + 
+             '[all/most/some]' + 
              ' industries to lose employees.' +
              ' The ' +
              slowest_growing_industry_1y +
@@ -2193,7 +2293,7 @@ def ProductionLanguage(county_data_frame,msa_data_frame,state_data_frame):
             'While GDP data at the county level is not yet available, '      +
            latest_period +
            ' data from the U.S. Bureau of Economic Analysis points to '+
-           'stagnant/steady/strong' +
+           '[stagnant/steady/strong]' +
            ' GDP growth for ' +
            county  +
            ', which produced ~' +
@@ -2212,9 +2312,8 @@ def ProductionLanguage(county_data_frame,msa_data_frame,state_data_frame):
             ' which should help life and business return to some semblance of ' +
             """"normal".""" +
              ' Yet the pandemic’s effects on spending, the labor market, and monetary policy are unlikely to fully dissipate in the near term. ' +
-             ' We project the recovery, measured by the level of real GDP, will be complete in ' +
-             full_recovery_year_projection +
-             ', but the economy will still be smaller than it would have been in the absence of the pandemic.' 
+             ' The level of national real GDP has now returned to pre-pandemic levels, ' +
+             'but the economy is likely now smaller than it would have been in the absence of the pandemic.' 
         )
 
 def IncomeLanguage():
@@ -2255,7 +2354,8 @@ def IncomeLanguage():
             ' than the ' +
             metro_or_state +
             ' level of '+
-            latest_msa_or_state_income
+            latest_msa_or_state_income +
+            '.'
             )
 
 def PopulationLanguage(national_resident_pop):
@@ -2293,7 +2393,9 @@ def PopulationLanguage(national_resident_pop):
     national_5y_growth  = "{:,.1f}%".format(national_5y_growth) 
     national_10y_growth = "{:,.1f}%".format(national_10y_growth)
 
-    return('Over the past ten years, this County has seen its population expand ' +
+    return('Going back ten years, ' +
+            county +
+           ' has seen its population [expand/compress] ' +
             county_10y_growth +
             ' per annum ' +
             'to the ' +
@@ -2303,20 +2405,19 @@ def PopulationLanguage(national_resident_pop):
             latest_county_pop +
             '.' +
             ' Growth has ' +
-            'slowed/accelerated' +
+            '[slowed/accelerated]' +
             ' recently. ' +
             'In fact, over the past five years, growth has ' +
-            'declined/expanded' +
+            '[declined/expanded]' +
             ', ' +
-            'decelerating/accelerating' +
+            '[decelerating/accelerating]' +
             ' ' +
             county_5y_growth +
             ' per annum since ' +
             str((int(latest_period) - 5)) +
             '.' + 
-            ' This falls well ' +
-            'short'  +
-            ' of growth seen across the Nation, which has ' +
+            ' This growth rate [falls short of/exceeds] ' +
+            ' growth seen across the Nation, which has ' +
             'expanded' +
             ' ' +
             national_5y_growth +
@@ -2378,12 +2479,15 @@ def PlaneLanguage():
     airports              = page.section('Airports')
     air                   = page.section('Air')
     aviation              = page.section('Aviation')
+    airtravel             = page.section('Air travel')
     if airports != None:
         return(airports + "\n")
     elif air != None:
         return(air + "\n")
     elif aviation != None:
         return(aviation + "\n")
+    elif airtravel != None:
+        return(airtravel + "\n")
     else:
         return('This county is not served by any airport.')
     
@@ -2675,48 +2779,81 @@ def Citation(document,text):
 
 def AddMap(document):
     #Add image of map
-    try:
+    if os.path.exists(os.path.join(county_folder_map,'map.png')):
         map = document.add_picture(os.path.join(county_folder_map,'map.png'),width=Inches(6.5))
-    except:
-        #Search Google Maps for County
-        options = webdriver.ChromeOptions()
-        options.add_argument("--start-maximized")
-        browser = webdriver.Chrome(executable_path=(os.path.join(os.environ['USERPROFILE'], 'Desktop','chromedriver.exe')),options=options)
-        browser.get('https:google.com/maps')
-        Place = browser.find_element_by_class_name("tactile-searchbox-input")
-        Place.send_keys((county + ', ' + state))
-        Submit = browser.find_element_by_xpath(
-        "/html/body/jsl/div[3]/div[9]/div[3]/div[1]/div[1]/div[1]/div[2]/div[1]/button")
-        Submit.click()
-        time.sleep(5)
-        zoomout = browser.find_element_by_xpath(
-        """/html/body/jsl/div[3]/div[9]/div[22]/div[1]/div[2]/div[7]/div/button""")
-        zoomout.click()
-        time.sleep(10)
-        im2 = pyautogui.screenshot(region=(1089,276, 2405, 1754) ) #left, top, width, and height
-        time.sleep(.25)
-        im2.save(os.path.join(county_folder_map,'map.png'))
-        im2.close()
-        time.sleep(1)
-        map = document.add_picture(os.path.join(county_folder_map,'map.png'),width=Inches(6.5))
-        browser.quit()
-    finally:
-        pass
+    else:    
+        try:
+            #Search Google Maps for County
+            options = webdriver.ChromeOptions()
+            options.add_argument("--start-maximized")
+            browser = webdriver.Chrome(executable_path=(os.path.join(os.environ['USERPROFILE'], 'Desktop','chromedriver.exe')),options=options)
+            browser.get('https:google.com/maps')
+            Place = browser.find_element_by_class_name("tactile-searchbox-input")
+            Place.send_keys((county + ', ' + state))
+            Submit = browser.find_element_by_xpath(
+            "/html/body/jsl/div[3]/div[9]/div[3]/div[1]/div[1]/div[1]/div[2]/div[1]/button")
+            Submit.click()
+            time.sleep(5)
+            zoomout = browser.find_element_by_xpath(
+            """/html/body/jsl/div[3]/div[9]/div[22]/div[1]/div[2]/div[7]/div/button""")
+            zoomout.click()
+            time.sleep(7)
+
+            if 'Leahy' in os.environ['USERPROFILE']: #differnet machines have different screen coordinates
+                print('Using Mikes coordinates for screenshot')
+                im2 = pyautogui.screenshot(region=(1089,276, 2405, 1754) ) #left, top, width, and height
+            
+            elif 'Dominic' in os.environ['USERPROFILE']:
+                print('Using Doms coordinates for screenshot')
+                im2 = pyautogui.screenshot(region=(3680,254,1968 ,1231) ) #left, top, width, and height
+            
+            else:
+                im2 = pyautogui.screenshot(region=(1089,276, 2405, 1754) ) #left, top, width, and height
+
+            time.sleep(.25)
+            im2.save(os.path.join(county_folder_map,'map.png'))
+            im2.close()
+            time.sleep(1)
+            map = document.add_picture(os.path.join(county_folder_map,'map.png'),width=Inches(6.5))
+            browser.quit()
+        except:
+            try:
+                browser.quit()
+            except:
+                pass
     
     
-    last_paragraph = document.paragraphs[-1] 
+    
     
 def GetDataAndLanguageForOverviewTable():
     
     current_county_employment = county_employment['Employment'].iloc[-1]
-    current_county_gdp = county_gdp['GDP'].iloc[-1]
+    if   (isinstance(county_gdp, pd.DataFrame) == True):
+        current_county_gdp = county_gdp['GDP'].iloc[-1]
+    else:
+        current_county_gdp = 0
+
     current_county_pop = county_resident_pop['Resident Population'].iloc[-1]
-    current_county_pci = county_pci['Per Capita Personal Income'].iloc[-1]
-    
+
+    if (isinstance(county_pci, pd.DataFrame) == True):
+        current_county_pci = county_pci['Per Capita Personal Income'].iloc[-1]
+    else:
+        current_county_pci = 0
+
     lagged_county_employment = county_employment['Employment'].iloc[-1 - (growth_period * 12)] #the employment data is monthly
-    lagged_county_gdp        = county_gdp['GDP'].iloc[-1 - growth_period]
+
+    if   (isinstance(county_gdp, pd.DataFrame) == True):
+        lagged_county_gdp        = county_gdp['GDP'].iloc[-1 - growth_period]
+    else:
+        lagged_county_gdp        = 1
+
     lagged_county_pop        = county_resident_pop['Resident Population'].iloc[-1- growth_period]
-    lagged_county_pci        = county_pci['Per Capita Personal Income'].iloc[-1- growth_period]
+
+    if (isinstance(county_pci, pd.DataFrame) == True):
+        lagged_county_pci        = county_pci['Per Capita Personal Income'].iloc[-1- growth_period]
+    else:
+        lagged_county_pci         = 1
+
 
     county_employment_growth = ((current_county_employment/lagged_county_employment) - 1 ) * 100
     county_gdp_growth        = ((current_county_gdp/lagged_county_gdp) - 1) * 100
@@ -2727,9 +2864,20 @@ def GetDataAndLanguageForOverviewTable():
 
     #Make sure we are comparing the same month to month change in values between state and county data
     state_employment_extra_month_cut_off    = state_employment.loc[state_employment['period'] <= (county_employment['period'].max())]
-    state_gdp_extra_month_cut_off           = state_gdp.loc[state_gdp['Period'] <= (county_gdp['Period'].max())]
+
+    if (isinstance(county_gdp, pd.DataFrame) == True):
+        state_gdp_extra_month_cut_off           = state_gdp.loc[state_gdp['Period'] <= (county_gdp['Period'].max())]
+    else:
+        state_gdp_extra_month_cut_off           = state_gdp
+    
+
     state_resident_pop_extra_month_cut_off  = state_resident_pop.loc[state_resident_pop['Period'] <= (county_resident_pop['Period'].max())]
-    state_pci_extra_month_cut_off           = state_pci.loc[state_pci['Period'] <= (county_pci['Period'].max())]
+    
+    if (isinstance(county_pci, pd.DataFrame) == True):
+        state_pci_extra_month_cut_off           = state_pci.loc[state_pci['Period'] <= (county_pci['Period'].max())]
+    else:
+        state_pci_extra_month_cut_off           = state_pci
+
 
 
     current_state_employment = state_employment_extra_month_cut_off['Employment'].iloc[-1]
@@ -2790,11 +2938,19 @@ def GetDataAndLanguageForOverviewTable():
     county_pop_growth = "{:,.1f}%".format(county_pop_growth)
     county_pci_growth = "{:,.1f}%".format(county_pci_growth)
 
-    return([ ['Attribute','County Level Value',str(growth_period) + ' Year Growth Rate','Relative to Baseline (State)'], 
+
+    overview_table =([ ['Attribute','County Level Value',str(growth_period) + ' Year Growth Rate','Relative to Baseline (State)'], 
              ['Employment',current_county_employment,county_employment_growth,employment_faster_or_slower + ' State' ], 
              ['GDP',current_county_gdp,county_gdp_growth,gdp_faster_or_slower + ' State'],
              ['Population',current_county_pop,county_pop_growth,pop_faster_or_slower + ' State'], 
              ['Per Capita Personal Income',current_county_pci,county_pci_growth,pci_faster_or_slower + ' State'] ])
+    
+    for list in overview_table:
+        if list[1] == '$0':
+            list[1] = 'NA'
+            list[2] = 'NA'
+            list[3] = 'NA'
+    return(overview_table)
 
 def AddTable(document,data_for_table): #Function we use to insert our overview table into the report document
     #list of list where each list is a row for our table

@@ -880,3 +880,97 @@ def GetCountyMHHI(fips,state,observation_start):
     # five_year_state_employment_growth_pct = "{:,.1f}%".format(five_year_state_employment_growth_pct)
     # state_or_metro                        = state_name
     # five_year_state_or_metro_growth       = five_year_state_employment_growth_pct
+
+    
+
+##################################
+    # if cbsa != '':
+ 
+    #     else:
+    #         fig.add_trace( go.Bar(
+    #             name = 'United States',  
+    #             x=years, 
+    #             y=[national_5y_growth, national_3y_growth, national_1y_growth],
+    #             marker_color ="#000F44",
+    #             text = [national_5y_growth, national_3y_growth, national_1y_growth],
+    #             texttemplate = "%{value:.2f}%",
+    #             textposition = annotation_position,
+    #             cliponaxis =  False
+    #             ),
+    #             row = 1,
+    #             col = 2
+    #             )
+
+    #     fig.add_trace( go.Bar(
+    #         name = cbsa_name + ' (MSA)',  
+    #         x=years, 
+    #         y=[msa_5y_growth, msa_3y_growth, msa_1y_growth],
+    #         marker_color ="#B3C3FF",
+    #         text = [msa_5y_growth, msa_3y_growth, msa_1y_growth],
+    #         texttemplate = "%{value:.2f}%",
+    #         textposition = annotation_position,
+    #         cliponaxis =  False
+    #         ),
+    #         row = 1,
+    #         col = 2
+    #    )
+    #    if county_data_frame != '':
+    #     fig.add_trace(go.Bar(
+    #             name=county,      
+    #             x=years, 
+    #             y=[county_5y_growth,county_3y_growth,county_1y_growth],
+    #             marker_color="#4160D3",
+    #             text = [county_5y_growth,county_3y_growth,county_1y_growth],
+    #             texttemplate = "%{value:.2f}%",
+    #             textposition = annotation_position,
+    #             cliponaxis =  False
+    #         ),
+    #         row = 1,
+    #         col = 2
+    #     )
+        
+
+    # else:
+
+    #     fig.add_trace(go.Bar(
+    #         name = 'United States',  
+    #         x=years, 
+    #         y=[national_5y_growth, national_3y_growth, national_1y_growth],
+    #         marker_color ="#000F44",
+    #         text = [national_5y_growth, national_3y_growth, national_1y_growth],
+    #         texttemplate = "%{value:.2f}%",
+    #         textposition = annotation_position,
+    #         cliponaxis =  False
+    #         ),
+    #         row = 1,
+    #         col = 2
+    #    )
+       
+
+    #     fig.add_trace(go.Bar(
+    #             name=state_name,  
+    #             x=years, 
+    #             y=[state_5y_growth, state_3y_growth, state_1y_growth],
+    #             marker_color ="#A6B0BF",
+    #             text = [state_5y_growth, state_3y_growth, state_1y_growth],
+    #             texttemplate = "%{value:.2f}%",
+    #             textposition = annotation_position,
+    #             cliponaxis =  False
+    #             ),
+    #             row = 1,
+    #             col = 2
+    #     )
+    #     if county_data_frame != '':
+    #         fig.add_trace(go.Bar(
+    #                 name=county,      
+    #                 x=years, 
+    #                 y=[county_5y_growth,county_3y_growth,county_1y_growth],
+    #                 marker_color="#4160D3",
+    #                 text = [county_5y_growth,county_3y_growth,county_1y_growth],
+    #                 texttemplate = "%{value:.2f}%",
+    #                 textposition = annotation_position,
+    #                 cliponaxis =  False
+    #                 ),
+    #                 row = 1,
+    #                 col = 2
+    #         )
