@@ -114,7 +114,11 @@ def UpdateSalesforceMarketList(markets_list, submarkets_list, sector_list, secto
     if market == primary_market:
         dropbox_research_names.append(state + ' - ' + primary_market_name_for_file + ' - ' + sector )
     else:
-        dropbox_research_names.append(state + ' - ' + market_title + ' - ' + sector )
+        if market_title == primary_market_name_for_file : #if market and submarket have same name
+            dropbox_research_names.append(state + ' - ' + market_title + ' SUB' + ' - ' + sector )
+        else:
+            dropbox_research_names.append(state + ' - ' + market_title + ' - ' + sector )
+
 
     dropbox_document_names.append(report_file_title)
     dropbox_statuses.append('Outdated')
@@ -764,22 +768,26 @@ def CreateMarketReport():
 
     report_path = CreateReportFilePath()
 
-    #Start writing report
-    document = Document()
-    SetPageMargins()
-    SetStyle()
-    MakeReportTitle()
-    MakeCoStarDisclaimer()
-    AddMap()       
-    OverviewSection()
-    SupplyDemandSection()
-    RentSecton()
-    ConstructionSection()
-    CapitalMarketsSection()
-    OutlookSection()
+    #Skip the reports we have already done
+    if os.path.exists(report_path.replace('_draft','_FINAL',1)):
+        pass
+    else:
+        #Start writing report
+        document = Document()
+        SetPageMargins()
+        SetStyle()
+        MakeReportTitle()
+        MakeCoStarDisclaimer()
+        AddMap()       
+        OverviewSection()
+        SupplyDemandSection()
+        RentSecton()
+        ConstructionSection()
+        CapitalMarketsSection()
+        OutlookSection()
 
-    # Save report
-    document.save(report_path)
+        # Save report
+        document.save(report_path)
 
     
     #Report writing done, delete figures
@@ -811,7 +819,7 @@ for df,df2,sector in zip(      [df_multifamily, df_office, df_retail, df_industr
 
         state = primary_market[-2:] #Get State to make folder that stores markets
 
-        if  state != 'AR' :    
+        if  primary_market != 'New Haven - CT' :    
             pass
             # continue
         print(primary_market)
