@@ -8,7 +8,7 @@ import numpy as np
 
 #Define file location pre paths
 project_location               =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Projects','Research Report Automation Project')  
-costar_data_location           =  os.path.join(project_location,'Data','Costar Data') 
+costar_data_location           =  os.path.join(project_location,'Data','CoStar Data') 
 
 #Define location of raw CoStar data files
 raw_multifamily_file           =  os.path.join(costar_data_location,'mf.csv') 
@@ -16,20 +16,55 @@ raw_office_file                =  os.path.join(costar_data_location,'office.csv'
 raw_retail_file                =  os.path.join(costar_data_location,'retail.csv') 
 raw_industrial_file            =  os.path.join(costar_data_location,'industrial.csv') 
 
-raw_multifamily_slices_file           =  os.path.join(costar_data_location,'mf_slices.xlsx') 
-raw_office_slices_file                =  os.path.join(costar_data_location,'office_slices.xlsx') 
-raw_retail_slices_file                =  os.path.join(costar_data_location,'retail_slices.csv') 
-raw_industrial_slices_file            =  os.path.join(costar_data_location,'industrial_slices.xlsx') 
+raw_multifamily_slices_file    =  os.path.join(costar_data_location,'mf_slices.xlsx') 
+raw_office_slices_file         =  os.path.join(costar_data_location,'office_slices.xlsx') 
+raw_retail_slices_file         =  os.path.join(costar_data_location,'retail_slices.csv') 
+raw_industrial_slices_file     =  os.path.join(costar_data_location,'industrial_slices.xlsx') 
 
-#Import raw CoStar data as pandas data frames
+
+
+
+ 
+
+
+
+
+# Import raw CoStar data as pandas data frames
 df_multifamily  = pd.read_csv(raw_multifamily_file,
                 dtype={'Sales Volume Transactions': object
                       }      ) 
 
 df_office       = pd.read_csv(raw_office_file,
-                  dtype={'Sales Volume Transactions': object,'Total Sales Volume':object,
-                        'Transaction Sale Price/SF':object,'Under Construction Buildings':object
+                  dtype={'Sales Volume Transactions': object,
+                         'Total Sales Volume':object,
+                        'Transaction Sale Price/SF':object,
+                        'Under Construction Buildings':object,
+                        'Asset Value': object,
+                        'Availability Rate': object,
+                        'Existing Buildings':object,
+                        'Asset Value':object,
+                        'Total Sales Volume':object,
+                        'Cap Rate':object,
+                        'Existing Buildings':object,
+                        'Market Sale Price Growth':object,
+                        'Occupancy Rate':object,
+                        'Median Cap Rate':object,
+                        'Under Construction Buildings':object,
+                        'Year':object,
+                        'Sales Volume Transactions':object,
+                        'Net Absorption SF':object,
+                        'Inventory SF':object,
+                        'Under Construction SF':object,
+                        'Market Rent/SF':object,
+                        'Market Rent Growth':object,
+                        'Market Rent Growth 12 Mo':object,
+                        'Available SF':object,
+                        'Vacacny Rate':object
+
                         }     )
+
+                        
+
 
 df_retail       = pd.read_csv(raw_retail_file,
                   dtype={'Sales Volume Transactions': object,
@@ -54,13 +89,18 @@ df_industrial   = pd.read_csv(raw_industrial_file,
                          'Vacancy Rate':float
                         }
                              )  		
+
+
 #Import the raw slices data from Costar where the markets are broken down by the quality of the properties
 df_multifamily_slices  = pd.read_excel(raw_multifamily_slices_file,
                 dtype={'Sales Volume Transactions': object
                       }      ) 
 df_office_slices       = pd.read_excel(raw_office_slices_file,
-                  dtype={'Sales Volume Transactions': object,'Total Sales Volume':object,
-                        'Transaction Sale Price/SF':object,'Under Construction Buildings':object
+                  dtype={'Sales Volume Transactions': object,
+                        'Total Sales Volume':object,
+                        'Transaction Sale Price/SF':object,
+                        'Under Construction Buildings':object,
+                        'Vacancy Rate': float
                         }     )
 
 df_retail_slices       = pd.read_csv(raw_retail_slices_file,
@@ -85,7 +125,31 @@ df_industrial_slices   = pd.read_excel(raw_industrial_slices_file,
                          'Under Construction Buildings': object,
                          'Vacancy Rate':float
                         })
-                        
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #Data cleaning
 def DropClusters(df): #drops rows that report data on the cluster geography type
     df = df.loc[df['Geography Type'] != 'Cluster']
@@ -177,9 +241,9 @@ def DestringVariablesConvertToNumeric(df,sector):
 
 def FillBlanksWithZero(df,sector):
     if sector == 'Multifamily':
-        var_list_to_replace_blanks = ['Sales Volume Transactions','Under Construction Units']
+        var_list_to_replace_blanks = ['Sales Volume Transactions','Total Sales Volume','Under Construction Units','Absorption Units']
     else:
-        var_list_to_replace_blanks = ['Sales Volume Transactions','Under Construction SF']
+        var_list_to_replace_blanks = ['Sales Volume Transactions','Total Sales Volume','Under Construction SF','Net Absorption SF']
 
     for var in var_list_to_replace_blanks:
         df[var] = df[var].fillna(0)
@@ -208,7 +272,7 @@ def ConvertPercenttoPercentagePoints(df,sector):
                    'Market Rent Growth 12 Mo' ]
     
     for var in rate_vars:
-        df[var] = round((df[var] * 100),2)
+            df[var] = round(df[var] * 100,2)
     return(df)
 
 def MainClean(df,sector): #Calls all cleaning functions and returns cleaned dataframes
@@ -216,8 +280,8 @@ def MainClean(df,sector): #Calls all cleaning functions and returns cleaned data
     df = SortData(df)
     df = CreateYearAndQuarterVariables(df)
     df = DropExtraVariables(df,sector)
-    df = ConvertPercenttoPercentagePoints(df,sector)
     df = DestringVariablesConvertToNumeric(df,sector)
+    df = ConvertPercenttoPercentagePoints(df,sector)
     df = FillBlanksWithZero(df,sector)
     return(df)
 
@@ -225,15 +289,28 @@ def MainCleanSlices(df,sector): #Calls cleaning functions and returns cleaned da
     if sector == 'Multifamily':
         df = df[['Property Class Name','Period','Slice','As Of','Geography Name','Property Type','Vacancy Rate','Market Effective Rent/Unit']]
     else:
-        df = df[['Property Class Name','Period','Slice','As Of','Geography Name','Property Type','Vacancy Rate','Market Rent/SF']]
+        df = df[['Property Class Name','Period','Slice','As Of','Geography Name','Property Type','Vacancy Rate','Market Rent/SF','Inventory SF','Under Construction SF','Net Delivered SF 12 Mo','Availability Rate','Net Absorption SF 12 Mo']]
+        df['Availability Rate'] = df['Availability Rate'] * 100
+
+        #Replace NA with 0
+        df['Under Construction SF'] = df['Under Construction SF'].fillna(0)
+        
     df['Vacancy Rate'] = df['Vacancy Rate'] * 100
     df['Vacancy Rate'] = round(df['Vacancy Rate'],1 )
-    
+
+
     #Remove "Center" from slice name
     df['Slice'] = df['Slice'].str.replace(' Center', '', regex=False)
     
+    df['Geography Name'] = df['Geography Name'].str.replace('New York City', 'Manhattan', regex=False)
+    
+    
+
     #Drop the aggregate slice
     df = df.loc[df['Slice'] != 'All']
+
+    df.loc[:,'Year']           =   df.loc[:,'Period'].str[:4]
+    df.loc[:,'Quarter']        =   df.loc[:,'Period'].str[5:]
 
     return(df)
 
@@ -249,10 +326,12 @@ df_retail_slices        =  MainCleanSlices(df_retail_slices,'Retail')
 df_industrial_slices    =  MainCleanSlices(df_industrial_slices,'Industrial')
 
 
+
 #Loop through the 4 dataframes: create variables we will use in our report/figures 
 for df in [df_multifamily,df_office,df_retail,df_industrial]:
-    # continue 
-    
+
+    df['Geography Name'] = df['Geography Name'].str.replace('New York City', 'Manhattan', regex=False)
+
     #Clean the Sqft and Unit variables seperately
     if df.equals(df_multifamily):
 
@@ -357,18 +436,18 @@ for df in [df_multifamily,df_office,df_retail,df_industrial]:
 
 
     #Making Variables for all sectors
-    df['Previous Quarter Vacancy'] = df.groupby('Geography Name')['Vacancy Rate'].shift(1)
-    df['4 Quarters Ago Vacancy']   = df.groupby('Geography Name')['Vacancy Rate'].shift(4)
+    df['Previous Quarter Vacancy']            = df.groupby('Geography Name')['Vacancy Rate'].shift(1)
+    df['4 Quarters Ago Vacancy']              = df.groupby('Geography Name')['Vacancy Rate'].shift(4)
     
-    df['QoQ Vacancy Growth']        = round((df['Vacancy Rate'] - df['Previous Quarter Vacancy']) * 100,0)
-    df['YoY Vacancy Growth']        = round((df['Vacancy Rate'] - df['4 Quarters Ago Vacancy'])   * 100,0)
+    df['QoQ Vacancy Growth']                  = round((df['Vacancy Rate'] - df['Previous Quarter Vacancy']) * 100,0)
+    df['YoY Vacancy Growth']                  = round((df['Vacancy Rate'] - df['4 Quarters Ago Vacancy'])   * 100,0)
 
     #Absorption
-    df['Previous Quarter Absorption Rate'] =  df.groupby('Geography Name')['Absorption Rate'].shift(1)
-    df['4 Quarters Ago Absorption Rate']   =  df.groupby('Geography Name')['Absorption Rate'].shift(4)
+    df['Previous Quarter Absorption Rate']    =  df.groupby('Geography Name')['Absorption Rate'].shift(1)
+    df['4 Quarters Ago Absorption Rate']      =  df.groupby('Geography Name')['Absorption Rate'].shift(4)
 
-    df['QoQ Absorption Growth']        = round((df['Absorption Rate'] - df['Previous Quarter Absorption Rate']) * 100,0)
-    df['YoY Absorption Growth']        = round((df['Absorption Rate'] - df['4 Quarters Ago Absorption Rate'])   * 100,0)
+    df['QoQ Absorption Growth']               = round((df['Absorption Rate'] - df['Previous Quarter Absorption Rate']) * 100,0)
+    df['YoY Absorption Growth']               = round((df['Absorption Rate'] - df['4 Quarters Ago Absorption Rate'])   * 100,0)
     
     #Sales Volume
     df['Previous Quarter Total Sales Volume'] = df.groupby('Geography Name')['Total Sales Volume'].shift(1)
@@ -381,29 +460,29 @@ for df in [df_multifamily,df_office,df_retail,df_industrial]:
     df['Previous Quarter Sales Volume Transactions'] = df.groupby('Geography Name')['Sales Volume Transactions'].shift(1)
     df['4 Quarters Ago Sales Volume Transactions']   = df.groupby('Geography Name')['Sales Volume Transactions'].shift(4)
     
-    df['QoQ Transactions Growth']         = round(  (((df['Sales Volume Transactions']/df['Previous Quarter Sales Volume Transactions']) - 1)  * 100)            ,0)
-    df['YoY Transactions Growth']         = round(  (((df['Sales Volume Transactions']/df['4 Quarters Ago Sales Volume Transactions'])   - 1)  * 100)            ,0)
+    df['QoQ Transactions Growth']                   = round(  (((df['Sales Volume Transactions']/df['Previous Quarter Sales Volume Transactions']) - 1)  * 100)            ,0)
+    df['YoY Transactions Growth']                   = round(  (((df['Sales Volume Transactions']/df['4 Quarters Ago Sales Volume Transactions'])   - 1)  * 100)            ,0)
 
 
     #market cap rate
-    df['Previous Quarter Market Cap Rate'] = df.groupby('Geography Name')['Market Cap Rate'].shift(1)
-    df['4 Quarters Ago Market Cap Rate']   = df.groupby('Geography Name')['Market Cap Rate'].shift(4)
+    df['Previous Quarter Market Cap Rate']          = df.groupby('Geography Name')['Market Cap Rate'].shift(1)
+    df['4 Quarters Ago Market Cap Rate']            = df.groupby('Geography Name')['Market Cap Rate'].shift(4)
     
-    df['QoQ Market Cap Rate Growth']        = round((df['Market Cap Rate'] - df['Previous Quarter Market Cap Rate']) * 100,0)
-    df['YoY Market Cap Rate Growth']        = round((df['Market Cap Rate'] - df['4 Quarters Ago Market Cap Rate'])   * 100,0)
+    df['QoQ Market Cap Rate Growth']                = round((df['Market Cap Rate'] - df['Previous Quarter Market Cap Rate']) * 100,0)
+    df['YoY Market Cap Rate Growth']                = round((df['Market Cap Rate'] - df['4 Quarters Ago Market Cap Rate'])   * 100,0)
 
     #Round  3 percentage variables we report in overview table
-    df['Market Cap Rate']            = round(df['Market Cap Rate'],1)
-    df['Vacancy Rate']               = round(df['Vacancy Rate'],1)
-    df['Absorption Rate']            = round(df['Absorption Rate'],1)
+    df['Market Cap Rate']                           = round(df['Market Cap Rate'],1)
+    df['Vacancy Rate']                              = round(df['Vacancy Rate'],1)
+    df['Absorption Rate']                           = round(df['Absorption Rate'],1)
 
 
 
 #Keep last 10 years only 
-df_multifamily =  KeepLast10Years(df_multifamily,groupbylist= ['Geography Name'])
-df_office      =  KeepLast10Years(df_office,groupbylist= ['Geography Name'])
-df_retail      =  KeepLast10Years(df_retail,groupbylist= ['Geography Name'])
-df_industrial  =  KeepLast10Years(df_industrial,groupbylist= ['Geography Name'])
+df_multifamily          =  KeepLast10Years(df_multifamily,groupbylist= ['Geography Name'])
+df_office               =  KeepLast10Years(df_office,groupbylist= ['Geography Name'])
+df_retail               =  KeepLast10Years(df_retail,groupbylist= ['Geography Name'])
+df_industrial           =  KeepLast10Years(df_industrial,groupbylist= ['Geography Name'])
 
 df_multifamily_slices   =  KeepLast10Years(df_multifamily_slices,groupbylist= ['Geography Name','Slice'])
 df_office_slices        =  KeepLast10Years(df_office_slices,groupbylist= ['Geography Name','Slice'])
@@ -411,11 +490,14 @@ df_retail_slices        =  KeepLast10Years(df_retail_slices,groupbylist= ['Geogr
 df_industrial_slices    =  KeepLast10Years(df_industrial_slices,groupbylist= ['Geography Name','Slice'])
 
 
+
 #Export Cleaned Data Files
 df_multifamily.to_csv(os.path.join(costar_data_location,'mf_clean.csv'))
 df_office.to_csv(os.path.join(costar_data_location,'office_clean.csv'))
 df_retail.to_csv(os.path.join(costar_data_location,'retail_clean.csv',))
 df_industrial.to_csv(os.path.join(costar_data_location,'industrial_clean.csv'))
+
+
 
 
 df_multifamily_slices.to_csv(os.path.join(costar_data_location,'mf_slices_clean.csv'))

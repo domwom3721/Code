@@ -35,6 +35,10 @@ def AddOverviewTable(document,number_rows,number_cols,row_data,col_width): #Func
         
         #loop through all cells in the current row
         for current_column,(cell,cell_data) in enumerate(zip(row.cells,row_data_list)):
+            if str(cell_data) == 'Manhattan - NY':
+                cell_data = 'Manhattan'
+            elif str(cell_data) == 'United States of America':
+                cell_data = 'National'
 
             cell.text = str(cell_data)
 
@@ -144,7 +148,14 @@ def AddTable(document,row_data,col_width): #Function we use to insert our wide t
         
         #loop through all cells in the current row
         for current_column,(cell,cell_data) in enumerate(zip(row.cells,row_data_list)):
+            if str(cell_data) == 'Manhattan - NY':
+                cell_data = 'Manhattan'
+                
+
             cell.text = str(cell_data)
+
+         
+            
 
             if current_row == 0:
                 cell.vertical_alignment = WD_ALIGN_VERTICAL.BOTTOM
@@ -218,7 +229,16 @@ def AddHeading(document,title,heading_level): #Function we use to insert the hea
             rFonts.set(qn("w:asciiTheme"), "Avenir Next LT Pro")
 
 def CreateRowDataForTable(data_frame,data_frame2,data_frame3,var1,var2,var3,modifier1,modifier2,modifier3,title): #Returns a list which will populate a row in the overview table
-    if data_frame.equals(data_frame2):
+    
+    if data_frame.equals(data_frame2) and data_frame.equals(data_frame3):
+        row_data_list = [title,
+        data_frame[var1].iloc[-1],
+        data_frame[var2].iloc[-1],
+        data_frame[var3].iloc[-1],
+        ]
+
+    #Market
+    elif data_frame.equals(data_frame2):
         row_data_list = [title,
         data_frame[var1].iloc[-1],
         data_frame[var2].iloc[-1],
@@ -226,8 +246,10 @@ def CreateRowDataForTable(data_frame,data_frame2,data_frame3,var1,var2,var3,modi
         data_frame3[var1].iloc[-1],
         data_frame3[var2].iloc[-1],
         data_frame3[var3].iloc[-1]]
+    
+    
 
-
+    #Submarket
     else:
         row_data_list = [title,
         data_frame[var1].iloc[-1],
@@ -247,36 +269,45 @@ def CreateRowDataForTable(data_frame,data_frame2,data_frame3,var1,var2,var3,modi
 
             if var1 == ('Total Sales Volume') or var1 == ('Asset Value/Unit') or var1 == ('Asset Value/Sqft') or var1 == ('Market Effective Rent/Unit'):
                 row_data_list[first_spot] =  str("${:,.0f}".format(row_data_list[first_spot]))
-                row_data_list[second_spot] = str("${:,.0f}".format(row_data_list[second_spot])) 
+
+                if second_spot <= len(row_data_list) - 1:
+                    row_data_list[second_spot] = str("${:,.0f}".format(row_data_list[second_spot])) 
                 
             else:
                 row_data_list[first_spot] = modifier1 + '' + str(row_data_list[first_spot])
-                row_data_list[second_spot] = modifier1 + '' + str(row_data_list[second_spot])
+                if second_spot <= len(row_data_list) - 1:
+                    row_data_list[second_spot] = modifier1 + '' + str(row_data_list[second_spot])
 
         elif modifier == '%':
             if var1 == ('Total Sales Volume') or  var1 == ('Sales Volume Transactions'): #only want whole number for percent change in these variables
                 row_data_list[first_spot]  = str("{0:,.0f}".format(row_data_list[first_spot]))   + modifier
-                row_data_list[second_spot] = str("{0:,.0f}".format(row_data_list[second_spot]))  + modifier
+                if second_spot <= len(row_data_list) - 1:
+                    row_data_list[second_spot] = str("{0:,.0f}".format(row_data_list[second_spot]))  + modifier
             else:
                 row_data_list[first_spot]  = str(row_data_list[first_spot]) + modifier
-                row_data_list[second_spot] = str(row_data_list[second_spot]) + modifier
+                if second_spot <= len(row_data_list) - 1:
+                    row_data_list[second_spot] = str(row_data_list[second_spot]) + modifier
 
         elif modifier == 'bps':
             row_data_list[first_spot]  = str("{:,.0f}".format(row_data_list[first_spot]))  + ' ' + modifier
-            row_data_list[second_spot] = str("{:,.0f}".format(row_data_list[second_spot])) + ' ' + modifier
+            if second_spot <= len(row_data_list) - 1:
+                row_data_list[second_spot] = str("{:,.0f}".format(row_data_list[second_spot])) + ' ' + modifier
 
         else:
             if var1 == 'Sales Volume Transactions':
                 row_data_list[first_spot] =  str("{:,.0f}".format(row_data_list[first_spot]))
-                row_data_list[second_spot] = str("{:,.0f}".format(row_data_list[second_spot]))
+                if second_spot <= len(row_data_list) - 1:
+                    row_data_list[second_spot] = str("{:,.0f}".format(row_data_list[second_spot]))
             
             elif var1 == 'Absorption Units' or var1 == 'Net Absorption SF':
                 row_data_list[first_spot] =  str("{:,.0f}".format(row_data_list[first_spot]))
-                row_data_list[second_spot] = str("{:,.0f}".format(row_data_list[second_spot])) 
+                if second_spot <= len(row_data_list) - 1:
+                    row_data_list[second_spot] = str("{:,.0f}".format(row_data_list[second_spot])) 
 
             else:
                 row_data_list[first_spot]  = str(row_data_list[first_spot])  + ' ' + modifier
-                row_data_list[second_spot] = str(row_data_list[second_spot]) + ' ' + modifier
+                if second_spot <= len(row_data_list) - 1:
+                    row_data_list[second_spot] = str(row_data_list[second_spot]) + ' ' + modifier
             
         
         first_spot  +=1
@@ -290,6 +321,21 @@ def CreateRowDataForTable(data_frame,data_frame2,data_frame3,var1,var2,var3,modi
 def CreateRowDataForWideTable(data_frame,data_frame2,data_frame3,data_frame4,var1,modifier,sector): #Returns list of lists with data we use to fill rows in the wide table
     #This function takes a variable and returns a list of lists of that variables value over time in the market, submarket, and nation, 
     #and if we are doing a market the different quality slices. Each list in the list represents a row in a table for either rent or vacancy
+
+    level_1_name = data_frame['Geography Name'].iloc[0]
+    level_2_name = data_frame2['Geography Name'].iloc[0]
+    level_3_name = data_frame3['Geography Name'].iloc[0] #Typically will be United States, excpet for when doing NYC 
+
+    if data_frame.equals(data_frame3) == False and level_1_name != 'Manhattan - NY' and level_2_name != 'Manhattan - NY':
+        level_3_name = 'National'
+    else:
+        if level_1_name != 'United States of America':
+            level_3_name = 'Metro'
+
+
+
+
+
     if data_frame.equals(data_frame2):
         market_or_submarket = 'market'
     else:
@@ -341,10 +387,11 @@ def CreateRowDataForWideTable(data_frame,data_frame2,data_frame3,data_frame4,var
     data_frame3                           = data_frame3[data_frame3['Period'].str.contains("Q4")]
     data_frame3['Period']                 = data_frame3['Period'].str.replace(r' Q4', '')
 
-    tail_length                           =  int(len(data_frame4))/len(data_frame4['Slice'].unique()) - 2
-    data_frame4                           = data_frame4.groupby(['Slice']).tail(tail_length)
-    data_frame4                           = data_frame4[data_frame4['Period'].str.contains("Q4")]
-    data_frame4['Period']                 = data_frame4['Period'].str.replace(r' Q4', '')
+    if len(data_frame4) > 0:
+        tail_length                           =  int(len(data_frame4))/len(data_frame4['Slice'].unique()) - 2
+        data_frame4                           = data_frame4.groupby(['Slice']).tail(tail_length)
+        data_frame4                           = data_frame4[data_frame4['Period'].str.contains("Q4")]
+        data_frame4['Period']                 = data_frame4['Period'].str.replace(r' Q4', '')
    
 
     #Append the 2 most recent quarters with the Q4 dataframe
@@ -381,14 +428,15 @@ def CreateRowDataForWideTable(data_frame,data_frame2,data_frame3,data_frame4,var
     data.insert(0, {'Period': '', var1: 'Market'})
     data_frame2  = pd.concat([pd.DataFrame(data), data_frame2], ignore_index=True)
 
+    
     data = []
-    data.insert(0, {'Period': '', var1: 'National'})
+    data.insert(0, {'Period': '', var1: level_3_name})
     data_frame3  = pd.concat([pd.DataFrame(data), data_frame3], ignore_index=True)
 
  
     
     #If we are doing a market
-    if market_or_submarket == 'market':
+    if market_or_submarket == 'market' or len(data_frame4) > 0 :
 
         try:
             list_of_lists = [data_frame['Period'].tolist(),
@@ -413,6 +461,11 @@ def CreateRowDataForWideTable(data_frame,data_frame2,data_frame3,data_frame4,var
              list_of_lists = [data_frame['Period'].tolist(),
                 data_frame3[var1].tolist(),
                 data_frame2[var1].tolist()]
+
+        #remove extra row for national report
+        if level_1_name == 'United States of America':
+            # print(list_of_lists)
+            del list_of_lists[2]
 
 
         return(list_of_lists)
@@ -440,7 +493,7 @@ def CreateRowDataForWideTable(data_frame,data_frame2,data_frame3,data_frame4,var
             
             #Create empty rows for market and nation
             market_list           =  ['Market']
-            nation_list           =  ['National']
+            nation_list           =  ['-----National-----']
             for i in range(len(submarket_list) -1):
                 market_list.append('') 
                 nation_list.append('')
@@ -719,7 +772,6 @@ def CreateRowDataForWideTable(data_frame,data_frame2,data_frame3,data_frame4,var
         #     fill_list('Submarket',data_frame,3)
 
         # return(row_data)
-
 
 def AddMarketPerformanceTable(document,col_width,market_data_frame,sector): #Function we use to insert our wide tables into report document 
 

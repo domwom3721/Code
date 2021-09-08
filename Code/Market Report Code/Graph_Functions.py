@@ -119,7 +119,6 @@ def CreateSalesVolumeGraph(data_frame,folder):
     fig.update_layout(margin = dict(r=0))
     fig.write_image(os.path.join(folder,'sales_volume.png'),engine='kaleido',scale=scale)
 
-
 def CreateAssetValueGraph(data_frame,data_frame2,data_frame3,folder,market_title,primary_market,sector):
     #Create graph for non-multifamily with construction levels
 
@@ -152,12 +151,17 @@ def CreateAssetValueGraph(data_frame,data_frame2,data_frame3,folder,market_title
 
     #If its a submarket, add primary market cap rate. If it's a primary market, add national cap rate line
     if data_frame.equals(data_frame2):
-        fig.add_trace(
-        go.Scatter(x=data_frame3['Period'],
-        y=data_frame3['Market Cap Rate'],
-        name='National',
-        line=dict(color="#B3C3FF"))
-        ,secondary_y=True)  
+        name = data_frame3['Geography Name'].iloc[0]
+        if name == 'United States of America':
+            name = 'National'
+
+        if  primary_market != 'United States of America':
+            fig.add_trace(
+            go.Scatter(x=data_frame3['Period'],
+            y=data_frame3['Market Cap Rate'],
+            name=name,
+            line=dict(color="#B3C3FF"))
+            ,secondary_y=True)  
     
     else:
         fig.add_trace(
@@ -252,21 +256,30 @@ def CreateAbsorptionGraph(data_frame,data_frame2,data_frame3,folder,market_title
             line=dict(color="#4160D3"))
     ,secondary_y=True)
 
+    #Market
     if data_frame.equals(data_frame2):
-        fig.add_trace(
-        go.Scatter(x=data_frame3['Period'],
-        y=data_frame3['Vacancy Rate'],
-        name='National',
-        line=dict(color="#B3C3FF"))
-        ,secondary_y=True)  
+        name = data_frame3['Geography Name'].iloc[0]
+        if name == 'United States of America':
+            name = 'National'
+
+        if  primary_market != 'United States of America':
+            fig.add_trace(
+            go.Scatter(x=data_frame3['Period'],
+            y=data_frame3['Vacancy Rate'],
+            name=name,
+            line=dict(color="#B3C3FF"))
+            ,secondary_y=True)  
     
+    #Submarket
     else:
         fig.add_trace(
         go.Scatter(x=data_frame2['Period'],
         y=data_frame2['Vacancy Rate'],
         name=primary_market,
-        line=dict(color="#B3C3FF"))
-        ,secondary_y=True)     
+        line=dict(color="#B3C3FF")
+                 )
+        ,secondary_y=True
+                    )     
     
     
     #Set x axis ticks
@@ -294,7 +307,7 @@ def CreateAbsorptionGraph(data_frame,data_frame2,data_frame3,folder,market_title
                     
                     )
     
-    # #Set Legend Layout
+    #Set Legend Layout
     fig.update_layout(
     legend=dict(
         orientation="h",
@@ -323,12 +336,11 @@ def CreateAbsorptionGraph(data_frame,data_frame2,data_frame3,folder,market_title
     margin=dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin),
     height    = graph_height,
     width     = graph_width,
-        
                     )
 
 
 
-    #Add % to right axis ticks
+    #Add % to axis ticks
     fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.1f', secondary_y=True)
     fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.1f',secondary_y=False)
 
@@ -510,16 +522,20 @@ def CreateRentGrowthGraph(data_frame,data_frame2,data_frame3,folder,market_title
             line=dict(color="#4160D3",dash='solid'))
     ,secondary_y=True) 
 
-    #If its a submarket, add primary market cap rate. If it's a primary market, add national cap rate line
+    #If its a submarket, add primary market rent. If it's a primary market, add national rent line
     if data_frame.equals(data_frame2):
         extra_height = 70
-
-        fig.add_trace(
-        go.Scatter(x=data_frame3['Period'],
-        y=data_frame3[rent_var],
-        name='National',
-        line=dict(color="#B3C3FF"))
-        ,secondary_y=True)  
+        name = data_frame3['Geography Name'].iloc[0]
+        if name == 'United States of America':
+            name = 'National'
+        
+        if  primary_market != 'United States of America':
+            fig.add_trace(
+            go.Scatter(x=data_frame3['Period'],
+            y=data_frame3[rent_var],
+            name=name,
+            line=dict(color="#B3C3FF"))
+            ,secondary_y=True)  
     
     else: #Submarkets
         extra_height = 70
@@ -588,8 +604,13 @@ def CreateRentGrowthGraph(data_frame,data_frame2,data_frame3,folder,market_title
     fig.write_image(os.path.join(folder,'rent_growth.png'),engine='kaleido',scale=scale)
 
 
-
 def CreateAllGraphs(data_frame,data_frame2,data_frame3,folder,market_title,primary_market,sector):
+
+    if primary_market == 'Manhattan - NY':
+        primary_market = 'Manhattan'
+
+    if market_title == 'Manhattan - NY':
+        market_title = 'Manhattan'
 
     CreateSalesVolumeGraph(data_frame,folder)
     CreateAssetValueGraph(data_frame,data_frame2,data_frame3,folder,market_title,primary_market,sector)
