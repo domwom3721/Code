@@ -1416,7 +1416,7 @@ for df,df2,sector in zip(      df_list,
 
 
 #Now call our function that creates a csv with all the current market reports
-#CreateDirectoryCSV()        
+CreateDirectoryCSV()        
 
 def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
     if type == None:
