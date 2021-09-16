@@ -4100,7 +4100,7 @@ def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
         print('Service DB did not successfully update. Please run the script again.')
         
     # Delete the temporary CSV
-    # os.remove(csv_path)
+    os.remove(csv_path)
 
 # Post an update request to the Market Research Docs Service to update the database
 UpdateServiceDb(report_type='areas', 
