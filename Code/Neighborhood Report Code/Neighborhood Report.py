@@ -2416,7 +2416,7 @@ def CreateDirectoryCSV():
     dropbox_df = dropbox_df.sort_values(by=['State','Market Research Name'])
 
     csv_name = 'Dropbox Neighborhoods.csv'
-    service_api_csv_name = f'CoStar Markets-{datetime.now()}.csv'
+    service_api_csv_name = f'Dropbox Neighborhoods-{datetime.now()}.csv'
     dropbox_df.to_csv(os.path.join(main_output_location, csv_name),index=False)
     dropbox_df.to_csv(os.path.join(main_output_location, service_api_csv_name),index=False)
 
