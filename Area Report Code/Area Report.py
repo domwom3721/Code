@@ -4078,29 +4078,33 @@ def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
         return
     print(f'Updating service database: {report_type}')
 
-    url = f'http://market-research-service-dev.bowery.link/api/v1/update/{report_type}'
-    dropbox_path = f'{dropbox_dir}{csv_name}'
-    payload = { 'location': dropbox_path }
+    try:
+        url = f'http://market-research-service-dev.bowery.link/api/v1/update/{report_type}'
+        dropbox_path = f'{dropbox_dir}{csv_name}'
+        payload = { 'location': dropbox_path }
 
-    retry_strategy = Retry(
-        total=3,
-        status_forcelist=[400, 404, 409, 500, 503, 504],
-        allowed_methods=["POST"],
-        backoff_factor=5
-    )
-    adapter = HTTPAdapter(max_retries=retry_strategy)
-    http = requests.Session()
-    http.mount("https://", adapter)
-    http.mount("http://", adapter)
+        retry_strategy = Retry(
+            total=3,
+            status_forcelist=[400, 404, 409, 500, 503, 504],
+            allowed_methods=["POST"],
+            backoff_factor=5
+        )
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        http = requests.Session()
+        http.mount("https://", adapter)
+        http.mount("http://", adapter)
 
-    response = http.post(url, json=payload)
-    if response.status_code == 200:
-        print('Service successfully updated')
-    else:
-        print('Service DB did not successfully update. Please run the script again.')
-        
-    # Delete the temporary CSV
-    os.remove(csv_path)
+        response = http.post(url, json=payload)
+        if response.status_code == 200:
+            print('Service successfully updated')
+        else:
+            print(f'Service returned status code {response.status_code}')
+    except Exception as e:
+        print('Service DB did not successfully update. Please run the script again after fixing the error.')
+        print(e)
+    finally:
+        print(f'Deleting temporary CSV: ', csv_path)
+        os.remove(csv_path)
 
 # Post an update request to the Market Research Docs Service to update the database
 UpdateServiceDb(report_type='areas', 
