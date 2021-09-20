@@ -4,9 +4,6 @@
     #Loops through these 4 files, loops through each of the markets and submarkets (geographic areas) and creates a directory and word document
     #The word document is a report that reports tables and graphs generated from the data files
 
-import sys
-sys.path.append('../General Code/')
-
 import os
 import time
 import numpy as np
