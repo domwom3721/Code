@@ -2428,14 +2428,14 @@ def OverviewLanguage():
                    ' of the labor market)' +
                    ', as social distancing protocols were put in place and ' + 
                    'operating restrictions were imposed on many businesses in the retail, office, and hospitality sectors. ' +
-                   state_name +
-                   ' ' +
-                   covid_hotspot_was_or_wasnot +
-                   ' a hotspot for the virus, ' + 
-                   covid_lockdown_conjunction +
-                   ' policymakers imposed a ' +
-                   covid_lockdown_description +
-                   ' lockdown across the state. ' + 
+                   #state_name +
+                   #' ' +
+                   #covid_hotspot_was_or_wasnot +
+                   #' a hotspot for the virus, ' + 
+                   #covid_lockdown_conjunction +
+                   #' policymakers imposed a ' +
+                   #covid_lockdown_description +
+                   #' lockdown across the state. ' + 
                    'Fortunately, consumer spending and lower case counts resulted in record Q3 GDP growth, fueling improvement in the labor market over the course of 2021. ' +
                    'As of ' +
                    current_period +

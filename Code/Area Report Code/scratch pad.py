@@ -974,3 +974,119 @@ def GetCountyMHHI(fips,state,observation_start):
     #                 row = 1,
     #                 col = 2
     #         )
+
+
+def CarLanguage():
+    print('Writing Car Langauge')
+    
+    try:
+        page                          =  wikipedia.page((county + ',' + state))
+        major_highways                = page.section('Major highways')
+        major_Highways                = page.section('Major Highways')
+        roadways                      = page.section('Roadways')
+        highways                      = page.section('Highways')
+        public_roadways               = page.section('Public roadways')
+        major_roads                   = page.section('Major roads and highways')
+        roads_and_highways            = page.section('Roads and highways')
+        major_roads_and_Highways      = page.section('Major roads and Highways')
+        car_language = ''
+        for count,section in enumerate([major_highways,major_Highways,roadways,highways,public_roadways,major_roads,roads_and_highways,major_roads_and_Highways]):
+            if (section != None) and (count == 0):
+                car_language =  section 
+            elif (section != None) and (count > 0):
+                car_language = car_language + ' ' + "\n" + section 
+
+        
+
+        #If the wikipedia page is missiing all highway sections 
+        if car_language == '':
+            return(county + ' is not connected by any major highways or roads.')
+        else:
+            return(car_language)
+    except:
+        return('')
+ 
+def PlaneLanguage():
+    print('Writing Plane Langauge')
+
+    try:
+        #Go though some common section names for airports
+        page                  = wikipedia.page((county + ',' + state))
+        airports              = page.section('Airports')
+        air                   = page.section('Air')
+        aviation              = page.section('Aviation')
+        air_transport         = page.section('Air Transport')
+
+        plane_language = ''
+        for count,section in enumerate([airports,air,aviation,air_transport]):
+            if (section != None) and (count == 0):
+                plane_language =  section 
+            elif (section != None) and (count > 0):
+                plane_language = plane_language + ' ' + "\n" + section 
+
+        
+
+        #If the wikipedia page is missiing all airport sections 
+        if plane_language == '':
+            return(county + ' is not served by any airport.')
+        else:
+            return(plane_language)
+    except:
+        return('')        
+    
+def BusLanguage():
+    print('Writing Bus Langauge')
+
+    try:
+        page                         =  wikipedia.page((county + ',' + state))
+        bus                          =  page.section('Bus')
+        intercity_bus                =  page.section('Intercity buses')
+        public_Transportation        =  page.section('Public Transportation')
+        
+        #Add the text from the sections above to a single string variable
+        bus_language = ''
+        for count,section in enumerate([bus,intercity_bus,public_Transportation]):
+            if (section != None) and (count == 0):
+                bus_language =  section 
+            elif (section != None) and (count > 0):
+                bus_language = bus_language + ' ' + "\n" + section 
+
+        
+        #If the wikipedia page is missiing all airport sections return default phrase
+        if bus_language == '':
+            return(county + ' does not have public bus service.')
+        else:
+            return(bus_language)
+    except:
+        return('')
+
+def TrainLanguage():
+    print('Writing Train Langauge')
+    try:
+        page                         =  wikipedia.page((county + ',' + state))
+        rail                         =  page.section('Rail')
+        public_transportation        =  page.section('Public transportation')
+        public_Transportation        =  page.section('Public Transportation')
+        public_transport             =  page.section('Public transport')
+        public_Transit               =  page.section('Public Transit')
+        mass_transit                 =  page.section('Mass transit')
+        rail_network                 =  page.section('Rail Network')
+        intercity_rail               =  page.section('Intercity Rail')
+
+        #Add the text from the sections above to a single string variable
+        train_language = ''
+        for count,section in enumerate([rail,public_transportation,public_Transportation,public_transport,public_Transit,mass_transit,rail_network,intercity_rail]):
+            if (section != None) and (count == 0):
+                train_language =  section 
+            elif (section != None) and (count > 0):
+                train_language = train_language + ' ' + "\n" + section 
+
+        
+        #If the wikipedia page is missiing all airport sections return default phrase
+        if train_language == '':
+            return(county + ' is not served by any commuter or light rail lines.')
+        else:
+            return(train_language)
+    except:
+        return('')
+  
