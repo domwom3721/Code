@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 
 #Function that takes a number as input and writes it in words (eg: 5,000,000 ---> '5 million')
 def millify(n,modifier):
-    millnames = ['',' thousand',' million',' billion',' trillion']
+    millnames = ['','k',' million',' billion',' trillion']
     try:
         n = float(n)
         millidx = max(0,min(len(millnames)-1,
@@ -43,7 +43,9 @@ def PullCoStarWriteUp(section_names,writeup_directory):
                             text = text.replace('1 & 2 and 3 Star','class C') 
                             text = text.replace(' 1, & 2 & 3 Star',' class C')
                             text = text.replace(' 4 & 5 Star ',' class A and B ')
+                            text = text.replace(' 4 and 5-star  ',' class A and B ')
                             text = text.replace(' 4 and 5 Star ',' class A and B ')
+                            text = text.replace(' 4 or 5 Star ',' class A and B ')
                             text = text.replace('4 & 5 Stars','class A and B')
                             text = text.replace('4&5 Star','class A and B')
                             text = text.replace('1 & 2 Star','class C')
@@ -58,9 +60,16 @@ def PullCoStarWriteUp(section_names,writeup_directory):
                             text = text.replace(' 3 Star ',' class C ')
                             text = text.replace('3 Star','class C')
                             text = text.replace(' 2 Star ',' class C ')
+                            text = text.replace('2 Stars','class C')
                             text = text.replace('2 Star','class C')
                             text = text.replace(' 1 Star ',' class C ')
                             text = text.replace('1 Star','class C')
+                            text = text.replace('21Q1','2021 Q1')
+                            text = text.replace('21Q2','2021 Q2')
+                            text = text.replace('21Q3','2021 Q3')
+                            text = text.replace('amount','number')
+                            #our generated language is delayed compared to costar 
+                            text = text.replace('fourth quarter of 2021','3Q 2021')
 
                             #Now remove bad characters
                             for char in ['ï','»','¿','â','€']:
@@ -97,6 +106,11 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
     if primary_market == 'Manhattan - NY':
         primary_market = 'Manhattan'
 
+    #if market_title == 'Northern New Jersey - NJ':
+    #    market_title = 'Northern NJ'
+
+    #if primary_market == 'Northern New Jersey - NJ'    
+    #    primary_market = 'Northern NJ'
 
     #Section 1: Begin making variables for the overview language that come from the data: 
     if sector == 'Multifamily':
@@ -139,7 +153,16 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
         unit_or_sqft_singular           = 'SF'
         extra_s                         = ''
     
-    
+    #define periods for use in analysis    
+    #latest_quarter                      = data_frame['Period'].iloc[-1]
+    Q12020_quarter                      = data_frame['Period'].iloc[-7]
+    Q22020_quarter                      = data_frame['Period'].iloc[-6]
+    Q32020_quarter                      = data_frame['Period'].iloc[-5]
+    Q42020_quarter                      = data_frame['Period'].iloc[-4]
+    Q22021_quarter                      = data_frame['Period'].iloc[-3]
+    Q22022_quarter                      = data_frame['Period'].iloc[-2]
+
+
     submarket_inventory_fraction        = (submarket_inventory/market_inventory) * 100
     latest_quarter                      = data_frame['Period'].iloc[-1]
     current_sale_volume                 = data_frame['Total Sales Volume'].iloc[-1]
@@ -175,10 +198,10 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
 
     #Get Language for rent trends
     if yoy_rent_growth > 0 and qoq_rent_growth < 0:
-        rent_growth_description = 'annual rent growth has expanded but compressed in the past quarter'
+        rent_growth_description = 'have expanded over the past year but compressed in the past quarter'
 
     elif yoy_rent_growth < 0 and qoq_rent_growth < 0:
-        rent_growth_description = 'annual rent growth has expanded but compressed in the past quarter'
+        rent_growth_description = 'have contracted over the past year and continue to soften'
 
     
     #Describe YoY change in vacancy rates
@@ -241,17 +264,14 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
     else:
         demand_change_vacancy_relationship = 'causing'                          +  ' vacancy rates to '                + vacancy_change_description
 
-
-    
                    
-
     #Describe out change in fundamentals
     if rent_growth_description   == 'expanded'   and vacancy_change_description == 'compress': #if rent is growing and vacancy is falling we call fundamentals improving
         fundamentals_change = 'improving'
     elif rent_growth_description == 'compressed' and vacancy_change_description == 'expand': #if rent is falling and vacancy is rising we call fundamentals softening
         fundamentals_change = 'softening'
     else:
-        fundamentals_change = '[softening/improving]'
+        fundamentals_change = 'softening'
 
     #Determine if market or submarket
     if data_frame.equals(data_frame2):
@@ -259,19 +279,75 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
     else:
         market_or_submarket = 'Submarket'
 
-
     #Create the retail sepecific language
     if sector == "Retail" and yoy_rent_growth < 0 and vacancy_change > 0:
-            retail_language =  (' The shift from brick-and-mortar stores to e-commerce has disrupted retail over the last decade and the COVID ' + 
-                                'crisis appears to have accelerated that trend in the ' +
+            retail_language =  (' Prior to 2020 the shift from brick-and-mortar stores towards e-commerce was disrupting the retail sector, putting pressure on vacancy rates and rent growth. ' + 
+                                'The pandemic appears to have accelerated that trend in the ' +
                                 market_or_submarket +
                                 '. ' +
-                                'Retailers are facing an unprecedented shift in the retail landscape, contending with months of mandated store closures, ' + 
-                                'as well as once-in-a-generation unemployment levels and changing consumer tastes. This is all putting pressure on brick-and-mortar retail. ' +
                                 'This disruption in the retail sector has caused vacancy rates to expand, in turn placing downward pressure on rental growth. ')
     
+    elif sector == "Retail" and yoy_rent_growth <0 and vacancy_change < 0:
+            retail_language =  (' Prior to 2020 the shift from brick-and-mortar stores towards e-commerce was disrupting the retail sector, putting pressure on vacancy rates and rent growth. ' + 
+                                'Despite vacancy rates compressing in the ' +
+                                market_or_submarket +
+                                ' the pandemic appears to have accelerated that trend, placing downward pressure on rental growth. ')
+
     else:
-        retail_language = '' 
+        retail_language = (' Prior to 2020 the shift from brick-and-mortar stores towards e-commerce was disrupting the retail sector, putting pressure on vacancy rates and rent growth. ' + 
+                                'Despite the pandemic, the ' + 
+                                market_or_submarket +
+                                ' appears to have survived never-before-seen economic headwinds. ')
+
+    #Create the Multifamily sepecific language
+    if sector == "Multifamily" and yoy_rent_growth < 0 and vacancy_change > 0:
+            multifamily_language =  (' The unique nature of the pandemic and lockdown dramatically shifted renter preferences, reversing a multi-year trend of urbanization across the countries largest cities. ' + 
+                                'Multiple factors inspired the shift, including the ability to work-from-home, affordability, and the desire for more space. ' + 
+                                'The ' + market_or_submarket + 
+                                ' has been negatively affected by these shift in preferences, leading to rising vacancy rates and contracting rents. ' )
+    
+    else:
+        multifamily_language = (' The unique nature of the pandemic and lockdown dramatically shifted renter preferences, reversing a multi-year trend of urbanization across the largest cities. ' + 
+                                'Multiple factors inspired the shift, including the ability for some to work-from-home, affordability, and the desire for more space. ' + 
+                                'The ' + market_or_submarket + 
+                                ' has been positively affected by these shift in preferences, leading to record levels of leasing activity and strong rent growth for the ' + market_or_submarket + '.' )
+
+    #Create the Industrial sepecific language
+    if sector == "Industrial" and yoy_rent_growth < 0 and vacancy_change > 0:
+            industrial_language =  (' The unique nature of the pandemic and lockdown dramatically shifted renter preferences, reversing a multi-year trend of urbanization across the largest cities. ' + 
+                                'Multiple factors inspired the shift, including the need for social distance, affordability, and the desire for more space. ' + 
+                                'The ' + market_or_submarket + 
+                                ' has been negatively affected by these shift in preferences, leading to rising vacancy rates and contracting rents. ' )
+    
+    else:
+        industrial_language = (' The unique nature of the pandemic and lockdown dramatically shifted renter preferences, reversing a multi-year trend of urbanization across the largest cities. ' + 
+                                'Multiple factors inspired the shift, including the need for social distance, affordability, and the desire for more space. ' + 
+                                'The ' + market_or_submarket + 
+                                ' has been positively affected by these shift in preferences, leading to record levels of leasing activity and accelerating rent growth for the ' + market_or_submarket + '.' )
+
+    #Create the Office sepecific language
+    if sector == "Office" and yoy_rent_growth < 0 and vacancy_change > 0:
+            office_language =  (' The unique nature of the pandemic and lockdown dramatically shifted renter preferences, reversing a multi-year trend of urbanization across the countries largest cities. ' + 
+                                'Multiple factors inspired the shift, including the need for social distance, affordability, and the desire for more space. ' + 
+                                'The ' + market_or_submarket + 
+                                ' has been negatively affected by these shift in preferences, leading to rising vacancy rates and contracting rents  for the ' + market_or_submarket + '.' )
+    
+    else:
+        office_language = (' The unique nature of the pandemic and lockdown dramatically shifted renter preferences, reversing a multi-year trend of urbanization across the countries largest cities. ' + 
+                                'Multiple factors inspired the shift, including the need for social distance, affordability, and the desire for more space. ' + 
+                                'The ' + market_or_submarket + 
+                                ' has been positively affected by these shift in preferences, leading to record levels of leasing activity and accelerating rent growth. ' )
+
+    #overview languages
+    if sector == "Retail":
+        overview_sector_language = retail_language
+    elif sector == "Multifamily":      
+        overview_sector_language = multifamily_language
+    elif sector == "Office":      
+        overview_sector_language = office_language    
+    else:      
+        overview_sector_language = industrial_language
+
 
     #Section 3: Format Variables
     under_construction                  = millify(under_construction,'')     
@@ -379,7 +455,7 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
 
     #Section 4.2: Create the conclusion of the overivew language
     overview_conclusion_language = (
-               'Over the past twelve months, the ' +
+               ' Over the past twelve months, the ' +
                 market_or_submarket                +
                 ' has seen demand '                +
                 demand_change                      +
@@ -388,9 +464,7 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
                 ' to the current rate of '         +
                 vacancy                            +
                 '.'                                +
-                ' Meanwhile, rents in this '       +
-                market_or_submarket                +
-                ' '                                +
+                ' Meanwhile, rents '               +
                 rent_growth_description            +
                 ' at an annual rate of '           +
                 yoy_rent_growth                    +
@@ -417,8 +491,9 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
                                     )
 
     #Section 4.3: Combine the 3 langauge variables together to form the overview paragraph and return it
-    overview_language = (overview_intro_language        + retail_language         +       overview_conclusion_language)
+    overview_language = (overview_intro_language        + overview_sector_language         +       overview_conclusion_language)
     return(overview_language)    
+
 
 #Language for Supply and Demand Section
 def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary_market,sector,writeup_directory):
@@ -445,6 +520,7 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
         net_absorption                  =  data_frame['Absorption Units'].iloc[-1]
         previous_quarter_net_absorption =  data_frame['Absorption Units'].iloc[-2]
         covid_quarter_net_absorption    =  data_frame['Absorption Units'].iloc[-5]
+        firsthalf2020_net_absorption    =  data_frame['Absorption Units']
 
     else:
         unit_or_sqft                    = 'square feet'
@@ -967,7 +1043,7 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
             ten_year_growth_inline_or_exceeding = 'in line with'
 
         if submarket_decade_rent_growth > market_decade_rent_growth and primary_rent_discount > 0:
-                decade_rent_and_rent_discount = ' Despite elevated rents compared to the Market, landlords have had no issue pushing rents this cycle. '
+                decade_rent_and_rent_discount = ' Despite elevated rents compared to the Market, landlords have had no issue pushing rents over the past ten years. '
 
 
     #Section 3: Format Variables
@@ -1074,20 +1150,11 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
             ' rent growth ' +
             '[over the course of the year//temporarily]'+
             '.' +
-            ' Rent growth has ' +
-            '[picked up/slowed/remained steady]' +
-            ' over the first half of 2021' +
-            ' with quarterly growth in Q2 reaching ' +
+            ' Quarterly growth in Q2 reached ' +
             submarket_qoq_growth +
-            '. On an annual basis ' +
-            market_or_submarket +
-            ' rents have ' +
-            market_yoy_growth_description +
-            ' ' +
+            ', pushing/contracting annual growth to ' +
             market_yoy_growth +
-            ', pointing to possible signs that rents ' +
-           market_signal +
-            ' in the near term.' 
+            '.' 
     )   
 
     else: #Submarket
@@ -1151,20 +1218,11 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
             ' rent growth ' +
             '[over the course of the year//temporarily]'+
             '.' +
-            ' Rent growth has ' +
-            '[picked up/slowed/remained steady]' +
-            ' over the first half of 2021' +
-            ' with quarterly growth in Q2 reaching ' +
+            ' Quarterly growth in Q2 reached ' +
             submarket_qoq_growth +
-            '. On an annual basis ' +
-            market_or_submarket +
-            ' rents have ' +
-            submarket_yoy_growth_description +
-            ' ' +
-            submarket_yoy_growth +
-            ', pointing to possible signs that rents ' +
-           submarket_signal +
-            ' in the near term.' 
+            ', pushing/contracting annual growth to ' +
+            market_yoy_growth +
+            '.' 
 
     )   
 
@@ -1188,19 +1246,26 @@ def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,p
     if sector == "Multifamily":
         unit_or_sqft                        = 'units'
         under_construction                  = data_frame['Under Construction Units'].iloc[-1]
+        median_construction_level           = data_frame['Under Construction Units'].median()
+
         previous_quarter_under_construction = data_frame['Under Construction Units'].iloc[-2]
         under_construction_share            = round(data_frame['Under Construction %'].iloc[-1],2)
         current_inventory                   = data_frame['Inventory Units'].iloc[-1]
         decade_ago_inventory                = data_frame['Inventory Units'].iloc[0]
-        
+        delivered_inventory                 = data_frame['Gross Delivered Units'].sum()
+        demolished_inventory                = data_frame['Demolished Units'].sum()                        
+
     else:
         unit_or_sqft                        = 'square feet'
         under_construction                  = data_frame['Under Construction SF'].iloc[-1]
+        median_construction_level           = data_frame['Under Construction SF'].median()
         previous_quarter_under_construction = data_frame['Under Construction SF'].iloc[-2]
         under_construction_share            = round(data_frame['Under Construction %'].iloc[-1],2)
         current_inventory                   = data_frame['Inventory SF'].iloc[-1]
         decade_ago_inventory                = data_frame['Inventory SF'].iloc[0]
-    
+        delivered_inventory                 = data_frame['Gross Delivered SF'].sum()
+        demolished_inventory                = data_frame['Demolished SF'].sum()
+
     if data_frame.equals(data_frame2):
         market_or_submarket                 = 'Market'
     else:
@@ -1213,9 +1278,41 @@ def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,p
 
     #Section 3: Format variables
     inventory_growth_pct                        = "{:,.0f}%".format(abs(inventory_growth_pct)) 
-        
+    delivered_inventory                         = "{:,.0f}".format(delivered_inventory)
+    demolished_inventory                        = "{:,.0f}".format(demolished_inventory)
+
+    #Determine if developers are historically active here
+    #If theres at least 1 deliverable per quarter, active
+
+    if median_construction_level >= 10:
+        developers_active_or_inactive = ('Developers have been active for much of the past ten years. In fact, they have added ' + 
+                                        delivered_inventory +
+                                        ' '                 +
+                                        unit_or_sqft        +
+                                        ' to the '          +
+                                         market_or_submarket + 
+                                        ' over the past ten years, expanding inventory by ' +
+                                         inventory_growth_pct +
+                                          '. '
+                                        )
+    else:
+        developers_active_or_inactive = ('Developers have been inactive for much of the past ten years. In fact, they have added just ' + 
+                                        delivered_inventory + 
+                                        ' '                 +
+                                        unit_or_sqft        +
+                                        ' to the '          +
+                                        market_or_submarket + 
+                                        ' over the past ten years. Developers have also removed space for higher and better use, removing ' + 
+                                        demolished_inventory + 
+                                        ' ' +
+                                        unit_or_sqft + 
+                                        # 'contracting inventory by ' +
+                                        #  inventory_growth_pct + 
+                                         '. '
+                                         )
 
     #Section 4: Put together our variables into sentances and return the language
+    
 
     #Determine if the supply pipeline is active or not    
     if under_construction > 0:
@@ -1232,7 +1329,7 @@ def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,p
         inventory_expand_or_contract = 'However, over the past ten years, developers have added ' +  millify(inventory_growth,'') + ' '  + unit_or_sqft + ', expanding inventory by ' + inventory_growth_pct + '.'
     
     elif inventory_growth < 0:
-        inventory_expand_or_contract = 'Over the past ten years, developers have removed space from the ' + market_or_submarket + ', decreasing inventory by ' +  millify(abs(inventory_growth),'')   + ' ' + unit_or_sqft + ', a ' + inventory_growth_pct + ' change. '
+        inventory_expand_or_contract = 'In fact, inventory has contracted ' +  millify(abs(inventory_growth),'')   + ' ' + unit_or_sqft + ', a ' + inventory_growth_pct + ' change. '
     
     elif inventory_growth == 0:
         inventory_expand_or_contract = 'Over the past ten years, inventory levels have remained constant in the ' + market_or_submarket + '.'
@@ -1240,7 +1337,7 @@ def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,p
 
     #Determine qoq trends
     if under_construction > 0 and previous_quarter_under_construction == 0:
-        elevated_or_down_compared_to_previous_quarter = ' Developers have resumed activity after a brief pause. With ' +  "{:,.0f}".format(under_construction) + ' ' + unit_or_sqft + ' underway, inventory will expand by ' + "{:,.1f}%".format(under_construction_share) + '. While the pipeline is active, projects will not likely deliver over the 2nd half of the year, limiting supply pressure on vacacny rates.'
+        elevated_or_down_compared_to_previous_quarter = ' Developers have resumed activity after a brief pause. With ' +  "{:,.0f}".format(under_construction) + ' ' + unit_or_sqft + ' underway, inventory will expand by ' + "{:,.1f}%".format(under_construction_share) + '. While the pipeline is active, projects will not likely deliver over the 2nd half of the year, limiting supply pressure on vacancy rates.'
     
     elif under_construction > 0 and previous_quarter_under_construction > 0 and under_construction == previous_quarter_under_construction:     
         elevated_or_down_compared_to_previous_quarter = """ Developers have remained active with the same level of construction underway in the previous quarter."""
@@ -1261,7 +1358,8 @@ def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,p
         elevated_or_down_compared_to_previous_quarter = ' Development activity has been steady with nothing underway in the current or previous quarter.' 
 
     
-    return(active_or_inactive +
+    return(developers_active_or_inactive +
+    active_or_inactive +
         inventory_expand_or_contract + 
             elevated_or_down_compared_to_previous_quarter
             )
@@ -1338,11 +1436,15 @@ def CreateSaleLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
     #Determine if investors are typically active here
     #If theres at least 1 sale per quarter, active
     if data_frame['Sales Volume Transactions'].median() >= 1:
-        investors_active_or_inactive = 'active'
+        investors_active_or_inactive = 'Buyers have shown steady interest and have been busily acquiring assets over the years. '
     else:
-        investors_active_or_inactive = 'inactive'
+        investors_active_or_inactive = 'Buyers have not shown much interest in acquiring assets over the years. '
 
-
+    #determine change in investment volume over the last three years and the past year
+    if over_last_year_transactions > three_year_avg_transaction_count:
+        investment_volume_change = 'Despite concerns over the pandemic, the number of closed transactions has picked up. In the past twelve months, investors have closed '
+    else:     
+        investment_volume_change = 'With uncertainty surrounding the pandemic, transaction activity has slowed. '
 
     #Describe change in asset values
     if asset_value_change > 0:
@@ -1440,24 +1542,20 @@ def CreateSaleLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
 
 
     #Section 4: Put together our variables into a pargaraph and return the sales language
-    return('Investors are typically '                        +
-           investors_active_or_inactive                      +
-            ' in this '                                      +
-            submarket_or_market                              +
-            '. '                                             +
-            'Going back three years, investors have closed ' +
+    return(investors_active_or_inactive                      +
+            'Going back three years, investors have closed, on average, ' +
             three_year_avg_transaction_count                 +
             ' '                                              +
             three_year_avg_transaction_or_transactions       +
-            ' per annum'                                     +
-            ' representing an annual sales average of '      +
+            ' per year'                                      +
+            ' with an annual average sales volume of '       +
             three_year_avg_sale_volume                       +
             '. '                                             +
            'Over the past year, there '                      +
             over_last_year_was_or_were                       +
            ' '                                               +
             over_last_year_transactions                      +
-            ' '                                              + 
+            ' closed '                                        + 
             over_last_year_transactions_or_transaction       +
             ' across '                                       +
             over_last_year_units                             +

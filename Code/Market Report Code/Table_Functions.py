@@ -220,7 +220,7 @@ def AddHeading(document,title,heading_level): #Function we use to insert the hea
             heading_style.font.size = Pt(11)
             heading_style.font.bold = False
             heading.paragraph_format.space_after  = Pt(6)
-            heading.paragraph_format.space_before = Pt(12)
+            heading.paragraph_format.space_before = Pt(6)
 
             #Color
             heading_style.font.color.rgb = RGBColor.from_string('3F65AB')            
@@ -777,13 +777,15 @@ def AddMarketPerformanceTable(document,col_width,market_data_frame,sector): #Fun
 
     #Convert market dataframe into a (mostly) annual dataset for a handful of variables
     
-    #Start by declaring a list of varibles we want to display
+    #Start by declaring a list of variables we want to display
     if sector == 'Multifamily':
-        variables_of_interest = ['Period','Inventory Units','Absorption Units 12 Mo','Net Delivered Units 12 Mo','Vacancy Rate','Under Construction Units','Market Effective Rent/Unit']
-    else:
-        variables_of_interest = ['Period','Inventory SF','Net Absorption SF 12 Mo','Net Delivered SF 12 Mo','Vacancy Rate','Availability Rate','Under Construction SF','Market Rent/SF']
-
-   
+        variables_of_interest = ['Period','Inventory Units','Under Construction Units','Net Delivered Units 12 Mo','Absorption Units 12 Mo',    'Vacancy Rate',                           'Market Effective Rent/Unit']
+    elif sector == 'Retail':
+        variables_of_interest = ['Period','Inventory SF',   'Under Construction SF',   'Net Delivered SF 12 Mo',    'Net Absorption SF 12 Mo',  'Vacancy Rate',   'Availability Rate',    'Market Rent/SF']
+    elif sector == 'Industrial':
+        variables_of_interest = ['Period','Inventory SF',   'Under Construction SF',   'Net Delivered SF 12 Mo',    'Net Absorption SF 12 Mo',  'Vacancy Rate',   'Availability Rate',    'Market Rent/SF']
+    elif sector == 'Office':
+       variables_of_interest = ['Period','Inventory SF',    'Under Construction SF',   'Net Delivered SF 12 Mo',    'Net Absorption SF 12 Mo',  'Vacancy Rate',   'Availability Rate',    'Market Rent/SF']
     
     #Now create an annual dataset where we keep the last period of each year besides the current year
     market_data_frame = market_data_frame.sort_values(by=['Year','Quarter'],ascending = False) 

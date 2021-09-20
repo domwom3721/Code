@@ -30,7 +30,7 @@ start_time = time.time() #Used to track runtime of script
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
 project_location               =  os.path.join(dropbox_root,'Research','Projects','Research Report Automation Project') #Main Folder that stores all output, code, and documentation
 
-# output_location                = os.path.join(project_location,'Output','Market Reports')                             #The folder where we store our current reports, testing folder
+output_location                = os.path.join(project_location,'Output','Market Reports')                             #The folder where we store our current reports, testing folder
 output_location                = os.path.join(dropbox_root,'Research','Market Analysis','Market')                       #The folder where we store our current reports, production
 
 map_location                   = os.path.join(project_location,'Data','Maps','CoStar Maps')                             #Folders with maps png files  
@@ -81,7 +81,7 @@ df_industrial['Town']       = df_industrial['Town'].fillna('')
 
 #Set formatting paramaters for reports
 primary_font                    = 'Avenir Next LT Pro Light' 
-primary_space_after_paragraph   = 8
+primary_space_after_paragraph   = 6
 
 
 #GUI For user to select sector
@@ -403,11 +403,13 @@ def MakeReportTitle():
     else:
         title = document.add_heading(market_title + ': ' + sector + ' Submarket Analysis',level=1)
     title.style = document.styles['Heading 2']
-    title.paragraph_format.space_after  = Pt(6)
-    title.paragraph_format.space_before = Pt(12)
+    title.paragraph_format.space_after  = Pt(12)
+    title.paragraph_format.space_before = Pt(6)
+    title.paragraph_format.keep_with_next = True
+    # title.paragraph_style.widow_control = True
     title_style = title.style
     title_style.font.name = "Avenir Next LT Pro Light"
-    title_style.font.size = Pt(14)
+    title_style.font.size = Pt(18)
     title_style.font.bold = False
     title_style.font.color.rgb = RGBColor.from_string('3F65AB')
     title_style.element.xml
@@ -448,10 +450,11 @@ def MakeCoStarDisclaimer():
     
     disclaimer.style.font.name = primary_font
     disclaimer.style.font.size = Pt(9)
-    disclaimer.paragraph_format.space_after  = Pt(8)
+    disclaimer.paragraph_format.space_after  = Pt(6)
     disclaimer.paragraph_format.space_before = Pt(0)
     disclaimer.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
     disclaimer.paragraph_format.keep_together = True
+
 
 def CleanUpPNGs():
     #Report writing done, delete figures
@@ -488,6 +491,7 @@ def OverviewSection():
     summary_paragraph_style.font.size = Pt(9)
     summary_format = document.styles['Normal'].paragraph_format
     summary_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
+    # summary_paragraph_style.widow_control = True
 
     #Overview table title
     overview_table_title_paragraph = document.add_paragraph('Sector Fundamentals')
@@ -624,7 +628,7 @@ def SupplyDemandSection():
     vacancy_table_width = 1.2
     AddTable(document,data_for_vacancy_table,vacancy_table_width)
     
-            
+    #shouldnt this blank paragraph be in primary_font?        
     blank_paragraph_after_vac_table = document.add_paragraph('')
     blank_paragraph_after_vac_table.paragraph_format.space_after = Pt(primary_space_after_paragraph)
     blank_paragraph_after_vac_table.paragraph_format.space_after = Pt(0)
@@ -793,11 +797,6 @@ def GetOverviewTable():
                                                                 '%',
                                                                 'Market Rent/SF')
 
-        
-
-
-
-
         #Vacancy Row
         data_for_overview_table[2] =    CreateRowDataForTable(df_market_cut,
                                                                 df_primary_market,
@@ -809,6 +808,7 @@ def GetOverviewTable():
                                                                 'bps',
                                                                 'bps',
                                                                 'Vacancy Rate')
+
         #Availability Rate Row
         data_for_overview_table[3] =    CreateRowDataForTable(df_market_cut,
                                                                 df_primary_market,
@@ -969,7 +969,10 @@ def GetOverviewTable():
   
 
     return(data_for_overview_table)
-    
+
+        
+
+
 def GetRentTable():
     #Create data for rent Table
     if sector == 'Multifamily':
@@ -1394,7 +1397,7 @@ for df,df2,sector in zip(      df_list,
             CreateMarketReport()
 
     #Now create national reports
-    state                        = 'National'
+    state                        = 'US'
     market                       = 'United States of America'
     primary_market               = 'United States of America'
     primary_market_clean         = CleanMarketName(primary_market)
