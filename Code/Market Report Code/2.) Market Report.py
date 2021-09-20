@@ -65,9 +65,6 @@ df_office_supplemental        = pd.read_csv(supplemental_office_file,dtype={'Tow
 df_retail_supplemental        = pd.read_csv(supplemental_retail_file,dtype={'Town': object,})
 df_industrial_supplemental    = pd.read_csv(supplemental_industrial_file,dtype={'Town': object,})  	
 
-# Temporary CSV to update the Market Research Documents Service
-service_api_csv_name = None
-
 
 #Merge in our supplemental data into our main data frames
 df_multifamily              = pd.merge(df_multifamily, df_multifamily_supplemental,      on=['Geography Name','Geography Type'], how = 'left')
@@ -1134,6 +1131,7 @@ def user_selects_market(market_list):
 
 def CreateDirectoryCSV():
     global dropbox_markets,dropbox_research_names,dropbox_analysis_types,dropbox_states,dropbox_sectors,dropbox_sectors_codes,dropbox_links,dropbox_versions,dropbox_statuses,dropbox_document_names
+    global service_api_csv_name, csv_name
     if write_reports_yes_or_no == 'n':
         #Now create dataframe with list of markets and export to a CSV for Salesforce
         dropbox_df = pd.DataFrame({"Market":dropbox_primary_markets,
@@ -1353,7 +1351,7 @@ def CreateDirectoryCSV():
         dropbox_df = dropbox_df.append(all_files_dropbox_df)
 
         csv_name = 'CoStar Markets.csv'
-        service_api_csv_name = f'CoStar Markets-{datetime.now()}.csv'
+        service_api_csv_name = f'CoStar Markets-{datetime.now().timestamp()}.csv'
 
         dropbox_df.to_csv(os.path.join(output_location, csv_name), index=False)
         dropbox_df.to_csv(os.path.join(output_location, service_api_csv_name), index=False)

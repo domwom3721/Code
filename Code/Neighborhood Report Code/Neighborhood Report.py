@@ -69,7 +69,6 @@ google_maps_api_key           = 'AIzaSyBMcoRFOW2rxAGxURCpA4gk10MROVVflLs'
 c                             = Census(cenus_api_key) #Census API wrapper package
 c_area                        = CensusArea(cenus_api_key) #Census API package, sepearete extension of main package that allows for custom boundries
 
-service_api_csv_name = None
 
 #Directory Realted Functions
 def CreateDirectory():
@@ -2350,6 +2349,7 @@ def CleanUpPNGs():
             os.remove(os.path.join(hood_folder, image))
 
 def CreateDirectoryCSV():
+    global service_api_csv_name
     print('Creating CSV with file path information on all existing hood reports')
     dropbox_links                  = []
     dropbox_research_names         = []
@@ -2416,7 +2416,7 @@ def CreateDirectoryCSV():
     dropbox_df = dropbox_df.sort_values(by=['State','Market Research Name'])
 
     csv_name = 'Dropbox Neighborhoods.csv'
-    service_api_csv_name = f'Dropbox Neighborhoods-{datetime.now()}.csv'
+    service_api_csv_name = f'Dropbox Neighborhoods-{datetime.now().timestamp()}.csv'
     dropbox_df.to_csv(os.path.join(main_output_location, csv_name),index=False)
     dropbox_df.to_csv(os.path.join(main_output_location, service_api_csv_name),index=False)
 

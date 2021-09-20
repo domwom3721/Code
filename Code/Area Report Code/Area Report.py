@@ -58,7 +58,6 @@ primary_font                  = 'Avenir Next LT Pro Light'
 primary_space_after_paragraph = 8
 tickangle                     = 0
 
-service_api_csv_name = None
 
 def DeclareAPIKeys():
     global fred, c, bls,bea_api_key,walk_score_api_key
@@ -3848,6 +3847,7 @@ def CleanUpPNGs():
             os.remove(os.path.join(county_folder, image))
 
 def CreateDirectoryCSV():
+    global service_api_csv_name
     print('Creating CSV with file path information on all existing area reports')
     dropbox_links                  = []
     dropbox_research_names         = []
@@ -3911,7 +3911,7 @@ def CreateDirectoryCSV():
     dropbox_df = dropbox_df.sort_values(by=['State','Market Research Name'])
 
     csv_name = 'Dropbox Areas.csv'
-    service_api_csv_name = f'Dropbox Areas-{datetime.now()}.csv'
+    service_api_csv_name = f'Dropbox Areas-{datetime.now().timestamp()}.csv'
 
     dropbox_df.to_csv(os.path.join(main_output_location, csv_name),index=False)
     dropbox_df.to_csv(os.path.join(main_output_location, service_api_csv_name),index=False)
