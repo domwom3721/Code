@@ -188,7 +188,6 @@ def user_selects_reports_or_not():
     #GUI Over now define functions
 
 #Decide if you want to update report documents or create our csv output
-write_reports_yes_or_no         = 'y'
 user_selects_reports_or_not()
 user_selects_sector()
 
@@ -1442,7 +1441,7 @@ def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
         print('Service DB did not successfully update. Please run the script again.')
         
     # Delete the temporary CSV
-    # os.remove(csv_path)
+    os.remove(csv_path)
 
 # Post an update request to the Market Research Docs Service to update the database
 UpdateServiceDb(report_type='markets', 
