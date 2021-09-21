@@ -317,7 +317,7 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
     
 
 
-    
+
     #Create the sector sepecific conclusion language
     if sector == "Retail" and yoy_rent_growth < 0 and vacancy_change > 0:
             retail_conclusion_language =  (' Prior to 2020 the shift from brick-and-mortar stores towards e-commerce was disrupting the retail sector, putting pressure on vacancy rates and rent growth. ' + 
@@ -366,7 +366,11 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
 
     #Create the Office sepecific language
     if sector == "Office" and yoy_rent_growth < 0 and vacancy_change > 0:
-            office_conclusion_language =  (' Yet the forward-looking environment, while still a bit uncertain, appears notably more positive. As the U.S. economy continues reopening, ' +
+            office_conclusion_language =  (' Heading into Q4 2021, office continues to face a range of demand-driven headwinds ' + 
+                                'Multiple factors inspired the shift, including the need for social distance, affordability, and the desire for more space. ' + 
+                                'The ' + market_or_submarket + 
+                                ' has been negatively affected by these shift in preferences, leading to rising vacancy rates and contracting rents  for the ' + market_or_submarket + '.' +
+                                ' Yet the forward-looking environment, while still a bit uncertain, appears notably more positive. As the U.S. economy continues reopening, ' +
                                 ' office-using employment has ground higher and many companies are either planning for or have already begun their returns to the office. ' + 
                                 'The new hybrid work model is still a work in process and will likely undergo several iterations. ' +
                                 ' Most surveys suggest that employers are planning for an office-first hybrid model that should have a more muted impact on net office usage. ' + 
@@ -374,7 +378,11 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
                                 ' has been negatively affected by these shift in preferences, leading to rising vacancy rates and contracting rents  for the ' + market_or_submarket + '.' )
     
     else:
-        office_conclusion_language = ('Yet the forward-looking environment, while still a bit uncertain, appears notably more positive. As the U.S. economy continues reopening, ' +
+        office_conclusion_language = (' Heading into Q4 2021, office continues to face a range of demand-driven headwinds ' + 
+                                'Multiple factors inspired the shift, including the need for social distance, affordability, and the desire for more space. ' + 
+                                'The ' + market_or_submarket + 
+                                ' has been positively affected by these shift in preferences, leading to record levels of leasing activity and accelerating rent growth. '+ 
+                                'Yet the forward-looking environment, while still a bit uncertain, appears notably more positive. As the U.S. economy continues reopening, ' +
                                 ' office-using employment has ground higher and many companies are either planning for or have already begun their returns to the office. ' + 
                                 'The new hybrid work model is still a work in process and will likely undergo several iterations. ' +
                                 ' Most surveys suggest that employers are planning for an office-first hybrid model that should have a more muted impact on net office usage. ' + 
