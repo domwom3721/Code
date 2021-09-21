@@ -337,6 +337,7 @@ def CreateMapDirectory():
     return(map_directory)
 
 def CreateWriteupDirectory():
+    sector_folder                   = os.path.join(costar_writeup_location,sector)
     state_folder_writeup            = os.path.join(costar_writeup_location,sector,state)
     market_folder_writeup           = os.path.join(state_folder_writeup,primary_market_name_for_file)
 
@@ -346,7 +347,7 @@ def CreateWriteupDirectory():
         writeup_directory        = os.path.join(market_folder_writeup,str(market_title))
     
     #Check if output,map, and summary folder already exists, and if it doesnt, make it
-    for folder in [state_folder_writeup,market_folder_writeup,writeup_directory]:
+    for folder in [sector_folder,state_folder_writeup,market_folder_writeup,writeup_directory]:
         if os.path.exists(folder):
             pass 
         else:
