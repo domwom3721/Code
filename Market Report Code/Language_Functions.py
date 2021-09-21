@@ -155,12 +155,12 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
     
     #define periods for use in analysis    
     #latest_quarter                      = data_frame['Period'].iloc[-1]
-    Q12020_quarter                      = data_frame['Period'].iloc[-7]
-    Q22020_quarter                      = data_frame['Period'].iloc[-6]
-    Q32020_quarter                      = data_frame['Period'].iloc[-5]
-    Q42020_quarter                      = data_frame['Period'].iloc[-4]
-    Q22021_quarter                      = data_frame['Period'].iloc[-3]
-    Q22022_quarter                      = data_frame['Period'].iloc[-2]
+    # Q12020_quarter                      = data_frame['Period'].iloc[-7]
+    # Q22020_quarter                      = data_frame['Period'].iloc[-6]
+    # Q32020_quarter                      = data_frame['Period'].iloc[-5]
+    # Q42020_quarter                      = data_frame['Period'].iloc[-4]
+    # Q22021_quarter                      = data_frame['Period'].iloc[-3]
+    # Q22022_quarter                      = data_frame['Period'].iloc[-2]
 
 
     submarket_inventory_fraction        = (submarket_inventory/market_inventory) * 100
