@@ -10,6 +10,11 @@ import time
 from datetime import date
 from pprint import pprint
 from random import randrange
+from datetime import datetime
+
+import requests
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
 
 import docx
 import numpy as np
@@ -2344,6 +2349,7 @@ def CleanUpPNGs():
             os.remove(os.path.join(hood_folder, image))
 
 def CreateDirectoryCSV():
+    global service_api_csv_name
     print('Creating CSV with file path information on all existing hood reports')
     dropbox_links                  = []
     dropbox_research_names         = []
@@ -2409,7 +2415,10 @@ def CreateDirectoryCSV():
                            'Document Name': dropbox_document_names})
     dropbox_df = dropbox_df.sort_values(by=['State','Market Research Name'])
 
-    dropbox_df.to_csv(os.path.join(main_output_location,'Dropbox Neighborhoods.csv'),index=False)
+    csv_name = 'Dropbox Neighborhoods.csv'
+    service_api_csv_name = f'Dropbox Neighborhoods-{datetime.now().timestamp()}.csv'
+    dropbox_df.to_csv(os.path.join(main_output_location, csv_name),index=False)
+    dropbox_df.to_csv(os.path.join(main_output_location, service_api_csv_name),index=False)
 
 def Main():
     SetGraphFormatVariables()
@@ -2645,3 +2654,42 @@ if report_creation == 'y':
 
 #Crawl through directory and create CSV with all current neighborhood report documents
 CreateDirectoryCSV()
+
+def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
+    if type == None:
+        return
+    print(f'Updating service database: {report_type}')
+
+    try:
+        url = f'http://market-research-service-dev.bowery.link/api/v1/update/{report_type}'
+        dropbox_path = f'{dropbox_dir}{csv_name}'
+        payload = { 'location': dropbox_path }
+
+        retry_strategy = Retry(
+            total=3,
+            status_forcelist=[400, 404, 409, 500, 503, 504],
+            allowed_methods=["POST"],
+            backoff_factor=5
+        )
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        http = requests.Session()
+        http.mount("https://", adapter)
+        http.mount("http://", adapter)
+
+        response = http.post(url, json=payload)
+        if response.status_code == 200:
+            print('Service successfully updated')
+        else:
+            print(f'Service returned status code {response.status_code}')
+    except Exception as e:
+        print('Service DB did not successfully update. Please run the script again after fixing the error.')
+        print(e)
+    finally:
+        print(f'Deleting temporary CSV: ', csv_path)
+        os.remove(csv_path)           
+
+# Post an update request to the Market Research Docs Service to update the database
+UpdateServiceDb(report_type='neighborhoods', 
+                csv_name=service_api_csv_name, 
+                csv_path=os.path.join(main_output_location, service_api_csv_name),
+                dropbox_dir='https://www.dropbox.com/home/Research/Market Analysis/Neighborhood/')

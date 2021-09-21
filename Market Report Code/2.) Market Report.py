@@ -11,6 +11,11 @@ import pandas as pd
 import re
 from tkinter import *
 
+from datetime import datetime
+import requests
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
+
 
 from docx import Document
 from docx.dml.color import ColorFormat
@@ -22,7 +27,6 @@ from docx.shared import Inches, Pt, RGBColor
 from Graph_Functions import *  
 from Language_Functions import *  
 from Table_Functions import * 
-
 
 #Define file pre paths
 start_time = time.time() #Used to track runtime of script
@@ -60,8 +64,6 @@ df_multifamily_supplemental   = pd.read_csv(supplemental_multifamily_file,dtype=
 df_office_supplemental        = pd.read_csv(supplemental_office_file,dtype={'Town': object,})      
 df_retail_supplemental        = pd.read_csv(supplemental_retail_file,dtype={'Town': object,})
 df_industrial_supplemental    = pd.read_csv(supplemental_industrial_file,dtype={'Town': object,})  	
-
-
 
 
 #Merge in our supplemental data into our main data frames
@@ -183,7 +185,6 @@ def user_selects_reports_or_not():
     #GUI Over now define functions
 
 #Decide if you want to update report documents or create our csv output
-# write_reports_yes_or_no         = 'y'
 user_selects_reports_or_not()
 user_selects_sector()
 
@@ -1130,6 +1131,7 @@ def user_selects_market(market_list):
 
 def CreateDirectoryCSV():
     global dropbox_markets,dropbox_research_names,dropbox_analysis_types,dropbox_states,dropbox_sectors,dropbox_sectors_codes,dropbox_links,dropbox_versions,dropbox_statuses,dropbox_document_names
+    global service_api_csv_name, csv_name
     if write_reports_yes_or_no == 'n':
         #Now create dataframe with list of markets and export to a CSV for Salesforce
         dropbox_df = pd.DataFrame({"Market":dropbox_primary_markets,
@@ -1347,9 +1349,12 @@ def CreateDirectoryCSV():
 
         #Export the CoStar Markets export
         dropbox_df = dropbox_df.append(all_files_dropbox_df)
-        dropbox_df.to_csv(os.path.join(output_location,'CoStar Markets.csv'), index=False)
 
+        csv_name = 'CoStar Markets.csv'
+        service_api_csv_name = f'CoStar Markets-{datetime.now().timestamp()}.csv'
 
+        dropbox_df.to_csv(os.path.join(output_location, csv_name), index=False)
+        dropbox_df.to_csv(os.path.join(output_location, service_api_csv_name), index=False)
 
 
 #Define these empty lists we will fill during the loops, this is to create a list of markets and submarkets and their dropbox links for Salesforce mapping
@@ -1408,7 +1413,46 @@ for df,df2,sector in zip(      df_list,
 
 
 #Now call our function that creates a csv with all the current market reports
-CreateDirectoryCSV()
+CreateDirectoryCSV()        
+
+def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
+    if type == None:
+        return
+    print(f'Updating service database: {report_type}')
+
+    try:
+        url = f'http://market-research-service-dev.bowery.link/api/v1/update/{report_type}'
+        dropbox_path = f'{dropbox_dir}{csv_name}'
+        payload = { 'location': dropbox_path }
+
+        retry_strategy = Retry(
+            total=3,
+            status_forcelist=[400, 404, 409, 500, 503, 504],
+            allowed_methods=["POST"],
+            backoff_factor=5
+        )
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        http = requests.Session()
+        http.mount("https://", adapter)
+        http.mount("http://", adapter)
+
+        response = http.post(url, json=payload)
+        if response.status_code == 200:
+            print('Service successfully updated')
+        else:
+            print(f'Service returned status code {response.status_code}')
+    except Exception as e:
+        print('Service DB did not successfully update. Please run the script again after fixing the error.')
+        print(e)
+    finally:
+        print(f'Deleting temporary CSV: ', csv_path)
+        os.remove(csv_path)           
+
+# Post an update request to the Market Research Docs Service to update the database
+UpdateServiceDb(report_type='markets', 
+                csv_name=service_api_csv_name, 
+                csv_path=os.path.join(output_location, service_api_csv_name),
+                dropbox_dir='https://www.dropbox.com/home/Research/Market Analysis/Market/')
 
 
 print('Finished, you rock')
