@@ -95,23 +95,6 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
     if CoStarWriteUp != '':
         return(CoStarWriteUp)
     
-
-            
-
-    
-    #Custom market title change for the NYC reports for bank clients
-    if market_title == 'Manhattan - NY':
-        market_title = 'Manhattan'
-
-    if primary_market == 'Manhattan - NY':
-        primary_market = 'Manhattan'
-
-    #if market_title == 'Northern New Jersey - NJ':
-    #    market_title = 'Northern NJ'
-
-    #if primary_market == 'Northern New Jersey - NJ'    
-    #    primary_market = 'Northern NJ'
-
     #Section 1: Begin making variables for the overview language that come from the data: 
     if sector == 'Multifamily':
         yoy_rent_growth                 = data_frame['YoY Market Effective Rent/Unit Growth'].iloc[-1]
@@ -153,14 +136,7 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
         unit_or_sqft_singular           = 'SF'
         extra_s                         = ''
     
-    #define periods for use in analysis    
-    #latest_quarter                      = data_frame['Period'].iloc[-1]
-    # Q12020_quarter                      = data_frame['Period'].iloc[-7]
-    # Q22020_quarter                      = data_frame['Period'].iloc[-6]
-    # Q32020_quarter                      = data_frame['Period'].iloc[-5]
-    # Q42020_quarter                      = data_frame['Period'].iloc[-4]
-    # Q22021_quarter                      = data_frame['Period'].iloc[-3]
-    # Q22022_quarter                      = data_frame['Period'].iloc[-2]
+
 
 
     submarket_inventory_fraction        = (submarket_inventory/market_inventory) * 100
@@ -279,7 +255,7 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
     else:
         market_or_submarket = 'Submarket'
 
-    #Create the retail sepecific language
+    #Create the sector sepecific intro language
     if sector == "Retail" and yoy_rent_growth < 0 and vacancy_change > 0:
             retail_language =  (' Prior to 2020 the shift from brick-and-mortar stores towards e-commerce was disrupting the retail sector, putting pressure on vacancy rates and rent growth. ' + 
                                 'The pandemic appears to have accelerated that trend in the ' +
@@ -338,16 +314,103 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
                                 'Multiple factors inspired the shift, including the need for social distance, affordability, and the desire for more space. ' + 
                                 'The ' + market_or_submarket + 
                                 ' has been positively affected by these shift in preferences, leading to record levels of leasing activity and accelerating rent growth. ' )
+    
+
+
+    
+    #Create the sector sepecific conclusion language
+    if sector == "Retail" and yoy_rent_growth < 0 and vacancy_change > 0:
+            retail_conclusion_language =  (' Prior to 2020 the shift from brick-and-mortar stores towards e-commerce was disrupting the retail sector, putting pressure on vacancy rates and rent growth. ' + 
+                                'The pandemic appears to have accelerated that trend in the ' +
+                                market_or_submarket +
+                                '. ' +
+                                'This disruption in the retail sector has caused vacancy rates to expand, in turn placing downward pressure on rental growth. ')
+    
+    elif sector == "Retail" and yoy_rent_growth <0 and vacancy_change < 0:
+            retail_conclusion_language =  (' Prior to 2020 the shift from brick-and-mortar stores towards e-commerce was disrupting the retail sector, putting pressure on vacancy rates and rent growth. ' + 
+                                'Despite vacancy rates compressing in the ' +
+                                market_or_submarket +
+                                ' the pandemic appears to have accelerated that trend, placing downward pressure on rental growth. ')
+
+    else:
+        retail_conclusion_language = (' With the strong consumer providing a tailwind, we are optimistic that retail may be turning the corner. ' + 
+                                'Despite the pandemic, the ' + 
+                                market_or_submarket +
+                                ' appears to have survived never-before-seen economic headwinds. ')
+
+    #Create the Multifamily sepecific language
+    if sector == "Multifamily" and yoy_rent_growth < 0 and vacancy_change > 0:
+            multifamily_conclusion_language =  (' The unique nature of the pandemic and lockdown dramatically shifted renter preferences, reversing a multi-year trend of urbanization across the countries largest cities. ' + 
+                                'Multiple factors inspired the shift, including the ability to work-from-home, affordability, and the desire for more space. ' + 
+                                'The ' + market_or_submarket + 
+                                ' has been negatively affected by these shift in preferences, leading to rising vacancy rates and contracting rents. ' )
+    
+    else:
+        multifamily_conclusion_language = (' The unique nature of the pandemic and lockdown dramatically shifted renter preferences, reversing a multi-year trend of urbanization across the largest cities. ' + 
+                                'Multiple factors inspired the shift, including the ability for some to work-from-home, affordability, and the desire for more space. ' + 
+                                'The ' + market_or_submarket + 
+                                ' has been positively affected by these shift in preferences, leading to record levels of leasing activity and strong rent growth for the ' + market_or_submarket + '.' )
+
+    #Create the Industrial sepecific language
+    if sector == "Industrial" and yoy_rent_growth < 0 and vacancy_change > 0:
+            industrial_conclusion_language =  (' Industrial enters the fourth quarter in among the best shape of any of the major property types. ' + 
+                                'A pandemic driven spike in e-commerce sales along with significant growth in third-party logistics providers continues to drive demand. ' + 
+                                'Despite these macro trends, the ' + market_or_submarket + 
+                                ' has not felt the affects of these demand drivers, leading to softened levels of leasing activity and rent growth.' )
+    
+    else:
+        industrial_conclusion_language = (' Industrial enters the fourth quarter in among the best shape of any of the major property types. ' + 
+                                'A pandemic driven spike in e-commerce sales along with significant growth in third-party logistics providers continues to drive demand. ' + 
+                                'The ' + market_or_submarket + 
+                                ' has been positively affected by these demand drivers, leading to record levels of leasing activity and accelerating rent growth for the ' + market_or_submarket + '.' )
+
+    #Create the Office sepecific language
+    if sector == "Office" and yoy_rent_growth < 0 and vacancy_change > 0:
+            office_conclusion_language =  (' Yet the forward-looking environment, while still a bit uncertain, appears notably more positive. As the U.S. economy continues reopening, ' +
+                                ' office-using employment has ground higher and many companies are either planning for or have already begun their returns to the office. ' + 
+                                'The new hybrid work model is still a work in process and will likely undergo several iterations. ' +
+                                ' Most surveys suggest that employers are planning for an office-first hybrid model that should have a more muted impact on net office usage. ' + 
+                                'The ' + market_or_submarket + 
+                                ' has been negatively affected by these shift in preferences, leading to rising vacancy rates and contracting rents  for the ' + market_or_submarket + '.' )
+    
+    else:
+        office_conclusion_language = ('Yet the forward-looking environment, while still a bit uncertain, appears notably more positive. As the U.S. economy continues reopening, ' +
+                                ' office-using employment has ground higher and many companies are either planning for or have already begun their returns to the office. ' + 
+                                'The new hybrid work model is still a work in process and will likely undergo several iterations. ' +
+                                ' Most surveys suggest that employers are planning for an office-first hybrid model that should have a more muted impact on net office usage. ' + 
+                                'The ' + market_or_submarket + 
+                                ' has been positively affected by these shift in preferences, leading to record levels of leasing activity and accelerating rent growth. ' )
 
     #overview languages
     if sector == "Retail":
-        overview_sector_language = retail_language
+        overview_sector_language            = retail_language
+        overview_sector_conclusion_language = retail_conclusion_language
+
     elif sector == "Multifamily":      
-        overview_sector_language = multifamily_language
+        overview_sector_language            = multifamily_language
+        overview_sector_conclusion_language = multifamily_conclusion_language
+
     elif sector == "Office":      
-        overview_sector_language = office_language    
-    else:      
-        overview_sector_language = industrial_language
+        overview_sector_language            = office_language   
+        overview_sector_conclusion_language = office_conclusion_language
+
+    elif sector == 'Industrial':      
+        overview_sector_language            = industrial_language
+        overview_sector_conclusion_language = industrial_conclusion_language
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     #Section 3: Format Variables
@@ -491,74 +554,18 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
                 ' the long-term average.'
                                     )
 
-#Create the retail sepecific language
-    if sector == "Retail" and yoy_rent_growth < 0 and vacancy_change > 0:
-            retail_conclusion_language =  (' Prior to 2020 the shift from brick-and-mortar stores towards e-commerce was disrupting the retail sector, putting pressure on vacancy rates and rent growth. ' + 
-                                'The pandemic appears to have accelerated that trend in the ' +
-                                market_or_submarket +
-                                '. ' +
-                                'This disruption in the retail sector has caused vacancy rates to expand, in turn placing downward pressure on rental growth. ')
-    
-    elif sector == "Retail" and yoy_rent_growth <0 and vacancy_change < 0:
-            retail_conclusion_language =  (' Prior to 2020 the shift from brick-and-mortar stores towards e-commerce was disrupting the retail sector, putting pressure on vacancy rates and rent growth. ' + 
-                                'Despite vacancy rates compressing in the ' +
-                                market_or_submarket +
-                                ' the pandemic appears to have accelerated that trend, placing downward pressure on rental growth. ')
-
-    else:
-        retail_conclusion_language = (' With the strong consumer providing a tailwind, we are optimistic that retail may be turning the corner. ' + 
-                                'Despite the pandemic, the ' + 
-                                market_or_submarket +
-                                ' appears to have survived never-before-seen economic headwinds. ')
-
-    #Create the Multifamily sepecific language
-    if sector == "Multifamily" and yoy_rent_growth < 0 and vacancy_change > 0:
-            multifamily_conclusion_language =  (' The unique nature of the pandemic and lockdown dramatically shifted renter preferences, reversing a multi-year trend of urbanization across the countries largest cities. ' + 
-                                'Multiple factors inspired the shift, including the ability to work-from-home, affordability, and the desire for more space. ' + 
-                                'The ' + market_or_submarket + 
-                                ' has been negatively affected by these shift in preferences, leading to rising vacancy rates and contracting rents. ' )
-    
-    else:
-        multifamily_conclusion_language = (' The unique nature of the pandemic and lockdown dramatically shifted renter preferences, reversing a multi-year trend of urbanization across the largest cities. ' + 
-                                'Multiple factors inspired the shift, including the ability for some to work-from-home, affordability, and the desire for more space. ' + 
-                                'The ' + market_or_submarket + 
-                                ' has been positively affected by these shift in preferences, leading to record levels of leasing activity and strong rent growth for the ' + market_or_submarket + '.' )
-
-    #Create the Industrial sepecific language
-    if sector == "Industrial" and yoy_rent_growth < 0 and vacancy_change > 0:
-            industrial_conclusion_language =  (' Industrial enters the fourth quarter in among the best shape of any of the major property types. ' + 
-                                'A pandemic driven spike in e-commerce sales along with significant growth in third-party logistics providers continues to drive demand. ' + 
-                                'Despite these macro trends, the ' + market_or_submarket + 
-                                ' has not felt the affects of these demand drivers, leading to softened levels of leasing activity and rent growth.' )
-    
-    else:
-        industrial_conclusion_language = (' Industrial enters the fourth quarter in among the best shape of any of the major property types. ' + 
-                                'A pandemic driven spike in e-commerce sales along with significant growth in third-party logistics providers continues to drive demand. ' + 
-                                'The ' + market_or_submarket + 
-                                ' has been positively affected by these demand drivers, leading to record levels of leasing activity and accelerating rent growth for the ' + market_or_submarket + '.' )
-
-    #Create the Office sepecific language
-    if sector == "Office" and yoy_rent_growth < 0 and vacancy_change > 0:
-            office_conclusion_language =  (' Yet the forward-looking environment, while still a bit uncertain, appears notably more positive. As the U.S. economy continues reopening, ' +
-                                ' office-using employment has ground higher and many companies are either planning for or have already begun their returns to the office. ' + 
-                                'The new hybrid work model is still a work in process and will likely undergo several iterations. ' +
-                                ' Most surveys suggest that employers are planning for an office-first hybrid model that should have a more muted impact on net office usage. ' + 
-                                'The ' + market_or_submarket + 
-                                ' has been negatively affected by these shift in preferences, leading to rising vacancy rates and contracting rents  for the ' + market_or_submarket + '.' )
-    
-    else:
-        office_conclusion_language = ('Yet the forward-looking environment, while still a bit uncertain, appears notably more positive. As the U.S. economy continues reopening, ' +
-                                ' office-using employment has ground higher and many companies are either planning for or have already begun their returns to the office. ' + 
-                                'The new hybrid work model is still a work in process and will likely undergo several iterations. ' +
-                                ' Most surveys suggest that employers are planning for an office-first hybrid model that should have a more muted impact on net office usage. ' + 
-                                'The ' + market_or_submarket + 
-                                ' has been positively affected by these shift in preferences, leading to record levels of leasing activity and accelerating rent growth. ' )
 
 
 
 
     #Section 4.3: Combine the 3 langauge variables together to form the overview paragraph and return it
-    overview_language = (overview_intro_language        + overview_sector_language         +       overview_conclusion_language)
+    overview_language = (
+                        overview_intro_language        +
+                        # overview_sector_language       +       
+                        overview_conclusion_language   + 
+                        overview_sector_conclusion_language
+                        )
+    
     return(overview_language)    
 
 
