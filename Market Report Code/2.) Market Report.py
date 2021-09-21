@@ -1449,11 +1449,12 @@ def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
         print(f'Deleting temporary CSV: ', csv_path)
         os.remove(csv_path)           
 
-# Post an update request to the Market Research Docs Service to update the database
-UpdateServiceDb(report_type='markets', 
-                csv_name=service_api_csv_name, 
-                csv_path=os.path.join(output_location, service_api_csv_name),
-                dropbox_dir='https://www.dropbox.com/home/Research/Market Analysis/Market/')
+if output_location == os.path.join(dropbox_root,'Research','Market Analysis','Market'):
+    # Post an update request to the Market Research Docs Service to update the database
+    UpdateServiceDb(report_type='markets', 
+                    csv_name=service_api_csv_name, 
+                    csv_path=os.path.join(output_location, service_api_csv_name),
+                    dropbox_dir='https://www.dropbox.com/home/Research/Market Analysis/Market/')
 
 
 print('Finished, you rock')
