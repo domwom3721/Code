@@ -2438,10 +2438,9 @@ def CreateNationalUnemploymentGraph(folder):
         tickfont = dict(size=tickfont_size), 
         ticksuffix = '%',  
         title = None ,
-        # linecolor = 'black',   
+        linecolor = 'black',   
         tickmode  = 'auto',
         nticks    = 6,
-        # range = [0,25],
         secondary_y=False)                 
                     
     
@@ -2458,7 +2457,7 @@ def CreateNationalUnemploymentGraph(folder):
         ticktext = quarter_list_text,
         tickfont = dict(size=tickfont_size),
         tickangle = 0,
-        # linecolor = 'black' 
+        linecolor = 'black' 
         )
 
     #Set size
@@ -2515,7 +2514,7 @@ def CreateNationalEmploymentGrowthGraph(folder):
         tickfont = dict(size=tickfont_size), 
         ticksuffix = '%',  
         title = None ,
-        # linecolor = 'black',
+        linecolor = 'black',
         tickmode = 'auto',
         nticks   = 6,
         # range    =[-20,20],
@@ -2534,7 +2533,7 @@ def CreateNationalEmploymentGrowthGraph(folder):
         ticktext = quarter_list_text,
         tickfont = dict(size=tickfont_size),
         tickangle = 0,
-        # linecolor = 'black'
+        linecolor = 'black'
         )
 
     #Set size
@@ -2587,7 +2586,7 @@ def CreateNationalGDPGraph(folder):
         tickfont = dict(size=tickfont_size), 
         tickprefix = '$',  
         title = None ,
-        # linecolor = 'black',   
+        linecolor = 'black',   
         tickmode  = 'auto',
         nticks    = 6,
         secondary_y=False)                 
@@ -2598,7 +2597,7 @@ def CreateNationalGDPGraph(folder):
         tickmode = 'array',
         tickfont = dict(size=tickfont_size),
         tickangle = 0,
-        # linecolor = 'black' 
+        linecolor = 'black' 
         )
 
     #Set size
