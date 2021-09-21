@@ -853,9 +853,9 @@ def GetNationalData():
     national_pci                       = GetNationalPCI(observation_start = observation_start)
     national_resident_pop              = GetNationalResidentPopulation(observation_start=('01/01/' + str(end_year -11)))
     national_mlp                       = GetNationalMedianListPrice(observation_start=observation_start)
-    # national_unemployment              = GetNationalUnemploymentRate(start_year = start_year, end_year=end_year)
-    # national_employment                = GetNationalEmployment(start_year = start_year, end_year=end_year)
-    # national_gdp                       = GetNationalGDP(observation_start = observation_start)
+    national_unemployment              = GetNationalUnemploymentRate(start_year = start_year, end_year=end_year)
+    national_employment                = GetNationalEmployment(start_year = start_year, end_year=end_year)
+    national_gdp                       = GetNationalGDP(observation_start = observation_start)
 
 #Graph Functions
 def CreateUnemploymentRateEmploymentGrowthGraph(folder):
@@ -2441,7 +2441,10 @@ def CreateNationalUnemploymentGraph(folder):
         linecolor = 'black',   
         tickmode  = 'auto',
         nticks    = 6,
-        secondary_y=False)                 
+        showgrid = True,
+        gridcolor = 'black',
+        secondary_y=False,)   
+    
                     
     
     #Set x axis ticks
@@ -2517,9 +2520,11 @@ def CreateNationalEmploymentGrowthGraph(folder):
         linecolor = 'black',
         tickmode = 'auto',
         nticks   = 6,
-        # range    =[-20,20],
+        showgrid = True,
+        gridcolor = 'black',
         secondary_y=False)                
-   
+    fig.add_hline(y=0, line_width=1, line_color="black")              
+    
     
     #Set x axis ticks
     quarter_list = [i for i in range(len(county_employment['period']))]
@@ -2589,6 +2594,8 @@ def CreateNationalGDPGraph(folder):
         linecolor = 'black',   
         tickmode  = 'auto',
         nticks    = 6,
+        showgrid = True,
+        gridcolor = 'black',
         secondary_y=False)                 
                     
 
@@ -2627,9 +2634,9 @@ def CreateGraphs():
         print(e)
 
     #National Graphs (Only use them sometimes)
-    # CreateNationalUnemploymentGraph(folder=county_folder)
-    # CreateNationalEmploymentGrowthGraph(folder=county_folder)
-    # CreateNationalGDPGraph(folder = county_folder)
+    CreateNationalUnemploymentGraph(folder=county_folder)
+    CreateNationalEmploymentGrowthGraph(folder=county_folder)
+    CreateNationalGDPGraph(folder = county_folder)
 
 #Language Functions
 def millify(n):
