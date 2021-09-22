@@ -42,10 +42,10 @@ costar_data_location           = os.path.join(project_location,'Data','CoStar Da
 costar_writeup_location        = os.path.join(project_location,'Data','CoStar Writeups')                                #Folder with clean CoStar CSV files
 
 #These are files the research team made to store things such as the towns within each submarket
-supplemental_multifamily_file  = os.path.join(costar_data_location,'mf_supplemental.csv')
-supplemental_office_file       = os.path.join(costar_data_location,'office_supplemental.csv') 
-supplemental_retail_file       = os.path.join(costar_data_location,'retail_supplemental.csv') 
-supplemental_industrial_file   = os.path.join(costar_data_location,'industrial_supplemental.csv')
+supplemental_multifamily_file  = os.path.join(costar_data_location,'Supplemental Data','mf_supplemental.csv')
+supplemental_office_file       = os.path.join(costar_data_location,'Supplemental Data','office_supplemental.csv') 
+supplemental_retail_file       = os.path.join(costar_data_location,'Supplemental Data','retail_supplemental.csv') 
+supplemental_industrial_file   = os.path.join(costar_data_location,'Supplemental Data','industrial_supplemental.csv')
 
 
 #Import cleaned data from 1.) Clean Costar Data.py
@@ -1155,7 +1155,7 @@ def CreateDirectoryCSV():
 
         #We are now going to merge our dataframe with the list of markets and submarkets with the zip codes associated with each market and submarket
         #We first import and clean that zip code level dataset (convert to one row per submarket with a list of zip codes in it)
-        df_zipcodes                                     = pd.read_excel(os.path.join(costar_data_location,'Zip to Submarket.xlsx'), dtype={'PostalCode': object} ) 
+        df_zipcodes                                     = pd.read_excel(os.path.join(costar_data_location,'Supplemental Data','Zip to Submarket.xlsx'), dtype={'PostalCode': object} ) 
         df_zipcodes                                     = df_zipcodes.loc[(df_zipcodes['PropertyType'] == 'Office') | (df_zipcodes['PropertyType'] == 'Retail') | (df_zipcodes['PropertyType'] == 'Industrial') | (df_zipcodes['PropertyType'] == 'Multi-Family')]
         df_zipcodes.loc[df_zipcodes['PropertyType']     == 'Multi-Family', 'PropertyType'] = 'Multifamily'
 
