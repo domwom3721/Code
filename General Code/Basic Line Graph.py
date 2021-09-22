@@ -17,6 +17,8 @@ df  = pd.read_csv(file_location)
 df["Monthly % Change"] = ((df['CPIAUCSL']/df['CPIAUCSL'].shift(1)) - 1 ) * 100
 
 
+
+
 #Set graph parameters
 #Set Graph Size
 marginInches = 1/18
@@ -45,7 +47,7 @@ paper_backgroundcolor = 'white'
 
 #Title Position
 title_position = .95
-
+#Parameters now set
 
 
 
@@ -85,7 +87,6 @@ title={
     'yanchor': 'top'},
 
 yaxis = dict(rangemode = 'tozero'),
-# yaxis_range = [200,275],
 
 legend=dict(
     orientation="h",
