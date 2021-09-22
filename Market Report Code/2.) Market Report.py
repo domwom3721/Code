@@ -791,7 +791,7 @@ def CapitalMarketsSection():
         else:
             data_for_sales_table = [['Property',		'Tenant',	'SF', 'Type'],['X' for i in range(4)],['X' for i in range(4)],['X' for i in range(4)],['X' for i in range(4)]]
 
-        #Uncommen out below to put sales table in submarket reports
+        #Uncomment out below to put sales table in submarket reports
         # AddTable(document,data_for_sales_table,col_width=1)
         # document.add_paragraph('')
     
