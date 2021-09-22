@@ -1361,7 +1361,7 @@ def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,p
 
     #Section 3: Format variables
     inventory_growth_pct                        = "{:,.0f}%".format(abs(inventory_growth_pct)) 
-    delivered_inventory                         = "{:,f}".format(delivered_inventory)
+    delivered_inventory                         = "{:,.0f}".format(delivered_inventory)
     demolished_inventory                        = "{:,.0f}".format(demolished_inventory)
 
     #Determine if developers are historically active here
@@ -1405,17 +1405,17 @@ def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,p
 
 
     #Determine 10 year inventory growth   
-    if inventory_growth > 0 and under_construction > 0:
-        inventory_expand_or_contract = 'In fact, over the past ten years, developers have added ' +  millify(inventory_growth,'') + ' '  + unit_or_sqft + ', expanding inventory by ' + inventory_growth_pct + '.'
-    
-    elif inventory_growth > 0 and under_construction <= 0 :
-        inventory_expand_or_contract = 'However, over the past ten years, developers have added ' +  millify(inventory_growth,'') + ' '  + unit_or_sqft + ', expanding inventory by ' + inventory_growth_pct + '.'
-    
-    elif inventory_growth < 0:
-        inventory_expand_or_contract = 'In fact, inventory has contracted ' +  millify(abs(inventory_growth),'')   + ' ' + unit_or_sqft + ', a ' + inventory_growth_pct + ' change. '
-    
-    elif inventory_growth == 0:
-        inventory_expand_or_contract = 'Over the past ten years, inventory levels have remained constant in the ' + market_or_submarket + '.'
+    #if inventory_growth > 0 and under_construction > 0:
+    #    inventory_expand_or_contract = 'In fact, over the past ten years, developers have added ' +  millify(inventory_growth,'') + ' '  + unit_or_sqft + ', expanding inventory by ' + inventory_growth_pct + '.'
+    #
+    #elif inventory_growth > 0 and under_construction <= 0 :
+    #    inventory_expand_or_contract = 'However, over the past ten years, developers have added ' +  millify(inventory_growth,'') + ' '  + unit_or_sqft + ', expanding inventory by ' + inventory_growth_pct + '.'
+    #
+    #elif inventory_growth < 0:
+    #    inventory_expand_or_contract = 'In fact, inventory has contracted ' +  millify(abs(inventory_growth),'')   + ' ' + unit_or_sqft + ', a ' + inventory_growth_pct + ' change. '
+    # 
+    #elif inventory_growth == 0:
+    #    inventory_expand_or_contract = 'Over the past ten years, inventory levels have remained constant in the ' + market_or_submarket + '.'
 
 
     #Determine qoq trends
@@ -1444,7 +1444,7 @@ def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,p
     
     return(developers_active_or_inactive +
     active_or_inactive +
-        inventory_expand_or_contract + 
+        #inventory_expand_or_contract + 
             elevated_or_down_compared_to_previous_quarter
             )
 
@@ -1664,7 +1664,7 @@ def CreateSaleLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
             asset_value                                      +
             '/'                                              +
             unit_or_sqft_singular                            +
-            ', values in this '                              +
+            ' and '                                          +
             submarket_or_market                              +
             ' have '                                         +
             asset_value_change_description                   +
@@ -1677,10 +1677,11 @@ def CreateSaleLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
              cap_rate_change                                 +
             ' over the past year '                           +
            cap_rate_change_description_to_or_at              +
-            ' '                                              +
+            '. '                                             +
             cap_rate +
-            ' There is still uncertainty in the capital markets thanks to the coronavirus pandemic. ' +
-            ' Although the capital markets has held up relatively well, some investors may need to see signs of sustained economic growth before engaging in the submarket. ')
+            '  ' +
+            ' Although the capital markets has held up relatively well, uncertainty still remains in the capital markets. ' +
+            ' Some investors may need to see signs of sustained economic growth before engaging. ')
 
 #Language for outlook section
 def CreateOutlookLanguage(data_frame,data_frame2,data_frame3,market_title,primary_market,sector,writeup_directory):
