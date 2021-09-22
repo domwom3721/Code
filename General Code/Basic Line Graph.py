@@ -79,7 +79,7 @@ fig.update_yaxes(tickfont = dict(size=tickfont_size), ticksuffix = '%',  title =
 
 #Set formatting 
 fig.update_layout(
-title_text="Cosumer Price Index and Monthly % Change",    
+title_text="Consumer Price Index and Monthly % Change",    
 title={
     'y':title_position,
     'x':0.5,
