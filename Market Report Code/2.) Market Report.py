@@ -35,7 +35,7 @@ dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropb
 project_location               =  os.path.join(dropbox_root,'Research','Projects','Research Report Automation Project') #Main Folder that stores all output, code, and documentation
 
 output_location                = os.path.join(project_location,'Output','Market Reports')                             #The folder where we store our current reports, testing folder
-output_location                = os.path.join(dropbox_root,'Research','Market Analysis','Market')                       #The folder where we store our current reports, production
+# output_location                = os.path.join(dropbox_root,'Research','Market Analysis','Market')                       #The folder where we store our current reports, production
 
 map_location                   = os.path.join(project_location,'Data','Maps','CoStar Maps')                             #Folders with maps png files  
 costar_data_location           = os.path.join(project_location,'Data','CoStar Data')                                    #Folder with clean CoStar CSV files
@@ -71,7 +71,9 @@ df_multifamily              = pd.merge(df_multifamily, df_multifamily_supplement
 df_office                   = pd.merge(df_office,      df_office_supplemental,           on=['Geography Name','Geography Type'], how = 'left')
 df_retail                   = pd.merge(df_retail,      df_retail_supplemental,           on=['Geography Name','Geography Type'], how = 'left')
 df_industrial               = pd.merge(df_industrial,  df_industrial_supplemental,       on=['Geography Name','Geography Type'], how = 'left')
-df_custom                   = pd.read_excel(os.path.join(costar_data_location,'Clean Custom CoStar Data.xlsx') )
+
+if os.path.exists(os.path.join(costar_data_location,'Clean Custom CoStar Data.xlsx')):
+    df_custom                   = pd.read_excel(os.path.join(costar_data_location,'Clean Custom CoStar Data.xlsx') )
 
 df_multifamily['Town']      = df_multifamily['Town'].fillna('')
 df_office['Town']           = df_office['Town'].fillna('')
@@ -189,19 +191,31 @@ user_selects_reports_or_not()
 user_selects_sector()
 
 if selected_sector == 'Retail':
-    df_retail  = df_retail.append(df_custom) #Add the custom data to the main data file
+    try:
+        df_retail  = df_retail.append(df_custom) #Add the custom data to the main data file
+    except:
+        pass
     df_list[0] = df_retail
 
 elif selected_sector == 'Office':
-    df_office  = df_office.append(df_custom) #Add the custom data to the main data file
+    try:
+        df_office  = df_office.append(df_custom) #Add the custom data to the main data file
+    except:
+        pass
     df_list[0] = df_office
 
 elif  selected_sector == 'Multifamily':
-    df_multifamily  = df_multifamily.append(df_custom) #Add the custom data to the main data file
+    try:
+        df_multifamily  = df_multifamily.append(df_custom) #Add the custom data to the main data file
+    except:
+        pass
     df_list[0]      = df_multifamily
 
 elif selected_sector  == 'Industrial':
-    df_industrial   = df_industrial.append(df_custom) #Add the custom data to the main data file
+    try:
+        df_industrial   = df_industrial.append(df_custom) #Add the custom data to the main data file
+    except:
+        pass
     df_list[0]      = df_industrial
 
 
