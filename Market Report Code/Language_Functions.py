@@ -1663,9 +1663,7 @@ def CreateSaleLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
             asset_value                                      +
             '/'                                              +
             unit_or_sqft_singular                            +
-            ' and '                                          +
-            submarket_or_market                              +
-            ' have '                                         +
+            ' and have '                                     +
             asset_value_change_description                   +
             ' '                                              +
             asset_value_change                               + 
@@ -1676,9 +1674,9 @@ def CreateSaleLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
              cap_rate_change                                 +
             ' over the past year '                           +
            cap_rate_change_description_to_or_at              +
+           ' '                                               +
+            cap_rate                                         +
             '. '                                             +
-            cap_rate +
-            '  ' +
             ' Although the capital markets has held up relatively well, uncertainty still remains in the capital markets. ' +
             ' Some investors may need to see signs of sustained economic growth before engaging. ')
 
