@@ -281,7 +281,7 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
             multifamily_language =  (' The unique nature of the pandemic and lockdown dramatically shifted renter preferences, reversing a multi-year trend of urbanization across the countries largest cities. ' + 
                                 'Multiple factors inspired the shift, including the ability to work-from-home, affordability, and the desire for more space. ' + 
                                 'The ' + market_or_submarket + 
-                                ' has been negatively affected by these shift in preferences, leading to rising vacancy rates and contracting rents. ' )
+                                ' has been negatively affected by this shift in preferences, leading to rising vacancy rates and contracting rents. ' )
     
     else:
         multifamily_language = (' The unique nature of the pandemic and lockdown dramatically shifted renter preferences, reversing a multi-year trend of urbanization across the largest cities. ' + 
