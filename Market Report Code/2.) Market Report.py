@@ -1409,7 +1409,9 @@ def CreateDirectoryCSV():
         service_api_csv_name = f'CoStar Markets-{datetime.now().timestamp()}.csv'
 
         dropbox_df.to_csv(os.path.join(output_location, csv_name), index=False)
-        dropbox_df.to_csv(os.path.join(output_location, service_api_csv_name), index=False)
+
+        if output_location == os.path.join(dropbox_root,'Research','Market Analysis','Market'):
+            dropbox_df.to_csv(os.path.join(output_location, service_api_csv_name), index=False)
 
 
 #Define these empty lists we will fill during the loops, this is to create a list of markets and submarkets and their dropbox links for Salesforce mapping
