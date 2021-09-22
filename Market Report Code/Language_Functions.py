@@ -1318,15 +1318,6 @@ def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,p
     CoStarWriteUp = PullCoStarWriteUp(section_names= ['Construction',],writeup_directory = writeup_directory)
     if CoStarWriteUp != '':
         return(CoStarWriteUp)
-
-
-    #Custom market title change for the NYC reports for bank clients
-    if market_title == 'Manhattan - NY':
-        market_title = 'Manhattan'
-
-    if primary_market == 'Manhattan - NY':
-        primary_market = 'Manhattan'
-    
     
     #Section 1: Begin making variables for the overview language that come from the data:     
     if sector == "Multifamily":
