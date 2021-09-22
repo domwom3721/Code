@@ -708,10 +708,47 @@ def ConstructionSection():
     else:
         pass
 
+    # #Create data for construction table (Market)
+    # if df_market_cut.equals(df_primary_market):
+    #     if sector == 'Multifamily':
+    #         data_for_sales_table = [['Property',	'Submarket',	'Tenant',	'Units',	'Type'],['X' for i in range(5)],['X' for i in range(5)],['X' for i in range(5)],['X' for i in range(5)]]
+    #     else:
+    #         data_for_sales_table = [['Property',	'Submarket',	'Tenant',	'SF', 'Type'],['X' for i in range(5)],['X' for i in range(5)],['X' for i in range(5)],['X' for i in range(5)]]
+        
+    #     #Key Sales Table
+    #     sales_table_title_paragraph = document.add_paragraph('Key Sales Transactions ' + latest_quarter)
+    #     sales_table_title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    #     sales_table_title_paragraph.paragraph_format.space_after  = Pt(6)
+    #     sales_table_title_paragraph.paragraph_format.space_before = Pt(12)
+    #     for run in sales_table_title_paragraph.runs:
+    #         font = run.font
+    #         font.name = 'Avenir Next LT Pro Medium'
+
+    #     AddTable(document,data_for_sales_table,col_width=1)
+    #     document.add_paragraph('')
+    
+    # #Create data for sales table (Submarket)
+    # else:
+    #     if sector == 'Multifamily':
+    #         data_for_sales_table = [['Property',		'Tenant',	'Units',	'Type'],['X' for i in range(4)],['X' for i in range(4)],['X' for i in range(4)],['X' for i in range(4)]]
+    #     else:
+    #         data_for_sales_table = [['Property',		'Tenant',	'SF', 'Type'],['X' for i in range(4)],['X' for i in range(4)],['X' for i in range(4)],['X' for i in range(4)]]
+
 def CapitalMarketsSection():
     #Captial Markets Section
     AddHeading(document,'Capital Markets',2)
-    capital_paragraph = document.add_paragraph(sale_language)
+
+    #Split the capital market language into 2 paragraphs
+    if len(sale_language.split('Market pricing')) >= 2:
+        sale_language_1   = sale_language.split('Market pricing')[0]
+        sale_language_2   = 'Market pricing' + sale_language.split('Market pricing')[1]
+    else:
+        sale_language_1   = sale_language
+        sale_language_2   = sale_language
+
+
+
+    capital_paragraph = document.add_paragraph(sale_language_1)
     capital_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
     capital_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
     capital_paragraph.paragraph_format.space_before = Pt(0)
@@ -723,7 +760,10 @@ def CapitalMarketsSection():
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         document.add_paragraph('')
 
-
+    capital_paragraph2 = document.add_paragraph(sale_language_2)
+    capital_paragraph2.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    capital_paragraph2.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+    capital_paragraph2.paragraph_format.space_before = Pt(0)
 
     #Create data for sales table (Market)
     if df_market_cut.equals(df_primary_market):
