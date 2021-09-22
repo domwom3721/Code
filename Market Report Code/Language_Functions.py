@@ -940,14 +940,6 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
     if CoStarWriteUp != '':
         return(CoStarWriteUp)
 
-    #Custom market title change for the NYC reports for bank clients
-    if market_title == 'Manhattan - NY':
-        market_title = 'Manhattan'
-
-    if primary_market == 'Manhattan - NY':
-        primary_market = 'Manhattan'
-
-
     #Section 1: Begin making variables for the overview language that come from the data: 
     if sector == "Multifamily":
         rent_var                = 'Market Effective Rent/Unit'
@@ -974,6 +966,9 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
     market_decade_rent_growth        = round(((primary_market_rent/market_starting_rent) - 1) * 100,1)
     market_decade_rent_growth_annual = market_decade_rent_growth/10
 
+    #Get most recent quarter
+    current_period                   = str(data_frame['Period'].iloc[-1])[5:]
+
     #Calcuate rent growth for submarket, market, and national average over past 10 years
     submarket_starting_rent             =  data_frame[rent_var].iloc[0]
     submarket_start_period              =  str(data_frame['Period'].iloc[0])
@@ -981,7 +976,7 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
     submarket_yoy_growth                =  data_frame[rent_growth_var].iloc[-1]
     submarket_qoq_growth                =  data_frame[qoq_rent_growth_var].iloc[-1]
     submarket_year_ago_yoy_growth       =  data_frame[rent_growth_var].iloc[-5]
-    submarket_pre_pandemic_yoy_growth   =  data_frame[rent_growth_var].iloc[-6] #2020 Q1 Annual Growth if still in 2021 Q2
+    submarket_pre_pandemic_yoy_growth   =  data_frame[rent_growth_var].iloc[-7] #2020 Q1 Annual Growth if still in 2021 Q3
     submarket_decade_rent_growth        = round(((current_rent/submarket_starting_rent) - 1) * 100,1)
     submarket_decade_rent_growth_annual = submarket_decade_rent_growth/10
 
@@ -1232,7 +1227,9 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
             ' rent growth ' +
             '[over the course of the year//temporarily]'+
             '.' +
-            ' Quarterly growth in Q2 reached ' +
+            ' Quarterly growth in '                     +
+            current_period                              +
+            ' reached ' +
             submarket_qoq_growth +
             ', '                 +
             '[pushing/contracting]' +
@@ -1302,7 +1299,9 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
             ' rent growth ' +
             '[over the course of the year//temporarily]'+
             '.' +
-            ' Quarterly growth in Q2 reached ' +
+            ' Quarterly growth in ' +
+            current_period          +
+            ' reached ' +
             submarket_qoq_growth +
             ', '                 +
              '[pushing/contracting]' +
