@@ -1234,7 +1234,9 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
             '.' +
             ' Quarterly growth in Q2 reached ' +
             submarket_qoq_growth +
-            ', pushing/contracting annual growth to ' +
+            ', '                 +
+            '[pushing/contracting]' +
+            ' annual growth to ' +
             market_yoy_growth +
             '.' 
     )   
