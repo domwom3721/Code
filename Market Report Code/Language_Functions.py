@@ -68,6 +68,7 @@ def PullCoStarWriteUp(section_names,writeup_directory):
                             text = text.replace('21Q2','2021 Q2')
                             text = text.replace('21Q3','2021 Q3')
                             text = text.replace('amount','number')
+                            text = text.replace('2021q3','2021 Q3')
                             #our generated language is delayed compared to costar 
                             text = text.replace('fourth quarter of 2021','3Q 2021')
 
