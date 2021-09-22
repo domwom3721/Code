@@ -569,10 +569,9 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
 
     #Section 4.3: Combine the 3 langauge variables together to form the overview paragraph and return it
     overview_language = (
-                        overview_intro_language        +
-                        # overview_sector_language       +       
-                        overview_conclusion_language   + 
-                        overview_sector_conclusion_language
+                        overview_intro_language        +     
+                        overview_sector_conclusion_language +
+                        overview_conclusion_language   
                         )
     
     return(overview_language)    
