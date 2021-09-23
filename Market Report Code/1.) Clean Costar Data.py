@@ -272,7 +272,7 @@ def ConvertPercenttoPercentagePoints(df,sector):
                    'Market Rent Growth 12 Mo' ]
     
     for var in rate_vars:
-            df[var] = round(df[var] * 100,2)
+            df[var] = round(df[var] * 100,4)
     return(df)
 
 def MainClean(df,sector): #Calls all cleaning functions and returns cleaned dataframes
@@ -472,9 +472,9 @@ for df in [df_multifamily,df_office,df_retail,df_industrial]:
     df['YoY Market Cap Rate Growth']                = round((df['Market Cap Rate'] - df['4 Quarters Ago Market Cap Rate'])   * 100,0)
 
     #Round  3 percentage variables we report in overview table
-    df['Market Cap Rate']                           = round(df['Market Cap Rate'],1)
-    df['Vacancy Rate']                              = round(df['Vacancy Rate'],1)
-    df['Absorption Rate']                           = round(df['Absorption Rate'],1)
+    df['Market Cap Rate']                           = round(df['Market Cap Rate'],2)
+    df['Vacancy Rate']                              = round(df['Vacancy Rate'],2)
+    df['Absorption Rate']                           = round(df['Absorption Rate'],2)
 
 
 
