@@ -472,10 +472,25 @@ def GetCountyMedianListPrice(fips,observation_start):
         mlp_series_names = mlp_series_names.loc[mlp_series_names['Region Code'] == fips]
         county_series_code = mlp_series_names['Series ID'].iloc[0]
     except:
-        county_series_code = 'MEDLISPRI' + fips
-    county_mlp_df = fred.get_series(series_id = county_series_code,observation_start = observation_start)
-    county_mlp_df = county_mlp_df.to_frame().reset_index()
-    county_mlp_df.columns = ['Period','Median List Price']
+        try:
+            county_series_code = 'MEDLISPRI' + fips
+            county_mlp_df = fred.get_series(series_id = county_series_code,observation_start = observation_start)
+            county_mlp_df = county_mlp_df.to_frame().reset_index()
+            county_mlp_df.columns = ['Period','Median List Price']
+        except:
+            try:
+                county_series_code = 'MELIPRCOUNTY' + fips
+                county_mlp_df = fred.get_series(series_id = county_series_code,observation_start = observation_start)
+                county_mlp_df = county_mlp_df.to_frame().reset_index()
+                county_mlp_df.columns = ['Period','Median List Price']
+            except:
+                county_series_code = 'MELIPRCOUNTY' + fips[1:] #Sometimes FRED series names drop leading 0s
+                county_mlp_df = fred.get_series(series_id = county_series_code,observation_start = observation_start)
+                county_mlp_df = county_mlp_df.to_frame().reset_index()
+                county_mlp_df.columns = ['Period','Median List Price']
+
+
+    
     if data_export == True:
         county_mlp_df.to_csv(os.path.join(county_folder,'County Median Home List Price.csv'))
     return(county_mlp_df)
