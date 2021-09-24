@@ -3146,10 +3146,7 @@ def ProductionLanguage(county_data_frame,msa_data_frame,state_data_frame):
         gdp_growth_description = '[stagnant/steady/strong/weak/negative]'
 
 
-
-
-
-    if  isinstance(msa_data_frame, pd.DataFrame) == True:
+    if  isinstance(msa_data_frame, pd.DataFrame) == True and msa_data_frame['GDP'].equals(county_data_frame['GDP']) == False:
         msa_data_frame = msa_data_frame.loc[msa_data_frame['Period'] <= (county_data_frame['Period'].max()) ]
         latest_msa_gdp_growth = ((msa_data_frame['GDP'].iloc[-1]/msa_data_frame['GDP'].iloc[-2]) - 1) * 100
         latest_msa_gdp_growth =  "{:,.1f}%".format(latest_msa_gdp_growth)
