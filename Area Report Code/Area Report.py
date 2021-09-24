@@ -471,20 +471,24 @@ def GetCountyMedianListPrice(fips,observation_start):
                         })
         mlp_series_names = mlp_series_names.loc[mlp_series_names['Region Code'] == fips]
         county_series_code = mlp_series_names['Series ID'].iloc[0]
-    except:
+        county_mlp_df = fred.get_series(series_id = county_series_code,observation_start = observation_start)
+        county_mlp_df = county_mlp_df.to_frame().reset_index()
+        county_mlp_df.columns = ['Period','Median List Price']
+    except Exception as e:
         try:
             county_series_code = 'MEDLISPRI' + fips
             county_mlp_df = fred.get_series(series_id = county_series_code,observation_start = observation_start)
             county_mlp_df = county_mlp_df.to_frame().reset_index()
             county_mlp_df.columns = ['Period','Median List Price']
-        except:
+        except Exception as e:
             try:
                 county_series_code = 'MELIPRCOUNTY' + fips
                 county_mlp_df = fred.get_series(series_id = county_series_code,observation_start = observation_start)
                 county_mlp_df = county_mlp_df.to_frame().reset_index()
                 county_mlp_df.columns = ['Period','Median List Price']
-            except:
+            except Exception as e:
                 county_series_code = 'MELIPRCOUNTY' + fips[1:] #Sometimes FRED series names drop leading 0s
+                print(county_series_code)
                 county_mlp_df = fred.get_series(series_id = county_series_code,observation_start = observation_start)
                 county_mlp_df = county_mlp_df.to_frame().reset_index()
                 county_mlp_df.columns = ['Period','Median List Price']
@@ -548,8 +552,8 @@ def GetCountyData():
     try:  
         county_mlp                    = GetCountyMedianListPrice(fips = fips,observation_start = observation_start)
     except Exception as e: 
-        print('No median home list data price available')
-        county_mlp                = ''
+        print(e,'No median home list data price available')
+        county_mlp                    = ''
 
 #MSA Data
 def GetMSAGDP(cbsa,observation_start):
