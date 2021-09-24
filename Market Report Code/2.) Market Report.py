@@ -93,6 +93,14 @@ primary_space_after_paragraph   = 6
 def user_selects_sector():
     global   df_list, df_slices_list,sector_name_list,selected_sector
 
+    #Don't make the user select a sector if they are not trying to write reports
+    if write_reports_yes_or_no == 'n':
+        selected_sector = 'All'
+        df_list         = [df_multifamily, df_office, df_retail, df_industrial]
+        df_slices_list   = [df_multifamily_slices, df_office_slices, df_retail_slices, df_industrial_slices]
+        sector_name_list =  ['Multifamily','Office','Retail','Industrial']
+        return('')
+
     #GUI that lets user specify which sectors they want to run
     ws = Tk()
     ws.title('Research Automation Project - Market Reports')
@@ -188,7 +196,7 @@ def user_selects_reports_or_not():
     
     #GUI Over now define functions
 
-#Decide if you want to update report documents or create our csv output and update the database
+#Decide if you want to create report documents or create our csv output and update the database
 user_selects_reports_or_not()
 user_selects_sector()
 
