@@ -28,9 +28,10 @@ from Graph_Functions import *
 from Language_Functions import *  
 from Table_Functions import * 
 
-#Define file pre paths
-start_time = time.time() #Used to track runtime of script
+#Used to track runtime of script
+start_time = time.time() 
 
+#Define file pre paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
 project_location               =  os.path.join(dropbox_root,'Research','Projects','Research Report Automation Project') #Main Folder that stores all output, code, and documentation
 
@@ -67,20 +68,20 @@ df_industrial_supplemental    = pd.read_csv(supplemental_industrial_file,dtype={
 
 
 #Merge in our supplemental data into our main data frames
-df_multifamily              = pd.merge(df_multifamily, df_multifamily_supplemental,      on=['Geography Name','Geography Type'], how = 'left')
-df_office                   = pd.merge(df_office,      df_office_supplemental,           on=['Geography Name','Geography Type'], how = 'left')
-df_retail                   = pd.merge(df_retail,      df_retail_supplemental,           on=['Geography Name','Geography Type'], how = 'left')
-df_industrial               = pd.merge(df_industrial,  df_industrial_supplemental,       on=['Geography Name','Geography Type'], how = 'left')
+df_multifamily                = pd.merge(df_multifamily, df_multifamily_supplemental,      on=['Geography Name','Geography Type'], how = 'left')
+df_office                     = pd.merge(df_office,      df_office_supplemental,           on=['Geography Name','Geography Type'], how = 'left')
+df_retail                     = pd.merge(df_retail,      df_retail_supplemental,           on=['Geography Name','Geography Type'], how = 'left')
+df_industrial                 = pd.merge(df_industrial,  df_industrial_supplemental,       on=['Geography Name','Geography Type'], how = 'left')
 
+#Do this because we don't have the towns for most of the market so this prevents errors
+df_multifamily['Town']        = df_multifamily['Town'].fillna('')
+df_office['Town']             = df_office['Town'].fillna('')
+df_retail['Town']             = df_retail['Town'].fillna('')
+df_industrial['Town']         = df_industrial['Town'].fillna('')
+
+#If we have any custom data, read it in as a dataframe so we can append it to our primary data
 if os.path.exists(os.path.join(costar_data_location,'Clean Custom CoStar Data.xlsx')):
-    df_custom                   = pd.read_excel(os.path.join(costar_data_location,'Clean Custom CoStar Data.xlsx') )
-
-df_multifamily['Town']      = df_multifamily['Town'].fillna('')
-df_office['Town']           = df_office['Town'].fillna('')
-df_retail['Town']           = df_retail['Town'].fillna('')
-df_industrial['Town']       = df_industrial['Town'].fillna('') 
-
-
+    df_custom                 = pd.read_excel(os.path.join(costar_data_location,'Clean Custom CoStar Data.xlsx') )
 
 
 #Set formatting paramaters for reports
@@ -88,7 +89,7 @@ primary_font                    = 'Avenir Next LT Pro Light'
 primary_space_after_paragraph   = 6
 
 
-#GUI For user to select sector
+#GUI for user to select sector
 def user_selects_sector():
     global   df_list, df_slices_list,sector_name_list,selected_sector
 
@@ -150,6 +151,7 @@ def user_selects_sector():
         sector_name_list =  ['Industrial']
     #GUI Over now define functions
 
+#GUI for user to select if they want to write reports, or update the database/CoStar Markets CSV file
 def user_selects_reports_or_not():
     global   write_reports_yes_or_no
 
@@ -186,10 +188,12 @@ def user_selects_reports_or_not():
     
     #GUI Over now define functions
 
-#Decide if you want to update report documents or create our csv output
+#Decide if you want to update report documents or create our csv output and update the database
 user_selects_reports_or_not()
 user_selects_sector()
 
+#In the case where the user has selected a single sector, add that sector's dataframe to our list of sector dataframes we are looping through to create
+#reports. Also, try to add any custom data in case we have any
 if selected_sector == 'Retail':
     try:
         df_retail  = df_retail.append(df_custom) #Add the custom data to the main data file
@@ -217,14 +221,6 @@ elif selected_sector  == 'Industrial':
     except:
         pass
     df_list[0]      = df_industrial
-
-
-
-
-    
-
-
-
 
 
 #Define functions used to handle the clean CoStar data and help write our repots
@@ -470,7 +466,6 @@ def MakeCoStarDisclaimer():
     disclaimer.paragraph_format.space_before = Pt(0)
     disclaimer.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
     disclaimer.paragraph_format.keep_together = True
-
 
 def CleanUpPNGs():
     #Report writing done, delete figures
@@ -1026,9 +1021,6 @@ def GetOverviewTable():
 
     return(data_for_overview_table)
 
-        
-
-
 def GetRentTable():
     #Create data for rent Table
     if sector == 'Multifamily':
@@ -1418,7 +1410,7 @@ def CreateDirectoryCSV():
 CreateEmptySalesforceLists()
 
 
-#Loop through the 4 dataframes, get list of unique markets, loop through those markets creating folders and writing market reports
+#This is the main loop for our program where we loop through the selected sector dataframes, get list of unique markets, loop through those markets creating folders and writing market reports
 for df,df2,sector in zip(      df_list,
                                df_slices_list,
                               sector_name_list):
@@ -1427,15 +1419,13 @@ for df,df2,sector in zip(      df_list,
 
     #Create dictionary with each market as key and a list of its submarkets as items
     market_dictionary            = CreateMarketDictionary(df)
-    # print(market_dictionary)
-    
-    selected_market              = user_selects_market(market_list = list(market_dictionary.keys())) #use a GUI to let user select a market
+
+    #Use a GUI to let user select a market to create reports for
+    selected_market              = user_selects_market(market_list = list(market_dictionary.keys())) 
 
     #Loop through the market dictionary creating reports for each market and their submarkets
     for primary_market,submarkets in market_dictionary.items():
-
         state                        = primary_market[-2:] #Get State to make folder that stores markets
-
 
         if   primary_market not in selected_market: 
             continue
@@ -1453,10 +1443,11 @@ for df,df2,sector in zip(      df_list,
         if selected_market == list(market_dictionary.keys()):
             selected_submarket = submarkets
         else:
-            selected_submarket           = user_selects_market(market_list = submarkets) #use a GUI to let user select a market
+            selected_submarket = user_selects_market(market_list = submarkets) #use a GUI to let user select a market
         
         #Create all the submarket reports for the market
         for submarket in submarkets:
+            #If the current submarket is not the one the user selected, skip it
             if submarket not in selected_submarket:
                 continue
             market = submarket
@@ -1510,6 +1501,7 @@ def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
         print(f'Deleting temporary CSV: ', csv_path)
         os.remove(csv_path)           
 
+#We only want to update the database when we are in the production folder and the user is not trying to create a report
 if output_location == os.path.join(dropbox_root,'Research','Market Analysis','Market') and write_reports_yes_or_no == 'n':
     # Post an update request to the Market Research Docs Service to update the database
     UpdateServiceDb(report_type='markets', 
