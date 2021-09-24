@@ -1448,11 +1448,13 @@ for df,df2,sector in zip(      df_list,
         #"market" is the general variable name used in all functions for the market OR submarket we are doing report for   
         market                        = primary_market 
         CreateMarketReport()
-
-        if selected_market == 'All':
+        
+        #If the user has selected all markets in a sector, assume they want all submarkets run, otherwise ask them for the submarket they want
+        if selected_market == list(market_dictionary.keys()):
             selected_submarket = submarkets
         else:
             selected_submarket           = user_selects_market(market_list = submarkets) #use a GUI to let user select a market
+        
         #Create all the submarket reports for the market
         for submarket in submarkets:
             if submarket not in selected_submarket:
