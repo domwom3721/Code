@@ -1066,17 +1066,16 @@ def CreateMarketReport():
     if write_reports_yes_or_no == 'y':
         #Create seperate dataframes with only rows from the current (sub)market, the primary market, and the nation 
         
-
-        if  primary_market != 'Manhattan - NY' and primary_market != 'Manhattan' :
-            df_nation         = df[df['Geography Type'] == 'National'].copy()              #df for the USA
-            df_primary_market = df[df['Geography Name'] == primary_market].copy()          #df for the market only
-        
-        else:
+        if  primary_market == 'Manhattan - NY' or primary_market == 'Manhattan':
             df_nation         = df[df['Geography Name'] == 'New York - NY'].copy() 
             df_primary_market = df[df['Geography Name'] == 'Manhattan - NY'].copy()          #df for the market only
             # print(df_nation)
             # print(df_primary_market)
         
+        else:
+            df_nation         = df[df['Geography Type'] == 'National'].copy()              #df for the USA
+            df_primary_market = df[df['Geography Name'] == primary_market].copy()          #df for the market only
+
         df_slices         = df2[df2['Geography Name'] == market].copy()        #df for the primary market with the quality/subtype slices
 
         assert len(df_market_cut) > 0
