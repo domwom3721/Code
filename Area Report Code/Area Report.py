@@ -2666,6 +2666,13 @@ def OverviewLanguage():
     jobs_recovered             =   current_jobs  - april_2020_jobs
     jobs_recovered_pct         = ((jobs_recovered/spring_job_losses_2020)) * 100
     
+    #Check if total employment has recovered from Covid losses
+    if jobs_recovered_pct >= 100:
+        fully_recovered_employment = True
+    else:
+        fully_recovered_employment = False
+
+
     spring_job_losses_2020      = "{:,}".format(spring_job_losses_2020)
     jobs_recovered_pct          = "{:,.1f}%".format(jobs_recovered_pct)
     jobs_recovered              = "{:,}".format(jobs_recovered)
@@ -2725,8 +2732,9 @@ def OverviewLanguage():
                    jobs_recovered +
                    ')'
                  ' of those jobs. ' +
-                   'The availability of and widespread use of vaccinations have aided the economy over the first half of 2021, but the Delta variant has led to recent worry and restrictions, that could slow growth over the 2nd half of 2021. ' +
-                'While fundamentals are pointing in the right direction, it will likely take some time for the ' +
+                   'The availability of and widespread use of vaccinations have aided the economy over the first half of 2021, but the Delta variant has led to recent worry and restrictions, that could slow growth over the 2nd half of 2021. ')
+    if fully_recovered_employment == False:
+        boiler_plate = boiler_plate + ('While fundamentals are pointing in the right direction, it will likely take some time for the ' +
                 'metro to fully return to pre-pandemic levels of employment.')
 
 
