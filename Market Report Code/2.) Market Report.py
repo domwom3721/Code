@@ -1449,7 +1449,10 @@ for df,df2,sector in zip(      df_list,
         market                        = primary_market 
         CreateMarketReport()
 
-        selected_submarket           = user_selects_market(market_list = submarkets) #use a GUI to let user select a market
+        if selected_market == 'All':
+            selected_submarket = submarkets
+        else:
+            selected_submarket           = user_selects_market(market_list = submarkets) #use a GUI to let user select a market
         #Create all the submarket reports for the market
         for submarket in submarkets:
             if submarket not in selected_submarket:
