@@ -1066,12 +1066,10 @@ def CreateMarketReport():
     if write_reports_yes_or_no == 'y':
         #Create seperate dataframes with only rows from the current (sub)market, the primary market, and the nation 
         
-        if  primary_market == 'Manhattan - NY' or primary_market == 'Manhattan':
+        if  primary_market == 'Manhattan - NY':
             df_nation         = df[df['Geography Name'] == 'New York - NY'].copy() 
             df_primary_market = df[df['Geography Name'] == 'Manhattan - NY'].copy()          #df for the market only
-            # print(df_nation)
-            # print(df_primary_market)
-        
+            
         else:
             df_nation         = df[df['Geography Type'] == 'National'].copy()              #df for the USA
             df_primary_market = df[df['Geography Name'] == primary_market].copy()          #df for the market only
