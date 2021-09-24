@@ -51,7 +51,7 @@ map_location                   =  os.path.join(project_location,'Data','Maps','C
 
 #Decide if you want to export data in excel files in the county folder
 data_export = True
-data_export = False
+# data_export = False
 
 #Set formatting paramaters for reports
 primary_font                  = 'Avenir Next LT Pro Light' 
@@ -3506,7 +3506,7 @@ def CreateLanguage():
         overview_language       = ''
     
     try:
-        emplopyment_industry_breakdown_language    = EmploymentBreakdownLanguage(county_industry_breakdown = county_industry_growth_breakdown)
+        emplopyment_industry_breakdown_language    = EmploymentBreakdownLanguage(county_industry_breakdown = county_industry_breakdown)
     except:
         print('problem with employment language')
         emplopyment_industry_breakdown_language    = ''
@@ -3559,7 +3559,7 @@ def CreateLanguage():
 
 
     try:    
-        emplopyment_growth_language = EmploymentGrowthLanguage(county_industry_breakdown=county_industry_breakdown)
+        emplopyment_growth_language = EmploymentGrowthLanguage(county_industry_breakdown=county_industry_growth_breakdown)
     except:
         print('problem with emp growth language')
         emplopyment_growth_language = ''
