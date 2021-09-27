@@ -34,10 +34,12 @@ assert os.path.exists(area_root)
 
 
 
-for (dirpath, dirnames, filenames) in os.walk(area_archive_root):
-    pass
+for (dirpath, dirnames, filenames) in os.walk(hood_root):
+    for file in filenames:
+        print(file)
 
 
 
-for (dirpath, dirnames, filenames) in os.walk(hood_archive_root):
-    pass
+for (dirpath, dirnames, filenames) in os.walk(area_root):
+    for file in filenames:
+        print(file)
