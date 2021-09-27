@@ -23,3 +23,21 @@ for i in range(10):
         if dirnames == [] and filenames == [] and dirpath != hood_archive_root:
             print('Deleting ',dirpath)
             os.rmdir(dirpath)
+
+#After we cleaned up the archvie folders, we can delete the files in the main area and hood folders so we can preserve the folder structure
+hood_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Market Analysis','Neighborhood') 
+assert os.path.exists(hood_root)
+
+area_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Market Analysis','Area') 
+assert os.path.exists(area_root)
+
+
+
+
+for (dirpath, dirnames, filenames) in os.walk(area_archive_root):
+    pass
+
+
+
+for (dirpath, dirnames, filenames) in os.walk(hood_archive_root):
+    pass
