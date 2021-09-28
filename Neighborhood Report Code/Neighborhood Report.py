@@ -13,8 +13,11 @@ from random import randrange
 from datetime import datetime
 
 import requests
+from requests.exceptions import HTTPError 
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
+
+import json
 
 import docx
 import numpy as np
@@ -2669,7 +2672,8 @@ def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
             total=3,
             status_forcelist=[400, 404, 409, 500, 503, 504],
             allowed_methods=["POST"],
-            backoff_factor=5
+            backoff_factor=5,
+            raise_on_status=False
         )
         adapter = HTTPAdapter(max_retries=retry_strategy)
         http = requests.Session()
@@ -2677,13 +2681,13 @@ def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
         http.mount("http://", adapter)
 
         response = http.post(url, json=payload)
-        if response.status_code == 200:
-            print('Service successfully updated')
-        else:
-            print(f'Service returned status code {response.status_code}')
-    except Exception as e:
+        response.raise_for_status()
+        print('Service successfully updated')
+    except HTTPError as e:
+        print(f'Request failed with status code {response.status_code}')
+        json_error = json.loads(response.content)
+        print(json.dumps(json_error, indent=2))
         print('Service DB did not successfully update. Please run the script again after fixing the error.')
-        print(e)
     finally:
         print(f'Deleting temporary CSV: ', csv_path)
         os.remove(csv_path)           
