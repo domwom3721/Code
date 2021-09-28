@@ -1066,10 +1066,15 @@ def CreateMarketReport():
     if write_reports_yes_or_no == 'y':
         #Create seperate dataframes with only rows from the current (sub)market, the primary market, and the nation 
         
+        #Specifiy the different comparsion levels for the culusters and research markets
         if  primary_market == 'Manhattan - NY':
             df_nation         = df[df['Geography Name'] == 'New York - NY'].copy() 
             df_primary_market = df[df['Geography Name'] == 'Manhattan - NY'].copy()          #df for the market only
-            
+        
+        elif  (primary_market == 'Downtown - NY') or (primary_market == 'Midtown - NY')  or (primary_market == 'Midtown South - NY')  or (primary_market == 'Uptown - NY')  :
+            df_nation         = df[df['Geography Name'] == 'Manhattan - NY'].copy() 
+            df_primary_market = df[df['Geography Name'] == primary_market].copy()                       
+        
         else:
             df_nation         = df[df['Geography Type'] == 'National'].copy()              #df for the USA
             df_primary_market = df[df['Geography Name'] == primary_market].copy()          #df for the market only
