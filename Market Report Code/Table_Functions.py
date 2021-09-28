@@ -311,11 +311,17 @@ def CreateRowDataForWideTable(data_frame,data_frame2,data_frame3,data_frame4,var
     level_2_name = data_frame2['Geography Name'].iloc[0]
     level_3_name = data_frame3['Geography Name'].iloc[0] #Typically will be United States, excpet for when doing NYC 
 
-    if data_frame.equals(data_frame3) == False and level_1_name != 'Manhattan - NY' and level_2_name != 'Manhattan - NY':
+
+    if level_3_name == 'United States of America':
         level_3_name = 'National'
-    else:
-        if level_1_name != 'United States of America':
-            level_3_name = 'Metro'
+    elif level_3_name == 'New York - NY':
+        level_3_name = 'Metro'
+
+    # if data_frame.equals(data_frame3) == False and level_1_name != 'Manhattan - NY' and level_2_name != 'Manhattan - NY':
+    #     level_3_name = 'National'
+    # else:
+    #     if level_1_name != 'United States of America':
+    #         level_3_name = 'Metro'
 
 
 
