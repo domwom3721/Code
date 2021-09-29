@@ -171,22 +171,34 @@ def GetStateName(state_code):
     state_name        = state_names_df['State Name'].iloc[0]
     return(state_name)
 
-def GetCurrentQuarterDigit():
+def GetCurrentQuarterAndYear():
     #Pulls unemployment for Nassau County, NY as a way to see the most current available month for county level unemployment, 
-    #from this we get the quarter
+    #from this we get the quarter and year for our report version
     df = fred.get_series(series_id = 'NYNASS9URN')
     df = df.to_frame().reset_index()
-    most_recent_period = str(df['index'].iloc[-1])[5:7] #cuts down to just month value eg: 08
     
-    if most_recent_period == '12'  or most_recent_period == '01' or most_recent_period == '02':
-        return('4')
-    elif most_recent_period == '11' or most_recent_period == '10' or most_recent_period == '09':
-        return('3')
-    elif most_recent_period == '08' or most_recent_period == '07' or most_recent_period == '06':
-        return('2')
-    elif most_recent_period == '05' or most_recent_period == '04' or most_recent_period == '03':
-        return('1')
+    most_recent_month = str(df['index'].iloc[-1])[5:7] #cuts down to just month value eg: 08
+    
+    if most_recent_month == '12'  or most_recent_month == '01' or most_recent_month == '02':
+        quarter = '4'
+    elif most_recent_month == '11' or most_recent_month == '10' or most_recent_month == '09':
+        quarter = '3'
+    elif most_recent_month == '08' or most_recent_month == '07' or most_recent_month == '06':
+       quarter = '2'
+    elif most_recent_month == '05' or most_recent_month == '04' or most_recent_month == '03':
+        quarter = '1'
 
+    most_recent_year = str(df['index'].iloc[-1])[0:4] #cuts down to just year value eg: 2021
+
+    if  quarter == '1' or quarter == '2'  or quarter == '3':
+        year = most_recent_year 
+    elif quarter == '4':
+        if most_recent_month == '12':
+            year = most_recent_year
+        else:
+            year = str(int(most_recent_year) -1 )
+
+    return[year,quarter]
 
 #Data functions
 def GetCountyGDP(fips,observation_start):
@@ -4309,9 +4321,11 @@ def IdentifyNecta(cbsa):
 
 DeclareAPIKeys()
 todays_date             = date.today()
-current_year            = '2021' #str(todays_date.year)
-current_quarter_number  = GetCurrentQuarterDigit()
+current_year_and_quarter = GetCurrentQuarterAndYear()
+current_year            = current_year_and_quarter[0]
+current_quarter_number  = current_year_and_quarter[1]
 current_quarter         = current_year + ' Q' + current_quarter_number
+
 new_england_states      = ['MA','VT','RI','ME','NH','CT']
 
 
