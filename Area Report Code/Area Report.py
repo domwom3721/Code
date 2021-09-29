@@ -171,6 +171,24 @@ def GetStateName(state_code):
     state_name        = state_names_df['State Name'].iloc[0]
     return(state_name)
 
+def GetCurrentQuarterDigit():
+    #Pulls unemployment for Nassau County, NY as a way to see the most current available month for county level unemployment, 
+    #from this we get the quarter
+    df = fred.get_series(series_id = 'NYNASS9URN')
+    df = df.to_frame().reset_index()
+    most_recent_period = str(df['index'].iloc[-1])[5:7] #cuts down to just month value eg: 08
+    print(most_recent_period)
+    
+    if most_recent_period == '12'  or most_recent_period == '01' or most_recent_period == '02':
+        return('4')
+    elif most_recent_period == '11' or most_recent_period == '10' or most_recent_period == '09':
+        return('3')
+    elif most_recent_period == '08' or most_recent_period == '07' or most_recent_period == '06':
+        return('2')
+    elif most_recent_period == '05' or most_recent_period == '04' or most_recent_period == '03':
+        return('1')
+
+
 #Data functions
 def GetCountyGDP(fips,observation_start):
     print('Getting County GDP')
@@ -4292,8 +4310,8 @@ def IdentifyNecta(cbsa):
 
 DeclareAPIKeys()
 todays_date             = date.today()
-current_year            = str(todays_date.year)
-current_quarter_number  = '2'
+current_year            = '2021' #str(todays_date.year)
+current_quarter_number  = GetCurrentQuarterDigit()
 current_quarter         = current_year + ' Q' + current_quarter_number
 new_england_states      = ['MA','VT','RI','ME','NH','CT']
 
