@@ -7,14 +7,18 @@ From CoStar.com, go to Analytics tab ----> Data Export
 From the Data Export page:
 
 For Office, Retail, Industrial, and Multifamily:
+	- Market Type = Markets
+	- Data as of = Today
+	- Select Property Type
+	- Select Base Case (normally grayed out)
+	- Select Building Quality / Secondary Type (all or slices)
 	- Select the United States
-	- Select Base Case
+	- Checkbox 'Include Markets'
+	- Select all markets
+	- Checkbox include submarkets
+	- Uncheckbox exclude markets
 	- Select the time period that ends at the quarter we are doing reports for, and starts at the same quarter 11 years ago.
 		-EG: Q1 2010 - Q1 2021
-	- Select all markets
-	- Select include countries
-	- Select include submarkets
-	- Unselect exclude markets
 	- Select all variables
 	- Hit Export
 	- Move the "DataExport.CSV" to the data folder

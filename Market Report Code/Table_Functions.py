@@ -150,7 +150,10 @@ def AddTable(document,row_data,col_width): #Function we use to insert our wide t
         for current_column,(cell,cell_data) in enumerate(zip(row.cells,row_data_list)):
             if str(cell_data) == 'Manhattan - NY':
                 cell_data = 'Manhattan'
-                
+
+            if ('2021 Q' in str(cell_data)) or ('2022 Q' in str(cell_data))  or ('2023 Q' in str(cell_data)):
+                cell_data = cell_data[5:]
+
 
             cell.text = str(cell_data)
 
@@ -169,28 +172,10 @@ def AddTable(document,row_data,col_width): #Function we use to insert our wide t
             #add border to top row
             if current_row == 1:
                     tcPr = cell._element.tcPr
-
                     tcBorders = OxmlElement("w:tcBorders")
-                
                     top = OxmlElement('w:top')
                     top.set(qn('w:val'), 'single')
-                
-                # left = OxmlElement('w:left')
-                # left.set(qn('w:val'), 'nil')
-                
-                # bottom = OxmlElement('w:bottom')
-                # bottom.set(qn('w:val'), 'nil')
-                # bottom.set(qn('w:sz'), '4')
-                # bottom.set(qn('w:space'), '0')
-                # bottom.set(qn('w:color'), 'auto')
-
-                # right = OxmlElement('w:right')
-                # right.set(qn('w:val'), 'nil')
-
                     tcBorders.append(top)
-                # tcBorders.append(left)
-                # tcBorders.append(bottom)
-                # tcBorders.append(right)
                     tcPr.append(tcBorders)
 
 
@@ -326,11 +311,17 @@ def CreateRowDataForWideTable(data_frame,data_frame2,data_frame3,data_frame4,var
     level_2_name = data_frame2['Geography Name'].iloc[0]
     level_3_name = data_frame3['Geography Name'].iloc[0] #Typically will be United States, excpet for when doing NYC 
 
-    if data_frame.equals(data_frame3) == False and level_1_name != 'Manhattan - NY' and level_2_name != 'Manhattan - NY':
+
+    if level_3_name == 'United States of America':
         level_3_name = 'National'
-    else:
-        if level_1_name != 'United States of America':
-            level_3_name = 'Metro'
+    elif level_3_name == 'New York - NY':
+        level_3_name = 'Metro'
+
+    # if data_frame.equals(data_frame3) == False and level_1_name != 'Manhattan - NY' and level_2_name != 'Manhattan - NY':
+    #     level_3_name = 'National'
+    # else:
+    #     if level_1_name != 'United States of America':
+    #         level_3_name = 'Metro'
 
 
 

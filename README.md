@@ -16,6 +16,6 @@ To alleviate this, I set out to produce 3 scripts (1 for each of our 3 main repo
                                                             7.) Creates a word document report with the map, graphs and language inserted
                                                             8.) Saves the report in the correct directory for the County within a state directory
 
-Neighbrohood Code - IN PROGRESS - This script will take Census Place (Cities) FIPS codes as inputs and will use Census API to pull in public data, create graphs, and a word document report for the city. It will also pull data for a larger comparison area (eg: County) and display that in the graphs
+Neighbrohood Code - IN PROGRESS - This script will take Census Place (Cities) FIPS codes as inputs and will use Census API to pull in public data, create graphs, and a word document report for the city. It will also pull data for a larger comparison area (eg: County) and display that in the graphs.
 
 General Code - Scripts I have written to help with some basic tasks while cleaning up folders, and getting project started. None of these scripts are currently in use or part of the project on a regular basis.

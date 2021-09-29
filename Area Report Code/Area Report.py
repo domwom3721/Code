@@ -473,11 +473,30 @@ def GetCountyMedianListPrice(fips,observation_start):
                         })
         mlp_series_names = mlp_series_names.loc[mlp_series_names['Region Code'] == fips]
         county_series_code = mlp_series_names['Series ID'].iloc[0]
-    except:
-        county_series_code = 'MEDLISPRI' + fips
-    county_mlp_df = fred.get_series(series_id = county_series_code,observation_start = observation_start)
-    county_mlp_df = county_mlp_df.to_frame().reset_index()
-    county_mlp_df.columns = ['Period','Median List Price']
+        county_mlp_df = fred.get_series(series_id = county_series_code,observation_start = observation_start)
+        county_mlp_df = county_mlp_df.to_frame().reset_index()
+        county_mlp_df.columns = ['Period','Median List Price']
+    except Exception as e:
+        try:
+            county_series_code = 'MEDLISPRI' + fips
+            county_mlp_df = fred.get_series(series_id = county_series_code,observation_start = observation_start)
+            county_mlp_df = county_mlp_df.to_frame().reset_index()
+            county_mlp_df.columns = ['Period','Median List Price']
+        except Exception as e:
+            try:
+                county_series_code = 'MELIPRCOUNTY' + fips
+                county_mlp_df = fred.get_series(series_id = county_series_code,observation_start = observation_start)
+                county_mlp_df = county_mlp_df.to_frame().reset_index()
+                county_mlp_df.columns = ['Period','Median List Price']
+            except Exception as e:
+                county_series_code = 'MELIPRCOUNTY' + fips[1:] #Sometimes FRED series names drop leading 0s
+                print(county_series_code)
+                county_mlp_df = fred.get_series(series_id = county_series_code,observation_start = observation_start)
+                county_mlp_df = county_mlp_df.to_frame().reset_index()
+                county_mlp_df.columns = ['Period','Median List Price']
+
+
+    
     if data_export == True:
         county_mlp_df.to_csv(os.path.join(county_folder,'County Median Home List Price.csv'))
     return(county_mlp_df)
@@ -535,8 +554,8 @@ def GetCountyData():
     try:  
         county_mlp                    = GetCountyMedianListPrice(fips = fips,observation_start = observation_start)
     except Exception as e: 
-        print('No median home list data price available')
-        county_mlp                = ''
+        print(e,'No median home list data price available')
+        county_mlp                    = ''
 
 #MSA Data
 def GetMSAGDP(cbsa,observation_start):
@@ -799,15 +818,66 @@ def GetNationalMedianListPrice(observation_start):
         usa_mlp_df.to_csv(os.path.join(county_folder,'National Median Home List Price.csv'))
     return(usa_mlp_df)
 
+def GetNationalUnemploymentRate(start_year,end_year):
+    print('Getting State UR')
+    #Seasonally-adjusted unemployment rate
+    series_name = 'LNS14000000'
+    national_ur_df = bls.series(series_name,start_year=start_year,end_year=end_year) 
+
+    national_ur_df['year']   = national_ur_df['year'].astype(str)
+    national_ur_df['period'] =    national_ur_df['period'].str[1:3] + '/' +  national_ur_df['year'].str[2:4]      
+    national_ur_df = national_ur_df.rename(columns={series_name: "unemployment_rate"})
+    if data_export == True:
+        national_ur_df.to_csv(os.path.join(county_folder,'National Unemployment Rate.csv'))
+    return(national_ur_df)
+
+def GetNationalEmployment(start_year,end_year):
+    print('Getting National Employment')
+    #Total Employment
+    series_name = 'LNS12000000'
+    national_emp_df = bls.series(series_name,start_year=(start_year-1),end_year=end_year)
+
+    national_emp_df['year']   =    national_emp_df['year'].astype(str)
+    national_emp_df['period'] =    national_emp_df['period'].str[1:3] + '/' +  national_emp_df['year'].str[2:4] 
+
+    national_emp_df = national_emp_df.rename(columns={series_name: "Employment"})
+
+    national_emp_df['Lagged Employment']       = national_emp_df['Employment'].shift(12)
+    national_emp_df['Employment Growth']       =  round(((national_emp_df['Employment']/national_emp_df['Lagged Employment']) - 1 ) * 100,2 )
+
+    #Drop the extra year we needed to calculate growth rates
+    national_emp_df    = national_emp_df.loc[national_emp_df['year'] != str(start_year-1)]
+
+    if data_export == True:
+        national_emp_df.to_csv(os.path.join(county_folder,'National Total Employment.csv'))
+    return(national_emp_df)
+
+def GetNationalGDP(observation_start):
+    print('Getting Natioanl GDP')
+    national_gdp_series_code = 'GDP'
+    national_gdp_df = fred.get_series(series_id = national_gdp_series_code,observation_start = observation_start,frequency = 'q')
+    national_gdp_df = national_gdp_df.to_frame().reset_index()
+    national_gdp_df.columns = ['Period','GDP']
+    national_gdp_df['GDP'] = national_gdp_df['GDP'] * 1000000000
+    if data_export == True:
+        national_gdp_df.to_csv(os.path.join(county_folder,'National GDP.csv'))
+    return(national_gdp_df)
+
 def GetNationalData():
     print('Getting National Data')
     global national_pci
     global national_resident_pop
     global national_mlp
+    global national_unemployment
+    global national_employment
+    global national_gdp
     national_pci                       = GetNationalPCI(observation_start = observation_start)
     national_resident_pop              = GetNationalResidentPopulation(observation_start=('01/01/' + str(end_year -11)))
     national_mlp                       = GetNationalMedianListPrice(observation_start=observation_start)
-    
+    national_unemployment              = GetNationalUnemploymentRate(start_year = start_year, end_year=end_year)
+    national_employment                = GetNationalEmployment(start_year = start_year, end_year=end_year)
+    national_gdp                       = GetNationalGDP(observation_start = observation_start)
+
 #Graph Functions
 def CreateUnemploymentRateEmploymentGrowthGraph(folder):
     print('Creating Unemployment Rate and Employment Growth Graph')
@@ -2349,6 +2419,227 @@ def CreateMLPGraph(county_data_frame,msa_data_frame,folder):
 
     fig.write_image(os.path.join(folder,'mlp.png'),engine='kaleido',scale=scale)
 
+def CreateNationalUnemploymentGraph(folder):
+    fig = make_subplots(specs=[[{"secondary_y": False}]])
+
+    #County unemployment rate
+    fig.add_trace(
+    go.Scatter(x=national_unemployment['period'],
+            y=national_unemployment['unemployment_rate'],
+            name='United States of America',
+            line=dict(color="#4160D3",))
+    ,secondary_y=False)
+
+    #Set formatting 
+    fig.update_layout(
+    title_text="National Unemployment Rate",    
+    title={
+        'y':title_position,
+        'x':0.5,
+        'xanchor': 'center',
+        'yanchor': 'top'},
+
+    legend=dict(
+        orientation="h",
+        yanchor="bottom",
+        y=legend_position,
+        xanchor="center",
+        x=0.5,
+        font_size = tickfont_size
+                ),
+    font_family="Avenir Next LT Pro",
+    font_color='#262626',
+    font_size = 10.5,
+    paper_bgcolor=paper_backgroundcolor,
+    plot_bgcolor ="White"    
+                    )
+
+    #Add % to left axis ticks
+    fig.update_yaxes(
+        tickfont = dict(size=tickfont_size), 
+        ticksuffix = '%',  
+        title = None ,
+        linecolor = 'black',   
+        tickmode  = 'auto',
+        nticks    = 6,
+        showgrid = True,
+        gridcolor = 'black',
+        secondary_y=False,)   
+    
+                    
+    
+    #Set x axis ticks
+    quarter_list = [i for i in range(len(county_unemployment_rate['period']))]
+    quarter_list = quarter_list[::-12]
+
+    quarter_list_text = [period for period in county_unemployment_rate['period']]
+    quarter_list_text = quarter_list_text[::-12]
+
+    fig.update_xaxes(
+        tickmode = 'array',
+        tickvals = quarter_list,
+        ticktext = quarter_list_text,
+        tickfont = dict(size=tickfont_size),
+        tickangle = 0,
+        linecolor = 'black' 
+        )
+
+    #Set size
+    fig.update_layout(
+    autosize=False,
+    height    = graph_height,
+    width     = graph_width,
+    margin=dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin,pad=0,autoexpand = True),)
+    
+
+
+    fig.write_image(os.path.join(folder,'national_unemployment_rate.png'),engine='kaleido',scale=scale)
+
+def CreateNationalEmploymentGrowthGraph(folder):
+    
+    fig = make_subplots(specs=[[{"secondary_y": False}]])
+
+    
+    fig.add_trace(
+    go.Scatter(x=national_employment['period'],
+            y=national_employment['Employment Growth'],
+            name=county,
+            line=dict(color="#4160D3"))
+    ,secondary_y=False)
+
+
+
+    #Set formatting 
+    fig.update_layout(
+    title_text="National Annual Employment Growth",    
+    title={
+        'y':title_position,
+        'x':0.5,
+        'xanchor': 'center',
+        'yanchor': 'top'},
+
+    legend=dict(
+        orientation="h",
+        yanchor="bottom",
+        y=legend_position,
+        xanchor="center",
+        x=0.5,
+        font_size = tickfont_size
+                ),
+    font_family="Avenir Next LT Pro",
+    font_color='#262626',
+    font_size = 10.5,
+    paper_bgcolor=paper_backgroundcolor,
+    plot_bgcolor ="White"    
+                    )
+
+    #Add % to left axis ticks
+    fig.update_yaxes(
+        tickfont = dict(size=tickfont_size), 
+        ticksuffix = '%',  
+        title = None ,
+        linecolor = 'black',
+        tickmode = 'auto',
+        nticks   = 6,
+        showgrid = True,
+        gridcolor = 'black',
+        secondary_y=False)                
+    fig.add_hline(y=0, line_width=1, line_color="black")              
+    
+    
+    #Set x axis ticks
+    quarter_list = [i for i in range(len(county_employment['period']))]
+    quarter_list = quarter_list[::-12]
+
+    quarter_list_text = [period for period in county_employment['period']]
+    quarter_list_text = quarter_list_text[::-12]
+
+    fig.update_xaxes(tickmode = 'array',
+        tickvals = quarter_list,
+        ticktext = quarter_list_text,
+        tickfont = dict(size=tickfont_size),
+        tickangle = 0,
+        linecolor = 'black'
+        )
+
+    #Set size
+    fig.update_layout(
+    autosize=False,
+    height    = graph_height,
+    width     = graph_width,
+    margin=dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin,pad=0,autoexpand = True),)
+    
+    fig.write_image(os.path.join(folder,'national_employment_growth.png'),engine='kaleido',scale=scale)
+
+def CreateNationalGDPGraph(folder):
+    print('Creating National GDP Graph')
+    fig = make_subplots(specs=[[{"secondary_y": False}]])
+
+    
+    fig.add_trace(
+    go.Scatter(x=national_gdp['Period'],
+            y=national_gdp['GDP'],
+            name='United States of America',
+            line=dict(color="#4160D3"))
+    ,secondary_y=False)
+
+    #Set formatting 
+    fig.update_layout(
+    title_text="National Gross Domestic Product",    
+    title={
+        'y':title_position,
+        'x':0.5,
+        'xanchor': 'center',
+        'yanchor': 'top'},
+
+    legend=dict(
+        orientation="h",
+        yanchor="bottom",
+        y=legend_position,
+        xanchor="center",
+        x=0.5,
+        font_size = tickfont_size
+                ),
+    font_family="Avenir Next LT Pro",
+    font_color='#262626',
+    font_size = 10.5,
+    paper_bgcolor=paper_backgroundcolor,
+    plot_bgcolor ="White"    
+                    )
+
+    #Add $ to left axis ticks
+    fig.update_yaxes(
+        tickfont = dict(size=tickfont_size), 
+        tickprefix = '$',  
+        title = None ,
+        linecolor = 'black',   
+        tickmode  = 'auto',
+        nticks    = 6,
+        showgrid = True,
+        gridcolor = 'black',
+        secondary_y=False)                 
+                    
+
+
+    fig.update_xaxes(
+        tickmode = 'array',
+        tickfont = dict(size=tickfont_size),
+        tickangle = 0,
+        linecolor = 'black' 
+        )
+
+    #Set size
+    fig.update_layout(
+    autosize=False,
+    height    = graph_height,
+    width     = graph_width,
+    margin=dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin,pad=0,autoexpand = True),)
+    
+
+
+    fig.write_image(os.path.join(folder,'national_gdp_rate.png'),engine='kaleido',scale=scale)
+     
+
 def CreateGraphs():
     print('Creating Graphs')
     CreateUnemploymentRateEmploymentGrowthGraph(folder = county_folder)
@@ -2362,9 +2653,11 @@ def CreateGraphs():
         CreateMLPWithGrowthGraph(county_data_frame = county_mlp, msa_data_frame = msa_mlp, national_data_frame = national_mlp, folder = county_folder)
     except Exception as e:
         print(e)
-    # CreateMLPGraph(county_data_frame = county_mlp , msa_data_frame = msa_mlp, folder = county_folder )
 
-
+    #National Graphs (Only use them sometimes)
+    CreateNationalUnemploymentGraph(folder=county_folder)
+    CreateNationalEmploymentGrowthGraph(folder=county_folder)
+    CreateNationalGDPGraph(folder = county_folder)
 
 #Language Functions
 def millify(n):
@@ -2394,6 +2687,13 @@ def OverviewLanguage():
     jobs_recovered             =   current_jobs  - april_2020_jobs
     jobs_recovered_pct         = ((jobs_recovered/spring_job_losses_2020)) * 100
     
+    #Check if total employment has recovered from Covid losses
+    if jobs_recovered_pct >= 100:
+        fully_recovered_employment = True
+    else:
+        fully_recovered_employment = False
+
+
     spring_job_losses_2020      = "{:,}".format(spring_job_losses_2020)
     jobs_recovered_pct          = "{:,.1f}%".format(jobs_recovered_pct)
     jobs_recovered              = "{:,}".format(jobs_recovered)
@@ -2453,8 +2753,9 @@ def OverviewLanguage():
                    jobs_recovered +
                    ')'
                  ' of those jobs. ' +
-                   'The availability of and widespread use of vaccinations have aided the economy over the first half of 2021, but the Delta variant has led to recent worry and restrictions, that could slow growth over the 2nd half of 2021. ' +
-                'While fundamentals are pointing in the right direction, it will likely take some time for the ' +
+                   'The availability of and widespread use of vaccinations have aided the economy over the first half of 2021, but the Delta variant has led to recent worry and restrictions, that could slow growth over the 2nd half of 2021. ')
+    if fully_recovered_employment == False:
+        boiler_plate = boiler_plate + ('While fundamentals are pointing in the right direction, it will likely take some time for the ' +
                 'metro to fully return to pre-pandemic levels of employment.')
 
 
@@ -2847,10 +3148,7 @@ def ProductionLanguage(county_data_frame,msa_data_frame,state_data_frame):
         gdp_growth_description = '[stagnant/steady/strong/weak/negative]'
 
 
-
-
-
-    if  isinstance(msa_data_frame, pd.DataFrame) == True:
+    if  isinstance(msa_data_frame, pd.DataFrame) == True and msa_data_frame['GDP'].equals(county_data_frame['GDP']) == False:
         msa_data_frame = msa_data_frame.loc[msa_data_frame['Period'] <= (county_data_frame['Period'].max()) ]
         latest_msa_gdp_growth = ((msa_data_frame['GDP'].iloc[-1]/msa_data_frame['GDP'].iloc[-2]) - 1) * 100
         latest_msa_gdp_growth =  "{:,.1f}%".format(latest_msa_gdp_growth)
@@ -3210,7 +3508,7 @@ def CreateLanguage():
         overview_language       = ''
     
     try:
-        emplopyment_industry_breakdown_language    = EmploymentBreakdownLanguage(county_industry_breakdown = county_industry_growth_breakdown)
+        emplopyment_industry_breakdown_language    = EmploymentBreakdownLanguage(county_industry_breakdown = county_industry_breakdown)
     except:
         print('problem with employment language')
         emplopyment_industry_breakdown_language    = ''
@@ -3263,7 +3561,7 @@ def CreateLanguage():
 
 
     try:    
-        emplopyment_growth_language = EmploymentGrowthLanguage(county_industry_breakdown=county_industry_breakdown)
+        emplopyment_growth_language = EmploymentGrowthLanguage(county_industry_breakdown=county_industry_growth_breakdown)
     except:
         print('problem with emp growth language')
         emplopyment_growth_language = ''

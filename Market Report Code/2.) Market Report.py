@@ -30,24 +30,25 @@ from Graph_Functions import *
 from Language_Functions import *  
 from Table_Functions import * 
 
-#Define file pre paths
-start_time = time.time() #Used to track runtime of script
+#Used to track runtime of script
+start_time = time.time() 
 
+#Define file pre paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
 project_location               =  os.path.join(dropbox_root,'Research','Projects','Research Report Automation Project') #Main Folder that stores all output, code, and documentation
 
 output_location                = os.path.join(project_location,'Output','Market Reports')                             #The folder where we store our current reports, testing folder
-output_location                = os.path.join(dropbox_root,'Research','Market Analysis','Market')                       #The folder where we store our current reports, production
+# output_location                = os.path.join(dropbox_root,'Research','Market Analysis','Market')                       #The folder where we store our current reports, production
 
 map_location                   = os.path.join(project_location,'Data','Maps','CoStar Maps')                             #Folders with maps png files  
 costar_data_location           = os.path.join(project_location,'Data','CoStar Data')                                    #Folder with clean CoStar CSV files
 costar_writeup_location        = os.path.join(project_location,'Data','CoStar Writeups')                                #Folder with clean CoStar CSV files
 
 #These are files the research team made to store things such as the towns within each submarket
-supplemental_multifamily_file  = os.path.join(costar_data_location,'mf_supplemental.csv')
-supplemental_office_file       = os.path.join(costar_data_location,'office_supplemental.csv') 
-supplemental_retail_file       = os.path.join(costar_data_location,'retail_supplemental.csv') 
-supplemental_industrial_file   = os.path.join(costar_data_location,'industrial_supplemental.csv')
+supplemental_multifamily_file  = os.path.join(costar_data_location,'Supplemental Data','mf_supplemental.csv')
+supplemental_office_file       = os.path.join(costar_data_location,'Supplemental Data','office_supplemental.csv') 
+supplemental_retail_file       = os.path.join(costar_data_location,'Supplemental Data','retail_supplemental.csv') 
+supplemental_industrial_file   = os.path.join(costar_data_location,'Supplemental Data','industrial_supplemental.csv')
 
 
 #Import cleaned data from 1.) Clean Costar Data.py
@@ -69,18 +70,20 @@ df_industrial_supplemental    = pd.read_csv(supplemental_industrial_file,dtype={
 
 
 #Merge in our supplemental data into our main data frames
-df_multifamily              = pd.merge(df_multifamily, df_multifamily_supplemental,      on=['Geography Name','Geography Type'], how = 'left')
-df_office                   = pd.merge(df_office,      df_office_supplemental,           on=['Geography Name','Geography Type'], how = 'left')
-df_retail                   = pd.merge(df_retail,      df_retail_supplemental,           on=['Geography Name','Geography Type'], how = 'left')
-df_industrial               = pd.merge(df_industrial,  df_industrial_supplemental,       on=['Geography Name','Geography Type'], how = 'left')
-df_custom                   = pd.read_excel(os.path.join(costar_data_location,'Clean Custom CoStar Data.xlsx') )
+df_multifamily                = pd.merge(df_multifamily, df_multifamily_supplemental,      on=['Geography Name','Geography Type'], how = 'left')
+df_office                     = pd.merge(df_office,      df_office_supplemental,           on=['Geography Name','Geography Type'], how = 'left')
+df_retail                     = pd.merge(df_retail,      df_retail_supplemental,           on=['Geography Name','Geography Type'], how = 'left')
+df_industrial                 = pd.merge(df_industrial,  df_industrial_supplemental,       on=['Geography Name','Geography Type'], how = 'left')
 
-df_multifamily['Town']      = df_multifamily['Town'].fillna('')
-df_office['Town']           = df_office['Town'].fillna('')
-df_retail['Town']           = df_retail['Town'].fillna('')
-df_industrial['Town']       = df_industrial['Town'].fillna('') 
+#Do this because we don't have the towns for most of the market so this prevents errors
+df_multifamily['Town']        = df_multifamily['Town'].fillna('')
+df_office['Town']             = df_office['Town'].fillna('')
+df_retail['Town']             = df_retail['Town'].fillna('')
+df_industrial['Town']         = df_industrial['Town'].fillna('')
 
-
+#If we have any custom data, read it in as a dataframe so we can append it to our primary data
+if os.path.exists(os.path.join(costar_data_location,'Clean Custom CoStar Data.xlsx')):
+    df_custom                 = pd.read_excel(os.path.join(costar_data_location,'Clean Custom CoStar Data.xlsx') )
 
 
 #Set formatting paramaters for reports
@@ -88,9 +91,17 @@ primary_font                    = 'Avenir Next LT Pro Light'
 primary_space_after_paragraph   = 6
 
 
-#GUI For user to select sector
+#GUI for user to select sector
 def user_selects_sector():
     global   df_list, df_slices_list,sector_name_list,selected_sector
+
+    #Don't make the user select a sector if they are not trying to write reports
+    if write_reports_yes_or_no == 'n':
+        selected_sector = 'All'
+        df_list         = [df_multifamily, df_office, df_retail, df_industrial]
+        df_slices_list   = [df_multifamily_slices, df_office_slices, df_retail_slices, df_industrial_slices]
+        sector_name_list =  ['Multifamily','Office','Retail','Industrial']
+        return('')
 
     #GUI that lets user specify which sectors they want to run
     ws = Tk()
@@ -150,6 +161,7 @@ def user_selects_sector():
         sector_name_list =  ['Industrial']
     #GUI Over now define functions
 
+#GUI for user to select if they want to write reports, or update the database/CoStar Markets CSV file
 def user_selects_reports_or_not():
     global   write_reports_yes_or_no
 
@@ -186,33 +198,39 @@ def user_selects_reports_or_not():
     
     #GUI Over now define functions
 
-#Decide if you want to update report documents or create our csv output
+#Decide if you want to create report documents or create our csv output and update the database
 user_selects_reports_or_not()
 user_selects_sector()
 
+#In the case where the user has selected a single sector, add that sector's dataframe to our list of sector dataframes we are looping through to create
+#reports. Also, try to add any custom data in case we have any
 if selected_sector == 'Retail':
-    df_retail  = df_retail.append(df_custom) #Add the custom data to the main data file
+    try:
+        df_retail  = df_retail.append(df_custom) #Add the custom data to the main data file
+    except:
+        pass
     df_list[0] = df_retail
 
 elif selected_sector == 'Office':
-    df_office  = df_office.append(df_custom) #Add the custom data to the main data file
+    try:
+        df_office  = df_office.append(df_custom) #Add the custom data to the main data file
+    except:
+        pass
     df_list[0] = df_office
 
 elif  selected_sector == 'Multifamily':
-    df_multifamily  = df_multifamily.append(df_custom) #Add the custom data to the main data file
+    try:
+        df_multifamily  = df_multifamily.append(df_custom) #Add the custom data to the main data file
+    except:
+        pass
     df_list[0]      = df_multifamily
 
 elif selected_sector  == 'Industrial':
-    df_industrial   = df_industrial.append(df_custom) #Add the custom data to the main data file
+    try:
+        df_industrial   = df_industrial.append(df_custom) #Add the custom data to the main data file
+    except:
+        pass
     df_list[0]      = df_industrial
-
-
-
-
-    
-
-
-
 
 
 #Define functions used to handle the clean CoStar data and help write our repots
@@ -339,6 +357,7 @@ def CreateMapDirectory():
     return(map_directory)
 
 def CreateWriteupDirectory():
+    sector_folder                   = os.path.join(costar_writeup_location,sector)
     state_folder_writeup            = os.path.join(costar_writeup_location,sector,state)
     market_folder_writeup           = os.path.join(state_folder_writeup,primary_market_name_for_file)
 
@@ -348,7 +367,7 @@ def CreateWriteupDirectory():
         writeup_directory        = os.path.join(market_folder_writeup,str(market_title))
     
     #Check if output,map, and summary folder already exists, and if it doesnt, make it
-    for folder in [state_folder_writeup,market_folder_writeup,writeup_directory]:
+    for folder in [sector_folder,state_folder_writeup,market_folder_writeup,writeup_directory]:
         if os.path.exists(folder):
             pass 
         else:
@@ -457,7 +476,6 @@ def MakeCoStarDisclaimer():
     disclaimer.paragraph_format.space_before = Pt(0)
     disclaimer.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
     disclaimer.paragraph_format.keep_together = True
-
 
 def CleanUpPNGs():
     #Report writing done, delete figures
@@ -695,10 +713,47 @@ def ConstructionSection():
     else:
         pass
 
+    # #Create data for construction table (Market)
+    # if df_market_cut.equals(df_primary_market):
+    #     if sector == 'Multifamily':
+    #         data_for_sales_table = [['Property',	'Submarket',	'Tenant',	'Units',	'Type'],['X' for i in range(5)],['X' for i in range(5)],['X' for i in range(5)],['X' for i in range(5)]]
+    #     else:
+    #         data_for_sales_table = [['Property',	'Submarket',	'Tenant',	'SF', 'Type'],['X' for i in range(5)],['X' for i in range(5)],['X' for i in range(5)],['X' for i in range(5)]]
+        
+    #     #Key Sales Table
+    #     sales_table_title_paragraph = document.add_paragraph('Key Sales Transactions ' + latest_quarter)
+    #     sales_table_title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    #     sales_table_title_paragraph.paragraph_format.space_after  = Pt(6)
+    #     sales_table_title_paragraph.paragraph_format.space_before = Pt(12)
+    #     for run in sales_table_title_paragraph.runs:
+    #         font = run.font
+    #         font.name = 'Avenir Next LT Pro Medium'
+
+    #     AddTable(document,data_for_sales_table,col_width=1)
+    #     document.add_paragraph('')
+    
+    # #Create data for sales table (Submarket)
+    # else:
+    #     if sector == 'Multifamily':
+    #         data_for_sales_table = [['Property',		'Tenant',	'Units',	'Type'],['X' for i in range(4)],['X' for i in range(4)],['X' for i in range(4)],['X' for i in range(4)]]
+    #     else:
+    #         data_for_sales_table = [['Property',		'Tenant',	'SF', 'Type'],['X' for i in range(4)],['X' for i in range(4)],['X' for i in range(4)],['X' for i in range(4)]]
+
 def CapitalMarketsSection():
     #Captial Markets Section
     AddHeading(document,'Capital Markets',2)
-    capital_paragraph = document.add_paragraph(sale_language)
+
+    #Split the capital market language into 2 paragraphs
+    if len(sale_language.split('Market pricing')) >= 2:
+        sale_language_1   = sale_language.split('Market pricing')[0]
+        sale_language_2   = 'Market pricing' + sale_language.split('Market pricing')[1]
+    else:
+        sale_language_1   = sale_language
+        sale_language_2   = sale_language
+
+
+
+    capital_paragraph = document.add_paragraph(sale_language_1)
     capital_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
     capital_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
     capital_paragraph.paragraph_format.space_before = Pt(0)
@@ -710,7 +765,10 @@ def CapitalMarketsSection():
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         document.add_paragraph('')
 
-
+    capital_paragraph2 = document.add_paragraph(sale_language_2)
+    capital_paragraph2.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    capital_paragraph2.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+    capital_paragraph2.paragraph_format.space_before = Pt(0)
 
     #Create data for sales table (Market)
     if df_market_cut.equals(df_primary_market):
@@ -738,7 +796,7 @@ def CapitalMarketsSection():
         else:
             data_for_sales_table = [['Property',		'Tenant',	'SF', 'Type'],['X' for i in range(4)],['X' for i in range(4)],['X' for i in range(4)],['X' for i in range(4)]]
 
-        #Uncommen out below to put sales table in submarket reports
+        #Uncomment out below to put sales table in submarket reports
         # AddTable(document,data_for_sales_table,col_width=1)
         # document.add_paragraph('')
     
@@ -973,9 +1031,6 @@ def GetOverviewTable():
 
     return(data_for_overview_table)
 
-        
-
-
 def GetRentTable():
     #Create data for rent Table
     if sector == 'Multifamily':
@@ -1013,17 +1068,19 @@ def CreateMarketReport():
     if write_reports_yes_or_no == 'y':
         #Create seperate dataframes with only rows from the current (sub)market, the primary market, and the nation 
         
-
-        if  primary_market != 'Manhattan - NY' and primary_market != 'Manhattan' :
-            df_nation         = df[df['Geography Type'] == 'National'].copy()              #df for the USA
-            df_primary_market = df[df['Geography Name'] == primary_market].copy()          #df for the market only
-        
-        else:
+        #Specifiy the different comparsion levels for the culusters and research markets
+        if  primary_market == 'Manhattan - NY':
             df_nation         = df[df['Geography Name'] == 'New York - NY'].copy() 
             df_primary_market = df[df['Geography Name'] == 'Manhattan - NY'].copy()          #df for the market only
-            # print(df_nation)
-            # print(df_primary_market)
         
+        elif  (primary_market == 'Downtown - NY') or (primary_market == 'Midtown - NY')  or (primary_market == 'Midtown South - NY')  or (primary_market == 'Uptown - NY')  :
+            df_nation         = df[df['Geography Name'] == 'Manhattan - NY'].copy() 
+            df_primary_market = df[df['Geography Name'] == primary_market].copy()                       
+        
+        else:
+            df_nation         = df[df['Geography Type'] == 'National'].copy()              #df for the USA
+            df_primary_market = df[df['Geography Name'] == primary_market].copy()          #df for the market only
+
         df_slices         = df2[df2['Geography Name'] == market].copy()        #df for the primary market with the quality/subtype slices
 
         assert len(df_market_cut) > 0
@@ -1156,7 +1213,7 @@ def CreateDirectoryCSV():
 
         #We are now going to merge our dataframe with the list of markets and submarkets with the zip codes associated with each market and submarket
         #We first import and clean that zip code level dataset (convert to one row per submarket with a list of zip codes in it)
-        df_zipcodes                                     = pd.read_excel(os.path.join(costar_data_location,'Zip to Submarket.xlsx'), dtype={'PostalCode': object} ) 
+        df_zipcodes                                     = pd.read_excel(os.path.join(costar_data_location,'Supplemental Data','Zip to Submarket.xlsx'), dtype={'PostalCode': object} ) 
         df_zipcodes                                     = df_zipcodes.loc[(df_zipcodes['PropertyType'] == 'Office') | (df_zipcodes['PropertyType'] == 'Retail') | (df_zipcodes['PropertyType'] == 'Industrial') | (df_zipcodes['PropertyType'] == 'Multi-Family')]
         df_zipcodes.loc[df_zipcodes['PropertyType']     == 'Multi-Family', 'PropertyType'] = 'Multifamily'
 
@@ -1356,14 +1413,16 @@ def CreateDirectoryCSV():
         service_api_csv_name = f'CoStar Markets-{datetime.now().timestamp()}.csv'
 
         dropbox_df.to_csv(os.path.join(output_location, csv_name), index=False)
-        dropbox_df.to_csv(os.path.join(output_location, service_api_csv_name), index=False)
+
+        if output_location == os.path.join(dropbox_root,'Research','Market Analysis','Market'):
+            dropbox_df.to_csv(os.path.join(output_location, service_api_csv_name), index=False)
 
 
 #Define these empty lists we will fill during the loops, this is to create a list of markets and submarkets and their dropbox links for Salesforce mapping
 CreateEmptySalesforceLists()
 
 
-#Loop through the 4 dataframes, get list of unique markets, loop through those markets creating folders and writing market reports
+#This is the main loop for our program where we loop through the selected sector dataframes, get list of unique markets, loop through those markets creating folders and writing market reports
 for df,df2,sector in zip(      df_list,
                                df_slices_list,
                               sector_name_list):
@@ -1372,15 +1431,13 @@ for df,df2,sector in zip(      df_list,
 
     #Create dictionary with each market as key and a list of its submarkets as items
     market_dictionary            = CreateMarketDictionary(df)
-    # print(market_dictionary)
-    
-    selected_market              = user_selects_market(market_list = list(market_dictionary.keys())) #use a GUI to let user select a market
+
+    #Use a GUI to let user select a market to create reports for
+    selected_market              = user_selects_market(market_list = list(market_dictionary.keys())) 
 
     #Loop through the market dictionary creating reports for each market and their submarkets
     for primary_market,submarkets in market_dictionary.items():
-
         state                        = primary_market[-2:] #Get State to make folder that stores markets
-
 
         if   primary_market not in selected_market: 
             continue
@@ -1393,10 +1450,16 @@ for df,df2,sector in zip(      df_list,
         #"market" is the general variable name used in all functions for the market OR submarket we are doing report for   
         market                        = primary_market 
         CreateMarketReport()
-
-        selected_submarket           = user_selects_market(market_list = submarkets) #use a GUI to let user select a market
+        
+        #If the user has selected all markets in a sector, assume they want all submarkets run, otherwise ask them for the submarket they want
+        if selected_market == list(market_dictionary.keys()):
+            selected_submarket = submarkets
+        else:
+            selected_submarket = user_selects_market(market_list = submarkets) #use a GUI to let user select a market
+        
         #Create all the submarket reports for the market
         for submarket in submarkets:
+            #If the current submarket is not the one the user selected, skip it
             if submarket not in selected_submarket:
                 continue
             market = submarket
@@ -1451,11 +1514,13 @@ def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
         print(f'Deleting temporary CSV: ', csv_path)
         os.remove(csv_path)           
 
-# Post an update request to the Market Research Docs Service to update the database
-UpdateServiceDb(report_type='markets', 
-                csv_name=service_api_csv_name, 
-                csv_path=os.path.join(output_location, service_api_csv_name),
-                dropbox_dir='https://www.dropbox.com/home/Research/Market Analysis/Market/')
+#We only want to update the database when we are in the production folder and the user is not trying to create a report
+if output_location == os.path.join(dropbox_root,'Research','Market Analysis','Market') and write_reports_yes_or_no == 'n':
+    # Post an update request to the Market Research Docs Service to update the database
+    UpdateServiceDb(report_type='markets', 
+                    csv_name=service_api_csv_name, 
+                    csv_path=os.path.join(output_location, service_api_csv_name),
+                    dropbox_dir='https://www.dropbox.com/home/Research/Market Analysis/Market/')
 
 
 print('Finished, you rock')
