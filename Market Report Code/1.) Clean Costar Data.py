@@ -344,6 +344,7 @@ for df in [df_multifamily,df_office,df_retail,df_industrial]:
 
         
         #Create variable for inventory growth rate
+        df['Inventory Units Growth'] = df['Inventory Units'] - df['Lagged Inventory Units']
         df['Inventory Growth'] = round(((df['Inventory Units'] / df['Lagged Inventory Units']) - 1)  * 100,2)
 
         #Create variable for percent under construction
@@ -418,6 +419,7 @@ for df in [df_multifamily,df_office,df_retail,df_industrial]:
 
         
         #Create variable for inventory growth rate
+        df['Inventory SF Growth'] = df['Inventory SF'] - df['Lagged Inventory SF']  
         df['Inventory Growth'] = round(((df['Inventory SF'] / df['Lagged Inventory SF']) - 1)  * 100,2)
 
 
