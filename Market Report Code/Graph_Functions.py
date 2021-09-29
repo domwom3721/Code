@@ -230,10 +230,17 @@ def CreateAbsorptionGraph(data_frame,data_frame2,data_frame3,folder,market_title
     # Create figure with secondary y-axis
     fig = make_subplots(specs=[[{"secondary_y": True}]])
 
+    if sector == 'Multifamily':
+        absorption_var = 'Absorption Units'
+        inventory_growth_var = 'Inventory Units Growth'
+    else:
+        absorption_var = 'Net Absorption SF'
+        inventory_growth_var = 'Inventory SF Growth'
+
     #Add Bars with inventory growth
     fig.add_trace(
     go.Bar(x=data_frame['Period'],
-           y=data_frame['Inventory Growth'],
+           y=data_frame[inventory_growth_var],
            name="Inventory Growth (L)",
            marker_color="#A6B0BF")
             ,secondary_y=False
@@ -242,7 +249,7 @@ def CreateAbsorptionGraph(data_frame,data_frame2,data_frame3,folder,market_title
     #Add Bars with net absorption rate 
     fig.add_trace(
     go.Bar(x=data_frame['Period'],
-           y=data_frame['Absorption Rate'],
+           y=data_frame[absorption_var],
            name="Net Absorption (L)",
            marker_color="#D7DEEA")
             ,secondary_y=False
@@ -341,8 +348,8 @@ def CreateAbsorptionGraph(data_frame,data_frame2,data_frame3,folder,market_title
 
 
     #Add % to axis ticks
-    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.1f', secondary_y=True)
-    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.1f',secondary_y=False)
+    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.1f', secondary_y=True) #right axis
+    fig.update_yaxes(tickfont = dict(size=tickfont_size),tickformat=',d',secondary_y=False) #left axis
 
 
     
