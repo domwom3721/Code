@@ -4293,7 +4293,8 @@ def IdentifyNecta(cbsa):
 DeclareAPIKeys()
 todays_date             = date.today()
 current_year            = str(todays_date.year)
-current_quarter         = current_year + ' Q' + '2'
+current_quarter_number  = '2'
+current_quarter         = current_year + ' Q' + current_quarter_number
 new_england_states      = ['MA','VT','RI','ME','NH','CT']
 
 
@@ -4304,7 +4305,7 @@ start_year              = end_year - growth_period              #For BLS
 
 observation_start       = '01/01/' + str(start_year -1)   #For FRED
 observation_start_less1 = '01/01/' + str(start_year -2)   #For FRED for series 1 year behind the rest
-qcew_year               = '2021'                          #for quarterly census of employment and wages
+qcew_year               = current_year                    #for quarterly census of employment and wages
 qcew_qtr                = '1'                             #for quarterly census of employment and wages
 
 #Create empty list of fips codes and have the user fill the list with their desired fips
