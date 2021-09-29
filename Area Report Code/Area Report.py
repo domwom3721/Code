@@ -177,7 +177,6 @@ def GetCurrentQuarterDigit():
     df = fred.get_series(series_id = 'NYNASS9URN')
     df = df.to_frame().reset_index()
     most_recent_period = str(df['index'].iloc[-1])[5:7] #cuts down to just month value eg: 08
-    print(most_recent_period)
     
     if most_recent_period == '12'  or most_recent_period == '01' or most_recent_period == '02':
         return('4')
