@@ -315,31 +315,26 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
                                 ' has been negatively affected by these shift in preferences, leading to rising vacancy rates and contracting rents for the ' + market_or_submarket + '.' )
     
     elif sector == "Office" and yoy_rent_growth < 0 and vacancy_change < 0: #rents contract, vacancy contracts
-            retail_language =  (' Heading into Q4 2021, some of the adverse market trends established during the pandemic continue to plague the office sector.' + 
+            office_language =  (' Heading into Q4 2021, some of the adverse market trends established during the pandemic continue to plague the office sector.' + 
                                 'While vacancy rates have managed to compress over the past year for office properties in the ' +
                                 market_or_submarket + ', rents continue to contract, decreasing ' + yoy_rent_growth + ' since 2020 Q3.')
 
     elif sector == "Office" and yoy_rent_growth > 0 and vacancy_change > 0: #rents expand, vacancy expands
-            retail_language =  (' Heading into Q4 2021, some of the adverse market trends established during the pandemic continue to plague the office sector.' + 
+            office_language =  (' Heading into Q4 2021, some of the adverse market trends established during the pandemic continue to plague the office sector.' + 
                                 'While vacancy rates continued to expand over the past year for office properties in the ' +
-                                market_or_submarket + ', rents have expanded ' + yoy_rent_growth + ' since 2020 Q3.')
+                                market_or_submarket + ', rents have managed to expand ' + yoy_rent_growth + ' since 2020 Q3.')
 
     else:
-        office_language = (' Heading into Q4 2021, some of the adverse market trends established during the pandemic continue to plague the office sector. ' + 
-                                'Multiple factors inspired the shift, including the need for social distance, affordability, and the desire for more space. ' + 
-                                'The ' + market_or_submarket + 
-                                ' has been positively affected by these shift in preferences, leading to record levels of leasing activity and accelerating rent growth. ' )
+        office_language = (' Heading into Q4 2021, the adverse trends affecting the U.S. office sector during the pandemic have not spilled over into the ' + market_or_submarket + 
+                                'In fact, leasing activity has allowed for vacancy rate compression and positive rent growth. ' )
     
-
-
 
     #Create the sector sepecific conclusion language
     if sector == "Retail" and yoy_rent_growth < 0 and vacancy_change > 0:
-            retail_conclusion_language =  (' Prior to 2020 the shift from brick-and-mortar stores towards e-commerce was disrupting the retail sector, putting pressure on vacancy rates and rent growth. ' + 
-                                'The pandemic appears to have accelerated that trend in the ' +
-                                market_or_submarket +
-                                '. ' +
-                                'This disruption in the retail sector has caused vacancy rates to expand, in turn placing downward pressure on rental growth. ')
+            retail_conclusion_language =  ('The pandemic appears to have accelerated the shift from brick-and-mortar stores towards online channels, negatively affecting the ' +
+                                market_or_submarket + '. ' +
+                                'This disruption in the retail sector has caused vacancy rates to expand, in turn placing downward pressure on rent growth.' + 
+                                'Looking ahead, its likely that demand will remain weak, limiting improvement in rents and values. ')
     
     elif sector == "Retail" and yoy_rent_growth <0 and vacancy_change < 0:
             retail_conclusion_language =  (' Prior to 2020 the shift from brick-and-mortar stores towards e-commerce was disrupting the retail sector, putting pressure on vacancy rates and rent growth. ' + 
@@ -348,10 +343,8 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
                                 ' the pandemic appears to have accelerated that trend, placing downward pressure on rental growth. ')
 
     else:
-        retail_conclusion_language = (' With the strong consumer providing a tailwind, we are optimistic that retail may be turning the corner. ' + 
-                                'Despite the pandemic, the ' + 
-                                market_or_submarket +
-                                ' appears to have survived never-before-seen economic headwinds. ')
+        retail_conclusion_language = ('Despite the pandemic, the ' + market_or_submarket + ' appears to have survived never-before-seen economic headwinds. ' + 
+                                'With the strong consumer providing a tailwind, we are optimistic that retail may be turning the corner. ') 
 
     #Create the Multifamily sepecific language
     if sector == "Multifamily" and yoy_rent_growth < 0 and vacancy_change > 0:
@@ -1200,12 +1193,12 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
         submarket_year_ago_yoy_growth_description = 'stable'
 
     #Describe Prepandemic Growth 
-    if submarket_pre_pandemic_yoy_growth > 0:
-        submarket_pre_pandemic_yoy_growth_description = 'were accelerating'
+    if submarket_pre_pandemic_yoy_growth > submarket_decade_rent_growth_annual:
+        submarket_pre_pandemic_yoy_growth_description = 'accelerated above the historical average'
     elif submarket_pre_pandemic_yoy_growth < 0:
-        submarket_pre_pandemic_yoy_growth_description = 'had slowed'
+        submarket_pre_pandemic_yoy_growth_description = 'softened below the historical average'
     else:
-        submarket_pre_pandemic_yoy_growth_description = 'were stable' 
+        submarket_pre_pandemic_yoy_growth_description = 'remained in line with the historical average,' 
 
     #Describe new prepandemic growth
     # if submarket_pre_pandemic_yoy_growth > submarket_decade_rent_growth_annual:
@@ -1329,18 +1322,18 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
             ' have ' +
             market_annual_growth_description +
             ' '  +
-            market_decade_rent_growth +
+            #market_decade_rent_growth +
             ' over the last decade from ' +
-            market_starting_rent +
-               '/' +
-            unit_or_sqft +
-            ' in ' +
-            submarket_start_period +
-            ', representing an annual ' +
-           market_annual_growth_description2 +
-            ' of ' +
+            #market_starting_rent +
+            #   '/' +
+            #unit_or_sqft +
+            #' in ' +
+            #submarket_start_period +
+            #', representing an annual ' +
+            #market_annual_growth_description2 +
+            #' of ' +
             market_decade_rent_growth_annual +
-            ', '+
+            ' per annum, '+
             ten_year_growth_inline_or_exceeding +
             ' the ' +
             market_or_nation +
@@ -1348,9 +1341,9 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
             'expanded ' +
             national_decade_rent_growth_annual +
             ' per annum during that time. ' +
-            'Prior to ' +
-              'the pandemic' +
-            ', rents in the '+
+            'Heading into 2020' +
+            #  'the pandemic' +
+            ', rent growth in the '+
             market_or_submarket +
             ' ' +
             submarket_pre_pandemic_yoy_growth_description +  
@@ -1422,7 +1415,7 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
             ' per annum during that time. ' +
             'Leading up to ' +
             'the pandemic' +
-            ', rents in the '+
+            ', rent growth in the '+
             market_or_submarket +
             ' ' +
             submarket_pre_pandemic_yoy_growth_description +  
