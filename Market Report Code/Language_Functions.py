@@ -985,7 +985,7 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
     submarket_pre_pandemic_yoy_growth   =  data_frame[rent_growth_var].iloc[-7] #2020 Q1 Annual Growth if still in 2021 Q3
     submarket_decade_rent_growth        = round(((current_rent/submarket_starting_rent) - 1) * 100,1)
     submarket_decade_rent_growth_annual = submarket_decade_rent_growth/10
-    submarket_annual_rent_growth_peak   = data_frame['YoY Rent Growth'].max()
+    submarket_annual_rent_growth_peak   = data_frame[rent_growth_var].max()
 
 
     national_starting_rent             =  data_frame3[rent_var].iloc[0]
