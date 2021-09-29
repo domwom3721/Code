@@ -545,7 +545,7 @@ def CreateRentGrowthGraph(data_frame,data_frame2,data_frame3,folder,market_title
             ,secondary_y=True)  
     
     else: #Submarkets
-        extra_height = 70
+        extra_height = 0
 
         fig.add_trace(
         go.Scatter(x=data_frame2['Period'],
