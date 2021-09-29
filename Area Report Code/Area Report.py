@@ -4380,7 +4380,7 @@ def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
     print(f'Updating service database: {report_type}')
 
     try:
-        url = f'http://market-research-service-dev.bowery.link/api/v1/update/{report_type}'
+        url = f'http://market-research-service.bowery.link/api/v1/update/{report_type}'
         dropbox_path = f'{dropbox_dir}{csv_name}'
         payload = { 'location': dropbox_path }
 
