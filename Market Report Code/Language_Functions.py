@@ -1245,16 +1245,16 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
             ' with annual growth of '+
             submarket_pre_pandemic_yoy_growth +
             '. ' +
-            '[Despite//With]' + 
-            ' shutdowns occurring in March and April 2020, '+
-            'demand ' +
-            '[picked up//slowed]' +
-            ', '+
-            '[accelerating//softening]' +
-            ' rent growth ' +
-            '[over the course of the year//temporarily]'+
-            '.' +
-            ' Quarterly growth in '                     +
+            # '[Despite//With]' + 
+            # ' shutdowns occurring in March and April 2020, '+
+            # 'demand ' +
+            # '[picked up//slowed]' +
+            # ', '+
+            # '[accelerating//softening]' +
+            # ' rent growth ' +
+            # '[over the course of the year//temporarily]'+
+            # '.' +
+            'Quarterly growth in '                     +
             current_period                              +
             ' reached ' +
             submarket_qoq_growth +
@@ -1306,16 +1306,16 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
             ' with annual growth of '+
             submarket_pre_pandemic_yoy_growth +
             '. '+
-            '[Despite//With]' + 
-            ' shutdowns occurring in March and April 2020, '+
-            'demand ' +
-            '[picked up//slowed]' +
-            ', '+
-            '[accelerating//softening]' +
-            ' rent growth ' +
-            '[over the course of the year//temporarily]'+
-            '.' +
-            ' Quarterly growth in ' +
+            # '[Despite//With]' + 
+            # ' shutdowns occurring in March and April 2020, '+
+            # 'demand ' +
+            # '[picked up//slowed]' +
+            # ', '+
+            # '[accelerating//softening]' +
+            # ' rent growth ' +
+            # '[over the course of the year//temporarily]'+
+            # '.' +
+            'Quarterly growth in ' +
             current_period          +
             ' reached ' +
             submarket_qoq_growth +
