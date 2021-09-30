@@ -978,3 +978,5 @@ def AddSubmarketsPerformanceTable(document,col_width,submarkets_data_frame,secto
                     if current_row == 0: 
                         font.bold = True
                         font.name = 'Avenir Next LT Pro Demi'
+                    if current_column == 0 and current_row != 0:
+                        font.italic = True
