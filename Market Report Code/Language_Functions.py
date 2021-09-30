@@ -979,6 +979,7 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
     submarket_starting_rent             =  data_frame[rent_var].iloc[0]
     submarket_start_period              =  str(data_frame['Period'].iloc[0])
     submarket_year_ago_period           =  str(data_frame['Period'].iloc[-5])
+    submarket_previous_quarter_yoy_growth  =  data_frame[rent_growth_var].iloc[-2]
     submarket_yoy_growth                =  data_frame[rent_growth_var].iloc[-1]
     submarket_qoq_growth                =  data_frame[qoq_rent_growth_var].iloc[-1]
     submarket_year_ago_yoy_growth       =  data_frame[rent_growth_var].iloc[-5]
@@ -1080,7 +1081,19 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
     else:
         submarket_yoy_growth_description = 'remained at'
         submarket_signal                 = 'are staying put' 
+
+    #Describe relationship between quarterly growth and annual rent growth
+    if submarket_previous_quarter_yoy_growth > submarket_yoy_growth:
+        qoq_pushing_or_contracting_annual_growth = 'contracting annual growth to'
+
+    elif submarket_previous_quarter_yoy_growth < submarket_yoy_growth:
+        qoq_pushing_or_contracting_annual_growth = 'pushing annual growth to'
     
+    elif submarket_previous_quarter_yoy_growth == submarket_yoy_growth:
+        qoq_pushing_or_contracting_annual_growth = 'keeping annual growth at'
+      
+
+
     #Describe YOY Growth 1 year ago
     if submarket_year_ago_yoy_growth > 0:
         submarket_year_ago_yoy_growth_description = 'accelerating'
@@ -1250,8 +1263,8 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
             ' reached ' +
             submarket_qoq_growth +
             ', '                 +
-            '[pushing/contracting]' +
-            ' annual growth to ' +
+           qoq_pushing_or_contracting_annual_growth +
+           ' ' +
             market_yoy_growth +
             '.' 
     )   
@@ -1302,7 +1315,7 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
             ' reached ' +
             submarket_qoq_growth +
             ', '                 +
-             '[pushing/contracting]' +
+            qoq_pushing_or_contracting_annual_growth +
              ' annual growth to ' +
             submarket_yoy_growth +
             '.' 
