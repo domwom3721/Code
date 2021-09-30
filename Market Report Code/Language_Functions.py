@@ -317,7 +317,7 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
             overview_sector_specific_language =  (' Heading into Q4 2021, some of the adverse market trends established during the pandemic continue to plague the office sector. ' + 
                                 'Vacancy rose higher as struggling businesses and tenants adopting remote work relinquished space. ' + 
                                 'The ' + market_or_submarket + 
-                                ' has been negatively affected by these shift in preferences, leading to rising vacancy rates and contracting rents for the ' + market_or_submarket + '.' )
+                                ' has been negatively affected by this shift in preferences, leading to rising vacancy rates and contracting rents for the ' + market_or_submarket + '.' )
     
         elif yoy_rent_growth < 0 and vacancy_change < 0: #rents contract, vacancy contracts
             overview_sector_specific_language =  (' Heading into Q4 2021, some of the adverse market trends established during the pandemic continue to plague the office sector.' + 
