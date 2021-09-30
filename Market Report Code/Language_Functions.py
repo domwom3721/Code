@@ -1190,14 +1190,14 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
         market_starting_rent                 = "${:,.2f}".format(market_starting_rent)
         national_market_rent                 = "${:,.2f}".format(national_market_rent)
         submarket_decade_rent_growth         = "{:,.0f}%".format(abs(submarket_decade_rent_growth))
-        submarket_decade_rent_growth_annual  = "{:,.1f}%".format(abs(submarket_decade_rent_growth_annual))
-        submarket_yoy_growth                 = "{:,.1f}%".format(abs(submarket_yoy_growth))
+        submarket_decade_rent_growth_annual  = "{:,.1f}%".format(submarket_decade_rent_growth_annual)
+        submarket_yoy_growth                 = "{:,.1f}%".format(submarket_yoy_growth)
         submarket_qoq_growth                 = "{:,.1f}%".format(submarket_qoq_growth)
         submarket_year_ago_yoy_growth        = "{:,.1f}%".format(submarket_year_ago_yoy_growth)
         submarket_pre_pandemic_yoy_growth    = "{:,.1f}%".format(submarket_pre_pandemic_yoy_growth)
         market_decade_rent_growth            = "{:,.0f}%".format(abs(market_decade_rent_growth))
         market_decade_rent_growth_annual     = "{:,.1f}%".format(abs(market_decade_rent_growth_annual))
-        market_yoy_growth                    = "{:,.1f}%".format(abs(market_yoy_growth))
+        market_yoy_growth                    = "{:,.1f}%".format(market_yoy_growth)
         national_decade_rent_growth          = "{:,.0f}%".format(national_decade_rent_growth)
         national_decade_rent_growth_annual   = "{:,.1f}%".format(abs(national_decade_rent_growth_annual))
         primary_rent_discount                = "{:,.0f}%".format(primary_rent_discount)
@@ -1245,15 +1245,6 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
             ' with annual growth of '+
             submarket_pre_pandemic_yoy_growth +
             '. ' +
-            # '[Despite//With]' + 
-            # ' shutdowns occurring in March and April 2020, '+
-            # 'demand ' +
-            # '[picked up//slowed]' +
-            # ', '+
-            # '[accelerating//softening]' +
-            # ' rent growth ' +
-            # '[over the course of the year//temporarily]'+
-            # '.' +
             'Quarterly growth in '                     +
             current_period                              +
             ' reached ' +
@@ -1306,15 +1297,6 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
             ' with annual growth of '+
             submarket_pre_pandemic_yoy_growth +
             '. '+
-            # '[Despite//With]' + 
-            # ' shutdowns occurring in March and April 2020, '+
-            # 'demand ' +
-            # '[picked up//slowed]' +
-            # ', '+
-            # '[accelerating//softening]' +
-            # ' rent growth ' +
-            # '[over the course of the year//temporarily]'+
-            # '.' +
             'Quarterly growth in ' +
             current_period          +
             ' reached ' +
@@ -1322,7 +1304,7 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
             ', '                 +
              '[pushing/contracting]' +
              ' annual growth to ' +
-            market_yoy_growth +
+            submarket_yoy_growth +
             '.' 
 
     )   
