@@ -927,7 +927,6 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
             unit_or_sqft                                                +
             '. ')                                                        
 
-
 #Language for rent section
 def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_market,sector,writeup_directory):
 
@@ -1370,7 +1369,7 @@ def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,p
                                         unit_or_sqft        +
                                         ' to the '          +
                                          market_or_submarket + 
-                                        ' over the past ten years, expanding inventory by ' +
+                                        ' over that time, expanding inventory by ' +
                                          inventory_growth_pct +
                                           '. '
                                         )
@@ -1381,12 +1380,10 @@ def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,p
                                         unit_or_sqft        +
                                         ' to the '          +
                                         market_or_submarket + 
-                                        ' over the past ten years. Developers have also removed space for higher and better use, removing ' + 
+                                        ' over that time. Developers have also removed space for higher and better use, removing ' + 
                                         demolished_inventory + 
                                         ' ' +
                                         unit_or_sqft + 
-                                        # 'contracting inventory by ' +
-                                        #  inventory_growth_pct + 
                                          '. '
                                          )
 
@@ -1397,7 +1394,7 @@ def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,p
     if under_construction > 0:
         active_or_inactive = 'Developers are currently active in the ' + market_or_submarket + ' with ' + millify(under_construction,'') + ' ' + unit_or_sqft + ', or the equivalent of ' + "{:,.0f}%".format(under_construction_share)   + ' of existing inventory, underway. '
     else:
-        active_or_inactive = 'Developers are not currently active in the ' + market_or_submarket + '. '
+        active_or_inactive = 'Developers are not currently active in the ' + market_or_submarket + '. The empty pipeline will likely limit supply pressure on vacancies, boding well for fundamentals in the near term. '
 
 
     #Determine 10 year inventory growth   
@@ -1436,13 +1433,8 @@ def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,p
     elif under_construction == previous_quarter_under_construction == 0:
         elevated_or_down_compared_to_previous_quarter = ' Development activity has been steady with nothing underway in the current or previous quarter.' 
 
-    # 'This could weigh on rent in certain areas if demand fails to keep pace and operators utilize concessions to lure tenants. '
     
-    return(developers_active_or_inactive +
-    active_or_inactive +
-        #inventory_expand_or_contract + 
-            elevated_or_down_compared_to_previous_quarter
-            )
+    return(developers_active_or_inactive + active_or_inactive)
 
 #Language for sales section
 def CreateSaleLanguage(data_frame,data_frame2,data_frame3,market_title,primary_market,sector,writeup_directory):
