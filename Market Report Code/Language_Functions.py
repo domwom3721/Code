@@ -1129,6 +1129,8 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
 
         elif submarket_pre_pandemic_yoy_growth == submarket_pre_2020_average_yoy_rent_growth: #equal to historical average
             submarket_pre_pandemic_yoy_growth_description = 'remained stable and in line with the historical average'
+    else: submarket_pre_pandemic_yoy_growth_description = ['accelerated/softened/remained stable']
+
 
     
     #Determime if the market grew faster or slower than nation over 10 years
