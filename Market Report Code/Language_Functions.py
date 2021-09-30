@@ -1082,6 +1082,9 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
     
     elif submarket_previous_quarter_yoy_growth == submarket_yoy_growth:
         qoq_pushing_or_contracting_annual_growth = 'keeping annual growth at'
+    else:
+        growth = '[contracting/pushing] annual growth to'
+
       
 
 
