@@ -559,49 +559,8 @@ def OverviewSection():
     table_preamble.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
     table_preamble.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
 
-    #Add a market performance table
-    if primary_market == 'Manhattan - NY':
-        
-        if market == primary_market:
-            performance_table_title_paragraph = document.add_paragraph('Historical ' + sector  + ' Performance: ' +  market_title + ' Market' )
-        else:
-            performance_table_title_paragraph = document.add_paragraph('Historical ' + sector  + ' Performance: ' +  market_title + ' Submarket')
-
-        performance_table_title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        performance_table_title_paragraph.paragraph_format.space_after  = Pt(6)
-        performance_table_title_paragraph.paragraph_format.space_before = Pt(12)
-
-        for run in performance_table_title_paragraph.runs:
-                    font = run.font
-                    font.name = 'Avenir Next LT Pro Medium'
-
-        AddMarketPerformanceTable(document = document,market_data_frame = df_market_cut,col_width = 1.2,sector=sector)
-
-        if len(df_slices) > 0:
-            #For Manhatan submarkets, add a table for each slice
-            for slice in df_slices['Slice'].unique():
-                df_slices_temp =df_slices.loc[df_slices['Slice'] == slice]
-                # print(df_slices_temp)
-                if market == primary_market:
-                    performance_table_title_paragraph = document.add_paragraph('Historical ' + slice + ' ' + sector  + ' Performance: ' +  market_title + ' Market' )
-                else:
-                    performance_table_title_paragraph = document.add_paragraph('Historical ' + slice + ' ' + sector  + ' Performance: ' +  market_title + ' Submarket')
-
-                performance_table_title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                performance_table_title_paragraph.paragraph_format.space_after  = Pt(6)
-                performance_table_title_paragraph.paragraph_format.space_before = Pt(12)
-
-                for run in performance_table_title_paragraph.runs:
-                        font = run.font
-                        font.name = 'Avenir Next LT Pro Medium'
-
-                AddMarketPerformanceTable(document = document,market_data_frame = df_slices_temp,col_width = 1.2,sector=sector)
-
-
-        
-
-
-    elif market == primary_market:
+    #Market performance table for primary markets
+    if market == primary_market:
         performance_table_title_paragraph = document.add_paragraph('Historical ' + sector  + ' Performance: ' +  market_title + ' Market' )
         performance_table_title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         performance_table_title_paragraph.paragraph_format.space_after  = Pt(6)
@@ -612,6 +571,39 @@ def OverviewSection():
                     font.name = 'Avenir Next LT Pro Medium'
 
         AddMarketPerformanceTable(document = document,market_data_frame = df_primary_market,col_width = 1.2,sector=sector)
+        
+        #For Manhatan submarkets, add a table for each quality slice
+        if primary_market == 'Manhattan - NY':
+            if len(df_slices) > 0:
+                for slice in df_slices['Slice'].unique():
+                    df_slices_temp =df_slices.loc[df_slices['Slice'] == slice]
+                    if market == primary_market:
+                        performance_table_title_paragraph = document.add_paragraph('Historical ' + slice + ' ' + sector  + ' Performance: ' +  market_title + ' Market' )
+                    else:
+                        performance_table_title_paragraph = document.add_paragraph('Historical ' + slice + ' ' + sector  + ' Performance: ' +  market_title + ' Submarket')
+
+                    performance_table_title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                    performance_table_title_paragraph.paragraph_format.space_after  = Pt(6)
+                    performance_table_title_paragraph.paragraph_format.space_before = Pt(12)
+
+                    for run in performance_table_title_paragraph.runs:
+                            font = run.font
+                            font.name = 'Avenir Next LT Pro Medium'
+
+                    AddMarketPerformanceTable(document = document,market_data_frame = df_slices_temp,col_width = 1.2,sector=sector)
+
+        #Add a table with stats on all submarkets in the market
+        submarket_performance_table_title_paragraph = document.add_paragraph(market_title + ' ' + sector + ' Market Overview' )
+        submarket_performance_table_title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        submarket_performance_table_title_paragraph.paragraph_format.space_after  = Pt(6)
+        submarket_performance_table_title_paragraph.paragraph_format.space_before = Pt(12)
+
+        for run in submarket_performance_table_title_paragraph.runs:
+                    font = run.font
+                    font.name = 'Avenir Next LT Pro Medium'
+        AddSubmarketsPerformanceTable(document = document, submarkets_data_frame = df_submarkets, col_width = 1.2, sector=sector)
+    
+    #Submarket market performance table
     else:
         performance_table_title_paragraph = document.add_paragraph('Historical ' + sector  + ' Performance: ' +  market_title + ' Submarket')
         performance_table_title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -1041,7 +1033,7 @@ def GetRentTable():
 
 def CreateMarketReport():
     global market_clean,market_title,output_directory,map_directory
-    global df_market_cut,df_primary_market,df_nation,df_slices
+    global df_market_cut,df_primary_market,df_nation, df_submarkets ,df_slices
     global latest_quarter,document,data_for_overview_table,data_for_vacancy_table,data_for_rent_table,report_path
     global primary_market,market
     
@@ -1083,6 +1075,10 @@ def CreateMarketReport():
 
         df_slices         = df2[df2['Geography Name'] == market].copy()        #df for the primary market with the quality/subtype slices
 
+        #A dataframe that tracks all submarkets in a market at the latest quarter
+        df_submarkets     = df.loc[(df['Geography Name'].isin(submarkets) == True) & (df['Period'] == latest_quarter)]
+        if len(df_submarkets) > 0:
+            assert df_submarkets['Geography Type'].all() == 'Submarket'
         assert len(df_market_cut) > 0
         assert len(df_primary_market) > 0
         assert len(df_nation) > 0
