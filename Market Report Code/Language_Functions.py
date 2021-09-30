@@ -982,7 +982,12 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
     submarket_yoy_growth                =  data_frame[rent_growth_var].iloc[-1]
     submarket_qoq_growth                =  data_frame[qoq_rent_growth_var].iloc[-1]
     submarket_year_ago_yoy_growth       =  data_frame[rent_growth_var].iloc[-5]
-    submarket_pre_pandemic_yoy_growth   =  data_frame[rent_growth_var].iloc[-7] #2020 Q1 Annual Growth if still in 2021 Q3
+    
+    submarket_pre_2020_average_yoy_rent_growth         = data_frame.loc[data_frame['Year'] < 2020][rent_growth_var].mean() #average year over year rent growth before 2020
+    submarket_2019Q4_yoy_growth                        = data_frame.loc[data_frame['Period'] == '2019 Q4'][rent_growth_var].iloc[-1]  #2019 Q4 Annual Growth
+    submarket_pre_pandemic_yoy_growth                  = data_frame.loc[data_frame['Period'] == '2020 Q1'][rent_growth_var].iloc[-1]  #2020 Q1 Annual Growth
+    
+    
     submarket_decade_rent_growth        = round(((current_rent/submarket_starting_rent) - 1) * 100,1)
     submarket_decade_rent_growth_annual = submarket_decade_rent_growth/10
     submarket_annual_rent_growth_peak   = data_frame[rent_growth_var].max()
@@ -1084,45 +1089,54 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
     else:
         submarket_year_ago_yoy_growth_description = 'stable'
 
+
+
     #Describe Prepandemic Growth 
-    if submarket_pre_pandemic_yoy_growth > submarket_decade_rent_growth_annual:
-        submarket_pre_pandemic_yoy_growth_description = 'accelerated above the historical average'
-    elif submarket_pre_pandemic_yoy_growth < 0:
-        submarket_pre_pandemic_yoy_growth_description = 'softened below the historical average'
-    else:
-        submarket_pre_pandemic_yoy_growth_description = 'remained in line with the historical average,' 
+    #There's 3 possible starting situations, YoY rent growth in 2020 Q1 was higher than 2019 Q4, lower, or the same, next we need to determine if the growth rate is higher, lower, or in line with the
+    #historical average (pre 2020 average)
+    if submarket_pre_pandemic_yoy_growth > submarket_2019Q4_yoy_growth: #rent growth accelerated
+        if submarket_pre_pandemic_yoy_growth > submarket_pre_2020_average_yoy_rent_growth: #above historical average
+            submarket_pre_pandemic_yoy_growth_description = 'accelerated, and was above the historical average, '
+        
+        elif submarket_pre_pandemic_yoy_growth < submarket_pre_2020_average_yoy_rent_growth:  #below historical average
+            submarket_pre_pandemic_yoy_growth_description = 'accelerated, but remained below the historical average,'
 
-    #Describe new prepandemic growth
-    # if submarket_pre_pandemic_yoy_growth > submarket_decade_rent_growth_annual:
-    #     submarket_pre_pandemic_yoy_growth_description = "Prior to the pandemic, rent growth in the submarket had accelerated "
-    # elif submarket_pre_pandemic_yoy_growth < submarket_decade_rent_growth_annual:    
-    #      submarket_pre_pandemic_yoy_growth_description = "Prior to the pandemic, rent growth in the submarket had decelerated "
-    # else:
-    #      submarket_pre_pandemcic_yoy_growth_description = "Leading up to the pandemic rent growth in the submarket was stable "
+        elif submarket_pre_pandemic_yoy_growth == submarket_pre_2020_average_yoy_rent_growth: #equal to historical average
+            submarket_pre_pandemic_yoy_growth_description = 'accelerated, and was in line with the historical average,'
 
+    
+    elif submarket_pre_pandemic_yoy_growth < submarket_2019Q4_yoy_growth: #rent growth softend
+        if submarket_pre_pandemic_yoy_growth > submarket_pre_2020_average_yoy_rent_growth:  #above historical average
+            submarket_pre_pandemic_yoy_growth_description = 'softened, but was above the historical average,'
+
+        elif submarket_pre_pandemic_yoy_growth < submarket_pre_2020_average_yoy_rent_growth: #below historical average
+            submarket_pre_pandemic_yoy_growth_description = 'softened, and was below the historical average,'
+
+        elif submarket_pre_pandemic_yoy_growth == submarket_pre_2020_average_yoy_rent_growth: #equal to historical average
+            submarket_pre_pandemic_yoy_growth_description = 'softened, but was in line with the historical average,'
+
+    
+    elif submarket_pre_pandemic_yoy_growth == submarket_2019Q4_yoy_growth: #rent growth constant
+        if submarket_pre_pandemic_yoy_growth > submarket_pre_2020_average_yoy_rent_growth:  #above historical average
+            submarket_pre_pandemic_yoy_growth_description = 'remained stable, and was above the historical average, '
+
+        elif submarket_pre_pandemic_yoy_growth < submarket_pre_2020_average_yoy_rent_growth: #below historical average
+            submarket_pre_pandemic_yoy_growth_description = 'remained stable, but was below the historical average,'
+
+        elif submarket_pre_pandemic_yoy_growth == submarket_pre_2020_average_yoy_rent_growth: #equal to historical average
+            submarket_pre_pandemic_yoy_growth_description = 'remained stable and in line with the historical average'
+
+    
     #Determime if the market grew faster or slower than nation over 10 years
     ten_year_growth_inline_or_exceeding = '[in line with/falling short of/exceeding]'
 
 
-    #Describe rent growth signal for future growth
-    if market_yoy_growth < 0:
-        market_yoy_growth_description = 'compressed'
-        market_signal                 =  'will likely compress further' 
-    elif market_yoy_growth > 0:
-        market_yoy_growth_description = 'expanded'
-        market_signal                 = 'are starting to rebound' 
-    else:
-        market_yoy_growth_description = 'remained at'
-        market_signal                 = 'are staying put'
-
-    
-
     if data_frame.equals(data_frame2): #Market
         market_or_submarket = 'Market'
-        if primary_market  != 'Manhattan - NY' :
-            market_or_nation  = 'National average'
+        if primary_market  == 'Manhattan - NY' :
+            market_or_nation  = 'New York Metro average' 
         else:
-            market_or_nation    = 'New York Metro average'
+            market_or_nation    = 'National average'
         
         #Check if market decade growth was slower or faster than national growth
         if market_decade_rent_growth_annual > national_decade_rent_growth_annual:
@@ -1213,17 +1227,7 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
             market_or_submarket +
             ' have ' +
             market_annual_growth_description +
-            ' '  +
-            #market_decade_rent_growth +
-            ' over the last decade from ' +
-            #market_starting_rent +
-            #   '/' +
-            #unit_or_sqft +
-            #' in ' +
-            #submarket_start_period +
-            #', representing an annual ' +
-            #market_annual_growth_description2 +
-            #' of ' +
+            ' '                             +
             market_decade_rent_growth_annual +
             ' per annum, '+
             ten_year_growth_inline_or_exceeding +
@@ -1234,7 +1238,6 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
             national_decade_rent_growth_annual +
             ' per annum during that time. ' +
             'Heading into 2020' +
-            #  'the pandemic' +
             ', rent growth in the '+
             market_or_submarket +
             ' ' +
@@ -1287,26 +1290,15 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
             ' have ' +
             submarket_annual_growth_description +
             ' '  +
-            submarket_decade_rent_growth +
-            ' over the last decade from ' +
-            submarket_starting_rent +
-               '/' +
-            unit_or_sqft +
-            ' in ' +
-            submarket_start_period +
-            ', representing an annual ' +
-           submarket_annual_growth_description2 +
-            ' of ' +
             submarket_decade_rent_growth_annual +
-           ', ' +
+           ' per annum, ' +
            ten_year_growth_inline_or_exceeding +
            ' the ' +
             market_or_nation +
             ', where rents expanded ' +
             market_decade_rent_growth_annual +
             ' per annum during that time. ' +
-            'Leading up to ' +
-            'the pandemic' +
+            'Heading into 2020'
             ', rent growth in the '+
             market_or_submarket +
             ' ' +
@@ -1452,7 +1444,7 @@ def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,p
         elevated_or_down_compared_to_previous_quarter = ' Developers have remained active with ' +  "{:,.0f}".format(under_construction) + ' ' + unit_or_sqft + ' underway.'
     
     elif under_construction <= 0 and previous_quarter_under_construction > 0:
-         elevated_or_down_compared_to_previous_quarter = ' After activity in the previous quarter, developers have paused and nothing is currenly underway. The empty pipeline will likely limit supply pressure on vacancies, boding well for fundamentals in the near term.'
+         elevated_or_down_compared_to_previous_quarter = ' After activity in the previous quarter, developers have paused and nothing is currently underway. The empty pipeline will likely limit supply pressure on vacancies, boding well for fundamentals in the near term.'
     
     elif under_construction == previous_quarter_under_construction == 0:
         elevated_or_down_compared_to_previous_quarter = ' Development activity has been steady with nothing underway in the current or previous quarter.' 
@@ -1695,7 +1687,7 @@ def CreateSaleLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
            ' '                                               +
             cap_rate                                         +
             '. '                                             +
-            ' Although the capital markets has held up relatively well, uncertainty still remains in the capital markets. ' +
+            ' Although capital markets have held up relatively well, uncertainty still remains. ' +
             ' Some investors may need to see signs of sustained economic growth before engaging. ')
 
 #Language for outlook section
