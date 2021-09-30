@@ -1360,7 +1360,7 @@ def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,p
     #Section 2: Begin making varaiables that are conditional on the variables we have created in section 1
 
     #Section 3: Format variables
-    inventory_growth_pct                        = "{:,.0f}%".format(abs(inventory_growth_pct)) 
+    inventory_growth_pct                        = "{:,.1f}%".format(abs(inventory_growth_pct)) 
     delivered_inventory                         = "{:,.0f}".format(delivered_inventory)
     demolished_inventory                        = "{:,.0f}".format(demolished_inventory)
 
@@ -1397,7 +1397,7 @@ def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,p
 
     #Determine if the supply pipeline is active or not    
     if under_construction > 0:
-        active_or_inactive = 'Developers are currently active in the ' + market_or_submarket + ' with ' + millify(under_construction,'') + ' ' + unit_or_sqft + ', or the equivalent of ' + "{:,.0f}%".format(under_construction_share)   + ' of existing inventory, underway. '
+        active_or_inactive = 'Developers are currently active in the ' + market_or_submarket + ' with ' + millify(under_construction,'') + ' ' + unit_or_sqft + ', or the equivalent of ' + "{:,.1f}%".format(under_construction_share)   + ' of existing inventory, underway. '
     else:
         active_or_inactive = 'Developers are not currently active in the ' + market_or_submarket + '. The empty pipeline will likely limit supply pressure on vacancies, boding well for fundamentals in the near term. '
 
