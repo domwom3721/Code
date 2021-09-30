@@ -286,16 +286,16 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
     #Create the Multifamily sepecific language
     if sector == "Multifamily": 
         if yoy_rent_growth < 0 and vacancy_change > 0:
-            overview_sector_specific_language =  (' The unique nature of the pandemic and lockdown dramatically shifted renter preferences, reversing a multi-year trend of urbanization across the countries largest cities. ' + 
-                                'Multiple factors inspired the shift, including the ability to work-from-home, affordability, and the desire for more space. ' + 
+            overview_sector_specific_language =  (""" The unique nature of the pandemic and lockdown dramatically shifted renter preferences, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
+                                'Multiple factors inspired the shift, including the ability to work-from-home, affordability, and a desire for more space. ' + 
                                 'The ' + market_or_submarket + 
-                                ' has been negatively affected by this shift in preferences, leading to rising vacancy rates and contracting rents. ' )
+                                """ has been negatively affected by this shift in preferences, leading to rising vacancy rates and contracting rents. """)
     
         else:
-            overview_sector_specific_language = (' The unique nature of the pandemic and lockdown dramatically shifted renter preferences, reversing a multi-year trend of urbanization across the largest cities. ' + 
-                                'Multiple factors inspired the shift, including the ability for some to work-from-home, affordability, and the desire for more space. ' + 
+            overview_sector_specific_language = (""" The unique nature of the pandemic and lockdown dramatically shifted renter preferences, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
+                                'Multiple factors inspired the shift, including the ability for some to work-from-home, affordability, and a desire for more space. ' + 
                                 'The ' + market_or_submarket + 
-                                ' has been positively affected by these shift in preferences, leading to record levels of leasing activity and strong rent growth for the ' + market_or_submarket + '. ' )
+                                ' has been positively affected by this shift in preferences, leading to record levels of leasing activity and strong rent growth for the ' + market_or_submarket + '. ' )
                                 
     #Create the Industrial sepecific language
     if sector == "Industrial": 
@@ -587,7 +587,7 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
     #Describe leasing activity/net abosorption over the past year relative to inventory growth
 
     if leasing_change > 0:
-        leasing_activity_change = 'accelerated'
+        leasing_activity_change = 'picked up'
     elif leasing_change < 0:
         leasing_activity_change = 'slowed'
     elif data_frame[(net_absorption_var_name + ' 12 Mo')].iloc[-1] == 0:
@@ -657,13 +657,19 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
 
     #Describe change in vacancy over the past year
     if yoy_submarket_vacancy_growth > 0:
-        yoy_submarket_vacancy_growth_description = 'expanded'
+        yoy_submarket_vacancy_growth_description  = 'expanded'
+        yoy_submarket_vacancy_growth_description2 = 'expanding'
+
             
     elif yoy_submarket_vacancy_growth < 0:
-        yoy_submarket_vacancy_growth_description = 'compressed'
+        yoy_submarket_vacancy_growth_description  = 'compressed'
+        yoy_submarket_vacancy_growth_description2 = 'compressing'
+
 
     else:
-        yoy_submarket_vacancy_growth_description = 'remained flat'
+        yoy_submarket_vacancy_growth_description  = 'remained flat'
+        yoy_submarket_vacancy_growth_description2 = 'remaining flat'
+
 
     #Describe change in vacancy over the past quarter
     if qoq_submarket_vacancy_growth > 0:
@@ -868,7 +874,7 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
             ' to '                                                      +
             submarket_vacancy                                           +
             ', '                                                        +
-            yoy_submarket_vacancy_growth_description                    +
+            yoy_submarket_vacancy_growth_description2                    +
             ' '                                                         +
             avg_relationship_description                                +
             ' the 10-year average of '                                  +
@@ -879,7 +885,7 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
             market_or_national                                          +     
             ' average by '                                              +
             market_submarket_differnce                                  +
-            ' bps.'                                                     +
+            ' bps'                                                     +
             '. In the '                                                 +
             quarter                                                     +
             ' quarter, the '                                            +
@@ -894,7 +900,7 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
             previous_quarter_net_absorption                             +
             ' '                                                         +
             unit_or_sqft                                                +
-            ' of net absorption in the '                                +
+            ' of net absorption in '                                +
             previous_quarter                                            + 
             '. '                                                        +
             ' With '                                                    +
@@ -902,15 +908,17 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
             ' '                                                         +
             unit_or_sqft                                                +
             net_absorption_description                                  +
-            'in the '                 +
+            'in the '                                                   +
             quarter                                                     +
-            ' quarter, vacancy rates have '                              +
+            ' quarter, vacancy rates have '                             +
             qoq_submarket_vacancy_growth_description                    +
             ' '                                                         +
             qoq_submarket_vacancy_growth                                +
-            ' bps since Q2.'                               +
+            ' bps since '                                               +
+            previous_quarter[5:]                                        +
+            '.'                                                         +
             ' Combined, net absorption through the first '              +
-            'three'                                                       +
+            'three'                                                     +
             ' quarters of '                                             +
             '2021'                                                      +
             ' totaled '                                                 +
@@ -918,23 +926,7 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
             ' '                                                         +
             unit_or_sqft                                                +
             '. ')                                                        
-        # 'Going back ten years,'                                         +
-        # ' vacancy rates '                                               +
-        # 'have '                                                         +
-        # ten_year_growth_description                                     +
-        # ' from '                                                        +
-        # lagged_submarket_vacancy                                        +
-        # ' in '                                                          +
-        # lagged_date                                                     +
-        # ' to the current rate of '                                      +
-        # submarket_vacancy                                               +
-        # '. Over the past twelve months vacancy rates have '             +
-        # yoy_submarket_vacancy_growth_description                        +
-        # ' '                                                             +
-        # avg_relationship_description                                    +
-        # ' the 10-year average of '                                      +
-        # submarket_avg_vacancy                                           +
-        
+
 
 #Language for rent section
 def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_market,sector,writeup_directory):

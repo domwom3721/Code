@@ -571,6 +571,7 @@ def OverviewSection():
                     font.name = 'Avenir Next LT Pro Medium'
 
         AddMarketPerformanceTable(document = document,market_data_frame = df_primary_market,col_width = 1.2,sector=sector)
+        document.add_paragraph('')
         
         #For Manhatan submarkets, add a table for each quality slice
         if primary_market == 'Manhattan - NY':
@@ -591,6 +592,7 @@ def OverviewSection():
                             font.name = 'Avenir Next LT Pro Medium'
 
                     AddMarketPerformanceTable(document = document,market_data_frame = df_slices_temp,col_width = 1.2,sector=sector)
+                    document.add_paragraph('')
 
         #Add a table with stats on all submarkets in the market
         submarket_performance_table_title_paragraph = document.add_paragraph(market_title + ' ' + sector + ' Market Overview' )
@@ -602,6 +604,8 @@ def OverviewSection():
                     font = run.font
                     font.name = 'Avenir Next LT Pro Medium'
         AddSubmarketsPerformanceTable(document = document, submarkets_data_frame = df_submarkets, col_width = 1.2, sector=sector)
+        document.add_paragraph('')
+
     
     #Submarket market performance table
     else:
@@ -616,6 +620,8 @@ def OverviewSection():
                     font.name = 'Avenir Next LT Pro Medium'
 
         AddMarketPerformanceTable(document = document,market_data_frame = df_market_cut ,col_width = 1.2,sector=sector)
+        document.add_paragraph('')
+
 
 def SupplyDemandSection():
     #Supply and Demand Section
