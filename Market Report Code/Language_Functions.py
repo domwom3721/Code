@@ -1096,7 +1096,7 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
     #historical average (pre 2020 average)
     if submarket_pre_pandemic_yoy_growth > submarket_2019Q4_yoy_growth: #rent growth accelerated
         if submarket_pre_pandemic_yoy_growth > submarket_pre_2020_average_yoy_rent_growth: #above historical average
-            submarket_pre_pandemic_yoy_growth_description = 'accelerated, and was above the historical average, '
+            submarket_pre_pandemic_yoy_growth_description = 'accelerated, and was above the historical average,'
         
         elif submarket_pre_pandemic_yoy_growth < submarket_pre_2020_average_yoy_rent_growth:  #below historical average
             submarket_pre_pandemic_yoy_growth_description = 'accelerated, but remained below the historical average,'
@@ -1118,7 +1118,7 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
     
     elif submarket_pre_pandemic_yoy_growth == submarket_2019Q4_yoy_growth: #rent growth constant
         if submarket_pre_pandemic_yoy_growth > submarket_pre_2020_average_yoy_rent_growth:  #above historical average
-            submarket_pre_pandemic_yoy_growth_description = 'remained stable, and was above the historical average, '
+            submarket_pre_pandemic_yoy_growth_description = 'remained stable, and was above the historical average,'
 
         elif submarket_pre_pandemic_yoy_growth < submarket_pre_2020_average_yoy_rent_growth: #below historical average
             submarket_pre_pandemic_yoy_growth_description = 'remained stable, but was below the historical average,'
