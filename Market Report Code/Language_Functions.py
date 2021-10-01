@@ -1369,7 +1369,7 @@ def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,p
 
     if median_construction_level >= 1:
         developers_historically_active_or_inactive = ('Developers have been active for much of the past ten years. In fact, they have added ' + 
-                                        "{:,.0f}".format(delivered_inventory)  +
+                                        millify(delivered_inventory)  +
                                         ' '                 +
                                         unit_or_sqft        +
                                         ' to the '          +
@@ -1386,7 +1386,7 @@ def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,p
         if delivered_inventory > 0:
             developers_historically_active_or_inactive = developers_historically_active_or_inactive +  (
                                         'In fact, they have added just ' + 
-                                        "{:,.0f}".format(delivered_inventory) + 
+                                        millify(delivered_inventory) + 
                                         ' '                 +
                                         unit_or_sqft        +
                                         ' to the '          +
@@ -1396,7 +1396,7 @@ def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,p
             #If they've demolished space, add a sentance about that
             if demolished_inventory > 0:
                 developers_historically_active_or_inactive = developers_historically_active_or_inactive + ('Developers have also removed space for higher and better use, removing ' + 
-                                            "{:,.0f}".format(demolished_inventory) + 
+                                            millify(demolished_inventory) + 
                                             ' ' +
                                             unit_or_sqft + 
                                             '. '
@@ -1407,7 +1407,7 @@ def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,p
             #If they've demolished space, add a sentance about that
             if demolished_inventory > 0:
                 developers_historically_active_or_inactive = developers_historically_active_or_inactive +  ('They have removed space for higher and better use, removing ' + 
-                                            "{:,.0f}".format(demolished_inventory) + 
+                                            millify(demolished_inventory) + 
                                             ' ' +
                                             unit_or_sqft + 
                                             '. '
