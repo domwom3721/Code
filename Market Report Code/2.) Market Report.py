@@ -679,10 +679,7 @@ def RentSecton():
     for run in rent_table_title_paragraph.runs:
                     font = run.font
                     font.name = 'Avenir Next LT Pro Medium'
- 
-
-    rent_table_width = 1.2
-    AddTable(document,data_for_rent_table,rent_table_width)
+    AddTable(document,data_for_rent_table, col_width = 1.2)
   
 
     blank_paragraph_after_rent_table = document.add_paragraph('')
