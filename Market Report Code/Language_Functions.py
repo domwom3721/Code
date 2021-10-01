@@ -320,18 +320,18 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
                                 ' has been negatively affected by this shift in preferences, leading to rising vacancy rates and contracting rents for the ' + market_or_submarket + '.' )
     
         elif yoy_rent_growth < 0 and vacancy_change < 0: #rents contract, vacancy contracts
-            overview_sector_specific_language =  (' Heading into Q4 2021, some of the adverse market trends established during the pandemic continue to plague the office sector.' + 
+            overview_sector_specific_language =  (' Heading into Q4 2021, some of the adverse market trends established during the pandemic continue to plague the office sector. ' + 
                                 'While vacancy rates have managed to compress over the past year for office properties in the ' +
                                 market_or_submarket + ', rents continue to contract, decreasing ' + "{:,.1f}%".format(yoy_rent_growth) + ' since 2020 Q3.')
 
         elif yoy_rent_growth > 0 and vacancy_change > 0: #rents expand, vacancy expands
-            overview_sector_specific_language =  (' Heading into Q4 2021, some of the adverse market trends established during the pandemic continue to plague the office sector.' + 
+            overview_sector_specific_language =  (' Heading into Q4 2021, some of the adverse market trends established during the pandemic continue to plague the office sector. ' + 
                                 'While vacancy rates continued to expand over the past year for office properties in the ' +
                                 market_or_submarket + ', rents have managed to expand ' + "{:,.1f}%".format(yoy_rent_growth) + ' since 2020 Q3.')
 
         else:
             overview_sector_specific_language = (' Heading into Q4 2021, the adverse trends affecting the U.S. office sector during the pandemic have not spilled over into the ' + market_or_submarket + 
-                                'In fact, leasing activity has allowed for vacancy rate compression and positive rent growth. ' )
+                                '. In fact, leasing activity has allowed for vacancy rate compression and positive rent growth. ' )
     
 
     #Section 3: Format Variables
