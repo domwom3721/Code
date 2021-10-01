@@ -594,17 +594,7 @@ def OverviewSection():
                     AddMarketPerformanceTable(document = document,market_data_frame = df_slices_temp,col_width = 1.2,sector=sector)
                     document.add_paragraph('')
 
-        #Add a table with stats on all submarkets in the market
-        submarket_performance_table_title_paragraph = document.add_paragraph(market_title + ' ' + sector + ' Market Overview' )
-        submarket_performance_table_title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        submarket_performance_table_title_paragraph.paragraph_format.space_after  = Pt(6)
-        submarket_performance_table_title_paragraph.paragraph_format.space_before = Pt(12)
 
-        for run in submarket_performance_table_title_paragraph.runs:
-                    font = run.font
-                    font.name = 'Avenir Next LT Pro Medium'
-        AddSubmarketsPerformanceTable(document = document, submarkets_data_frame = df_submarkets, col_width = 1.2, sector=sector)
-        document.add_paragraph('')
 
     
     #Submarket market performance table
@@ -808,6 +798,23 @@ def OutlookSection():
     conclusion_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
     conclusion_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
     conclusion_paragraph.paragraph_format.space_before = Pt(0)
+
+def AppendixSection():
+    #Appendix Section
+    AddHeading(document,'Appendix',2)
+    if market == primary_market:
+        #Add a table with stats on all submarkets in the market
+        submarket_performance_table_title_paragraph = document.add_paragraph(market_title + ' ' + sector + ' Market Overview' )
+        submarket_performance_table_title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        submarket_performance_table_title_paragraph.paragraph_format.space_after  = Pt(6)
+        submarket_performance_table_title_paragraph.paragraph_format.space_before = Pt(12)
+
+        for run in submarket_performance_table_title_paragraph.runs:
+                    font = run.font
+                    font.name = 'Avenir Next LT Pro Medium'
+        AddSubmarketsPerformanceTable(document = document, submarkets_data_frame = df_submarkets, col_width = 1.2, sector=sector)
+        document.add_paragraph('')
+
 
 def GetLanguage(writeup_directory):
     global overview_language, demand_language,sale_language,rent_language,construction_languge,outlook_language
@@ -1124,6 +1131,7 @@ def CreateMarketReport():
             ConstructionSection()
             CapitalMarketsSection()
             OutlookSection()
+            AppendixSection()
             
             #Temp fix to replace Manhattan - NY with Manhattan
             for paragraph in document.paragraphs:
