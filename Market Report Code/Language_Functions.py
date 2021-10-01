@@ -495,13 +495,6 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
     if CoStarWriteUp != '':
         return(CoStarWriteUp)
 
-    #Custom market title change for the NYC reports for bank clients
-    if market_title == 'Manhattan - NY':
-        market_title = 'Manhattan'
-
-    if primary_market == 'Manhattan - NY':
-        primary_market = 'Manhattan'
-
     #Section 1: Begin making variables for the supply and demand language that come from the data: 
     if sector == 'Multifamily':
         unit_or_sqft                    = 'units'
@@ -512,13 +505,9 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
         net_absorption                  =  data_frame['Absorption Units'].iloc[-1]
         previous_quarter_net_absorption =  data_frame['Absorption Units'].iloc[-2]
         covid_quarter_net_absorption    =  data_frame['Absorption Units'].iloc[-6] #change_each_Q
-        # firsthalf2020_net_absorption    =  data_frame['Absorption Units']
-        # year_ago_net_absorption = data_frame['Absorption Units'].iloc[-5] #change_each_Q
-        #over_last_year_units                = data_frame['Sold Units'][-1:-5:-1].sum()
-
-
-
-
+        # firsthalf2020_net_absorption  =  data_frame['Absorption Units']
+        # year_ago_net_absorption       = data_frame['Absorption Units'].iloc[-5] #change_each_Q
+        #over_last_year_units           = data_frame['Sold Units'][-1:-5:-1].sum()
 
     else:
         unit_or_sqft                    = 'square feet'
@@ -527,9 +516,9 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
         net_absorption                  =  data_frame['Net Absorption SF'].iloc[-1]
         previous_quarter_net_absorption =  data_frame['Net Absorption SF'].iloc[-2]
         covid_quarter_net_absorption    =  data_frame['Net Absorption SF'].iloc[-6] #change_each_Q
-        #availability rate               =  data_frame['Availability Rate'].iloc[-1]    
-        # year_ago_net_absorption         = data_frame['Net Absorption SF'].iloc[-5] #change_each_Q
-        # year_ago_leasing_activity       = data_frame['Leasing Activity'].iloc[-5] #change_each_Q
+        #availability rate              =  data_frame['Availability Rate'].iloc[-1]    
+        # year_ago_net_absorption       = data_frame['Net Absorption SF'].iloc[-5] #change_each_Q
+        # year_ago_leasing_activity     = data_frame['Leasing Activity'].iloc[-5] #change_each_Q
 
 
     #Get latest quarter and year
@@ -553,10 +542,10 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
     #Calculate 10 year average, trough, and peak
     submarket_avg_vacancy               = data_frame['Vacancy Rate'].mean()
     market_avg_vacancy                  = data_frame2['Vacancy Rate'].mean()
-    submarket_trough_vacancy               = data_frame['Vacancy Rate'].min()
-    market_trough_vacancy                  = data_frame2['Vacancy Rate'].min()
-    submarket_peak_vacancy               = data_frame['Vacancy Rate'].max()
-    market_peak_vacancy                  = data_frame2['Vacancy Rate'].max()
+    submarket_trough_vacancy            = data_frame['Vacancy Rate'].min()
+    market_trough_vacancy               = data_frame2['Vacancy Rate'].min()
+    submarket_peak_vacancy              = data_frame['Vacancy Rate'].max()
+    market_peak_vacancy                 = data_frame2['Vacancy Rate'].max()
 
     leasing_activity12mo                = data_frame[(net_absorption_var_name + ' 12 Mo')].iloc[-1] 
     leasing_change                      = data_frame[(net_absorption_var_name + ' 12 Mo')].iloc[-1] -  data_frame[(net_absorption_var_name + ' 12 Mo')].iloc[-5]
@@ -585,7 +574,6 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
 
 
     #Describe leasing activity/net abosorption over the past year relative to inventory growth
-
     if leasing_change > 0:
         leasing_activity_change = 'picked up'
     elif leasing_change < 0:
@@ -607,11 +595,11 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
         demand_fallingshort_or_exceeding_inventorygrowth = '[falling short of/exceeding]'
     
     #Determine conjunction (and or but)
-    if leasing_activity_change == 'accelerated' and demand_fallenshort_or_exceeding_inventorygrowth == 'exceeded':
+    if leasing_activity_change == 'picked up' and demand_fallenshort_or_exceeding_inventorygrowth == 'exceeded':
         demand_inventory_growth_and_or_but               = 'and' 
     elif leasing_activity_change == 'slowed' and demand_fallenshort_or_exceeding_inventorygrowth == 'exceeded':
         demand_inventory_growth_and_or_but               = 'but'
-    elif leasing_activity_change == 'accelerated' and demand_fallenshort_or_exceeding_inventorygrowth == 'fallen short of':
+    elif leasing_activity_change == 'picked up' and demand_fallenshort_or_exceeding_inventorygrowth == 'fallen short of':
         demand_inventory_growth_and_or_but               = 'but'
     elif leasing_activity_change == 'slowed' and demand_fallenshort_or_exceeding_inventorygrowth == 'fallen short of':
         demand_inventory_growth_and_or_but               = 'and'
@@ -648,27 +636,34 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
     #Get the word to decribe the quarter (first, 2nd, third, fourth)
     if 'Q1' in latest_quarter:
         quarter = 'first'
+        number_of_quarters = 'the first quarter of '
+        
     elif 'Q2' in latest_quarter:
         quarter = '2nd'
+        number_of_quarters = 'the first two quarters of ' 
+
     elif 'Q3' in latest_quarter:
         quarter = 'third'
+        number_of_quarters = 'the first three quarters of ' 
+
     elif 'Q4' in latest_quarter:
         quarter = 'fourth'
+        number_of_quarters = '' 
 
     #Describe change in vacancy over the past year
     if yoy_submarket_vacancy_growth > 0:
         yoy_submarket_vacancy_growth_description  = 'expanded'
-        yoy_submarket_vacancy_growth_description2 = 'expanding'
+        # yoy_submarket_vacancy_growth_description2 = 'expanding'
 
             
     elif yoy_submarket_vacancy_growth < 0:
         yoy_submarket_vacancy_growth_description  = 'compressed'
-        yoy_submarket_vacancy_growth_description2 = 'compressing'
+        # yoy_submarket_vacancy_growth_description2 = 'compressing'
 
 
     else:
         yoy_submarket_vacancy_growth_description  = 'remained flat'
-        yoy_submarket_vacancy_growth_description2 = 'remaining flat'
+        # yoy_submarket_vacancy_growth_description2 = 'remaining flat'
 
 
     #Describe change in vacancy over the past quarter
@@ -715,12 +710,12 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
 
 
 
-    if submarket_vacancy > lagged_submarket_vacancy:
-        ten_year_growth_description = 'expanded'
-    elif  submarket_vacancy < lagged_submarket_vacancy:
-        ten_year_growth_description = 'compressed'
-    else:
-        ten_year_growth_description = 'stayed stead'
+    # if submarket_vacancy > lagged_submarket_vacancy:
+    #     ten_year_growth_description = 'expanded'
+    # elif  submarket_vacancy < lagged_submarket_vacancy:
+    #     ten_year_growth_description = 'compressed'
+    # else:
+    #     ten_year_growth_description = 'stayed stead'
 
 
 
@@ -733,17 +728,17 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
         avg_relationship_description = 'at'
 
     #determine if vacancy "expanded", "compressed", or "stayed at" the 10 year average over the past year
-    if (data_frame['Vacancy Rate'].iloc[-1] > submarket_avg_vacancy) and (data_frame['Vacancy Rate'].iloc[-5] > submarket_avg_vacancy):
-        avg_relationship_change = 'stayed'
+    # if (data_frame['Vacancy Rate'].iloc[-1] > submarket_avg_vacancy) and (data_frame['Vacancy Rate'].iloc[-5] > submarket_avg_vacancy):
+    #     avg_relationship_change = 'stayed'
 
-    elif (data_frame['Vacancy Rate'].iloc[-1] > submarket_avg_vacancy) and (data_frame['Vacancy Rate'].iloc[-5] < submarket_avg_vacancy):
-        avg_relationship_change = 'expanded'
+    # elif (data_frame['Vacancy Rate'].iloc[-1] > submarket_avg_vacancy) and (data_frame['Vacancy Rate'].iloc[-5] < submarket_avg_vacancy):
+    #     avg_relationship_change = 'expanded'
     
-    elif (data_frame['Vacancy Rate'].iloc[-1] < submarket_avg_vacancy) and (data_frame['Vacancy Rate'].iloc[-5] > submarket_avg_vacancy):
-        avg_relationship_change = 'compressed'
+    # elif (data_frame['Vacancy Rate'].iloc[-1] < submarket_avg_vacancy) and (data_frame['Vacancy Rate'].iloc[-5] > submarket_avg_vacancy):
+    #     avg_relationship_change = 'compressed'
     
-    else:
-        avg_relationship_change = 'expanded/compressed'
+    # else:
+    #     avg_relationship_change = 'expanded/compressed'
 
     #Calculate total net absorption so far for the current year and how it compares to the same period last year
     data_frame_current_year  = data_frame.loc[data_frame['Year'] == (data_frame['Year'].max())]
@@ -760,7 +755,175 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
         else:
             net_absorption_so_far_this_year_percent_change = "{:,.0f}% decrease".format(abs(net_absorption_so_far_this_year_percent_change))
 
-    
+
+
+
+    #This is the first part of the first sentance and explains why vacancy changed
+    #Inventory expanded over past year
+    if inventory_change > 0:
+
+        #Vacancy increased
+        if yoy_submarket_vacancy_growth > 0:
+
+            #12m net absorption grew over past year
+            if leasing_change > 0:
+                leasing_activity_intro_clause = 'Despite demand picking up, with rising inventory levels'
+
+            #12m net absorption declined over past year
+            elif  leasing_change < 0:
+                leasing_activity_intro_clause = 'With falling demand and rising inventory levels'
+
+               
+            #12m net absorption flat over past year
+            elif leasing_change == 0:
+                leasing_activity_intro_clause = 'Despite no change in demand, with rising inventory levels'
+                
+
+
+        #Vacancy decreased
+        elif yoy_submarket_vacancy_growth < 0:
+            #12m net absorption grew over past year
+            if leasing_change > 0:
+                leasing_activity_intro_clause = 'Despite growing inventory levels, with demand picking up'
+
+            #12m net absorption declined over past year
+            elif  leasing_change < 0:
+                leasing_activity_intro_clause = 'Despite falling demand and rising inventory levels'
+               
+            #12m net absorption flat over past year
+            elif leasing_change == 0:
+                leasing_activity_intro_clause = 'Despite no change in demand and rising inventory levels'
+
+
+
+
+        #Vacancy flat
+        elif yoy_submarket_vacancy_growth == 0:
+
+            #12m net absorption grew over past year
+            if leasing_change > 0:
+                leasing_activity_intro_clause = 'Despite demand picking up, with rising inventory levels'
+
+            #12m net absorption declined over past year
+            elif  leasing_change < 0:
+                leasing_activity_intro_clause = 'Despite falling demand and rising inventory levels'
+               
+            #12m net absorption flat over past year
+            elif leasing_change == 0:
+                leasing_activity_intro_clause = 'Despite rising inventory levels, with no change in demand'
+
+    #Inventory contracted over the past year
+    elif inventory_change < 0:
+
+        #Vacancy increased
+        if yoy_submarket_vacancy_growth > 0:
+
+            #12m net absorption grew over past year
+            if leasing_change > 0:
+                leasing_activity_intro_clause = 'Despite falling inventory levels and growing demand'
+
+            #12m net absorption declined over past year
+            elif  leasing_change < 0:
+                leasing_activity_intro_clause = 'Despite falling inventory levels, with falling demand'
+               
+            #12m net absorption flat over past year
+            elif leasing_change == 0:
+                leasing_activity_intro_clause = 'Despite falling demand and no change in demand'
+
+
+
+        #Vacancy decreased
+        elif yoy_submarket_vacancy_growth < 0:
+            #12m net absorption grew over past year
+            if leasing_change > 0:
+                leasing_activity_intro_clause = 'With falling inventory levels and growing deamnd'
+
+            #12m net absorption declined over past year
+            elif  leasing_change < 0:
+                leasing_activity_intro_clause = 'Despite falling demand, with falling inventory levels'
+               
+            #12m net absorption flat over past year
+            elif leasing_change == 0:
+                leasing_activity_intro_clause = 'With falling inventory levels and no change in demand'
+
+
+
+
+
+        #Vacancy flat
+        elif yoy_submarket_vacancy_growth == 0:
+            #12m net absorption grew over past year
+            if leasing_change > 0:
+                leasing_activity_intro_clause = 'Despite falling invetory and growing demand'
+
+            #12m net absorption declined over past year
+            elif  leasing_change < 0:
+                leasing_activity_intro_clause = 'Despite falling inventory levels, with demand falling'
+               
+            #12m net absorption flat over past year
+            elif leasing_change == 0:
+                leasing_activity_intro_clause = 'Despite falling inventory levels and no change in demand'
+
+    #Inventory flat over the past year
+    elif inventory_change == 0:
+
+        #Vacancy increased
+        if yoy_submarket_vacancy_growth > 0:
+
+            #12m net absorption grew over past year
+            if leasing_change > 0:
+                leasing_activity_intro_clause = 'Despite a lack of inventory growth and accelerating demand'
+
+            #12m net absorption declined over past year
+            elif  leasing_change < 0:
+                leasing_activity_intro_clause = 'With no inventory growth but falling demand'
+               
+            #12m net absorption flat over past year
+            elif leasing_change == 0:
+                leasing_activity_intro_clause = 'Despite a lack of inventory growth and no change in net absorption over the previous 12 months'
+
+
+
+        #Vacancy decreased
+        elif yoy_submarket_vacancy_growth < 0:
+
+            #12m net absorption grew over past year
+            if leasing_change > 0:
+                leasing_activity_intro_clause = 'With demand picking up in the absesnce of inventory growth'
+
+            #12m net absorption declined over past year
+            elif  leasing_change < 0:
+                leasing_activity_intro_clause = 'Although demand has declined, in the absesnce of inventory growth'
+               
+            #12m net absorption flat over past year
+            elif leasing_change == 0:
+                leasing_activity_intro_clause = 'With demand and inventory levels flat'
+
+
+
+        #Vacancy flat
+        elif yoy_submarket_vacancy_growth == 0:
+
+            #12m net absorption grew over past year
+            if leasing_change > 0:
+                leasing_activity_intro_clause = 'Despite rising demand and the absence of inventory growth'
+
+            #12m net absorption declined over past year
+            elif  leasing_change < 0:
+                leasing_activity_intro_clause = 'Despite falling demand, with no inventory growth'
+               
+            #12m net absorption flat over past year
+            elif leasing_change == 0:
+                leasing_activity_intro_clause = 'With demand and inventory levels flat'
+
+
+
+
+
+
+
+
+
 
 
 
@@ -783,89 +946,32 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
     market_submarket_differnce          = "{:,.0f}".format(market_submarket_differnce)
     current_year_total_net_absorption   = millify(current_year_total_net_absorption,'')
     
+    
     #Section 4: Put together the variables we have created into the supply and demand language and return it
-    # if sector == "Retail" and vacancy_change > 0:
-    #         retail_supply_demand_intro_language =  (' Prior to 2020 consumer demand was shifting from brick-and-mortar stores towards online channels, putting pressure on vacancy rates and rent growth across most markets. ' + 
-    #                             'The pandemic appears to have accelerated that trend in the ' +
-    #                             market_or_submarket +
-    #                             '. ' +
-    #                             'This disruption has expanded vacancy rates ' + vacancy_change + ' to ' + vacancy + '. ' + 'With vacancy rates expanding over the past year, rents have contracted ' + yoy_rent_growth + '.') 
+    return(
 
-    # elif sector == "Retail" and yoy_rent_growth < 0 and vacancy_change < 0:
-    #         retail_supply_demand_intro_language =  (' Prior to 2020 consumer demand was shifting from brick-and-mortar stores towards online channels, putting pressure on vacancy rates and rent growth across most markets. ' + 
-    #                             'Despite vacancy rate compression in the ' +
-    #                             market_or_submarket + ' over the past year, rents contracted, decreasing ' + yoy_rent_growth + ' since 2020 Q3.')
-
-    # elif sector == "Retail" and yoy_rent_growth >0 and vacancy_change < 0:
-    #         retail_supply_demand_intro_language =  (' Prior to 2020 consumer demand was shifting from brick-and-mortar stores towards online channels, putting pressure on vacancy rates and rent growth across most markets' + 
-    #                             'Despite vacancy rate compression in the ' +
-    #                             market_or_submarket +
-    #                             'over the past year, rents managed to grow, expanding ' + yoy_rent_growth + ' since 2020 Q3.')
-
-    # else:
-    #     retail_supply_demand_intro_language = (' Prior to 2020 consumer demand was shifting from brick-and-mortar stores towards online channels, putting pressure on vacancy rates and rent growth across most markets' + 
-    #                             'While these trends have continued through the pandemic for most ' + market_or_submarket + 's, retail properties in the ' + 
-    #                             market_or_submarket + ' have shown resounding strength since the pandemic. In fact, vacancy rates have compressed to ' + vacancy + ' while rents have expanded ' + yoy_rent_growth + ' .')  
-
-    # #Create the Multifamily sepecific language
-    # if sector == "Multifamily" and yoy_rent_growth < 0 and vacancy_change > 0:
-    #         multifamily_supply_demand_intro_language =  (' The unique nature of the pandemic and lockdown dramatically shifted renter preferences, reversing a multi-year trend of urbanization across the countries largest cities. ' + 
-    #                             'Multiple factors inspired the shift, including the ability to work-from-home, affordability, and the desire for more space. ' + 
-    #                             'The ' + market_or_submarket + 
-    #                             ' has been negatively affected by this shift in preferences, leading to rising vacancy rates and contracting rents. ' )
-    
-
-    
-    # else:
-    #     multifamily_supply_demand_intro_language = (' The unique nature of the pandemic and lockdown dramatically shifted renter preferences, reversing a multi-year trend of urbanization across the largest cities. ' + 
-    #                             'Multiple factors inspired the shift, including the ability for some to work-from-home, affordability, and the desire for more space. ' + 
-    #                             'The ' + market_or_submarket + 
-    #                             ' has been positively affected by these shift in preferences, leading to record levels of leasing activity and strong rent growth for the ' + market_or_submarket + '. ' )
-    #                             #Renewed demand allowed vacancy to fall 400 basis points year over year in the ' + submarket_or_market + 'to '+ vacancy + 'in Q3, fueling a ' + yoy_rent_growth + ' annual rent surge. '
-
-    # #Create the Industrial sepecific language
-    # if sector == "Industrial" and yoy_rent_growth < 0 and vacancy_change > 0:
-    #         industrial_supply_demand_intro_language =  (' Industrial enters the fourth quarter in among the best shape of any of the major property types. ' + 
-    #                             'A pandemic driven spike in e-commerce sales along with significant growth in third-party logistics providers continues to drive demand. ' + 
-    #                             'Despite these macro trends, the ' + market_or_submarket + 
-    #                             ' has not felt the affects of these demand drivers, leading to softened levels of leasing activity and rent growth.' )
-    
-    # else:
-    #     industrial_supply_demand_intro_language = (' Industrial enters the fourth quarter in among the best shape of any of the major property types. ' + 
-    #                             'A pandemic driven spike in e-commerce sales along with significant growth in third-party logistics providers continues to drive demand. ' + 
-    #                             'The ' + market_or_submarket + 
-    #                             ' has been positively affected by these demand drivers, leading to record levels of leasing activity and accelerating rent growth for the ' + market_or_submarket + '.' )
-
-    # #Create the Office sepecific language
-    # if sector == "Office" and yoy_rent_growth < 0 and vacancy_change > 0:
-    #         office_supply_demand_intro_language =  (' Heading into Q4 2021, office continues to face a range of demand-driven headwinds ' + 
-    #                             'Multiple factors inspired the shift, including the need for social distance, affordability, and the desire for more space. ' + 
-    #                             'The ' + market_or_submarket + 
-    #                             ' has been negatively affected by these shift in preferences, leading to rising vacancy rates and contracting rents for the ' + market_or_submarket + '.' )
-    
-    # else:
-    #     office_supply_demand_intro_language = (' Heading into Q4 2021, the office continues to face a range of demand-driven headwinds ' + 
-    #                             'Multiple factors inspired the shift, including the need for social distance, affordability, and the desire for more space. ' + 
-    #                             'The ' + market_or_submarket + 
-    #                             ' has been positively affected by these shift in preferences, leading to record levels of leasing activity and accelerating rent growth. ' )
+        
+            # #Sentance 1
+            # 'Leasing activity in the '                                  +
+            # market_or_submarket                                         +
+            # ' has '                                                     +
+            # leasing_activity_change                                     +
+            # ' over the past year '                                      +
+            # demand_inventory_growth_and_or_but                          +
+            # ' has '                                                     + 
+            # demand_fallenshort_or_exceeding_inventorygrowth             + 
+            # ' inventory growth. '                                       +
+            
+            # #Sentance 2
+            # 'With demand '                                              +
+            # demand_fallingshort_or_exceeding_inventorygrowth            +
+            # ' new supply, '                                             +
 
 
 
-
-
-
-    return('Leasing activity in the '                                   +
-            market_or_submarket                                         +
-            ' has '                                                     +
-            leasing_activity_change                                     +
-            ' over the past year '                                      +
-            demand_inventory_growth_and_or_but                          +
-            ' has '                                                     + 
-            demand_fallenshort_or_exceeding_inventorygrowth            + 
-            ' inventory growth. '                                       +
-            'With demand '                                              +
-            demand_fallingshort_or_exceeding_inventorygrowth            +
-            ' new supply, vacancy rates have '                          +
+            #Sentance 1
+            leasing_activity_intro_clause                               +
+            ', vacancy rates have '                                      +
             yoy_submarket_vacancy_growth_description                    +
             ' '                                                         +
             yoy_submarket_vacancy_growth                                +
@@ -874,8 +980,6 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
             ' to '                                                      +
             submarket_vacancy                                           +
             ', '                                                        +
-            yoy_submarket_vacancy_growth_description2                    +
-            ' '                                                         +
             avg_relationship_description                                +
             ' the 10-year average of '                                  +
             submarket_avg_vacancy                                       +
@@ -885,7 +989,9 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
             market_or_national                                          +     
             ' average by '                                              +
             market_submarket_differnce                                  +
-            ' bps'                                                     +
+            ' bps'                                                      +
+
+            #Sentance 3
             '. In the '                                                 +
             quarter                                                     +
             ' quarter, the '                                            +
@@ -900,9 +1006,13 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
             previous_quarter_net_absorption                             +
             ' '                                                         +
             unit_or_sqft                                                +
-            ' of net absorption in '                                +
+            ' of net absorption in '                                    +
             previous_quarter                                            + 
             '. '                                                        +
+            
+            
+            
+            #Sentance 4
             ' With '                                                    +
             net_absorption                                              +
             ' '                                                         +
@@ -916,11 +1026,12 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
             qoq_submarket_vacancy_growth                                +
             ' bps since '                                               +
             previous_quarter[5:]                                        +
-            '.'                                                         +
-            ' Combined, net absorption through the first '              +
-            'three'                                                     +
-            ' quarters of '                                             +
-            '2021'                                                      +
+            '. '                                                        +
+            
+            #Sentance 5
+            'Combined, net absorption through '                         +
+            number_of_quarters                                          +
+            latest_year                                                 +
             ' totaled '                                                 +
             current_year_total_net_absorption                           +
             ' '                                                         +
