@@ -276,7 +276,7 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
             overview_sector_specific_language =  (' Prior to 2020 consumer demand was shifting from brick-and-mortar stores towards online channels, putting pressure on vacancy rates and rent growth across most markets' + 
                                 'Despite vacancy rate compression in the ' +
                                 market_or_submarket +
-                                'over the past year, rents managed to grow, expanding ' + "{:,.1f}%".format(yoy_rent_growth) + ' since 2020 Q3.')
+                                ' over the past year, rents managed to grow, expanding ' + "{:,.1f}%".format(yoy_rent_growth) + ' since 2020 Q3.')
 
         else:
             overview_sector_specific_language = (' Prior to 2020 consumer demand was shifting from brick-and-mortar stores towards online channels, putting pressure on vacancy rates and rent growth across most markets' + 
@@ -439,24 +439,24 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
 
     #Section 4.2: Create the conclusion of the overivew language
     overview_conclusion_language = (
-               ' Over the past twelve months, the ' +
-                market_or_submarket                +
-                ' has seen demand '                +
-                demand_change                      +
-                ' '                                +
-                demand_change_vacancy_relationship +
-                ' to the current rate of '         +
-                vacancy                            +
-                '.'                                +
-                ' Meanwhile, rents '               +
-                rent_growth_description            +
-                ' at an annual rate of '           +
-                yoy_rent_growth                    +
-                " as of "                          +
-                latest_quarter                     +
-                '. '                               +
-                construcion_sentance               +       
-                capital_markets_sentance           +
+            #    ' Over the past twelve months, the ' +
+            #     market_or_submarket                +
+            #     ' has seen demand '                +
+            #     demand_change                      +
+            #     ' '                                +
+            #     demand_change_vacancy_relationship +
+            #     ' to the current rate of '         +
+            #     vacancy                            +
+            #     '.'                                +
+            #     ' Meanwhile, rents '               +
+            #     rent_growth_description            +
+            #     ' at an annual rate of '           +
+            #     yoy_rent_growth                    +
+            #     " as of "                          +
+            #     latest_quarter                     +
+            #     '. '                               +
+            #     construcion_sentance               +       
+            #     capital_markets_sentance           +
                 'With fundamentals '               +
                 fundamentals_change                +
                 ', values have '                   +
@@ -481,8 +481,8 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
     #Section 4.3: Combine the 3 langauge variables together to form the overview paragraph and return it
     overview_language = (
                         overview_intro_language     +   
-                        overview_sector_specific_language
-                        #overview_conclusion_language   
+                        overview_sector_specific_language +
+                        overview_conclusion_language   
                         )
     
     return(overview_language)    
