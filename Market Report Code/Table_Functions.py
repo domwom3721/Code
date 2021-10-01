@@ -782,6 +782,12 @@ def AddMarketPerformanceTable(document,col_width,market_data_frame,sector): #Fun
     #Now create an annual dataset where we keep the last period of each year besides the current year
     market_data_frame = market_data_frame.sort_values(by=['Year','Quarter'],ascending = False) 
 
+
+    for var in variables_of_interest:
+        market_data_frame[var] = market_data_frame[var].fillna('NA')
+
+
+
     #Keep all rows from the current year and the last quarter from all previous years
     market_data_frame_last2_quarters     = market_data_frame.head(2) #dataframe with 2 most recent quarters
     market_data_frame                    = market_data_frame[2:]     #dataframe with remaining quarters
