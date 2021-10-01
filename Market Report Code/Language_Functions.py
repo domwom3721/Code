@@ -1360,16 +1360,16 @@ def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,p
     #Section 2: Begin making varaiables that are conditional on the variables we have created in section 1
 
     #Section 3: Format variables
-    inventory_growth_pct                        = "{:,.1f}%".format(abs(inventory_growth_pct)) 
-    delivered_inventory                         = "{:,.0f}".format(delivered_inventory)
-    demolished_inventory                        = "{:,.0f}".format(demolished_inventory)
+    inventory_growth_pct                        = "{:,.1f}%".format(inventory_growth_pct)
+    # delivered_inventory                         = "{:,.0f}".format(delivered_inventory)
+    # demolished_inventory                        = "{:,.0f}".format(demolished_inventory)
 
     #Determine if developers are historically active here
     #If theres at least 1 deliverable per quarter, active
 
-    if median_construction_level >= 10:
-        developers_active_or_inactive = ('Developers have been active for much of the past ten years. In fact, they have added ' + 
-                                        delivered_inventory +
+    if median_construction_level >= 1:
+        developers_historically_active_or_inactive = ('Developers have been active for much of the past ten years. In fact, they have added ' + 
+                                        "{:,.0f}".format(delivered_inventory)  +
                                         ' '                 +
                                         unit_or_sqft        +
                                         ' to the '          +
@@ -1378,28 +1378,51 @@ def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,p
                                          inventory_growth_pct +
                                           '. '
                                         )
+    #Inactive devlopers
     else:
-        developers_active_or_inactive = ('Developers have been inactive for much of the past ten years. In fact, they have added just ' + 
-                                        delivered_inventory + 
+        developers_historically_active_or_inactive = ('Developers have been inactive for much of the past ten years. ')
+        
+        #If they've added to inventory, add a sentance about that
+        if delivered_inventory > 0:
+            developers_historically_active_or_inactive = developers_historically_active_or_inactive +  (
+                                        'In fact, they have added just ' + 
+                                        "{:,.0f}".format(delivered_inventory) + 
                                         ' '                 +
                                         unit_or_sqft        +
                                         ' to the '          +
                                         market_or_submarket + 
-                                        ' over that time. Developers have also removed space for higher and better use, removing ' + 
-                                        demolished_inventory + 
-                                        ' ' +
-                                        unit_or_sqft + 
-                                         '. '
-                                         )
+                                        ' over that time. '
+                                                                                                        )
+            #If they've demolished space, add a sentance about that
+            if demolished_inventory > 0:
+                developers_historically_active_or_inactive = developers_historically_active_or_inactive + ('Developers have also removed space for higher and better use, removing ' + 
+                                            "{:,.0f}".format(demolished_inventory) + 
+                                            ' ' +
+                                            unit_or_sqft + 
+                                            '. '
+                                            )
+        #If developers haven't added to inventory, we don't add that sentance
+        else:
+
+            #If they've demolished space, add a sentance about that
+            if demolished_inventory > 0:
+                developers_historically_active_or_inactive = developers_historically_active_or_inactive +  ('They have removed space for higher and better use, removing ' + 
+                                            "{:,.0f}".format(demolished_inventory) + 
+                                            ' ' +
+                                            unit_or_sqft + 
+                                            '. '
+                                            )
+
+
 
     #Section 4: Put together our variables into sentances and return the language
     
 
     #Determine if the supply pipeline is active or not    
     if under_construction > 0:
-        active_or_inactive = 'Developers are currently active in the ' + market_or_submarket + ' with ' + millify(under_construction,'') + ' ' + unit_or_sqft + ', or the equivalent of ' + "{:,.1f}%".format(under_construction_share)   + ' of existing inventory, underway. '
+        currently_active_or_inactive = 'Developers are currently active in the ' + market_or_submarket + ' with ' + millify(under_construction,'') + ' ' + unit_or_sqft + ', or the equivalent of ' + "{:,.1f}%".format(under_construction_share)   + ' of existing inventory, underway. '
     else:
-        active_or_inactive = 'Developers are not currently active in the ' + market_or_submarket + '. The empty pipeline will likely limit supply pressure on vacancies, boding well for fundamentals in the near term. '
+        currently_active_or_inactive = 'Developers are not currently active in the ' + market_or_submarket + '. The empty pipeline will likely limit supply pressure on vacancies, boding well for fundamentals in the near term. '
 
 
     #Determine 10 year inventory growth   
@@ -1416,30 +1439,30 @@ def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,p
     #    inventory_expand_or_contract = 'Over the past ten years, inventory levels have remained constant in the ' + market_or_submarket + '.'
 
 
-    #Determine qoq trends
-    if under_construction > 0 and previous_quarter_under_construction == 0:
-        elevated_or_down_compared_to_previous_quarter = ' Developers have resumed activity after a brief pause. With ' +  "{:,.0f}".format(under_construction) + ' ' + unit_or_sqft + ' underway, inventory will expand by ' + "{:,.1f}%".format(under_construction_share) + '. While the pipeline is active, projects will not likely deliver over the 2nd half of the year, limiting supply pressure on vacancy rates.'
+    # #Determine qoq trends
+    # if under_construction > 0 and previous_quarter_under_construction == 0:
+    #     elevated_or_down_compared_to_previous_quarter = ' Developers have resumed activity after a brief pause. With ' +  "{:,.0f}".format(under_construction) + ' ' + unit_or_sqft + ' underway, inventory will expand by ' + "{:,.1f}%".format(under_construction_share) + '. While the pipeline is active, projects will not likely deliver over the 2nd half of the year, limiting supply pressure on vacancy rates.'
     
-    elif under_construction > 0 and previous_quarter_under_construction > 0 and under_construction == previous_quarter_under_construction:     
-        elevated_or_down_compared_to_previous_quarter = """ Developers have remained active with the same level of construction underway in the previous quarter."""
+    # elif under_construction > 0 and previous_quarter_under_construction > 0 and under_construction == previous_quarter_under_construction:     
+    #     elevated_or_down_compared_to_previous_quarter = """ Developers have remained active with the same level of construction underway in the previous quarter."""
     
-    elif under_construction > 0 and previous_quarter_under_construction > 0 and under_construction > previous_quarter_under_construction:     
-        elevated_or_down_compared_to_previous_quarter = """ Developers have remained active with current construction levels surpassing the previous quarter's."""
+    # elif under_construction > 0 and previous_quarter_under_construction > 0 and under_construction > previous_quarter_under_construction:     
+    #     elevated_or_down_compared_to_previous_quarter = """ Developers have remained active with current construction levels surpassing the previous quarter's."""
     
-    elif under_construction > 0 and previous_quarter_under_construction > 0 and under_construction < previous_quarter_under_construction:     
-        elevated_or_down_compared_to_previous_quarter = """ Developers have remained active, but current construction levels are below the previous quarter's."""
+    # elif under_construction > 0 and previous_quarter_under_construction > 0 and under_construction < previous_quarter_under_construction:     
+    #     elevated_or_down_compared_to_previous_quarter = """ Developers have remained active, but current construction levels are below the previous quarter's."""
 
-    elif under_construction > 0 and previous_quarter_under_construction > 0:     
-        elevated_or_down_compared_to_previous_quarter = ' Developers have remained active with ' +  "{:,.0f}".format(under_construction) + ' ' + unit_or_sqft + ' underway.'
+    # elif under_construction > 0 and previous_quarter_under_construction > 0:     
+    #     elevated_or_down_compared_to_previous_quarter = ' Developers have remained active with ' +  "{:,.0f}".format(under_construction) + ' ' + unit_or_sqft + ' underway.'
     
-    elif under_construction <= 0 and previous_quarter_under_construction > 0:
-         elevated_or_down_compared_to_previous_quarter = ' After activity in the previous quarter, developers have paused and nothing is currently underway. The empty pipeline will likely limit supply pressure on vacancies, boding well for fundamentals in the near term.'
+    # elif under_construction <= 0 and previous_quarter_under_construction > 0:
+    #      elevated_or_down_compared_to_previous_quarter = ' After activity in the previous quarter, developers have paused and nothing is currently underway. The empty pipeline will likely limit supply pressure on vacancies, boding well for fundamentals in the near term.'
     
-    elif under_construction == previous_quarter_under_construction == 0:
-        elevated_or_down_compared_to_previous_quarter = ' Development activity has been steady with nothing underway in the current or previous quarter.' 
+    # elif under_construction == previous_quarter_under_construction == 0:
+    #     elevated_or_down_compared_to_previous_quarter = ' Development activity has been steady with nothing underway in the current or previous quarter.' 
 
     
-    return(developers_active_or_inactive + active_or_inactive)
+    return(developers_historically_active_or_inactive + currently_active_or_inactive)
 
 #Language for sales section
 def CreateSaleLanguage(data_frame,data_frame2,data_frame3,market_title,primary_market,sector,writeup_directory):
