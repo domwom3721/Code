@@ -894,6 +894,10 @@ def AddSubmarketsPerformanceTable(document,col_width,submarkets_data_frame,secto
     else:
         variables_of_interest = ['Submarket', 'Inventory SF', 'Vacancy Rate',  'Availability Rate', 'Under Construction SF', 'Market Rent/SF']
 
+    
+    for var in variables_of_interest:
+        submarkets_data_frame[var] = submarkets_data_frame[var].fillna('NA')
+
     #Sort from largest to smallest 
     submarkets_data_frame = submarkets_data_frame.sort_values(by=[variables_of_interest[1],'Submarket'],ascending = False) 
     
