@@ -1312,7 +1312,7 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
             submarket_qoq_growth +
             ', '                 +
             qoq_pushing_or_contracting_annual_growth +
-             ' annual growth to ' +
+             ' ' +
             submarket_yoy_growth +
             '.' 
 
