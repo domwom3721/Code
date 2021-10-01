@@ -273,13 +273,13 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
                                 market_or_submarket + ' over the past year, rents contracted, decreasing ' + "{:,.1f}%".format(yoy_rent_growth) + ' since 2020 Q3.')
 
         elif yoy_rent_growth > 0 and vacancy_change < 0:
-            overview_sector_specific_language =  (' Prior to 2020 consumer demand was shifting from brick-and-mortar stores towards online channels, putting pressure on vacancy rates and rent growth across most markets' + 
+            overview_sector_specific_language =  (' Prior to 2020 consumer demand was shifting from brick-and-mortar stores towards online channels, putting pressure on vacancy rates and rent growth across most markets. ' + 
                                 'Despite vacancy rate compression in the ' +
                                 market_or_submarket +
                                 ' over the past year, rents managed to grow, expanding ' + "{:,.1f}%".format(yoy_rent_growth) + ' since 2020 Q3.')
 
         else:
-            overview_sector_specific_language = (' Prior to 2020 consumer demand was shifting from brick-and-mortar stores towards online channels, putting pressure on vacancy rates and rent growth across most markets' + 
+            overview_sector_specific_language = (' Prior to 2020 consumer demand was shifting from brick-and-mortar stores towards online channels, putting pressure on vacancy rates and rent growth across most markets.' + 
                                 'While these trends have continued through the pandemic for most ' + market_or_submarket + 's, retail properties in the ' + 
                                 market_or_submarket + ' have shown resounding strength since the pandemic. In fact, vacancy rates have compressed to ' + "{:,.1f}%".format(vacancy) + ' while rents have expanded ' + "{:,.1f}%".format(yoy_rent_growth) + '.')  
 
