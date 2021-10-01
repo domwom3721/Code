@@ -854,7 +854,7 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
         elif yoy_submarket_vacancy_growth == 0:
             #12m net absorption grew over past year
             if leasing_change > 0:
-                leasing_activity_intro_clause = 'Despite falling invetory and growing demand'
+                leasing_activity_intro_clause = 'Despite falling inventory and growing demand'
 
             #12m net absorption declined over past year
             elif  leasing_change < 0:
@@ -969,7 +969,7 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
 
 
 
-            #Sentance 1
+            #Sentence 1
             leasing_activity_intro_clause                               +
             ', vacancy rates have '                                      +
             yoy_submarket_vacancy_growth_description                    +
@@ -991,7 +991,7 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
             market_submarket_differnce                                  +
             ' bps'                                                      +
 
-            #Sentance 3
+            #Sentence 2
             '. In the '                                                 +
             quarter                                                     +
             ' quarter, the '                                            +
@@ -1012,7 +1012,7 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
             
             
             
-            #Sentance 4
+            #Sentence 3
             ' With '                                                    +
             net_absorption                                              +
             ' '                                                         +
@@ -1028,7 +1028,7 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
             previous_quarter[5:]                                        +
             '. '                                                        +
             
-            #Sentance 5
+            #Sentence 4
             'Combined, net absorption through '                         +
             number_of_quarters                                          +
             latest_year                                                 +
