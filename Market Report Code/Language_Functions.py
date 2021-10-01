@@ -457,7 +457,7 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
             #     '. '                               +
             #     construcion_sentance               +       
             #     capital_markets_sentance           +
-                'With fundamentals '               +
+                ' With fundamentals '               +
                 fundamentals_change                +
                 ', values have '                   +
                 asset_value_change_description     +
