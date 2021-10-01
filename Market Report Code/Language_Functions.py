@@ -1238,7 +1238,7 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
             market_annual_growth_description +
             ' '                             +
             market_decade_rent_growth_annual +
-            ' per annum, '+
+            ' per annum over the past decade, '+
             ten_year_growth_inline_or_exceeding +
             ' the ' +
             market_or_nation +
@@ -1291,7 +1291,7 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
             submarket_annual_growth_description +
             ' '  +
             submarket_decade_rent_growth_annual +
-           ' per annum, ' +
+           ' per annum over the past decade, ' +
            ten_year_growth_inline_or_exceeding +
            ' the ' +
             market_or_nation +
