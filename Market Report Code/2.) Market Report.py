@@ -802,7 +802,7 @@ def OutlookSection():
 def AppendixSection():
     if market == primary_market:
         #Appendix Section
-        if  len(df_submarkets) > 1:
+        if  len(df_submarkets) > 0:
             document.add_paragraph('')
             AddHeading(document,'Appendix',2)
             #Add a table with stats on all submarkets in the market
