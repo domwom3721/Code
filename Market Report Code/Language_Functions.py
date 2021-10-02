@@ -243,13 +243,13 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
 
                    
     #Describe out change in fundamentals
-    if yoy_rent_growth >= 0     and vacancy_change <= 0: #if rent is growing and vacancy is falling we call fundamentals improving
+    if yoy_rent_growth >= 0     and vacancy_change <= 0: #if rent is growing (or flat) and vacancy is falling (or flat) we call fundamentals improving
         fundamentals_change = 'improving'
     elif yoy_rent_growth < 0 and vacancy_change > 0 : #if rent is falling and vacancy is rising we call fundamentals softening
         fundamentals_change = 'softening'
     elif (yoy_rent_growth > 0   and vacancy_change  > 0) or (yoy_rent_growth < 0 and vacancy_change < 0 ) : #if rents are falling but vacancy is also falling OR vice versa, then mixed
         fundamentals_change = 'mixed'
-    elif (yoy_rent_growth == 0 and vacancy_change == 0):
+    elif (yoy_rent_growth == 0 and vacancy_change == 0): #no change in rent or vacancy
         fundamentals_change = 'stable'
     else:
         fundamentals_change = '[improving/softening/mixed/stable]'
