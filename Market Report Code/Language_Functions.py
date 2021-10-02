@@ -1798,7 +1798,7 @@ def CreateSaleLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
             asset_value                                      +
             '/'                                              +
             unit_or_sqft_singular                            +
-            ' and have '                                     +
+            ' and has '                                     +
             asset_value_change_description                   +
             ' '                                              +
             asset_value_change                               + 
