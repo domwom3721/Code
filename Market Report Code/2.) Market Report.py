@@ -800,22 +800,22 @@ def OutlookSection():
     conclusion_paragraph.paragraph_format.space_before = Pt(0)
 
 def AppendixSection():
-
     if market == primary_market:
         #Appendix Section
-        document.add_paragraph('')
-        AddHeading(document,'Appendix',2)
-        #Add a table with stats on all submarkets in the market
-        submarket_performance_table_title_paragraph = document.add_paragraph(market_title + ' ' + sector + ' Market Overview' )
-        submarket_performance_table_title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        submarket_performance_table_title_paragraph.paragraph_format.space_after  = Pt(6)
-        submarket_performance_table_title_paragraph.paragraph_format.space_before = Pt(12)
+        if  len(df_submarkets) > 1:
+            document.add_paragraph('')
+            AddHeading(document,'Appendix',2)
+            #Add a table with stats on all submarkets in the market
+            submarket_performance_table_title_paragraph = document.add_paragraph(market_title + ' ' + sector + ' Market Overview' )
+            submarket_performance_table_title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            submarket_performance_table_title_paragraph.paragraph_format.space_after  = Pt(6)
+            submarket_performance_table_title_paragraph.paragraph_format.space_before = Pt(12)
 
-        for run in submarket_performance_table_title_paragraph.runs:
-                    font = run.font
-                    font.name = 'Avenir Next LT Pro Medium'
-        AddSubmarketsPerformanceTable(document = document, submarkets_data_frame = df_submarkets, col_width = 1.2, sector=sector)
-        document.add_paragraph('')
+            for run in submarket_performance_table_title_paragraph.runs:
+                        font = run.font
+                        font.name = 'Avenir Next LT Pro Medium'
+            AddSubmarketsPerformanceTable(document = document, submarkets_data_frame = df_submarkets, col_width = 1.2, sector=sector)
+            document.add_paragraph('')
 
 
 def GetLanguage(writeup_directory):
