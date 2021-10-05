@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 import re
 from tkinter import *
+from tkinter import ttk
 
 from datetime import datetime
 import requests
@@ -1199,50 +1200,89 @@ def CreateMarketReport():
     UpdateSalesforceMarketList(markets_list = dropbox_primary_markets, submarkets_list = dropbox_markets, sector_list = dropbox_sectors, sector_code_list = dropbox_sectors_codes, dropbox_links_list = dropbox_links)
 
 def user_selects_market(market_list):
-    market_list.insert(0,'All')
     if len(df_list) == 4:
-        market_list.remove('All')
         return(market_list)
-    #GUI that lets user specify which sectors they want to run
-    ws = Tk()
-    ws.title('Research Automation Project - Market Reports')
-    ws.geometry('400x300')
-    ws.config(bg='#404858') 
-
-    def select_market(choice):
-        global selected_market
-        selected_market = variable.get()
-        
-    # setting variable for Integers
-    variable = StringVar()
-    variable.set('Select a market')
-
-    # creating widget
-    dropdown = OptionMenu(
-        ws,
-        variable,
-        *market_list,
-        command=select_market
-    )
-
-    # positioning widget
-    dropdown.pack(expand=True)
-
-    # infinite loop 
-    ws.mainloop()
     
-    # button = Button(master, text="OK", command=SelectMarket)
-    # button.pack()
+    market_list.insert(0,'All')
+    
+    def callbackFunc(event):
+        global  selected_market
+        selected_market = comboExample.get()
+        
+     
+    app = Tk() 
+    app.geometry('400x300')
+    app.config(bg='#404858') 
 
-    try:
-        if selected_market == 'All':
+    labelTop = Label(app,
+                    text = "Choose your market")
+    labelTop.grid(column=0, row=0)
+
+    comboExample = ttk.Combobox(app, 
+                            values=market_list)
+
+
+    comboExample.grid(column=0, row=1)
+    comboExample.current(1)
+
+    comboExample.bind("<<ComboboxSelected>>", callbackFunc)
+    app.mainloop()
+
+
+    if selected_market == 'All':
             market_list.remove('All')
             return(market_list)
+    else:
+         return([selected_market])
 
-        return([selected_market])
-    except Exception as e:
-        print(e)
-        return(market_list)
+
+
+    # ###############
+    # market_list.insert(0,'All')
+    # if len(df_list) == 4:
+    #     market_list.remove('All')
+    #     return(market_list)
+    
+    # #GUI that lets user specify which sectors they want to run
+    # ws = Tk()
+    # ws.title('Research Automation Project - Market Reports')
+    # ws.geometry('400x300')
+    # ws.config(bg='#404858') 
+
+    # def select_market():
+    #     global selected_market
+    #     selected_market = variable.get()
+        
+    # # setting variable for Integers
+    # variable = StringVar()
+    # variable.set('Select a market')
+
+    # # creating widget
+    # dropdown = OptionMenu(
+    #     ws,
+    #     variable,
+    #     *market_list,
+    #     command=select_market
+    # )
+
+    # # positioning widget
+    # dropdown.pack(expand=True)
+
+    # # infinite loop 
+    # ws.mainloop()
+    
+    # # button = Button(master, text="OK", command=SelectMarket)
+    # # button.pack()
+
+    # try:
+    #     if selected_market == 'All':
+    #         market_list.remove('All')
+    #         return(market_list)
+
+    #     return([selected_market])
+    # except Exception as e:
+    #     print(e)
+    #     return(market_list)
 
 def CreateDirectoryCSV():
     global dropbox_markets,dropbox_research_names,dropbox_analysis_types,dropbox_states,dropbox_sectors,dropbox_sectors_codes,dropbox_links,dropbox_versions,dropbox_statuses,dropbox_document_names
