@@ -1146,9 +1146,8 @@ def CreateMarketReport():
         
 
         #This function calls all the graph functions defined in the Graph_Functions.py file
-        CreateAllGraphs(df_market_cut,df_primary_market,df_nation,output_directory,market_title,primary_market,sector) 
-
-
+        CreateAllGraphs(submarket_data_frame = df_market_cut , market_data_frame = df_primary_market, natioanl_data_frame = df_nation , folder = output_directory, market_title = market_title, primary_market = primary_market, sector=sector)
+  
         #Create Data for overview table
         #There are 4 possible permuations for this table (market/apt, market/nonapt, submarket/apt, submakert/nonapt)
         data_for_overview_table = GetOverviewTable()
