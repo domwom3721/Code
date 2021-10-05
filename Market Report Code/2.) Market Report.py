@@ -1205,14 +1205,15 @@ def user_selects_market(market_list):
     
     market_list.insert(0,'All')
     
-    def callbackFunc(event):
+    def select_market(event):
         global  selected_market
         selected_market = comboExample.get()
         
      
     app = Tk() 
     app.geometry('400x300')
-    app.config(bg='#404858') 
+    app.config(bg='#404858')
+    app.title('Research Automation Project - Market Reports') 
 
     labelTop = Label(app,
                     text = "Choose your market")
@@ -1223,9 +1224,8 @@ def user_selects_market(market_list):
 
 
     comboExample.grid(column=0, row=1)
-    comboExample.current(1)
-
-    comboExample.bind("<<ComboboxSelected>>", callbackFunc)
+    comboExample.current(0)
+    comboExample.bind("<<ComboboxSelected>>", select_market)
     app.mainloop()
 
 
