@@ -89,7 +89,7 @@ def PullCoStarWriteUp(section_names,writeup_directory):
         return('')
 
 #Langauge for overview section
-def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,primary_market,sector,writeup_directory):
+def CreateOverviewLanguage(submarket_data_frame,market_data_frame,natioanl_data_frame,market_title,primary_market,sector,writeup_directory):
 
     #Pull writeup from the CoStar Html page if we have one saved
     CoStarWriteUp = PullCoStarWriteUp(section_names= ['Summary'],writeup_directory = writeup_directory)
@@ -98,61 +98,48 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
     
     #Section 1: Begin making variables for the overview language that come from the data: 
     if sector == 'Multifamily':
-        yoy_rent_growth                 = data_frame['YoY Market Effective Rent/Unit Growth'].iloc[-1]
-        qoq_rent_growth                 = data_frame['QoQ Market Effective Rent/Unit Growth'].iloc[-1]
-        under_construction              = data_frame['Under Construction Units'].iloc[-1]
-        under_construction_share        = data_frame['Under Construction %'].iloc[-1]
-        
-        asset_value                     = data_frame['Asset Value/Unit'].iloc[-1]         #Get current asset value
-        asset_value_change              = data_frame['YoY Asset Value/Unit Growth'].iloc[-1]
-
+        yoy_rent_growth                 = submarket_data_frame['YoY Market Effective Rent/Unit Growth'].iloc[-1]
+        qoq_rent_growth                 = submarket_data_frame['QoQ Market Effective Rent/Unit Growth'].iloc[-1]
+        under_construction              = submarket_data_frame['Under Construction Units'].iloc[-1]
+        under_construction_share        = submarket_data_frame['Under Construction %'].iloc[-1]
+        asset_value                     = submarket_data_frame['Asset Value/Unit'].iloc[-1]         #Get current asset value
+        asset_value_change              = submarket_data_frame['YoY Asset Value/Unit Growth'].iloc[-1]
         net_absorption_var_name         = 'Absorption Units'
-
-        submarket_inventory            = data_frame['Inventory Units'].iloc[-1]
-        market_inventory               = data_frame2['Inventory Units'].iloc[-1]
-
+        submarket_inventory            = submarket_data_frame['Inventory Units'].iloc[-1]
+        market_inventory               = market_data_frame['Inventory Units'].iloc[-1]
         unit_or_sqft                    = 'unit'
         unit_or_sqft_singular           = 'unit'
         extra_s                         = 's'
 
 
     else: #non multifamily
-        yoy_rent_growth                 = data_frame['YoY Rent Growth'].iloc[-1]
+        yoy_rent_growth                 = submarket_data_frame['YoY Rent Growth'].iloc[-1]
         yoy_rent_growth                 = yoy_rent_growth
-        qoq_rent_growth                 = data_frame['QoQ Rent Growth'].iloc[-1]
-        under_construction              = data_frame['Under Construction SF'].iloc[-1]
-        under_construction_share        = data_frame['Under Construction %'].iloc[-1]
-
+        qoq_rent_growth                 = submarket_data_frame['QoQ Rent Growth'].iloc[-1]
+        under_construction              = submarket_data_frame['Under Construction SF'].iloc[-1]
+        under_construction_share        = submarket_data_frame['Under Construction %'].iloc[-1]
         #Get current asset value
-        asset_value                     = data_frame['Asset Value/Sqft'].iloc[-1]
-        asset_value_change              = data_frame['YoY Asset Value/Sqft Growth'].iloc[-1]
+        asset_value                     = submarket_data_frame['Asset Value/Sqft'].iloc[-1]
+        asset_value_change              = submarket_data_frame['YoY Asset Value/Sqft Growth'].iloc[-1]
         net_absorption_var_name         = 'Net Absorption SF'
-        
-        
         #Get Submarket and market inventory and the fraction of the inventory the submarket makes up
-        submarket_inventory             = data_frame['Inventory SF'].iloc[-1]
-        market_inventory                = data_frame2['Inventory SF'].iloc[-1]
-
+        submarket_inventory             = submarket_data_frame['Inventory SF'].iloc[-1]
+        market_inventory                = market_data_frame['Inventory SF'].iloc[-1]
         unit_or_sqft                    = 'square feet'
         unit_or_sqft_singular           = 'SF'
         extra_s                         = ''
     
-
-
-
     submarket_inventory_fraction        = (submarket_inventory/market_inventory) * 100
-    latest_quarter                      = data_frame['Period'].iloc[-1]
-    current_sale_volume                 = data_frame['Total Sales Volume'].iloc[-1]
-    current_transaction_count           = data_frame['Sales Volume Transactions'].iloc[-1]
-    vacancy                             = data_frame['Vacancy Rate'].iloc[-1]
-    vacancy_change                      = data_frame['YoY Vacancy Growth'].iloc[-1]
-    avg_vacancy                         = data_frame['Vacancy Rate'].mean()
+    current_sale_volume                 = submarket_data_frame['Total Sales Volume'].iloc[-1]
+    current_transaction_count           = submarket_data_frame['Sales Volume Transactions'].iloc[-1]
+    vacancy                             = submarket_data_frame['Vacancy Rate'].iloc[-1]
+    vacancy_change                      = submarket_data_frame['YoY Vacancy Growth'].iloc[-1]
+    avg_vacancy                         = submarket_data_frame['Vacancy Rate'].mean()
 
     #Get most recent cap rate and change in cap rate
-    cap_rate                            = data_frame['Market Cap Rate'].iloc[-1] 
-    avg_cap_rate                        = data_frame['Market Cap Rate'].mean() 
-    cap_rate_yoy_change                 = data_frame['YoY Market Cap Rate Growth'].iloc[-1]
-    demand_change                       = data_frame[(net_absorption_var_name + ' 12 Mo')].iloc[-1] - data_frame[(net_absorption_var_name + ' 12 Mo')].iloc[-5]
+    cap_rate                            = submarket_data_frame['Market Cap Rate'].iloc[-1] 
+    avg_cap_rate                        = submarket_data_frame['Market Cap Rate'].mean() 
+    cap_rate_yoy_change                 = submarket_data_frame['YoY Market Cap Rate Growth'].iloc[-1]
 
 
     #Section 2: Begin making variables that are conditional upon the variables created from the data itself
@@ -164,44 +151,9 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
         asset_value_change_description = 'compressed'
     else:
         asset_value_change_description = 'remained steady'
-    
-    #Describe YoY rent growth
-    if yoy_rent_growth > 0:
-        rent_growth_description = 'expanded'
-    elif yoy_rent_growth < 0:
-        rent_growth_description = 'compressed'
-    else:
-        rent_growth_description = 'remained steady'
 
-    #Get Language for rent trends
-    if yoy_rent_growth > 0 and qoq_rent_growth < 0:
-        rent_growth_description = 'have expanded over the past year but compressed in the past quarter'
 
-    elif yoy_rent_growth < 0 and qoq_rent_growth < 0:
-        rent_growth_description = 'have contracted over the past year and continue to soften'
-
-    
-    #Describe YoY change in vacancy rates
-    if vacancy_change > 0:
-        vacancy_change_description = 'expand'
-    elif vacancy_change < 0:
-        vacancy_change_description = 'compress'
-    elif vacancy_change == 0:
-        vacancy_change_description = 'remained steady'
-    else:
-        vacancy_change_description = ''
-
-    #Describe vacancy rates relative to the historical average
-    if vacancy > avg_vacancy:
-        vacancy_avg_above_or_below = 'above'
-    elif vacancy < avg_vacancy:
-        vacancy_avg_above_or_below = 'below'
-    elif vacancy == avg_vacancy:
-        vacancy_avg_above_or_below = 'at'
-    else:
-        ''
-
-    #Describe cap rates relative to the historical average
+    #Relationship betweeen current cap rate and the historical average
     if cap_rate < avg_cap_rate:
         cap_rate_above_below_average = 'below'
     elif cap_rate > avg_cap_rate:
@@ -217,31 +169,7 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
     elif cap_rate_yoy_change == 0 :
         cap_rate_change_description = 'seen minimal movement'
 
-    #Describe change in demand over the last year
-    if demand_change > 0:
-        demand_change = 'accelerate'
-    elif demand_change < 0:
-        demand_change = 'slow'
-    elif demand_change == 0:
-        demand_change = 'remain steady'
-    else:
-         demand_change = '[accelerate/slow/remained steady]'
-    
-    #Describe relationship between change in demand and change in vacancy
-    if demand_change == 'accelerate' and vacancy_change_description == 'compress':
-        demand_change_vacancy_relationship = 'causing'                          +  ' vacancy rates to '                + vacancy_change_description
-    elif demand_change == 'slow' and vacancy_change_description == 'expand':
-        demand_change_vacancy_relationship = 'causing'                          +  ' vacancy rates to '                + vacancy_change_description
-    
-    #mismatch between demand change and vacancy rates change 
-    elif demand_change == 'slow' and vacancy_change_description == 'compress':
-        demand_change_vacancy_relationship = 'but'                          +  ' vacancy rates '                + vacancy_change_description
-    elif demand_change == 'accelerate' and vacancy_change_description == 'expand':
-        demand_change_vacancy_relationship = 'but'                          +  ' vacancy rates '                + vacancy_change_description
-    else:
-        demand_change_vacancy_relationship = 'causing'                          +  ' vacancy rates to '                + vacancy_change_description
-
-                   
+   
     #Describe out change in fundamentals
     if yoy_rent_growth >= 0     and vacancy_change <= 0: #if rent is growing (or flat) and vacancy is falling (or flat) we call fundamentals improving
         fundamentals_change = 'improving'
@@ -254,17 +182,13 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
     else:
         fundamentals_change = '[improving/softening/mixed/stable]'
 
-
-
-
     #Determine if market or submarket
-    if data_frame.equals(data_frame2):
+    if submarket_data_frame.equals(market_data_frame):
         market_or_submarket = 'Market'
     else:
         market_or_submarket = 'Submarket'
 
     #Create the sector sepecific language
-    
     #Retail specific langauge
     if sector == "Retail":
         if yoy_rent_growth < 0 and vacancy_change > 0:
@@ -413,57 +337,8 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
     if (construcion_sentance == 'There are currently 0 square feet underway representing an inventory expansion of 0%.  ') or (' 0 units underway' in construcion_sentance):
         construcion_sentance = 'There is no active construction currently underway.  '
 
-    #Create the capital markets sentance
-    #Write first half of the capital markets section
-    if current_transaction_count == '1':
-        number_sales_sentanece_fragment  = ('There was only '                +
-                                            current_transaction_count        +
-                                            ' sale this quarter'                              
-                                        )
-
-    elif current_transaction_count != '0':
-        number_sales_sentanece_fragment  = ('There were '                     +
-                                            current_transaction_count        +
-                                            ' sales this quarter'                              
-                                        )
-
-    elif current_transaction_count == '0':
-        number_sales_sentanece_fragment = 'There were no transactions this quarter'
-
-    #Write second half of the capital markets section
-    if current_sale_volume != '$0':
-        sales__volume_sentanece_fragment = (
-                                        ' for a total sales volume of '       +
-                                            current_sale_volume                                
-                                            )
-    else:
-        sales__volume_sentanece_fragment = ''
-
-
-    capital_markets_sentance             =  number_sales_sentanece_fragment +  sales__volume_sentanece_fragment + '.  ' 
-                
-
-
     #Section 4.2: Create the conclusion of the overivew language
     overview_conclusion_language = (
-            #    ' Over the past twelve months, the ' +
-            #     market_or_submarket                +
-            #     ' has seen demand '                +
-            #     demand_change                      +
-            #     ' '                                +
-            #     demand_change_vacancy_relationship +
-            #     ' to the current rate of '         +
-            #     vacancy                            +
-            #     '.'                                +
-            #     ' Meanwhile, rents '               +
-            #     rent_growth_description            +
-            #     ' at an annual rate of '           +
-            #     yoy_rent_growth                    +
-            #     " as of "                          +
-            #     latest_quarter                     +
-            #     '. '                               +
-            #     construcion_sentance               +       
-            #     capital_markets_sentance           +
                 ' With fundamentals '               +
                 fundamentals_change                +
                 ', values have '                   +
@@ -481,18 +356,129 @@ def CreateOverviewLanguage(data_frame,data_frame2,data_frame3,market_title,prima
                 ' the long-term average.'
                                     )
 
-
-
-
-
     #Section 4.3: Combine the 3 langauge variables together to form the overview paragraph and return it
-    overview_language = (
-                        overview_intro_language     +   
-                        overview_sector_specific_language +
-                        overview_conclusion_language   
-                        )
-    
+    overview_language = (overview_intro_language     + overview_sector_specific_language + overview_conclusion_language)
     return(overview_language)    
+    
+    
+    #Unused code (old below)
+
+    # demand_change                       = data_frame[(net_absorption_var_name + ' 12 Mo')].iloc[-1] - data_frame[(net_absorption_var_name + ' 12 Mo')].iloc[-5]
+
+
+     # #Describe change in demand over the last year
+    # if demand_change > 0:
+    #     demand_change = 'accelerate'
+    # elif demand_change < 0:
+    #     demand_change = 'slow'
+    # elif demand_change == 0:
+    #     demand_change = 'remain steady'
+    # else:
+    #      demand_change = '[accelerate/slow/remained steady]'
+    
+
+
+    # #Describe YoY change in vacancy rates
+    # if vacancy_change > 0:
+    #     vacancy_change_description = 'expand'
+    # elif vacancy_change < 0:
+    #     vacancy_change_description = 'compress'
+    # elif vacancy_change == 0:
+    #     vacancy_change_description = 'remained steady'
+    # else:
+    #     vacancy_change_description = ''
+
+        # #Describe relationship between change in demand and change in vacancy
+    # if demand_change == 'accelerate' and vacancy_change_description == 'compress':
+    #     demand_change_vacancy_relationship = 'causing'                          +  ' vacancy rates to '                + vacancy_change_description
+    # elif demand_change == 'slow' and vacancy_change_description == 'expand':
+    #     demand_change_vacancy_relationship = 'causing'                          +  ' vacancy rates to '                + vacancy_change_description
+    
+    # #mismatch between demand change and vacancy rates change 
+    # elif demand_change == 'slow' and vacancy_change_description == 'compress':
+    #     demand_change_vacancy_relationship = 'but'                          +  ' vacancy rates '                + vacancy_change_description
+    # elif demand_change == 'accelerate' and vacancy_change_description == 'expand':
+    #     demand_change_vacancy_relationship = 'but'                          +  ' vacancy rates '                + vacancy_change_description
+    # else:
+    #     demand_change_vacancy_relationship = 'causing'                          +  ' vacancy rates to '                + vacancy_change_description
+
+                   
+
+     # #Describe vacancy rates relative to the historical average
+    # if vacancy > avg_vacancy:
+    #     vacancy_avg_above_or_below = 'above'
+    # elif vacancy < avg_vacancy:
+    #     vacancy_avg_above_or_below = 'below'
+    # elif vacancy == avg_vacancy:
+    #     vacancy_avg_above_or_below = 'at'
+    # else:
+    #     ''
+
+    #Describe cap rates relative to the historical average
+    # #Describe YoY rent growth
+    # if yoy_rent_growth > 0:
+    #     rent_growth_description = 'expanded'
+    # elif yoy_rent_growth < 0:
+    #     rent_growth_description = 'compressed'
+    # else:
+    #     rent_growth_description = 'remained steady'
+
+    # #Get Language for rent trends
+    # if yoy_rent_growth > 0 and qoq_rent_growth < 0:
+    #     rent_growth_description = 'have expanded over the past year but compressed in the past quarter'
+
+    # elif yoy_rent_growth < 0 and qoq_rent_growth < 0:
+    #     rent_growth_description = 'have contracted over the past year and continue to soften'
+
+
+    
+        # #Create the capital markets sentance
+    # #Write first half of the capital markets section
+    # if current_transaction_count == '1':
+    #     number_sales_sentanece_fragment  = ('There was only '                +
+    #                                         current_transaction_count        +
+    #                                         ' sale this quarter'                              
+    #                                     )
+
+    # elif current_transaction_count != '0':
+    #     number_sales_sentanece_fragment  = ('There were '                     +
+    #                                         current_transaction_count        +
+    #                                         ' sales this quarter'                              
+    #                                     )
+
+    # elif current_transaction_count == '0':
+    #     number_sales_sentanece_fragment = 'There were no transactions this quarter'
+
+    # #Write second half of the capital markets section
+    # if current_sale_volume != '$0':
+    #     sales__volume_sentanece_fragment = (
+    #                                     ' for a total sales volume of '       +
+    #                                         current_sale_volume                                
+    #                                         )
+    # else:
+    #     sales__volume_sentanece_fragment = ''
+
+    # capital_markets_sentance             =  number_sales_sentanece_fragment +  sales__volume_sentanece_fragment + '.  ' 
+
+
+    #    ' Over the past twelve months, the ' +
+    #     market_or_submarket                +
+    #     ' has seen demand '                +
+    #     demand_change                      +
+    #     ' '                                +
+    #     demand_change_vacancy_relationship +
+    #     ' to the current rate of '         +
+    #     vacancy                            +
+    #     '.'                                +
+    #     ' Meanwhile, rents '               +
+    #     rent_growth_description            +
+    #     ' at an annual rate of '           +
+    #     yoy_rent_growth                    +
+    #     " as of "                          +
+    #     latest_quarter                     +
+    #     '. '                               +
+    #     construcion_sentance               +       
+    #     capital_markets_sentance           +
 
 #Language for Supply and Demand Section
 def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary_market,sector,writeup_directory):
