@@ -1501,9 +1501,6 @@ def CreateConstructionLanguage(submarket_data_frame, market_data_frame, natioanl
     # elif under_construction == previous_quarter_under_construction == 0:
     #     elevated_or_down_compared_to_previous_quarter = ' Development activity has been steady with nothing underway in the current or previous quarter.' 
 
-    
-
-
 #Language for sales section
 def CreateSaleLanguage(submarket_data_frame,market_data_frame,natioanl_data_frame,market_title,primary_market,sector,writeup_directory):
     #Pull writeup from the CoStar Html page if we have one saved
@@ -1724,19 +1721,11 @@ def CreateSaleLanguage(submarket_data_frame,market_data_frame,natioanl_data_fram
         # else:     
         #     investment_volume_change = 'With uncertainty surrounding the pandemic, transaction activity has slowed. '
 
-
 #Language for outlook section
-def CreateOutlookLanguage(data_frame,data_frame2,data_frame3,market_title,primary_market,sector,writeup_directory):
-
-    #Custom market title change for the NYC reports for bank clients
-    if market_title == 'Manhattan - NY':
-        market_title = 'Manhattan'
-
-    if primary_market == 'Manhattan - NY':
-        primary_market = 'Manhattan'
+def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_frame,market_title,primary_market,sector,writeup_directory)):
 
     #Section 1: Begin making variables for the overview language that come from the data:     
-    if data_frame.equals(data_frame2):
+    if submarket_data_frame.equals(market_data_frame):
         market_or_submarket = 'Market'
     else:
         market_or_submarket = 'Submarket'
