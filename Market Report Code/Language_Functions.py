@@ -481,7 +481,7 @@ def CreateOverviewLanguage(submarket_data_frame,market_data_frame,natioanl_data_
     #     capital_markets_sentance           +
 
 #Language for Supply and Demand Section
-def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary_market,sector,writeup_directory):
+def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_frame,market_title,primary_market,sector,writeup_directory):
     
     #Pull writeup from the CoStar Html page if we have one saved
     CoStarWriteUp = PullCoStarWriteUp(section_names= ['Vacancy','Supply and Demand', 'Leasing'],writeup_directory = writeup_directory)
@@ -495,12 +495,12 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
         inventory_var_name              = 'Inventory Units'
 
 
-        net_absorption                  =  data_frame['Absorption Units'].iloc[-1]
-        previous_quarter_net_absorption =  data_frame['Absorption Units'].iloc[-2]
-        covid_quarter_net_absorption    =  data_frame['Absorption Units'].iloc[-6] #change_each_Q
-        # firsthalf2020_net_absorption  =  data_frame['Absorption Units']
-        # year_ago_net_absorption       = data_frame['Absorption Units'].iloc[-5] #change_each_Q
-        #over_last_year_units           = data_frame['Sold Units'][-1:-5:-1].sum()
+        net_absorption                  =  submarket_data_frame['Absorption Units'].iloc[-1]
+        previous_quarter_net_absorption =  submarket_data_frame['Absorption Units'].iloc[-2]
+        covid_quarter_net_absorption    =  submarket_data_frame['Absorption Units'].iloc[-6] #change_each_Q
+        # firsthalf2020_net_absorption  =  submarket_data_frame['Absorption Units']
+        # year_ago_net_absorption       = submarket_data_frame['Absorption Units'].iloc[-5] #change_each_Q
+        #over_last_year_units           = submarket_data_frame['Sold Units'][-1:-5:-1].sum()
 
     else:
         unit_or_sqft                    = 'square feet'
@@ -515,99 +515,55 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
 
 
     #Get latest quarter and year
-    latest_quarter                      = str(data_frame['Period'].iloc[-1])
-    latest_year                         = str(data_frame['Year'].iloc[-1])
-    previous_quarter                    = str(data_frame['Period'].iloc[-2])
+    latest_quarter                      = str(submarket_data_frame['Period'].iloc[-1])
+    latest_year                         = str(submarket_data_frame['Year'].iloc[-1])
+    previous_quarter                    = str(submarket_data_frame['Period'].iloc[-2])
 
     #Get the current vacancy rates
-    submarket_vacancy                   = data_frame['Vacancy Rate'].iloc[-1]
-    market_vacancy                      = data_frame2['Vacancy Rate'].iloc[-1]
-    national_vacancy                    = data_frame3['Vacancy Rate'].iloc[-1]
+    submarket_vacancy                   = submarket_data_frame['Vacancy Rate'].iloc[-1]
+    market_vacancy                      = market_data_frame['Vacancy Rate'].iloc[-1]
+    national_vacancy                    = natioanl_data_frame['Vacancy Rate'].iloc[-1]
    
-    year_ago_submarket_vacancy          = data_frame['Vacancy Rate'].iloc[-5]
+    year_ago_submarket_vacancy          = submarket_data_frame['Vacancy Rate'].iloc[-5]
 
     #Determine if vacancy has grown or compressed
-    yoy_submarket_vacancy_growth        = data_frame['YoY Vacancy Growth'].iloc[-1]
-    yoy_market_vacancy_growth           = data_frame2['YoY Vacancy Growth'].iloc[-1]
-    qoq_submarket_vacancy_growth        = data_frame['QoQ Vacancy Growth'].iloc[-1]
-    qoq_market_vacancy_growth           = data_frame2['QoQ Vacancy Growth'].iloc[-1]
+    yoy_submarket_vacancy_growth        = submarket_data_frame['YoY Vacancy Growth'].iloc[-1]
+    yoy_market_vacancy_growth           = market_data_frame['YoY Vacancy Growth'].iloc[-1]
+    qoq_submarket_vacancy_growth        = submarket_data_frame['QoQ Vacancy Growth'].iloc[-1]
+    qoq_market_vacancy_growth           = market_data_frame['QoQ Vacancy Growth'].iloc[-1]
 
     #Calculate 10 year average, trough, and peak
-    submarket_avg_vacancy               = data_frame['Vacancy Rate'].mean()
-    market_avg_vacancy                  = data_frame2['Vacancy Rate'].mean()
-    submarket_trough_vacancy            = data_frame['Vacancy Rate'].min()
-    market_trough_vacancy               = data_frame2['Vacancy Rate'].min()
-    submarket_peak_vacancy              = data_frame['Vacancy Rate'].max()
-    market_peak_vacancy                 = data_frame2['Vacancy Rate'].max()
+    submarket_avg_vacancy               = submarket_data_frame['Vacancy Rate'].mean()
+    market_avg_vacancy                  = market_data_frame['Vacancy Rate'].mean()
+    # submarket_trough_vacancy            = submarket_data_frame['Vacancy Rate'].min()
+    # market_trough_vacancy               = market_data_frame['Vacancy Rate'].min()
+    # submarket_peak_vacancy              = submarket_data_frame['Vacancy Rate'].max()
+    # market_peak_vacancy                 = market_data_frame['Vacancy Rate'].max()
 
-    leasing_activity12mo                = data_frame[(net_absorption_var_name + ' 12 Mo')].iloc[-1] 
-    leasing_change                      = data_frame[(net_absorption_var_name + ' 12 Mo')].iloc[-1] -  data_frame[(net_absorption_var_name + ' 12 Mo')].iloc[-5]
-    inventory_change                    = data_frame[inventory_var_name].iloc[-1] -  data_frame[inventory_var_name].iloc[-5]
+    # leasing_activity12mo                = submarket_data_frame[(net_absorption_var_name + ' 12 Mo')].iloc[-1] 
+    leasing_change                      = submarket_data_frame[(net_absorption_var_name + ' 12 Mo')].iloc[-1] -  submarket_data_frame[(net_absorption_var_name + ' 12 Mo')].iloc[-5]
+    inventory_change                    = submarket_data_frame[inventory_var_name].iloc[-1] -  submarket_data_frame[inventory_var_name].iloc[-5]
 
 
     #Track 10 year growth in vacancy 
     try:
         lag_ammount                     = -41
-        lagged_date                     = data_frame['Period'].iloc[lag_ammount]
-        lagged_submarket_vacancy        = data_frame['Vacancy Rate'].iloc[lag_ammount]
-        lagged_market_vacancy           = data_frame2['Vacancy Rate'].iloc[lag_ammount]
-        lagged_national_vacancy         = data_frame3['Vacancy Rate'].iloc[lag_ammount]
+        lagged_submarket_vacancy        = submarket_data_frame['Vacancy Rate'].iloc[lag_ammount]
+        # lagged_date                     = submarket_data_frame['Period'].iloc[lag_ammount]
+        # lagged_market_vacancy           = market_data_frame['Vacancy Rate'].iloc[lag_ammount]
+        # lagged_national_vacancy         = natioanl_data_frame['Vacancy Rate'].iloc[lag_ammount]
     except:
         lag_ammount                     = 0 #if therere arent 10 years of observations, use the first available
-        lagged_date                     = data_frame['Period'].iloc[lag_ammount]
-        lagged_submarket_vacancy        = data_frame['Vacancy Rate'].iloc[lag_ammount]
-        lagged_market_vacancy           = data_frame2['Vacancy Rate'].iloc[lag_ammount]
-        lagged_national_vacancy         = data_frame3['Vacancy Rate'].iloc[lag_ammount]
+        lagged_submarket_vacancy        = submarket_data_frame['Vacancy Rate'].iloc[lag_ammount]
+        # lagged_date                     = submarket_data_frame['Period'].iloc[lag_ammount]
+        # lagged_market_vacancy           = market_data_frame['Vacancy Rate'].iloc[lag_ammount]
+        # lagged_national_vacancy         = natioanl_data_frame['Vacancy Rate'].iloc[lag_ammount]
     
     ten_year_growth                     = (abs(submarket_vacancy -  lagged_submarket_vacancy)) * 100
     
 
 
     #Section 2: Begin making variables that are conditional upon the variables created from the data itself:
-
-
-    #Describe leasing activity/net abosorption over the past year relative to inventory growth
-    if leasing_change > 0:
-        leasing_activity_change = 'picked up'
-    elif leasing_change < 0:
-        leasing_activity_change = 'slowed'
-    elif data_frame[(net_absorption_var_name + ' 12 Mo')].iloc[-1] == 0:
-        leasing_activity_change = 'been nonexistent'
-    else:
-        leasing_activity_change                          = '[slowed/accelerated/stabilized/been volatile/nonexistent]'
-
-    if leasing_activity12mo > inventory_change:
-        demand_fallenshort_or_exceeding_inventorygrowth  = 'exceeded'
-        demand_fallingshort_or_exceeding_inventorygrowth = 'exceeding'
-
-    elif leasing_activity12mo < inventory_change:
-        demand_fallenshort_or_exceeding_inventorygrowth  = 'fallen short of'
-        demand_fallingshort_or_exceeding_inventorygrowth = 'falling short of'
-    else:
-        demand_fallenshort_or_exceeding_inventorygrowth  = '[fallen short of/exceeded]'
-        demand_fallingshort_or_exceeding_inventorygrowth = '[falling short of/exceeding]'
-    
-    #Determine conjunction (and or but)
-    if leasing_activity_change == 'picked up' and demand_fallenshort_or_exceeding_inventorygrowth == 'exceeded':
-        demand_inventory_growth_and_or_but               = 'and' 
-    elif leasing_activity_change == 'slowed' and demand_fallenshort_or_exceeding_inventorygrowth == 'exceeded':
-        demand_inventory_growth_and_or_but               = 'but'
-    elif leasing_activity_change == 'picked up' and demand_fallenshort_or_exceeding_inventorygrowth == 'fallen short of':
-        demand_inventory_growth_and_or_but               = 'but'
-    elif leasing_activity_change == 'slowed' and demand_fallenshort_or_exceeding_inventorygrowth == 'fallen short of':
-        demand_inventory_growth_and_or_but               = 'and'
-    else:
-        demand_inventory_growth_and_or_but               = '[and/but]'
-
-
-
-
-
-
-
-
-
-
 
     #Describe quarter over quarter change
     if net_absorption > previous_quarter_net_absorption:
@@ -646,17 +602,10 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
     #Describe change in vacancy over the past year
     if yoy_submarket_vacancy_growth > 0:
         yoy_submarket_vacancy_growth_description  = 'expanded'
-        # yoy_submarket_vacancy_growth_description2 = 'expanding'
-
-            
     elif yoy_submarket_vacancy_growth < 0:
         yoy_submarket_vacancy_growth_description  = 'compressed'
-        # yoy_submarket_vacancy_growth_description2 = 'compressing'
-
-
     else:
         yoy_submarket_vacancy_growth_description  = 'remained flat'
-        # yoy_submarket_vacancy_growth_description2 = 'remaining flat'
 
 
     #Describe change in vacancy over the past quarter
@@ -671,7 +620,7 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
 
 
     #Determine if market or submarket
-    if data_frame.equals(data_frame2):
+    if submarket_data_frame.equals(market_data_frame):
         market_or_submarket = 'Market'
         
         if primary_market  != 'Manhattan - NY' :
@@ -701,17 +650,6 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
 
         market_submarket_differnce  = abs(market_vacancy - submarket_vacancy) * 100
 
-
-
-    # if submarket_vacancy > lagged_submarket_vacancy:
-    #     ten_year_growth_description = 'expanded'
-    # elif  submarket_vacancy < lagged_submarket_vacancy:
-    #     ten_year_growth_description = 'compressed'
-    # else:
-    #     ten_year_growth_description = 'stayed stead'
-
-
-
     #Check if vacancy is above or below the historical average
     if submarket_vacancy > submarket_avg_vacancy:
         avg_relationship_description = 'above'
@@ -720,22 +658,9 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
     else:
         avg_relationship_description = 'at'
 
-    #determine if vacancy "expanded", "compressed", or "stayed at" the 10 year average over the past year
-    # if (data_frame['Vacancy Rate'].iloc[-1] > submarket_avg_vacancy) and (data_frame['Vacancy Rate'].iloc[-5] > submarket_avg_vacancy):
-    #     avg_relationship_change = 'stayed'
-
-    # elif (data_frame['Vacancy Rate'].iloc[-1] > submarket_avg_vacancy) and (data_frame['Vacancy Rate'].iloc[-5] < submarket_avg_vacancy):
-    #     avg_relationship_change = 'expanded'
-    
-    # elif (data_frame['Vacancy Rate'].iloc[-1] < submarket_avg_vacancy) and (data_frame['Vacancy Rate'].iloc[-5] > submarket_avg_vacancy):
-    #     avg_relationship_change = 'compressed'
-    
-    # else:
-    #     avg_relationship_change = 'expanded/compressed'
-
     #Calculate total net absorption so far for the current year and how it compares to the same period last year
-    data_frame_current_year  = data_frame.loc[data_frame['Year'] == (data_frame['Year'].max())]
-    data_frame_previous_year = data_frame.loc[data_frame['Year'] == (data_frame['Year'].max() -1 )]
+    data_frame_current_year  = submarket_data_frame.loc[submarket_data_frame['Year'] == (submarket_data_frame['Year'].max())]
+    data_frame_previous_year = submarket_data_frame.loc[submarket_data_frame['Year'] == (submarket_data_frame['Year'].max() -1 )]
     current_year_total_net_absorption  = data_frame_current_year[net_absorption_var_name].sum()
     previous_year_total_net_absorption = data_frame_previous_year[net_absorption_var_name].sum()
     
@@ -747,8 +672,6 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
             net_absorption_so_far_this_year_percent_change = "{:,.0f}% increase".format(abs(net_absorption_so_far_this_year_percent_change))
         else:
             net_absorption_so_far_this_year_percent_change = "{:,.0f}% decrease".format(abs(net_absorption_so_far_this_year_percent_change))
-
-
 
 
     #This is the first part of the first sentance and explains why vacancy changed
@@ -771,8 +694,6 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
             elif leasing_change == 0:
                 leasing_activity_intro_clause = 'Despite no change in demand, with rising inventory levels'
                 
-
-
         #Vacancy decreased
         elif yoy_submarket_vacancy_growth < 0:
             #12m net absorption grew over past year
@@ -786,9 +707,6 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
             #12m net absorption flat over past year
             elif leasing_change == 0:
                 leasing_activity_intro_clause = 'Despite no change in demand and rising inventory levels'
-
-
-
 
         #Vacancy flat
         elif yoy_submarket_vacancy_growth == 0:
@@ -823,8 +741,6 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
             elif leasing_change == 0:
                 leasing_activity_intro_clause = 'Despite falling demand and no change in demand'
 
-
-
         #Vacancy decreased
         elif yoy_submarket_vacancy_growth < 0:
             #12m net absorption grew over past year
@@ -838,10 +754,6 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
             #12m net absorption flat over past year
             elif leasing_change == 0:
                 leasing_activity_intro_clause = 'With falling inventory levels and no change in demand'
-
-
-
-
 
         #Vacancy flat
         elif yoy_submarket_vacancy_growth == 0:
@@ -875,8 +787,6 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
             elif leasing_change == 0:
                 leasing_activity_intro_clause = 'Despite a lack of inventory growth and no change in net absorption over the previous 12 months'
 
-
-
         #Vacancy decreased
         elif yoy_submarket_vacancy_growth < 0:
 
@@ -892,8 +802,6 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
             elif leasing_change == 0:
                 leasing_activity_intro_clause = 'With demand and inventory levels flat'
 
-
-
         #Vacancy flat
         elif yoy_submarket_vacancy_growth == 0:
 
@@ -908,16 +816,6 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
             #12m net absorption flat over past year
             elif leasing_change == 0:
                 leasing_activity_intro_clause = 'With demand and inventory levels flat'
-
-
-
-
-
-
-
-
-
-
 
 
     #Section 3: Format Variables
@@ -939,29 +837,8 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
     market_submarket_differnce          = "{:,.0f}".format(market_submarket_differnce)
     current_year_total_net_absorption   = millify(current_year_total_net_absorption,'')
     
-    
     #Section 4: Put together the variables we have created into the supply and demand language and return it
     return(
-
-        
-            # #Sentance 1
-            # 'Leasing activity in the '                                  +
-            # market_or_submarket                                         +
-            # ' has '                                                     +
-            # leasing_activity_change                                     +
-            # ' over the past year '                                      +
-            # demand_inventory_growth_and_or_but                          +
-            # ' has '                                                     + 
-            # demand_fallenshort_or_exceeding_inventorygrowth             + 
-            # ' inventory growth. '                                       +
-            
-            # #Sentance 2
-            # 'With demand '                                              +
-            # demand_fallingshort_or_exceeding_inventorygrowth            +
-            # ' new supply, '                                             +
-
-
-
             #Sentence 1
             leasing_activity_intro_clause                               +
             ', vacancy rates have '                                      +
@@ -1003,8 +880,6 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
             previous_quarter                                            + 
             '. '                                                        +
             
-            
-            
             #Sentence 3
             ' With '                                                    +
             net_absorption                                              +
@@ -1029,8 +904,86 @@ def CreateDemandLanguage(data_frame,data_frame2,data_frame3,market_title,primary
             current_year_total_net_absorption                           +
             ' '                                                         +
             unit_or_sqft                                                +
-            '. ')                                                        
+            '. '
+            )  
 
+        # #Describe leasing activity/net abosorption over the past year relative to inventory growth
+    # if leasing_change > 0:
+    #     leasing_activity_change = 'picked up'
+    # elif leasing_change < 0:
+    #     leasing_activity_change = 'slowed'
+    # elif submarket_data_frame[(net_absorption_var_name + ' 12 Mo')].iloc[-1] == 0:
+    #     leasing_activity_change = 'been nonexistent'
+    # else:
+    #     leasing_activity_change                          = '[slowed/accelerated/stabilized/been volatile/nonexistent]'
+
+    # if leasing_activity12mo > inventory_change:
+    #     demand_fallenshort_or_exceeding_inventorygrowth  = 'exceeded'
+    #     # demand_fallingshort_or_exceeding_inventorygrowth = 'exceeding'
+
+    # elif leasing_activity12mo < inventory_change:
+    #     demand_fallenshort_or_exceeding_inventorygrowth  = 'fallen short of'
+    #     # demand_fallingshort_or_exceeding_inventorygrowth = 'falling short of'
+    # else:
+    #     demand_fallenshort_or_exceeding_inventorygrowth  = '[fallen short of/exceeded]'
+    #     # demand_fallingshort_or_exceeding_inventorygrowth = '[falling short of/exceeding]'
+    
+
+        # #Determine conjunction (and or but)
+    # if leasing_activity_change == 'picked up' and demand_fallenshort_or_exceeding_inventorygrowth == 'exceeded':
+    #     demand_inventory_growth_and_or_but               = 'and' 
+    # elif leasing_activity_change == 'slowed' and demand_fallenshort_or_exceeding_inventorygrowth == 'exceeded':
+    #     demand_inventory_growth_and_or_but               = 'but'
+    # elif leasing_activity_change == 'picked up' and demand_fallenshort_or_exceeding_inventorygrowth == 'fallen short of':
+    #     demand_inventory_growth_and_or_but               = 'but'
+    # elif leasing_activity_change == 'slowed' and demand_fallenshort_or_exceeding_inventorygrowth == 'fallen short of':
+    #     demand_inventory_growth_and_or_but               = 'and'
+    # else:
+    #     demand_inventory_growth_and_or_but               = '[and/but]'
+
+
+
+
+    # if submarket_vacancy > lagged_submarket_vacancy:
+    #     ten_year_growth_description = 'expanded'
+    # elif  submarket_vacancy < lagged_submarket_vacancy:
+    #     ten_year_growth_description = 'compressed'
+    # else:
+    #     ten_year_growth_description = 'stayed stead'
+
+
+
+    #Old Code (Unused) below:
+    #           
+    # #Sentance 1
+    # 'Leasing activity in the '                                  +
+    # market_or_submarket                                         +
+    # ' has '                                                     +
+    # leasing_activity_change                                     +
+    # ' over the past year '                                      +
+    # demand_inventory_growth_and_or_but                          +
+    # ' has '                                                     + 
+    # demand_fallenshort_or_exceeding_inventorygrowth             + 
+    # ' inventory growth. '                                       +
+    
+    # #Sentance 2
+    # 'With demand '                                              +
+    # demand_fallingshort_or_exceeding_inventorygrowth            +
+    # ' new supply, '                                             +
+
+    #determine if vacancy "expanded", "compressed", or "stayed at" the 10 year average over the past year
+    # if (submarket_data_frame['Vacancy Rate'].iloc[-1] > submarket_avg_vacancy) and (submarket_data_frame['Vacancy Rate'].iloc[-5] > submarket_avg_vacancy):
+    #     avg_relationship_change = 'stayed'
+
+    # elif (submarket_data_frame['Vacancy Rate'].iloc[-1] > submarket_avg_vacancy) and (submarket_data_frame['Vacancy Rate'].iloc[-5] < submarket_avg_vacancy):
+    #     avg_relationship_change = 'expanded'
+    
+    # elif (submarket_data_frame['Vacancy Rate'].iloc[-1] < submarket_avg_vacancy) and (submarket_data_frame['Vacancy Rate'].iloc[-5] > submarket_avg_vacancy):
+    #     avg_relationship_change = 'compressed'
+    
+    # else:
+    #     avg_relationship_change = 'expanded/compressed'
+                                                    
 #Language for rent section
 def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_market,sector,writeup_directory):
 
