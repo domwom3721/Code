@@ -70,7 +70,7 @@ def PullCoStarWriteUp(section_names,writeup_directory):
                             text = text.replace('amount','number')
                             text = text.replace('2021q3','2021 Q3')
                             #our generated language is delayed compared to costar 
-                            text = text.replace('fourth quarter of 2021','3Q 2021')
+                            # text = text.replace('fourth quarter of 2021','3Q 2021')
 
                             #Now remove bad characters
                             for char in ['ï','»','¿','â','€']:
