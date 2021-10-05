@@ -506,12 +506,12 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
         unit_or_sqft                    = 'square feet'
         net_absorption_var_name         = 'Net Absorption SF'
         inventory_var_name              = 'Inventory SF'
-        net_absorption                  =  data_frame['Net Absorption SF'].iloc[-1]
-        previous_quarter_net_absorption =  data_frame['Net Absorption SF'].iloc[-2]
-        covid_quarter_net_absorption    =  data_frame['Net Absorption SF'].iloc[-6] #change_each_Q
-        #availability rate              =  data_frame['Availability Rate'].iloc[-1]    
-        # year_ago_net_absorption       = data_frame['Net Absorption SF'].iloc[-5] #change_each_Q
-        # year_ago_leasing_activity     = data_frame['Leasing Activity'].iloc[-5] #change_each_Q
+        net_absorption                  =  submarket_data_frame['Net Absorption SF'].iloc[-1]
+        previous_quarter_net_absorption =  submarket_data_frame['Net Absorption SF'].iloc[-2]
+        covid_quarter_net_absorption    =  submarket_data_frame['Net Absorption SF'].iloc[-6] #change_each_Q
+        #availability rate              =  submarket_data_frame['Availability Rate'].iloc[-1]    
+        # year_ago_net_absorption       = submarket_data_frame['Net Absorption SF'].iloc[-5] #change_each_Q
+        # year_ago_leasing_activity     = submarket_data_frame['Leasing Activity'].iloc[-5] #change_each_Q
 
 
     #Get latest quarter and year
@@ -1522,57 +1522,43 @@ def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,p
     return(developers_historically_active_or_inactive + currently_active_or_inactive)
 
 #Language for sales section
-def CreateSaleLanguage(data_frame,data_frame2,data_frame3,market_title,primary_market,sector,writeup_directory):
+def CreateSaleLanguage(submarket_data_frame,market_data_frame,natioanl_data_frame,market_title,primary_market,sector,writeup_directory):
     #Pull writeup from the CoStar Html page if we have one saved
     CoStarWriteUp = PullCoStarWriteUp(section_names= ['Sales','Capital Markets'],writeup_directory = writeup_directory)
     if CoStarWriteUp != '':
         return(CoStarWriteUp)
 
-
-    #Custom market title change for the NYC reports for bank clients
-    if market_title == 'Manhattan - NY':
-        market_title = 'Manhattan'
-
-    if primary_market == 'Manhattan - NY':
-        primary_market = 'Manhattan'
-
-
-
     #Section 1: Begin making variables for the sales language that come from the data:     
     if sector == "Multifamily":
         unit_or_sqft                        = 'units'
         unit_or_sqft_singular               = 'unit'
-        asset_value                         = data_frame['Asset Value/Unit'].iloc[-1]
-        asset_value_change                  = data_frame['YoY Asset Value/Unit Growth'].iloc[-1]
-        over_last_year_units                = data_frame['Sold Units'][-1:-5:-1].sum()
+        asset_value                         = submarket_data_frame['Asset Value/Unit'].iloc[-1]
+        asset_value_change                  = submarket_data_frame['YoY Asset Value/Unit Growth'].iloc[-1]
+        over_last_year_units                = submarket_data_frame['Sold Units'][-1:-5:-1].sum()
 
     else:
         unit_or_sqft                        = 'square feet'
         unit_or_sqft_singular               = 'SF'
-        asset_value                         = data_frame['Asset Value/Sqft'].iloc[-1]
-        asset_value_change                  = data_frame['YoY Asset Value/Sqft Growth'].iloc[-1]
-        over_last_year_units                = data_frame['Sold Building SF'][-1:-5:-1].sum()
+        asset_value                         = submarket_data_frame['Asset Value/Sqft'].iloc[-1]
+        asset_value_change                  = submarket_data_frame['YoY Asset Value/Sqft Growth'].iloc[-1]
+        over_last_year_units                = submarket_data_frame['Sold Building SF'][-1:-5:-1].sum()
 
-
-    current_sale_volume                     = data_frame['Total Sales Volume'].iloc[-1]
-    current_transaction_count               = data_frame['Sales Volume Transactions'].iloc[-1]
-    current_period                          = str(data_frame['Period'].iloc[-1])
-    cap_rate                                = data_frame['Market Cap Rate'].iloc[-1]
-    cap_rate_change                         = data_frame['YoY Market Cap Rate Growth'].iloc[-1]
+    current_sale_volume                     = submarket_data_frame['Total Sales Volume'].iloc[-1]
+    current_transaction_count               = submarket_data_frame['Sales Volume Transactions'].iloc[-1]
+    current_period                          = str(submarket_data_frame['Period'].iloc[-1])
+    cap_rate                                = submarket_data_frame['Market Cap Rate'].iloc[-1]
+    cap_rate_change                         = submarket_data_frame['YoY Market Cap Rate Growth'].iloc[-1]
 
     #Calculate the sale volume "over the last year" (last 4 quarters)
-    over_last_year_sale_volume              = data_frame['Total Sales Volume'][-1:-5:-1].sum()
-    over_last_year_transactions             = data_frame['Sales Volume Transactions'][-1:-5:-1].sum()
+    over_last_year_sale_volume              = submarket_data_frame['Total Sales Volume'][-1:-5:-1].sum()
+    over_last_year_transactions             = submarket_data_frame['Sales Volume Transactions'][-1:-5:-1].sum()
     
-
-        
-
     #Collapse down the data to the annual total sales info
-    data_frame['n']                         = 1
-    data_frame2['n']                        = 1
-    data_frame3['n']                        = 1
+    submarket_data_frame['n']               = 1
+    submarket_data_frame['n']               = 1
+    submarket_data_frame['n']               = 1
     
-    data_frame_annual                       = data_frame.groupby('Year').agg(sale_volume=('Total Sales Volume', 'sum'),
+    data_frame_annual                       = submarket_data_frame.groupby('Year').agg(sale_volume=('Total Sales Volume', 'sum'),
                                                 transaction_count=('Sales Volume Transactions', 'sum'),
                                                 n = ('n','sum')
                                                 ).reset_index()
@@ -1592,16 +1578,11 @@ def CreateSaleLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
 
     #Determine if investors are typically active here
     #If theres at least 1 sale per quarter, active
-    if data_frame['Sales Volume Transactions'].median() >= 1:
+    if submarket_data_frame['Sales Volume Transactions'].median() >= 1:
         investors_active_or_inactive = 'Buyers have shown steady interest and have been busily acquiring assets over the years. '
     else:
         investors_active_or_inactive = 'Buyers have not shown much interest in acquiring assets over the years. '
 
-    #determine change in investment volume over the last three years and the past year
-    if over_last_year_transactions > three_year_avg_transaction_count:
-        investment_volume_change = 'Despite concerns over the pandemic, the number of closed transactions has picked up. In the past twelve months, investors have closed '
-    else:     
-        investment_volume_change = 'With uncertainty surrounding the pandemic, transaction activity has slowed. '
 
     #Describe change in asset values
     if asset_value_change > 0:
@@ -1616,7 +1597,7 @@ def CreateSaleLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
     
     
     #Determine if market or submarket
-    if data_frame.equals(data_frame2):
+    if submarket_data_frame.equals(market_data_frame):
         submarket_or_market           = 'Market'
     else:
         submarket_or_market           = 'Submarket'
@@ -1624,17 +1605,14 @@ def CreateSaleLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
     #Determine change in cap rate
     if cap_rate_change > 0:
         cap_rate_change_description  = 'expanded'
-        cap_rate_change_description2 = 'expanding'
         cap_rate_change_description_to_or_at = 'to'
 
     elif cap_rate_change < 0:
         cap_rate_change_description  = 'compressed'
-        cap_rate_change_description2 = 'compressing'
         cap_rate_change_description_to_or_at = 'to'
 
     else:
         cap_rate_change_description  = 'remained stable'
-        cap_rate_change_description2 = ''
         cap_rate_change_description_to_or_at = 'at'
 
 
@@ -1672,18 +1650,19 @@ def CreateSaleLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
     #Section 3: Format variables
     cap_rate                         = "{:,.1f}%".format(cap_rate)
 
+    #Format cap rate change variable
     if cap_rate_change == 0 :
             cap_rate_change          = ''
     else:
             cap_rate_change          = "{:,.0f} bps".format(abs(cap_rate_change))
 
+    #format Asset value chagne
     if asset_value_change != 0:
         asset_value_change               = "{:,.0f}%".format(abs(asset_value_change))
         if asset_value_change == '0%':
             asset_value_change = 'slightly'
     else:
         asset_value_change = ''
-
 
 
     over_last_year_sale_volume       = millify(over_last_year_sale_volume,'$')
@@ -1752,7 +1731,16 @@ def CreateSaleLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
             cap_rate                                         +
             '. '                                             +
             ' Although capital markets have held up relatively well, uncertainty still remains. ' +
-            ' Some investors may need to see signs of sustained economic growth before engaging. ')
+            ' Some investors may need to see signs of sustained economic growth before engaging. '
+            )
+
+        #Old unused code below
+        # #determine change in investment volume over the last three years and the past year
+        # if over_last_year_transactions > three_year_avg_transaction_count:
+        #     investment_volume_change = 'Despite concerns over the pandemic, the number of closed transactions has picked up. In the past twelve months, investors have closed '
+        # else:     
+        #     investment_volume_change = 'With uncertainty surrounding the pandemic, transaction activity has slowed. '
+
 
 #Language for outlook section
 def CreateOutlookLanguage(data_frame,data_frame2,data_frame3,market_title,primary_market,sector,writeup_directory):
