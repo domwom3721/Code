@@ -295,10 +295,8 @@ def MainCleanSlices(df,sector): #Calls cleaning functions and returns cleaned da
         #Replace NA with 0
         df['Under Construction SF'] = df['Under Construction SF'].fillna(0)
         
-    df['Vacancy Rate'] = df['Vacancy Rate'] * 100
-    df['Vacancy Rate'] = round(df['Vacancy Rate'],1 )
-
-
+    
+    df['Vacancy Rate'] = round(df['Vacancy Rate'] * 100,1)
     #Remove "Center" from slice name
     df['Slice'] = df['Slice'].str.replace(' Center', '', regex=False)
     
