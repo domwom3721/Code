@@ -13,7 +13,7 @@ graph_width  = (width_inches - marginInches)   * ppi
 graph_height = (height_inches  - marginInches) * ppi
 
 #Set scale for resolution 1 = no change, > 1 increases resolution. Very important for run time of main script. 
-scale = 5
+scale = 7
 
 #Set tick font size (also controls legend font size)
 tickfont_size = 8 
