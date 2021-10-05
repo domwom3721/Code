@@ -237,18 +237,14 @@ elif selected_sector  == 'Industrial':
 def CreateMarketDictionary(df): #Creates a dictionary where each key is a market and the items are lists of its submarkets
      df_markets             = df.loc[df['Geography Type'] == 'Metro'] 
      df_submarkets          = df.loc[df['Geography Type'] == 'Submarket']
-     df_clusters            = df.loc[df['Geography Type'] == 'Cluster']
      unique_markets_list    = df_markets['Geography Name'].unique()
      unique_submarkets_list = df_submarkets['Geography Name'].unique()
-     unique_cluster_list    = df_clusters['Geography Name'].unique()
-
+    
      #Now create dictionary to track which submarkets belong to each market
      market_dictionary = {}
      for market in unique_markets_list:
          submarkets = [submarket for submarket in unique_submarkets_list if market in submarket ] #list of sumarkets within current market
-         clusters = [cluster for cluster in unique_cluster_list if market in cluster ] #list of sumarkets within current market
          market_dictionary.update({market:submarkets}) 
-        #  market_dictionary.update({market:clusters}) 
 
      return(market_dictionary)
 
