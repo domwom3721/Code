@@ -36,10 +36,8 @@ start_time = time.time()
 #Define file pre paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
 project_location               =  os.path.join(dropbox_root,'Research','Projects','Research Report Automation Project') #Main Folder that stores all output, code, and documentation
-
 output_location                = os.path.join(dropbox_root,'Research','Market Analysis','Market')                       #The folder where we store our current reports, production
 output_location                = os.path.join(project_location,'Output','Market Reports')                               #The folder where we store our current reports, testing folder
-
 map_location                   = os.path.join(project_location,'Data','Maps','CoStar Maps')                             #Folders with maps png files  
 costar_data_location           = os.path.join(project_location,'Data','CoStar Data')                                    #Folder with clean CoStar CSV files
 costar_writeup_location        = os.path.join(project_location,'Data','CoStar Writeups')                                #Folder with clean CoStar CSV files
@@ -49,9 +47,13 @@ custom_data_file_location      = os.path.join(costar_data_location,'Clean Data',
 if os.path.exists(custom_data_file_location):
     df_custom                 = pd.read_excel(custom_data_file_location)
 
-#Set formatting paramaters for reports
-primary_font                    = 'Avenir Next LT Pro Light' 
-primary_space_after_paragraph   = 6
+
+#Function used to set global values for variables that set formatting preferences such as font
+def SetGlobalFormattingParamters():
+    global primary_font, primary_space_after_paragraph
+    #Set formatting paramaters for reports
+    primary_font                    = 'Avenir Next LT Pro Light' 
+    primary_space_after_paragraph   = 6
 
 #GUI for user to select if they want to write reports, or update the database/CoStar Markets CSV file
 def user_selects_reports_or_not():
@@ -1470,6 +1472,8 @@ def CreateDirectoryCSV():
 
         if output_location == os.path.join(dropbox_root,'Research','Market Analysis','Market'):
             dropbox_df.to_csv(os.path.join(output_location, service_api_csv_name), index=False)
+
+SetGlobalFormattingParamters()
 
 #Decide if you want to create report documents or create our csv output and update the database
 user_selects_reports_or_not()
