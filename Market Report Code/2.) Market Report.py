@@ -50,37 +50,6 @@ supplemental_office_file       = os.path.join(costar_data_location,'Supplemental
 supplemental_retail_file       = os.path.join(costar_data_location,'Supplemental Data','retail_supplemental.csv') 
 supplemental_industrial_file   = os.path.join(costar_data_location,'Supplemental Data','industrial_supplemental.csv')
 
-
-#Import cleaned data from 1.) Clean Costar Data.py
-df_multifamily                 = pd.read_csv(os.path.join(costar_data_location,'Clean Data','mf_clean.csv')) 
-df_office                      = pd.read_csv(os.path.join(costar_data_location,'Clean Data','office_clean.csv'))
-df_retail                      = pd.read_csv(os.path.join(costar_data_location,'Clean Data','retail_clean.csv'))
-df_industrial                  = pd.read_csv(os.path.join(costar_data_location,'Clean Data','industrial_clean.csv')) 
-
-df_multifamily_slices          = pd.read_csv(os.path.join(costar_data_location,'Clean Data','mf_slices_clean.csv')) 
-df_office_slices               = pd.read_csv(os.path.join(costar_data_location,'Clean Data','office_slices_clean.csv'))
-df_retail_slices               = pd.read_csv(os.path.join(costar_data_location,'Clean Data','retail_slices_clean.csv'))
-df_industrial_slices           = pd.read_csv(os.path.join(costar_data_location,'Clean Data','industrial_slices_clean.csv')) 
-
-#Import supplemental data as pandas data frames. This is data we store for ourselves on the differnet markets and submarkets (we will merge into our main data dfs)
-df_multifamily_supplemental   = pd.read_csv(supplemental_multifamily_file,dtype={'Town': object,}) 
-df_office_supplemental        = pd.read_csv(supplemental_office_file,dtype={'Town': object,})      
-df_retail_supplemental        = pd.read_csv(supplemental_retail_file,dtype={'Town': object,})
-df_industrial_supplemental    = pd.read_csv(supplemental_industrial_file,dtype={'Town': object,})  	
-
-
-#Merge in our supplemental data into our main data frames
-df_multifamily                = pd.merge(df_multifamily, df_multifamily_supplemental,      on=['Geography Name','Geography Type'], how = 'left')
-df_office                     = pd.merge(df_office,      df_office_supplemental,           on=['Geography Name','Geography Type'], how = 'left')
-df_retail                     = pd.merge(df_retail,      df_retail_supplemental,           on=['Geography Name','Geography Type'], how = 'left')
-df_industrial                 = pd.merge(df_industrial,  df_industrial_supplemental,       on=['Geography Name','Geography Type'], how = 'left')
-
-#Do this because we don't have the towns for most of the market so this prevents errors
-df_multifamily['Town']        = df_multifamily['Town'].fillna('')
-df_office['Town']             = df_office['Town'].fillna('')
-df_retail['Town']             = df_retail['Town'].fillna('')
-df_industrial['Town']         = df_industrial['Town'].fillna('')
-
 #If we have any custom data, read it in as a dataframe so we can append it to our primary data
 if os.path.exists(os.path.join(costar_data_location,'Clean Data','Clean Custom CoStar Data.xlsx')):
     df_custom                 = pd.read_excel(os.path.join(costar_data_location,'Clean Data','Clean Custom CoStar Data.xlsx') )
@@ -94,6 +63,9 @@ primary_space_after_paragraph   = 6
 #GUI for user to select sector
 def user_selects_sector():
     global   df_list, df_slices_list,sector_name_list,selected_sector
+    global df_multifamily, df_office, df_retail, df_industrial
+    global df_multifamily_slices, df_office_slices, df_retail_slices, df_industrial_slices
+
 
     #Don't make the user select a sector if they are not trying to write reports
     if write_reports_yes_or_no == 'n':
@@ -135,27 +107,137 @@ def user_selects_sector():
     ws.mainloop()
 
     if selected_sector == 'All':
+        #Import cleaned data from 1.) Clean Costar Data.py
+        df_multifamily                 = pd.read_csv(os.path.join(costar_data_location,'Clean Data','mf_clean.csv')) 
+        df_office                      = pd.read_csv(os.path.join(costar_data_location,'Clean Data','office_clean.csv'))
+        df_retail                      = pd.read_csv(os.path.join(costar_data_location,'Clean Data','retail_clean.csv'))
+        df_industrial                  = pd.read_csv(os.path.join(costar_data_location,'Clean Data','industrial_clean.csv')) 
+
+        df_multifamily_slices          = pd.read_csv(os.path.join(costar_data_location,'Clean Data','mf_slices_clean.csv')) 
+        df_office_slices               = pd.read_csv(os.path.join(costar_data_location,'Clean Data','office_slices_clean.csv'))
+        df_retail_slices               = pd.read_csv(os.path.join(costar_data_location,'Clean Data','retail_slices_clean.csv'))
+        df_industrial_slices           = pd.read_csv(os.path.join(costar_data_location,'Clean Data','industrial_slices_clean.csv')) 
+
+        #Import supplemental data as pandas data frames. This is data we store for ourselves on the differnet markets and submarkets (we will merge into our main data dfs)
+        df_multifamily_supplemental   = pd.read_csv(supplemental_multifamily_file,dtype={'Town': object,}) 
+        df_office_supplemental        = pd.read_csv(supplemental_office_file,dtype={'Town': object,})      
+        df_retail_supplemental        = pd.read_csv(supplemental_retail_file,dtype={'Town': object,})
+        df_industrial_supplemental    = pd.read_csv(supplemental_industrial_file,dtype={'Town': object,})  	
+
+
+        #Merge in our supplemental data into our main data frames
+        df_multifamily                = pd.merge(df_multifamily, df_multifamily_supplemental,      on=['Geography Name','Geography Type'], how = 'left')
+        df_office                     = pd.merge(df_office,      df_office_supplemental,           on=['Geography Name','Geography Type'], how = 'left')
+        df_retail                     = pd.merge(df_retail,      df_retail_supplemental,           on=['Geography Name','Geography Type'], how = 'left')
+        df_industrial                 = pd.merge(df_industrial,  df_industrial_supplemental,       on=['Geography Name','Geography Type'], how = 'left')
+
+        #Do this because we don't have the towns for most of the market so this prevents errors
+        df_multifamily['Town']        = df_multifamily['Town'].fillna('')
+        df_office['Town']             = df_office['Town'].fillna('')
+        df_retail['Town']             = df_retail['Town'].fillna('')
+        df_industrial['Town']         = df_industrial['Town'].fillna('')
+
+
+
         df_list         = [df_multifamily, df_office, df_retail, df_industrial]
         df_slices_list   = [df_multifamily_slices, df_office_slices, df_retail_slices, df_industrial_slices]
         sector_name_list =  ['Multifamily','Office','Retail','Industrial']
 
+
+
+
+
     elif selected_sector == 'Office':
+
+        #Import cleaned data from 1.) Clean Costar Data.py
+        df_office                      = pd.read_csv(os.path.join(costar_data_location,'Clean Data','office_clean.csv'))
+        df_office_slices               = pd.read_csv(os.path.join(costar_data_location,'Clean Data','office_slices_clean.csv'))
+
+        #Import supplemental data as pandas data frames. This is data we store for ourselves on the differnet markets and submarkets (we will merge into our main data dfs)
+        df_office_supplemental        = pd.read_csv(supplemental_office_file,dtype={'Town': object,})      
+
+        #Merge in our supplemental data into our main data frames
+        df_office                     = pd.merge(df_office,      df_office_supplemental,           on=['Geography Name','Geography Type'], how = 'left')
+
+        #Do this because we don't have the towns for most of the market so this prevents errors
+        df_office['Town']             = df_office['Town'].fillna('')
+
+        try:
+            df_office  = df_office.append(df_custom) #Add the custom data to the main data file
+        except:
+            pass
         df_list         = [df_office]
         df_slices_list   = [df_office_slices]
         sector_name_list =  ['Office']
 
+
     elif selected_sector == 'Retail':
+        #Import cleaned data from 1.) Clean Costar Data.py
+        df_retail                      = pd.read_csv(os.path.join(costar_data_location,'Clean Data','retail_clean.csv'))
+        df_retail_slices               = pd.read_csv(os.path.join(costar_data_location,'Clean Data','retail_slices_clean.csv'))
+
+        #Import supplemental data as pandas data frames. This is data we store for ourselves on the differnet markets and submarkets (we will merge into our main data dfs)
+        df_retail_supplemental        = pd.read_csv(supplemental_retail_file,dtype={'Town': object,})
+
+        #Merge in our supplemental data into our main data frames
+        df_retail                     = pd.merge(df_retail,      df_retail_supplemental,           on=['Geography Name','Geography Type'], how = 'left')
+
+        #Do this because we don't have the towns for most of the market so this prevents errors
+        df_retail['Town']             = df_retail['Town'].fillna('')
+
+        try:
+            df_retail  = df_retail.append(df_custom) #Add the custom data to the main data file
+        except:
+            pass
         df_list         = [df_retail]
         df_slices_list   = [df_retail_slices]
         sector_name_list =  ['Retail']
 
 
     elif selected_sector == 'Multifamily':
+
+        #Import cleaned data from 1.) Clean Costar Data.py
+        df_multifamily                 = pd.read_csv(os.path.join(costar_data_location,'Clean Data','mf_clean.csv')) 
+        df_multifamily_slices          = pd.read_csv(os.path.join(costar_data_location,'Clean Data','mf_slices_clean.csv')) 
+
+        #Import supplemental data as pandas data frames. This is data we store for ourselves on the differnet markets and submarkets (we will merge into our main data dfs)
+        df_multifamily_supplemental   = pd.read_csv(supplemental_multifamily_file,dtype={'Town': object,}) 
+
+        #Merge in our supplemental data into our main data frames
+        df_multifamily                = pd.merge(df_multifamily, df_multifamily_supplemental,      on=['Geography Name','Geography Type'], how = 'left')
+
+        #Do this because we don't have the towns for most of the market so this prevents errors
+        df_multifamily['Town']        = df_multifamily['Town'].fillna('')
+
+        try:
+            df_multifamily  = df_multifamily.append(df_custom) #Add the custom data to the main data file
+        except:
+            pass
         df_list          = [df_multifamily]
         df_slices_list   = [df_multifamily_slices]
         sector_name_list =  ['Multifamily']
 
+
+
+
     elif selected_sector == 'Industrial':
+        #Import cleaned data from 1.) Clean Costar Data.py
+        df_industrial                  = pd.read_csv(os.path.join(costar_data_location,'Clean Data','industrial_clean.csv')) 
+        df_industrial_slices           = pd.read_csv(os.path.join(costar_data_location,'Clean Data','industrial_slices_clean.csv')) 
+
+        #Import supplemental data as pandas data frames. This is data we store for ourselves on the differnet markets and submarkets (we will merge into our main data dfs)
+        df_industrial_supplemental    = pd.read_csv(supplemental_industrial_file,dtype={'Town': object,})  	
+
+        #Merge in our supplemental data into our main data frames
+        df_industrial                 = pd.merge(df_industrial,  df_industrial_supplemental,       on=['Geography Name','Geography Type'], how = 'left')
+
+        #Do this because we don't have the towns for most of the market so this prevents errors
+        df_industrial['Town']         = df_industrial['Town'].fillna('')
+       
+        try:
+            df_industrial   = df_industrial.append(df_custom) #Add the custom data to the main data file
+        except:
+            pass
         df_list          = [df_industrial]
         df_slices_list   = [df_industrial_slices]
         sector_name_list =  ['Industrial']
@@ -201,37 +283,6 @@ def user_selects_reports_or_not():
 #Decide if you want to create report documents or create our csv output and update the database
 user_selects_reports_or_not()
 user_selects_sector()
-
-#In the case where the user has selected a single sector, add that sector's dataframe to our list of sector dataframes we are looping through to create
-#reports. Also, try to add any custom data in case we have any
-if selected_sector == 'Retail':
-    try:
-        df_retail  = df_retail.append(df_custom) #Add the custom data to the main data file
-    except:
-        pass
-    df_list[0] = df_retail
-
-elif selected_sector == 'Office':
-    try:
-        df_office  = df_office.append(df_custom) #Add the custom data to the main data file
-    except:
-        pass
-    df_list[0] = df_office
-
-elif  selected_sector == 'Multifamily':
-    try:
-        df_multifamily  = df_multifamily.append(df_custom) #Add the custom data to the main data file
-    except:
-        pass
-    df_list[0]      = df_multifamily
-
-elif selected_sector  == 'Industrial':
-    try:
-        df_industrial   = df_industrial.append(df_custom) #Add the custom data to the main data file
-    except:
-        pass
-    df_list[0]      = df_industrial
-
 
 #Define functions used to handle the clean CoStar data and help write our repots
 def CreateMarketDictionary(df): #Creates a dictionary where each key is a market and the items are lists of its submarkets
@@ -608,7 +659,6 @@ def OverviewSection():
         AddMarketPerformanceTable(document = document,market_data_frame = df_market_cut ,col_width = 1.2,sector=sector)
         document.add_paragraph('')
 
-
 def SupplyDemandSection():
     #Supply and Demand Section
     AddHeading(document,'Supply & Demand',2)
@@ -812,7 +862,6 @@ def AppendixSection():
                         font.name = 'Avenir Next LT Pro Medium'
             AddSubmarketsPerformanceTable(document = document, submarkets_data_frame = df_submarkets, col_width = 1.2, sector=sector)
             document.add_paragraph('')
-
 
 def GetLanguage(writeup_directory):
     global overview_language, demand_language,sale_language,rent_language,construction_languge,outlook_language
@@ -1426,7 +1475,6 @@ def CreateDirectoryCSV():
 #Define these empty lists we will fill during the loops, this is to create a list of markets and submarkets and their dropbox links for Salesforce mapping
 CreateEmptySalesforceLists()
 
-
 #This is the main loop for our program where we loop through the selected sector dataframes, get list of unique markets, loop through those markets creating folders and writing market reports
 for df,df2,sector in zip(      df_list,
                                df_slices_list,
@@ -1480,8 +1528,6 @@ for df,df2,sector in zip(      df_list,
     market                       = 'United States of America'
     CreateMarketReport() 
 
-
-
 #Now call our function that creates a csv with all the current market reports
 CreateDirectoryCSV()        
 
@@ -1526,7 +1572,6 @@ if output_location == os.path.join(dropbox_root,'Research','Market Analysis','Ma
                     csv_name=service_api_csv_name, 
                     csv_path=os.path.join(output_location, service_api_csv_name),
                     dropbox_dir='https://www.dropbox.com/home/Research/Market Analysis/Market/')
-
 
 print('Finished, you rock')
 print("--- %s seconds ---" % (time.time() - start_time))        

@@ -1722,7 +1722,7 @@ def CreateSaleLanguage(submarket_data_frame,market_data_frame,natioanl_data_fram
         #     investment_volume_change = 'With uncertainty surrounding the pandemic, transaction activity has slowed. '
 
 #Language for outlook section
-def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_frame,market_title,primary_market,sector,writeup_directory)):
+def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_frame,market_title,primary_market,sector,writeup_directory):
 
     #Section 1: Begin making variables for the overview language that come from the data:     
     if submarket_data_frame.equals(market_data_frame):
