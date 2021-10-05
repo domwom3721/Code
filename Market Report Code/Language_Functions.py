@@ -1360,7 +1360,7 @@ def CreateRentLanguage(submarket_data_frame,market_data_frame,natioanl_data_fram
         #     submarket_signal                 = 'are staying put' 
 
 #Language for construction section
-def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,primary_market,sector,writeup_directory):
+def CreateConstructionLanguage(submarket_data_frame, market_data_frame, natioanl_data_frame, market_title, primary_market, sector,writeup_directory):
     #Pull writeup from the CoStar Html page if we have one saved
     CoStarWriteUp = PullCoStarWriteUp(section_names= ['Construction',],writeup_directory = writeup_directory)
     if CoStarWriteUp != '':
@@ -1369,28 +1369,27 @@ def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,p
     #Section 1: Begin making variables for the overview language that come from the data:     
     if sector == "Multifamily":
         unit_or_sqft                        = 'units'
-        under_construction                  = data_frame['Under Construction Units'].iloc[-1]
-        median_construction_level           = data_frame['Under Construction Units'].median()
-
-        previous_quarter_under_construction = data_frame['Under Construction Units'].iloc[-2]
-        under_construction_share            = round(data_frame['Under Construction %'].iloc[-1],2)
-        current_inventory                   = data_frame['Inventory Units'].iloc[-1]
-        decade_ago_inventory                = data_frame['Inventory Units'].iloc[0]
-        delivered_inventory                 = data_frame['Gross Delivered Units'].sum()
-        demolished_inventory                = data_frame['Demolished Units'].sum()                        
+        under_construction                  = submarket_data_frame['Under Construction Units'].iloc[-1]
+        median_construction_level           = submarket_data_frame['Under Construction Units'].median()
+        # previous_quarter_under_construction = data_frame['Under Construction Units'].iloc[-2]
+        under_construction_share            = round(submarket_data_frame['Under Construction %'].iloc[-1],2)
+        current_inventory                   = submarket_data_frame['Inventory Units'].iloc[-1]
+        decade_ago_inventory                = submarket_data_frame['Inventory Units'].iloc[0]
+        delivered_inventory                 = submarket_data_frame['Gross Delivered Units'].sum()
+        demolished_inventory                = submarket_data_frame['Demolished Units'].sum()                        
 
     else:
         unit_or_sqft                        = 'square feet'
-        under_construction                  = data_frame['Under Construction SF'].iloc[-1]
-        median_construction_level           = data_frame['Under Construction SF'].median()
-        previous_quarter_under_construction = data_frame['Under Construction SF'].iloc[-2]
-        under_construction_share            = round(data_frame['Under Construction %'].iloc[-1],2)
-        current_inventory                   = data_frame['Inventory SF'].iloc[-1]
-        decade_ago_inventory                = data_frame['Inventory SF'].iloc[0]
-        delivered_inventory                 = data_frame['Gross Delivered SF'].sum()
-        demolished_inventory                = data_frame['Demolished SF'].sum()
+        under_construction                  = submarket_data_frame['Under Construction SF'].iloc[-1]
+        median_construction_level           = submarket_data_frame['Under Construction SF'].median()
+        # previous_quarter_under_construction = data_frame['Under Construction SF'].iloc[-2]
+        under_construction_share            = round(submarket_data_frame['Under Construction %'].iloc[-1],2)
+        current_inventory                   = submarket_data_frame['Inventory SF'].iloc[-1]
+        decade_ago_inventory                = submarket_data_frame['Inventory SF'].iloc[0]
+        delivered_inventory                 = submarket_data_frame['Gross Delivered SF'].sum()
+        demolished_inventory                = submarket_data_frame['Demolished SF'].sum()
 
-    if data_frame.equals(data_frame2):
+    if submarket_data_frame.equals(market_data_frame):
         market_or_submarket                 = 'Market'
     else:
         market_or_submarket                 = 'Submarket'
@@ -1407,7 +1406,6 @@ def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,p
 
     #Determine if developers are historically active here
     #If theres at least 1 deliverable per quarter, active
-
     if median_construction_level >= 1:
         developers_historically_active_or_inactive = ('Developers have been active for much of the past ten years. In fact, they have added ' + 
                                         millify(delivered_inventory,'')  +
@@ -1458,14 +1456,15 @@ def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,p
 
     #Section 4: Put together our variables into sentances and return the language
     
-
     #Determine if the supply pipeline is active or not    
     if under_construction > 0:
         currently_active_or_inactive = 'Developers are currently active in the ' + market_or_submarket + ' with ' + millify(under_construction,'') + ' ' + unit_or_sqft + ', or the equivalent of ' + "{:,.1f}%".format(under_construction_share)   + ' of existing inventory, underway. '
     else:
         currently_active_or_inactive = 'Developers are not currently active in the ' + market_or_submarket + '. The empty pipeline will likely limit supply pressure on vacancies, boding well for fundamentals in the near term. '
 
+    return(developers_historically_active_or_inactive + currently_active_or_inactive)
 
+    #Old Code below:
     #Determine 10 year inventory growth   
     #if inventory_growth > 0 and under_construction > 0:
     #    inventory_expand_or_contract = 'In fact, over the past ten years, developers have added ' +  millify(inventory_growth,'') + ' '  + unit_or_sqft + ', expanding inventory by ' + inventory_growth_pct + '.'
@@ -1503,7 +1502,7 @@ def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,p
     #     elevated_or_down_compared_to_previous_quarter = ' Development activity has been steady with nothing underway in the current or previous quarter.' 
 
     
-    return(developers_historically_active_or_inactive + currently_active_or_inactive)
+
 
 #Language for sales section
 def CreateSaleLanguage(submarket_data_frame,market_data_frame,natioanl_data_frame,market_title,primary_market,sector,writeup_directory):
