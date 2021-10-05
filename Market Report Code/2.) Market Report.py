@@ -52,15 +52,15 @@ supplemental_industrial_file   = os.path.join(costar_data_location,'Supplemental
 
 
 #Import cleaned data from 1.) Clean Costar Data.py
-df_multifamily                 = pd.read_csv(os.path.join(costar_data_location,'mf_clean.csv')) 
-df_office                      = pd.read_csv(os.path.join(costar_data_location,'office_clean.csv'))
-df_retail                      = pd.read_csv(os.path.join(costar_data_location,'retail_clean.csv'))
-df_industrial                  = pd.read_csv(os.path.join(costar_data_location,'industrial_clean.csv')) 
+df_multifamily                 = pd.read_csv(os.path.join(costar_data_location,'Clean Data','mf_clean.csv')) 
+df_office                      = pd.read_csv(os.path.join(costar_data_location,'Clean Data','office_clean.csv'))
+df_retail                      = pd.read_csv(os.path.join(costar_data_location,'Clean Data','retail_clean.csv'))
+df_industrial                  = pd.read_csv(os.path.join(costar_data_location,'Clean Data','industrial_clean.csv')) 
 
-df_multifamily_slices          = pd.read_csv(os.path.join(costar_data_location,'mf_slices_clean.csv')) 
-df_office_slices               = pd.read_csv(os.path.join(costar_data_location,'office_slices_clean.csv'))
-df_retail_slices               = pd.read_csv(os.path.join(costar_data_location,'retail_slices_clean.csv'))
-df_industrial_slices           = pd.read_csv(os.path.join(costar_data_location,'industrial_slices_clean.csv')) 
+df_multifamily_slices          = pd.read_csv(os.path.join(costar_data_location,'Clean Data','mf_slices_clean.csv')) 
+df_office_slices               = pd.read_csv(os.path.join(costar_data_location,'Clean Data','office_slices_clean.csv'))
+df_retail_slices               = pd.read_csv(os.path.join(costar_data_location,'Clean Data','retail_slices_clean.csv'))
+df_industrial_slices           = pd.read_csv(os.path.join(costar_data_location,'Clean Data','industrial_slices_clean.csv')) 
 
 #Import supplemental data as pandas data frames. This is data we store for ourselves on the differnet markets and submarkets (we will merge into our main data dfs)
 df_multifamily_supplemental   = pd.read_csv(supplemental_multifamily_file,dtype={'Town': object,}) 
@@ -82,8 +82,8 @@ df_retail['Town']             = df_retail['Town'].fillna('')
 df_industrial['Town']         = df_industrial['Town'].fillna('')
 
 #If we have any custom data, read it in as a dataframe so we can append it to our primary data
-if os.path.exists(os.path.join(costar_data_location,'Clean Custom CoStar Data.xlsx')):
-    df_custom                 = pd.read_excel(os.path.join(costar_data_location,'Clean Custom CoStar Data.xlsx') )
+if os.path.exists(os.path.join(costar_data_location,'Clean Data','Clean Custom CoStar Data.xlsx')):
+    df_custom                 = pd.read_excel(os.path.join(costar_data_location,'Clean Data','Clean Custom CoStar Data.xlsx') )
 
 
 #Set formatting paramaters for reports

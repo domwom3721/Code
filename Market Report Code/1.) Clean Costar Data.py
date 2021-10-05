@@ -11,15 +11,15 @@ project_location               =  os.path.join(os.environ['USERPROFILE'], 'Dropb
 costar_data_location           =  os.path.join(project_location,'Data','CoStar Data') 
 
 #Define location of raw CoStar data files
-raw_multifamily_file           =  os.path.join(costar_data_location,'mf.csv') 
-raw_office_file                =  os.path.join(costar_data_location,'office.csv') 
-raw_retail_file                =  os.path.join(costar_data_location,'retail.csv') 
-raw_industrial_file            =  os.path.join(costar_data_location,'industrial.csv') 
+raw_multifamily_file           =  os.path.join(costar_data_location,'Raw Data','mf.csv') 
+raw_office_file                =  os.path.join(costar_data_location,'Raw Data','office.csv') 
+raw_retail_file                =  os.path.join(costar_data_location,'Raw Data','retail.csv') 
+raw_industrial_file            =  os.path.join(costar_data_location,'Raw Data','industrial.csv') 
 
-raw_multifamily_slices_file    =  os.path.join(costar_data_location,'mf_slices.xlsx') 
-raw_office_slices_file         =  os.path.join(costar_data_location,'office_slices.xlsx') 
-raw_retail_slices_file         =  os.path.join(costar_data_location,'retail_slices.csv') 
-raw_industrial_slices_file     =  os.path.join(costar_data_location,'industrial_slices.xlsx') 
+raw_multifamily_slices_file    =  os.path.join(costar_data_location,'Raw Data','mf_slices.xlsx') 
+raw_office_slices_file         =  os.path.join(costar_data_location,'Raw Data','office_slices.xlsx') 
+raw_retail_slices_file         =  os.path.join(costar_data_location,'Raw Data','retail_slices.csv') 
+raw_industrial_slices_file     =  os.path.join(costar_data_location,'Raw Data','industrial_slices.xlsx') 
 
 
 
@@ -494,15 +494,15 @@ df_industrial_slices    =  KeepLast10Years(df_industrial_slices,groupbylist= ['G
 
 
 #Export Cleaned Data Files
-df_multifamily.to_csv(os.path.join(costar_data_location,'mf_clean.csv'))
-df_office.to_csv(os.path.join(costar_data_location,'office_clean.csv'))
-df_retail.to_csv(os.path.join(costar_data_location,'retail_clean.csv',))
-df_industrial.to_csv(os.path.join(costar_data_location,'industrial_clean.csv'))
+df_multifamily.to_csv(os.path.join(costar_data_location,'Clean Data','mf_clean.csv'))
+df_office.to_csv(os.path.join(costar_data_location, 'Clean Data','office_clean.csv'))
+df_retail.to_csv(os.path.join(costar_data_location,'Clean Data','retail_clean.csv',))
+df_industrial.to_csv(os.path.join(costar_data_location,'Clean Data','industrial_clean.csv'))
 
 
 
 
-df_multifamily_slices.to_csv(os.path.join(costar_data_location,'mf_slices_clean.csv'))
-df_office_slices.to_csv(os.path.join(costar_data_location,'office_slices_clean.csv'))
-df_retail_slices.to_csv(os.path.join(costar_data_location,'retail_slices_clean.csv',))
-df_industrial_slices.to_csv(os.path.join(costar_data_location,'industrial_slices_clean.csv'))
+df_multifamily_slices.to_csv(os.path.join(costar_data_location,'Clean Data','mf_slices_clean.csv'))
+df_office_slices.to_csv(os.path.join(costar_data_location,'Clean Data','office_slices_clean.csv'))
+df_retail_slices.to_csv(os.path.join(costar_data_location,'Clean Data','retail_slices_clean.csv',))
+df_industrial_slices.to_csv(os.path.join(costar_data_location,'Clean Data','industrial_slices_clean.csv'))

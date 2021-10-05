@@ -16,10 +16,10 @@ costar_data_location           =  os.path.join(project_location,'Data','CoStar D
 #Define location of raw CoStar data files
 raw_custom_file_downloads      =  os.path.join(os.environ['USERPROFILE'], 'Downloads','CommercialDataGrid.xlsx') 
 raw_custom_file_downloads_mf   =  os.path.join(os.environ['USERPROFILE'], 'Downloads','MultifamilyDataGrid.xlsx') 
-raw_custom_file                =  os.path.join(costar_data_location,'CommercialDataGrid.xlsx')
-raw_custom_file_mf             =  os.path.join(costar_data_location,'MultifamilyDataGrid.xlsx') 
+raw_custom_file                =  os.path.join(costar_data_location,'Raw Data','CommercialDataGrid.xlsx')
+raw_custom_file_mf             =  os.path.join(costar_data_location,'Raw Data','MultifamilyDataGrid.xlsx') 
 
-clean_custom_file              =  os.path.join(costar_data_location,'Clean Custom CoStar Data.xlsx') 
+clean_custom_file              =  os.path.join(costar_data_location,'Clean Data','Clean Custom CoStar Data.xlsx') 
 
 #move exported data from downloads fodler into data folder
 if os.path.exists(raw_custom_file_downloads):
