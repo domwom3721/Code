@@ -37,28 +37,58 @@ start_time = time.time()
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
 project_location               =  os.path.join(dropbox_root,'Research','Projects','Research Report Automation Project') #Main Folder that stores all output, code, and documentation
 
-output_location                = os.path.join(project_location,'Output','Market Reports')                             #The folder where we store our current reports, testing folder
-# output_location                = os.path.join(dropbox_root,'Research','Market Analysis','Market')                       #The folder where we store our current reports, production
+output_location                = os.path.join(dropbox_root,'Research','Market Analysis','Market')                       #The folder where we store our current reports, production
+output_location                = os.path.join(project_location,'Output','Market Reports')                               #The folder where we store our current reports, testing folder
 
 map_location                   = os.path.join(project_location,'Data','Maps','CoStar Maps')                             #Folders with maps png files  
 costar_data_location           = os.path.join(project_location,'Data','CoStar Data')                                    #Folder with clean CoStar CSV files
 costar_writeup_location        = os.path.join(project_location,'Data','CoStar Writeups')                                #Folder with clean CoStar CSV files
 
-#These are files the research team made to store things such as the towns within each submarket
-supplemental_multifamily_file  = os.path.join(costar_data_location,'Supplemental Data','mf_supplemental.csv')
-supplemental_office_file       = os.path.join(costar_data_location,'Supplemental Data','office_supplemental.csv') 
-supplemental_retail_file       = os.path.join(costar_data_location,'Supplemental Data','retail_supplemental.csv') 
-supplemental_industrial_file   = os.path.join(costar_data_location,'Supplemental Data','industrial_supplemental.csv')
-
 #If we have any custom data, read it in as a dataframe so we can append it to our primary data
-if os.path.exists(os.path.join(costar_data_location,'Clean Data','Clean Custom CoStar Data.xlsx')):
-    df_custom                 = pd.read_excel(os.path.join(costar_data_location,'Clean Data','Clean Custom CoStar Data.xlsx') )
-
+custom_data_file_location      = os.path.join(costar_data_location,'Clean Data','Clean Custom CoStar Data.xlsx')
+if os.path.exists(custom_data_file_location):
+    df_custom                 = pd.read_excel(custom_data_file_location)
 
 #Set formatting paramaters for reports
 primary_font                    = 'Avenir Next LT Pro Light' 
 primary_space_after_paragraph   = 6
 
+#GUI for user to select if they want to write reports, or update the database/CoStar Markets CSV file
+def user_selects_reports_or_not():
+    global   write_reports_yes_or_no
+
+    #GUI that lets user specify which sectors they want to run
+    ws = Tk()
+    ws.title('Research Automation Project - Market Reports')
+    ws.geometry('400x300')
+    ws.config(bg='#404858')
+
+    def select_sector(choice):
+        global write_reports_yes_or_no
+        write_reports_yes_or_no = variable.get()
+
+    options = ['y','n']
+
+    # setting variable for Integers
+    variable = StringVar()
+    variable.set('Write Reports?')
+
+    # creating widget
+    dropdown = OptionMenu(
+        ws,
+        variable,
+        *options,
+        command=select_sector
+    )
+
+    # positioning widget
+    dropdown.pack(expand=True)
+
+    # infinite loop 
+    ws.mainloop()
+
+    
+    #GUI Over now define functions
 
 #GUI for user to select sector
 def user_selects_sector():
@@ -70,6 +100,17 @@ def user_selects_sector():
     #Don't make the user select a sector if they are not trying to write reports
     if write_reports_yes_or_no == 'n':
         selected_sector = 'All'
+        #Import cleaned data from 1.) Clean Costar Data.py
+        df_multifamily                 = pd.read_csv(os.path.join(costar_data_location,'Clean Data','mf_clean.csv')) 
+        df_office                      = pd.read_csv(os.path.join(costar_data_location,'Clean Data','office_clean.csv'))
+        df_retail                      = pd.read_csv(os.path.join(costar_data_location,'Clean Data','retail_clean.csv'))
+        df_industrial                  = pd.read_csv(os.path.join(costar_data_location,'Clean Data','industrial_clean.csv')) 
+
+        df_multifamily_slices          = pd.read_csv(os.path.join(costar_data_location,'Clean Data','mf_slices_clean.csv')) 
+        df_office_slices               = pd.read_csv(os.path.join(costar_data_location,'Clean Data','office_slices_clean.csv'))
+        df_retail_slices               = pd.read_csv(os.path.join(costar_data_location,'Clean Data','retail_slices_clean.csv'))
+        df_industrial_slices           = pd.read_csv(os.path.join(costar_data_location,'Clean Data','industrial_slices_clean.csv')) 
+
         df_list         = [df_multifamily, df_office, df_retail, df_industrial]
         df_slices_list   = [df_multifamily_slices, df_office_slices, df_retail_slices, df_industrial_slices]
         sector_name_list =  ['Multifamily','Office','Retail','Industrial']
@@ -119,10 +160,10 @@ def user_selects_sector():
         df_industrial_slices           = pd.read_csv(os.path.join(costar_data_location,'Clean Data','industrial_slices_clean.csv')) 
 
         #Import supplemental data as pandas data frames. This is data we store for ourselves on the differnet markets and submarkets (we will merge into our main data dfs)
-        df_multifamily_supplemental   = pd.read_csv(supplemental_multifamily_file,dtype={'Town': object,}) 
-        df_office_supplemental        = pd.read_csv(supplemental_office_file,dtype={'Town': object,})      
-        df_retail_supplemental        = pd.read_csv(supplemental_retail_file,dtype={'Town': object,})
-        df_industrial_supplemental    = pd.read_csv(supplemental_industrial_file,dtype={'Town': object,})  	
+        df_multifamily_supplemental   = pd.read_csv(os.path.join(costar_data_location,'Supplemental Data','mf_supplemental.csv'),dtype={'Town': object,}) 
+        df_office_supplemental        = pd.read_csv(os.path.join(costar_data_location,'Supplemental Data','office_supplemental.csv') ,dtype={'Town': object,})      
+        df_retail_supplemental        = pd.read_csv(os.path.join(costar_data_location,'Supplemental Data','retail_supplemental.csv') ,dtype={'Town': object,})
+        df_industrial_supplemental    = pd.read_csv(os.path.join(costar_data_location,'Supplemental Data','industrial_supplemental.csv'),dtype={'Town': object,})  	
 
 
         #Merge in our supplemental data into our main data frames
@@ -154,7 +195,7 @@ def user_selects_sector():
         df_office_slices               = pd.read_csv(os.path.join(costar_data_location,'Clean Data','office_slices_clean.csv'))
 
         #Import supplemental data as pandas data frames. This is data we store for ourselves on the differnet markets and submarkets (we will merge into our main data dfs)
-        df_office_supplemental        = pd.read_csv(supplemental_office_file,dtype={'Town': object,})      
+        df_office_supplemental        = pd.read_csv(os.path.join(costar_data_location,'Supplemental Data','office_supplemental.csv') ,dtype={'Town': object,})      
 
         #Merge in our supplemental data into our main data frames
         df_office                     = pd.merge(df_office,      df_office_supplemental,           on=['Geography Name','Geography Type'], how = 'left')
@@ -177,7 +218,7 @@ def user_selects_sector():
         df_retail_slices               = pd.read_csv(os.path.join(costar_data_location,'Clean Data','retail_slices_clean.csv'))
 
         #Import supplemental data as pandas data frames. This is data we store for ourselves on the differnet markets and submarkets (we will merge into our main data dfs)
-        df_retail_supplemental        = pd.read_csv(supplemental_retail_file,dtype={'Town': object,})
+        df_retail_supplemental        = pd.read_csv(os.path.join(costar_data_location,'Supplemental Data','retail_supplemental.csv') ,dtype={'Town': object,})
 
         #Merge in our supplemental data into our main data frames
         df_retail                     = pd.merge(df_retail,      df_retail_supplemental,           on=['Geography Name','Geography Type'], how = 'left')
@@ -201,7 +242,7 @@ def user_selects_sector():
         df_multifamily_slices          = pd.read_csv(os.path.join(costar_data_location,'Clean Data','mf_slices_clean.csv')) 
 
         #Import supplemental data as pandas data frames. This is data we store for ourselves on the differnet markets and submarkets (we will merge into our main data dfs)
-        df_multifamily_supplemental   = pd.read_csv(supplemental_multifamily_file,dtype={'Town': object,}) 
+        df_multifamily_supplemental   = pd.read_csv(os.path.join(costar_data_location,'Supplemental Data','mf_supplemental.csv'),dtype={'Town': object,}) 
 
         #Merge in our supplemental data into our main data frames
         df_multifamily                = pd.merge(df_multifamily, df_multifamily_supplemental,      on=['Geography Name','Geography Type'], how = 'left')
@@ -226,7 +267,7 @@ def user_selects_sector():
         df_industrial_slices           = pd.read_csv(os.path.join(costar_data_location,'Clean Data','industrial_slices_clean.csv')) 
 
         #Import supplemental data as pandas data frames. This is data we store for ourselves on the differnet markets and submarkets (we will merge into our main data dfs)
-        df_industrial_supplemental    = pd.read_csv(supplemental_industrial_file,dtype={'Town': object,})  	
+        df_industrial_supplemental    = pd.read_csv(os.path.join(costar_data_location,'Supplemental Data','industrial_supplemental.csv'),dtype={'Town': object,})  	
 
         #Merge in our supplemental data into our main data frames
         df_industrial                 = pd.merge(df_industrial,  df_industrial_supplemental,       on=['Geography Name','Geography Type'], how = 'left')
@@ -242,47 +283,6 @@ def user_selects_sector():
         df_slices_list   = [df_industrial_slices]
         sector_name_list =  ['Industrial']
     #GUI Over now define functions
-
-#GUI for user to select if they want to write reports, or update the database/CoStar Markets CSV file
-def user_selects_reports_or_not():
-    global   write_reports_yes_or_no
-
-    #GUI that lets user specify which sectors they want to run
-    ws = Tk()
-    ws.title('Research Automation Project - Market Reports')
-    ws.geometry('400x300')
-    ws.config(bg='#404858')
-
-    def select_sector(choice):
-        global write_reports_yes_or_no
-        write_reports_yes_or_no = variable.get()
-
-    options = ['y','n']
-
-    # setting variable for Integers
-    variable = StringVar()
-    variable.set('Write Reports?')
-
-    # creating widget
-    dropdown = OptionMenu(
-        ws,
-        variable,
-        *options,
-        command=select_sector
-    )
-
-    # positioning widget
-    dropdown.pack(expand=True)
-
-    # infinite loop 
-    ws.mainloop()
-
-    
-    #GUI Over now define functions
-
-#Decide if you want to create report documents or create our csv output and update the database
-user_selects_reports_or_not()
-user_selects_sector()
 
 #Define functions used to handle the clean CoStar data and help write our repots
 def CreateMarketDictionary(df): #Creates a dictionary where each key is a market and the items are lists of its submarkets
@@ -1471,6 +1471,9 @@ def CreateDirectoryCSV():
         if output_location == os.path.join(dropbox_root,'Research','Market Analysis','Market'):
             dropbox_df.to_csv(os.path.join(output_location, service_api_csv_name), index=False)
 
+#Decide if you want to create report documents or create our csv output and update the database
+user_selects_reports_or_not()
+user_selects_sector()
 
 #Define these empty lists we will fill during the loops, this is to create a list of markets and submarkets and their dropbox links for Salesforce mapping
 CreateEmptySalesforceLists()
