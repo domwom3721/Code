@@ -985,7 +985,7 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
     #     avg_relationship_change = 'expanded/compressed'
                                                     
 #Language for rent section
-def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_market,sector,writeup_directory):
+def CreateRentLanguage(submarket_data_frame,market_data_frame,natioanl_data_frame,market_title,primary_market,sector,writeup_directory):
 
     #Pull writeup from the CoStar Html page if we have one saved
     CoStarWriteUp = PullCoStarWriteUp(section_names= ['Rent',],writeup_directory = writeup_directory)
@@ -1005,62 +1005,38 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
         unit_or_sqft            = 'SF'
 
     #Get current rents for submarket, market, and nation
-    current_rent                     = data_frame[rent_var].iloc[-1]
-    primary_market_rent              = data_frame2[rent_var].iloc[-1]
-    national_market_rent             = data_frame3[rent_var].iloc[-1]
+    current_rent                     = submarket_data_frame[rent_var].iloc[-1]
+    primary_market_rent              = market_data_frame[rent_var].iloc[-1]
+    national_market_rent             = natioanl_data_frame[rent_var].iloc[-1]
     
     #See how these rents compare to one another 
     primary_rent_discount            = round((((current_rent/primary_market_rent) -1 ) * -1) * 100,1)
     national_rent_discount           = round((((current_rent/national_market_rent) -1 ) * -1) * 100,1)
-
-    market_starting_rent             =  data_frame2[rent_var].iloc[0]
-    market_yoy_growth                =  data_frame[rent_growth_var].iloc[-1]
+    market_starting_rent             =  market_data_frame[rent_var].iloc[0]
+    market_yoy_growth                =  submarket_data_frame[rent_growth_var].iloc[-1]
     market_decade_rent_growth        = round(((primary_market_rent/market_starting_rent) - 1) * 100,1)
     market_decade_rent_growth_annual = market_decade_rent_growth/10
-    #market_ytd_rent_growth           = 
-
-
-    #Get most recent quarter
-    current_period                   = str(data_frame['Period'].iloc[-1])[5:]
+    current_period                   = str(submarket_data_frame['Period'].iloc[-1])[5:] #Get most recent quarter
 
     #Calcuate rent growth for submarket, market, and national average over past 10 years
-    submarket_starting_rent             =  data_frame[rent_var].iloc[0]
-    submarket_start_period              =  str(data_frame['Period'].iloc[0])
-    submarket_year_ago_period           =  str(data_frame['Period'].iloc[-5])
-    submarket_previous_quarter_yoy_growth  =  data_frame[rent_growth_var].iloc[-2]
-    submarket_yoy_growth                =  data_frame[rent_growth_var].iloc[-1]
-    submarket_qoq_growth                =  data_frame[qoq_rent_growth_var].iloc[-1]
-    submarket_year_ago_yoy_growth       =  data_frame[rent_growth_var].iloc[-5]
+    submarket_starting_rent                =  submarket_data_frame[rent_var].iloc[0]
+    submarket_previous_quarter_yoy_growth  =  submarket_data_frame[rent_growth_var].iloc[-2]
+    submarket_yoy_growth                   =  submarket_data_frame[rent_growth_var].iloc[-1]
+    submarket_qoq_growth                   =  submarket_data_frame[qoq_rent_growth_var].iloc[-1]
+    submarket_year_ago_yoy_growth          =  submarket_data_frame[rent_growth_var].iloc[-5]
     
-    submarket_pre_2020_average_yoy_rent_growth         = data_frame.loc[data_frame['Year'] < 2020][rent_growth_var].mean() #average year over year rent growth before 2020
-    submarket_2019Q4_yoy_growth                        = data_frame.loc[data_frame['Period'] == '2019 Q4'][rent_growth_var].iloc[-1]  #2019 Q4 Annual Growth
-    submarket_pre_pandemic_yoy_growth                  = data_frame.loc[data_frame['Period'] == '2020 Q1'][rent_growth_var].iloc[-1]  #2020 Q1 Annual Growth
+    submarket_pre_2020_average_yoy_rent_growth         = submarket_data_frame.loc[submarket_data_frame['Year'] < 2020][rent_growth_var].mean() #average year over year rent growth before 2020
+    submarket_2019Q4_yoy_growth                        = submarket_data_frame.loc[submarket_data_frame['Period'] == '2019 Q4'][rent_growth_var].iloc[-1]  #2019 Q4 Annual Growth
+    submarket_pre_pandemic_yoy_growth                  = submarket_data_frame.loc[submarket_data_frame['Period'] == '2020 Q1'][rent_growth_var].iloc[-1]  #2020 Q1 Annual Growth
     
     
     submarket_decade_rent_growth        = round(((current_rent/submarket_starting_rent) - 1) * 100,1)
     submarket_decade_rent_growth_annual = submarket_decade_rent_growth/10
-    submarket_annual_rent_growth_peak   = data_frame[rent_growth_var].max()
 
 
-    national_starting_rent             =  data_frame3[rent_var].iloc[0]
+    national_starting_rent             =  natioanl_data_frame[rent_var].iloc[0]
     national_decade_rent_growth        = round(((national_market_rent/national_starting_rent) - 1) * 100,1)
     national_decade_rent_growth_annual = national_decade_rent_growth/10
-
-
-
-    #Calculate 10 year average, trough, and peak
-    if sector == "Multifamily":
-        submarket_trough_rents               = data_frame['Market Effective Rent/Unit'].min()
-        market_trough_rents                 = data_frame2['Market Effective Rent/Unit'].min()
-        submarket_peak_rents               = data_frame['Market Effective Rent/Unit'].max()
-        market_peak_rents                  = data_frame2['Market Effective Rent/Unit'].max()
-    
-    else:
-        submarket_trough_rents               = data_frame['Market Rent/SF'].min()
-        market_trough_rents                 = data_frame2['Market Rent/SF'].min()
-        submarket_peak_rents               = data_frame['Market Rent/SF'].max()
-        market_peak_rents                  = data_frame2['Market Rent/SF'].max()    
-
 
 
     #Section 2: Create variables that are conditional on the variables we pulled from the data
@@ -1083,52 +1059,19 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
     #Describe rent growth in the submarket over the past decade
     if submarket_decade_rent_growth > 0:
         submarket_annual_growth_description = 'grown'
-        submarket_annual_growth_description2 = 'increase'
     elif submarket_decade_rent_growth < 0:
         submarket_annual_growth_description = 'decreased'
-        submarket_annual_growth_description2 = 'decrease'
     else:
         submarket_annual_growth_description = 'remained'
-        submarket_annual_growth_description2 = '-'
     
     #Describe rent growth in the market over the past decade
     if market_decade_rent_growth > 0:
         market_annual_growth_description = 'grown'
-        market_annual_growth_description2 = 'increase'
 
     elif market_decade_rent_growth < 0:
         market_annual_growth_description = 'decreased'
-        market_annual_growth_description2 = 'decrease'
     else:
         market_annual_growth_description = 'remained'
-        market_annual_growth_description2 = '-'
-
-    
-    #See if submarket grew faster than market and if market grew faster than nation
-    if market_decade_rent_growth > national_decade_rent_growth:
-        market_national_faster_or_slower = 'faster'
-    elif market_decade_rent_growth < national_decade_rent_growth:
-        market_national_faster_or_slower = 'slower'
-    else:
-        market_national_faster_or_slower = 'the same pace as'
-
-    if submarket_decade_rent_growth > market_decade_rent_growth:
-        submarket_market_faster_or_slower = 'faster'
-    elif submarket_decade_rent_growth < market_decade_rent_growth:
-        submarket_market_faster_or_slower = 'slower'
-    else:
-        submarket_market_faster_or_slower = 'the same pace as'
-
-    #Describe YOY growth for submarket
-    if submarket_yoy_growth < 0:
-        submarket_yoy_growth_description = 'compressed'
-        submarket_signal                 = 'will likely compress further' 
-    elif submarket_yoy_growth > 0:
-        submarket_yoy_growth_description = 'expanded'
-        submarket_signal                 = 'are starting to rebound' 
-    else:
-        submarket_yoy_growth_description = 'remained at'
-        submarket_signal                 = 'are staying put' 
 
     #Describe relationship between quarterly growth and annual rent growth
     if submarket_previous_quarter_yoy_growth > submarket_yoy_growth:
@@ -1143,18 +1086,6 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
         qoq_pushing_or_contracting_annual_growth = '[contracting/pushing] annual growth to'
 
       
-
-
-    #Describe YOY Growth 1 year ago
-    if submarket_year_ago_yoy_growth > 0:
-        submarket_year_ago_yoy_growth_description = 'accelerating'
-    elif submarket_year_ago_yoy_growth < 0:
-        submarket_year_ago_yoy_growth_description = 'decelerating'
-    else:
-        submarket_year_ago_yoy_growth_description = 'stable'
-
-
-
     #Describe Prepandemic Growth 
     #There's 3 possible starting situations, YoY rent growth in 2020 Q1 was higher than 2019 Q4, lower, or the same, next we need to determine if the growth rate is higher, lower, or in line with the
     #historical average (pre 2020 average)
@@ -1192,13 +1123,10 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
     else: submarket_pre_pandemic_yoy_growth_description = '[accelerated/softend/remained stable]'
 
 
-    
-    #Determime if the market grew faster or slower than nation over 10 years
-    ten_year_growth_inline_or_exceeding = '[in line with/falling short of/exceeding]'
 
-
-    if data_frame.equals(data_frame2): #Market
+    if submarket_data_frame.equals(market_data_frame): #Market
         market_or_submarket = 'Market'
+        
         if primary_market  == 'Manhattan - NY' :
             market_or_nation  = 'New York Metro average' 
         else:
@@ -1223,8 +1151,7 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
         else:
             ten_year_growth_inline_or_exceeding = 'in line with'
 
-        if submarket_decade_rent_growth > market_decade_rent_growth and primary_rent_discount > 0:
-                decade_rent_and_rent_discount = ' Despite elevated rents compared to the Market, landlords have had no issue pushing rents over the past ten years. '
+
 
 
     #Section 3: Format Variables
@@ -1271,7 +1198,7 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
     
 
     #Section 4: Put togther our rent langauge for either a market or submarket and return it
-    if data_frame.equals(data_frame2): #Market
+    if market_or_submarket == 'Market': #Market
         return( 'At ' +
             current_rent +
             '/' +
@@ -1320,11 +1247,9 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
            ' ' +
             market_yoy_growth +
             '.' 
-    )   
+            )   
 
-    else: #Submarket
-
-
+    elif market_or_submarket == 'Submarket':
         return( 'At ' +
             current_rent +
             '/' +
@@ -1372,8 +1297,67 @@ def CreateRentLanguage(data_frame,data_frame2,data_frame3,market_title,primary_m
              ' ' +
             submarket_yoy_growth +
             '.' 
+            )   
 
-    )   
+        #Old code below
+        # submarket_annual_rent_growth_peak   = submarket_data_frame[rent_growth_var].max()
+
+
+        # submarket_start_period              =  str(submarket_data_frame['Period'].iloc[0])
+        # submarket_year_ago_period           =  str(submarket_data_frame['Period'].iloc[-5])
+        #market_ytd_rent_growth           = 
+        
+        # #Describe YOY Growth 1 year ago
+        # if submarket_year_ago_yoy_growth > 0:
+        #     submarket_year_ago_yoy_growth_description = 'accelerating'
+        # elif submarket_year_ago_yoy_growth < 0:
+        #     submarket_year_ago_yoy_growth_description = 'decelerating'
+        # else:
+        #     submarket_year_ago_yoy_growth_description = 'stable'
+
+
+        # if submarket_decade_rent_growth > market_decade_rent_growth and primary_rent_discount > 0:
+        #         decade_rent_and_rent_discount = ' Despite elevated rents compared to the Market, landlords have had no issue pushing rents over the past ten years. '
+
+           # #Calculate 10 year average, trough, and peak
+        # if sector == "Multifamily":
+        #     submarket_trough_rents               = submarket_data_frame['Market Effective Rent/Unit'].min()
+        #     market_trough_rents                 = market_data_frame['Market Effective Rent/Unit'].min()
+        #     submarket_peak_rents               = submarket_data_frame['Market Effective Rent/Unit'].max()
+        #     market_peak_rents                  = market_data_frame['Market Effective Rent/Unit'].max()
+        
+        # else:
+        #     submarket_trough_rents               = submarket_data_frame['Market Rent/SF'].min()
+        #     market_trough_rents                 = market_data_frame['Market Rent/SF'].min()
+        #     submarket_peak_rents               = submarket_data_frame['Market Rent/SF'].max()
+        #     market_peak_rents                  = market_data_frame['Market Rent/SF'].max()    
+
+
+        # #See if submarket grew faster than market and if market grew faster than nation
+        # if market_decade_rent_growth > national_decade_rent_growth:
+        #     market_national_faster_or_slower = 'faster'
+        # elif market_decade_rent_growth < national_decade_rent_growth:
+        #     market_national_faster_or_slower = 'slower'
+        # else:
+        #     market_national_faster_or_slower = 'the same pace as'
+
+        # if submarket_decade_rent_growth > market_decade_rent_growth:
+        #     submarket_market_faster_or_slower = 'faster'
+        # elif submarket_decade_rent_growth < market_decade_rent_growth:
+        #     submarket_market_faster_or_slower = 'slower'
+        # else:
+        #     submarket_market_faster_or_slower = 'the same pace as'
+
+        # #Describe YOY growth for submarket
+        # if submarket_yoy_growth < 0:
+        #     submarket_yoy_growth_description = 'compressed'
+        #     submarket_signal                 = 'will likely compress further' 
+        # elif submarket_yoy_growth > 0:
+        #     submarket_yoy_growth_description = 'expanded'
+        #     submarket_signal                 = 'are starting to rebound' 
+        # else:
+        #     submarket_yoy_growth_description = 'remained at'
+        #     submarket_signal                 = 'are staying put' 
 
 #Language for construction section
 def CreateConstructionLanguage(data_frame,data_frame2,data_frame3,market_title,primary_market,sector,writeup_directory):
