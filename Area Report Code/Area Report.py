@@ -289,61 +289,36 @@ def GetCountyIndustryBreakdown(fips,year,qtr):
     print('Getting County Employment Breakdown')
 
 
-    #Pulls employment data (and the lagged data) from Quarterly Census of Employment and Wages
+    #Pulls employment data from Quarterly Census of Employment and Wages
     df_qcew          = qcew.get_data('area', rtype='dataframe', year=year,qtr=qtr, area=fips)
-    df_qcew_lagged   = qcew.get_data('area', rtype='dataframe', year=(str(int(year) - growth_period )),qtr=qtr, area=fips)
-    df_qcew_lagged1  = qcew.get_data('area', rtype='dataframe', year=(str(int(year) - 1 )),qtr=qtr, area=fips)
+    if data_export == True:
+        df_qcew.to_csv(os.path.join(county_folder,'qcew_raw.csv'))
 
     #Restrict to county-ownership level (fed,state,local,private), supersector employment
     df_qcew          = df_qcew.loc[df_qcew['agglvl_code'] == 73] 
-    df_qcew_lagged   = df_qcew_lagged.loc[df_qcew_lagged['agglvl_code'] == 73] 
-    df_qcew_lagged1  = df_qcew_lagged1.loc[df_qcew_lagged1['agglvl_code'] == 73] 
     
-    if data_export == True:
-        df_qcew.to_csv(os.path.join(county_folder,'qcew_raw.csv'))
-        df_qcew_lagged.to_csv(os.path.join(county_folder,'qcew_raw_lagged.csv'))
-        df_qcew_lagged1.to_csv(os.path.join(county_folder,'qcew_raw_lagged1.csv'))
-
-    #Add "lagged" and "lagged1" to the column names for the lagged data
-    df_qcew_lagged   = df_qcew_lagged.add_prefix('lagged_')
-    df_qcew_lagged1  = df_qcew_lagged1.add_prefix('lagged1_')
-
-    #Remove the "lagged" and "lagged1" prefix for the industry and ownership code columns so we can merge on them
-    df_qcew_lagged   = df_qcew_lagged.rename(columns={"lagged_own_code": "own_code", "lagged_industry_code": "industry_code"})
-    df_qcew_lagged1  = df_qcew_lagged1.rename(columns={"lagged1_own_code": "own_code", "lagged1_industry_code": "industry_code"})
-
-
-    #Merge together the current quarters data with the data from 1 year ago and with the data from (5) years from now
-    df_joint = pd.merge(df_qcew, df_qcew_lagged, on=('industry_code','own_code'),how='outer')
-    df_joint = pd.merge(df_joint, df_qcew_lagged1, on=('industry_code','own_code'),how='outer') #now merge in lagged employment data
-
-    #Flag the industries and ownership type rows where the data was suppresed in the past or present
-    filter = (df_joint['disclosure_code'] == 'N') | (df_joint['lagged_disclosure_code'] == 'N')
-    df_joint['Employment Growth Invalid'] = ''
-    df_joint.loc[filter, ['Employment Growth Invalid']] = 1
-    df_joint.loc[df_joint['Employment Growth Invalid'] != 1, ['Employment Growth Invalid']] = 0
-    
-    one_year_filter = (df_joint['disclosure_code'] == 'N') | (df_joint['lagged1_disclosure_code'] == 'N' )
-    df_joint['1Y Employment Growth Invalid'] = ''
-    df_joint.loc[one_year_filter, ['1Y Employment Growth Invalid']] = 1
-    df_joint.loc[df_joint['1Y Employment Growth Invalid'] != 1, ['1Y Employment Growth Invalid']] = 0
-    
-
-    #Replace the Employment Growth Invalid column with the maximum value from each row for a given industry
-    df_joint['Employment Growth Invalid'] = df_joint.groupby('industry_code')['Employment Growth Invalid'].transform('max')
-    df_joint['1Y Employment Growth Invalid'] = df_joint.groupby('industry_code')['1Y Employment Growth Invalid'].transform('max')
+    #Drop suppresed employment rows
+    df_qcew          = df_qcew.loc[df_qcew['disclosure_code'] != 'N'] 
 
     #Drop the rows where employment is 0 
-    df_joint          = df_joint.loc[(df_joint['month3_emplvl'] > 0) ] 
+    df_qcew          = df_qcew.loc[(df_qcew['month3_emplvl'] > 0) ] 
 
-    #Create a seperate dataframe with just the current quarters weekly wages by industry
+    #Create a seperate dataframe with just the weekly wages by industry
     wtavg = lambda x: np.average(x.avg_wkly_wage, weights = x.month3_emplvl,axis = 0) #define function to calcuate weighted average wage
-    df_qcew_wages           = df_joint.groupby('industry_code').apply(wtavg).reset_index()
+    df_qcew_wages           = df_qcew.groupby('industry_code').apply(wtavg).reset_index()
     df_qcew_wages.columns = ['industry_code','avg_wkly_wage']
 
+    #Create a seperate dataframe with just the location quotient by industry (averaged across sectors)
+    wtavg = lambda x: np.average(x.lq_month3_emplvl, weights = x.month3_emplvl,axis = 0) #define function to calcuate weighted average wage
+    df_qcew_lq           = df_qcew.groupby('industry_code').apply(wtavg).reset_index()
+    df_qcew_lq.columns = ['industry_code','lq_month3_emplvl']
+
     #Collapse down to total employment across the 3 ownership codes
-    df_joint                 = df_joint.groupby('industry_code').agg(month3_emplvl=('month3_emplvl', 'sum'),lagged_month3_emplvl=('lagged_month3_emplvl', 'sum'),lagged1_month3_emplvl=('lagged1_month3_emplvl', 'sum'),emp_growth_invalid=('Employment Growth Invalid', 'max'),one_year_emp_growth_invalid=('1Y Employment Growth Invalid', 'max'))
-    df_joint                 = pd.merge(df_joint, df_qcew_wages, on=('industry_code'),how='outer')
+    df_qcew                 = df_qcew.groupby('industry_code').agg(month3_emplvl=('month3_emplvl', 'sum'),)
+    
+    #Merge in the wage and location quotient dataframes
+    df_qcew                 = pd.merge(df_qcew, df_qcew_wages, on=('industry_code'),how='outer')
+    df_qcew                 = pd.merge(df_qcew, df_qcew_lq, on=('industry_code'),how='outer')
 
     #Change the industry codes to names
     replacements = {'1011':'Natural Resources & Mining', 
@@ -359,33 +334,19 @@ def GetCountyIndustryBreakdown(fips,year,qtr):
                     '1028':'Public Administration', 
                     '1029':'Unclassified'}
 
-    df_joint['industry_code'].replace(replacements, inplace=True)
+    df_qcew['industry_code'].replace(replacements, inplace=True)
 
    
-
-    #Calcualte employment growth rates
-    df_joint['Employment Growth'] = round((((df_joint['month3_emplvl'] / df_joint['lagged_month3_emplvl']) - 1 ) * 100 ),2)
-    df_joint['1 Year Employment Growth'] = round((((df_joint['month3_emplvl'] / df_joint['lagged1_month3_emplvl']) - 1 ) * 100 ),2)
-    
-    #Drop the employment growth values when the industry is not valid due to data suppression
-    growth_filter          = (df_joint['emp_growth_invalid'] == 1)
-    one_year_growth_filter = (df_joint['one_year_emp_growth_invalid'] == 1)
-
-    df_joint.loc[growth_filter, ['Employment Growth']] = NaN
-    df_joint.loc[one_year_growth_filter, ['1 Year Employment Growth']] = NaN
-
-
-    #Sort by 5 year growth rate
-    df_joint = df_joint.sort_values(by=['Employment Growth'])
-    df_joint['county'] = county
-
+    #Sort by total employement
+    df_qcew['employment_fraction'] = round(((df_qcew['month3_emplvl']/(df_qcew['month3_emplvl'].sum())) * 100),2)
+    df_qcew['county'] = county
+    df_qcew      = df_qcew.loc[df_qcew['industry_code'] != 'Unclassified']
+    df_qcew = df_qcew.sort_values(by=['month3_emplvl'])
 
     #Export final data
     if data_export == True:
-        df_joint.to_csv(os.path.join(county_folder,'County Industry Breakdown.csv'))
-
-
-    return(df_joint)
+        df_qcew.to_csv(os.path.join(county_folder,'County Industry Breakdown.csv'))
+    return(df_qcew)
 
 def GetCountyIndustryGrowthBreakdown(fips,year,qtr):
     print('Getting County Employment Growth Breakdown')
@@ -2811,25 +2772,24 @@ def OverviewLanguage():
 
 def EmploymentBreakdownLanguage(county_industry_breakdown):
     print('Writing Employment Breakdown Langauge')
-    #Sort the industry breakdown data by most employees
-    county_industry_breakdown      = county_industry_breakdown.loc[county_industry_breakdown['industry_code'] != 'Unclassified'] 
-    county_industry_breakdown      = county_industry_breakdown.sort_values(by=['month3_emplvl'])
-    largest_industry               = county_industry_breakdown['industry_code'].iloc[-1]
-    second_largest_industry        = county_industry_breakdown['industry_code'].iloc[-2]
+    print(county_industry_breakdown)
+    #Get the largest industries
+    largest_industry                        = county_industry_breakdown['industry_code'].iloc[-1]
+    largest_industry_employment             = county_industry_breakdown['month3_emplvl'].iloc[-1]
+    largest_industry_employment_fraction    = county_industry_breakdown['employment_fraction'].iloc[-1]
+    second_largest_industry                 = county_industry_breakdown['industry_code'].iloc[-2]
     if len(county_industry_breakdown) > 2:
-        third_largest_industry         = county_industry_breakdown['industry_code'].iloc[-3]
+        third_largest_industry              = county_industry_breakdown['industry_code'].iloc[-3]
     else:
-        third_largest_industry         = ''
-    largest_industry_employment    = county_industry_breakdown['month3_emplvl'].iloc[-1]
-    total_employment               = county_industry_breakdown['month3_emplvl'].sum()
+        third_largest_industry              = ''
     
     #Classify employment diversification level
     diversification_level = '[fairly diversified/diversified/concentrated]'
 
-
-    largest_industry_employment_fraction    = (largest_industry_employment/total_employment) * 100
-    largest_industry_employment    = "{:,.0f}".format(largest_industry_employment)
+    #Format Variables
     largest_industry_employment_fraction    = "{:,.1f}%".format(largest_industry_employment_fraction) 
+    largest_industry_employment             = "{:,.0f}".format(largest_industry_employment)
+
 
     return('The employment sector in ' +
            county +
