@@ -2821,7 +2821,7 @@ def EmploymentBreakdownLanguage(county_industry_breakdown):
            second_largest_industry +
            ', and ' +
           third_largest_industry +
-           ' industries account for the top three industries, employing ' +
+           ' industries account for the top three employers, employing ' +
 
            largest_industry_employment +
            ' (' +
