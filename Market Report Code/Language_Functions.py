@@ -13,9 +13,12 @@ def millify(n,modifier):
                             
         if n >= 1000000:
             return modifier + '{:.1f}{}'.format(n / 10**(3 * millidx), millnames[millidx])
+        elif n < 1000:
+            return "{:,.0f}".format(n)
         else:
-            return modifier + '{:.0f}{}'.format(n / 10**(3 * millidx), millnames[millidx])
-    except:
+            return modifier + '{:.1f}{}'.format(n / 10**(3 * millidx), millnames[millidx])
+    except Exception as e:
+        print(e)
         return(n)
 
 #Function that reads in the write up from the saved html file in the CoStar Write Ups folder within the data folder
@@ -670,6 +673,9 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
     #Calculate total net absorption so far for the current year and how it compares to the same period last year
     data_frame_current_year  = submarket_data_frame.loc[submarket_data_frame['Year'] == (submarket_data_frame['Year'].max())]
     data_frame_previous_year = submarket_data_frame.loc[submarket_data_frame['Year'] == (submarket_data_frame['Year'].max() -1 )]
+    data_frame_previous_year = data_frame_previous_year.iloc[0:len(data_frame_current_year)] #make sure we are comparing the same period from the currnet year to the period from last year
+    assert (list(data_frame_previous_year['Quarter'])) ==  list((data_frame_current_year['Quarter']))
+
     current_year_total_net_absorption  = data_frame_current_year[net_absorption_var_name].sum()
     previous_year_total_net_absorption = data_frame_previous_year[net_absorption_var_name].sum()
     
@@ -1049,7 +1055,7 @@ def CreateRentLanguage(submarket_data_frame,market_data_frame,natioanl_data_fram
     market_yoy_growth                =  submarket_data_frame[rent_growth_var].iloc[-1]
     market_decade_rent_growth        = round(((primary_market_rent/market_starting_rent) - 1) * 100,1)
     market_decade_rent_growth_annual = market_decade_rent_growth/10
-    current_period                   = str(submarket_data_frame['Period'].iloc[-1])[5:] #Get most recent quarter
+    current_period                   = str(submarket_data_frame['Period'].iloc[-1]) #Get most recent quarter
 
     #Calcuate rent growth for submarket, market, and national average over past 10 years
     submarket_starting_rent                =  submarket_data_frame[rent_var].iloc[0]
@@ -1060,7 +1066,7 @@ def CreateRentLanguage(submarket_data_frame,market_data_frame,natioanl_data_fram
     
     submarket_pre_2020_average_yoy_rent_growth         = submarket_data_frame.loc[submarket_data_frame['Year'] < 2020][rent_growth_var].mean() #average year over year rent growth before 2020
     submarket_2019Q4_yoy_growth                        = submarket_data_frame.loc[submarket_data_frame['Period'] == '2019 Q4'][rent_growth_var].iloc[-1]  #2019 Q4 Annual Growth
-    submarket_pre_pandemic_yoy_growth                  = submarket_data_frame.loc[submarket_data_frame['Period'] == '2020 Q1'][rent_growth_var].iloc[-1]  #2020 Q1 Annual Growth
+    submarket_pre_pandemic_yoy_growth                  = submarket_data_frame.loc[submarket_data_frame['Period'] == '2019 Q4'][rent_growth_var].iloc[-1]  #2019 Q4 Annual Growth
     
     
     submarket_decade_rent_growth        = round(((current_rent/submarket_starting_rent) - 1) * 100,1)
@@ -1159,7 +1165,7 @@ def CreateRentLanguage(submarket_data_frame,market_data_frame,natioanl_data_fram
 
     if submarket_data_frame.equals(market_data_frame): #Market
         market_or_submarket = 'Market'
-        
+
         if primary_market  == 'Manhattan - NY' :
             market_or_nation  = 'New York Metro average' 
         else:
@@ -1587,11 +1593,11 @@ def CreateSaleLanguage(submarket_data_frame,market_data_frame,natioanl_data_fram
     over_last_year_transactions             = submarket_data_frame['Sales Volume Transactions'][-1:-5:-1].sum()
     
     #Collapse down the data to the annual total sales info
-    submarket_data_frame['n']               = 1
-    submarket_data_frame['n']               = 1
-    submarket_data_frame['n']               = 1
-    
-    data_frame_annual                       = submarket_data_frame.groupby('Year').agg(sale_volume=('Total Sales Volume', 'sum'),
+    data_frame_annual                    = submarket_data_frame
+    data_frame_annual['n']               = 1
+    data_frame_annual['n']               = 1
+    data_frame_annual['n']               = 1
+    data_frame_annual                    = data_frame_annual.groupby('Year').agg(sale_volume=('Total Sales Volume', 'sum'),
                                                 transaction_count=('Sales Volume Transactions', 'sum'),
                                                 n = ('n','sum')
                                                 ).reset_index()

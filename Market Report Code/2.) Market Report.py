@@ -870,10 +870,10 @@ def GetLanguage(writeup_directory):
     global overview_language, demand_language,sale_language,rent_language,construction_languge,outlook_language
     overview_language    = CreateOverviewLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
     demand_language      = CreateDemandLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
-    sale_language        = CreateSaleLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
     rent_language        = CreateRentLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
     construction_languge = CreateConstructionLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
     outlook_language     = CreateOutlookLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
+    sale_language        = CreateSaleLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
 
 def GetOverviewTable():
     #Create Data for overview table
