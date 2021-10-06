@@ -219,36 +219,36 @@ def CreateOverviewLanguage(submarket_data_frame,market_data_frame,natioanl_data_
         if yoy_rent_growth < 0 and vacancy_change > 0:
             overview_sector_specific_language =  (""" The unique nature of the pandemic and lockdown dramatically shifted renter preferences, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
                                 'Multiple factors inspired the shift, including the ability to work-from-home, affordability, and a desire for more space. ' + 
-                                'The ' + market_or_submarket + 
-                                """ has been negatively affected by this shift in preferences, leading to rising vacancy rates and contracting rents. """)
+                                sector + ' properties in the ' + market_or_submarket + 
+                                """ have been negatively affected by this shift in preferences, leading to rising vacancy rates and contracting rents. """)
     
         else:
             overview_sector_specific_language = (""" The unique nature of the pandemic and lockdown dramatically shifted renter preferences, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
                                 'Multiple factors inspired the shift, including the ability for some to work-from-home, affordability, and a desire for more space. ' + 
-                                'The ' + market_or_submarket + 
-                                ' has been positively affected by this shift in preferences, leading to record levels of leasing activity and strong rent growth for the ' + market_or_submarket + '. ' )
+                                sector + ' properties in the ' + market_or_submarket + 
+                                ' benefited from this shift in preferences, leading to positive net absorption and strong rent growth for the ' + market_or_submarket + '. ' )
                                 
     #Create the Industrial sepecific language
     if sector == "Industrial": 
         if yoy_rent_growth < 0 and vacancy_change > 0:
             overview_sector_specific_language =  (' Industrial enters the fourth quarter in among the best shape of any of the major property types. ' + 
                                 'A pandemic driven spike in e-commerce sales along with significant growth in third-party logistics providers continues to drive demand. ' + 
-                                'Despite these macro trends, the ' + market_or_submarket + 
-                                ' has not felt the affects of these demand drivers, leading to softened levels of leasing activity and rent growth.' )
+                                'Despite these macro trends, '  + sector.lower() + ' properties in the ' + market_or_submarket + 
+                                ' have not felt the affects of these demand drivers, leading to softened levels of leasing activity and rent growth.' )
     
         else:
             overview_sector_specific_language = (' Industrial enters the fourth quarter in among the best shape of any of the major property types. ' + 
                                 'A pandemic driven spike in e-commerce sales along with significant growth in third-party logistics providers continues to drive demand. ' + 
-                                'The ' + market_or_submarket + 
-                                ' has been positively affected by these demand drivers, leading to record levels of leasing activity and accelerating rent growth for the ' + market_or_submarket + '.' )
+                                sector + ' properties in the ' + market_or_submarket + 
+                                ' benefited from these demand drivers, leading to positive net absorption and continued growth in rents.' )
 
     #Create the Office sepecific language
     if sector == "Office": 
         if yoy_rent_growth < 0 and vacancy_change > 0: #rents contract, vacancy expands
             overview_sector_specific_language =  (' Heading into Q4 2021, some of the adverse market trends established during the pandemic continue to plague the office sector. ' + 
                                 'Vacancy rose higher as struggling businesses and tenants adopting remote work relinquished space. ' + 
-                                'The ' + market_or_submarket + 
-                                ' has been negatively affected by this shift in preferences, leading to rising vacancy rates and contracting rents for the ' + market_or_submarket + '.' )
+                                 sector + ' properties in the ' + market_or_submarket + 
+                                ' have been negatively affected by this shift in preferences, leading to rising vacancy rates and contracting rents for the ' + market_or_submarket + '.' )
     
         elif yoy_rent_growth < 0 and vacancy_change < 0: #rents contract, vacancy contracts
             overview_sector_specific_language =  (' Heading into Q4 2021, some of the adverse market trends established during the pandemic continue to plague the office sector. ' + 
@@ -339,8 +339,12 @@ def CreateOverviewLanguage(submarket_data_frame,market_data_frame,natioanl_data_
 
     #Section 4.2: Create the conclusion of the overivew language
     overview_conclusion_language = (
-                ' With fundamentals '               +
+                ' With fundamentals '              +
                 fundamentals_change                +
+                 ' for '                           +
+                 sector.lower()                    +
+                 ' properties in the '             +
+                 market_or_submarket               +
                 ', values have '                   +
                 asset_value_change_description     +
                 ' over the past year to '          +
