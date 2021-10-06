@@ -517,6 +517,12 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
         # year_ago_net_absorption       = submarket_data_frame['Net Absorption SF'].iloc[-5] #change_each_Q
         # year_ago_leasing_activity     = submarket_data_frame['Leasing Activity'].iloc[-5] #change_each_Q
 
+    #inventory levels
+    submarket_inventory                 = submarket_data_frame[inventory_var_name].iloc[-1]
+    decade_ago_inventory                = submarket_data_frame[inventory_var_name].iloc[0]
+    ten_year_inventory_growth           = submarket_inventory - decade_ago_inventory       
+    inventory_growth_pct                = round(((ten_year_inventory_growth)/decade_ago_inventory)  * 100,2)
+
 
     #Get latest quarter and year
     latest_quarter                      = str(submarket_data_frame['Period'].iloc[-1])
@@ -527,7 +533,6 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
     submarket_vacancy                   = submarket_data_frame['Vacancy Rate'].iloc[-1]
     market_vacancy                      = market_data_frame['Vacancy Rate'].iloc[-1]
     national_vacancy                    = natioanl_data_frame['Vacancy Rate'].iloc[-1]
-   
     year_ago_submarket_vacancy          = submarket_data_frame['Vacancy Rate'].iloc[-5]
 
     #Determine if vacancy has grown or compressed
@@ -840,12 +845,39 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
     national_vacancy                    = "{:,.1f}%".format(national_vacancy)
     market_submarket_differnce          = "{:,.0f}".format(market_submarket_differnce)
     current_year_total_net_absorption   = millify(current_year_total_net_absorption,'')
-    
+    submarket_inventory                 = millify(submarket_inventory,'')
+    inventory_growth_pct                = "{:,.1f}%".format(inventory_growth_pct)
+    ten_year_inventory_growth           = millify(ten_year_inventory_growth,'')
+
     #Section 4: Put together the variables we have created into the supply and demand language and return it
     return(
-            #Sentence 1
+            #Sentance 1 (Supply sentence)
+            'The '                                                      +
+            market_or_submarket                                         +
+            ' is home to '                                              +
+            submarket_inventory                                         +
+            ' '                                                         +
+            unit_or_sqft                                                +
+            ' of '                                                      +
+            sector.lower()                                              +
+            ' space,'                                                   + 
+            ' and developers have '                                     +
+            'added'                                                     +
+            ', net of demolitions,'                                     +
+            ' '                                                         +
+            ten_year_inventory_growth                                   +
+            ' '                                                         +
+            unit_or_sqft                                                +
+            ' over the past ten years. '                                +
+            'These developments have '                                  +
+            'expanded'                                                  +
+            ' inventory by '                                            +
+            inventory_growth_pct                                        +
+            '. '                                                        +
+            
+            #Sentence 2
             leasing_activity_intro_clause                               +
-            ', vacancy rates have '                                      +
+            ', vacancy rates have '                                     +
             yoy_submarket_vacancy_growth_description                    +
             ' '                                                         +
             yoy_submarket_vacancy_growth                                +
@@ -865,7 +897,7 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
             market_submarket_differnce                                  +
             ' bps'                                                      +
 
-            #Sentence 2
+            #Sentence 3
             '. In the '                                                 +
             quarter                                                     +
             ' quarter, the '                                            +
@@ -884,7 +916,7 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
             previous_quarter                                            + 
             '. '                                                        +
             
-            #Sentence 3
+            #Sentence 4
             ' With '                                                    +
             net_absorption                                              +
             ' '                                                         +
@@ -900,7 +932,7 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
             previous_quarter[5:]                                        +
             '. '                                                        +
             
-            #Sentence 4
+            #Sentence 5
             'Combined, net absorption through '                         +
             number_of_quarters                                          +
             latest_year                                                 +
