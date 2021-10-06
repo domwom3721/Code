@@ -54,7 +54,7 @@ map_location                   =  os.path.join(project_location,'Data','Maps','C
 
 #Decide if you want to export data in excel files in the county folder
 data_export = True
-data_export = False
+# data_export = False
 
 #Set formatting paramaters for reports
 primary_font                  = 'Avenir Next LT Pro Light' 
@@ -2772,44 +2772,82 @@ def OverviewLanguage():
 
 def EmploymentBreakdownLanguage(county_industry_breakdown):
     print('Writing Employment Breakdown Langauge')
-    print(county_industry_breakdown)
+    # print(county_industry_breakdown)
     #Get the largest industries
-    largest_industry                        = county_industry_breakdown['industry_code'].iloc[-1]
-    largest_industry_employment             = county_industry_breakdown['month3_emplvl'].iloc[-1]
-    largest_industry_employment_fraction    = county_industry_breakdown['employment_fraction'].iloc[-1]
-    second_largest_industry                 = county_industry_breakdown['industry_code'].iloc[-2]
+    largest_industry                                  = county_industry_breakdown['industry_code'].iloc[-1]
+    largest_industry_employment                       = county_industry_breakdown['month3_emplvl'].iloc[-1]
+    largest_industry_employment_fraction              = county_industry_breakdown['employment_fraction'].iloc[-1]
+    
+    second_largest_industry                           = county_industry_breakdown['industry_code'].iloc[-2]
+    second_largest_industry_employment                = county_industry_breakdown['month3_emplvl'].iloc[-2]
+    second_largest_industry_employment_fraction       = county_industry_breakdown['employment_fraction'].iloc[-2]
+    
+
     if len(county_industry_breakdown) > 2:
-        third_largest_industry              = county_industry_breakdown['industry_code'].iloc[-3]
+        third_largest_industry                        = county_industry_breakdown['industry_code'].iloc[-3]
+        third_largest_industry_employment             = county_industry_breakdown['month3_emplvl'].iloc[-3]
+        third_largest_industry_employment_fraction    = county_industry_breakdown['employment_fraction'].iloc[-3]
+        
     else:
-        third_largest_industry              = ''
+        third_largest_industry                        = ''
+        third_largest_industry_employment             = ''
+        third_largest_industry_employment_fraction    = ''
     
     #Classify employment diversification level
     diversification_level = '[fairly diversified/diversified/concentrated]'
 
     #Format Variables
-    largest_industry_employment_fraction    = "{:,.1f}%".format(largest_industry_employment_fraction) 
-    largest_industry_employment             = "{:,.0f}".format(largest_industry_employment)
+    largest_industry_employment_fraction           = "{:,.1f}%".format(largest_industry_employment_fraction) 
+    largest_industry_employment                    = "{:,.0f}".format(largest_industry_employment)
+
+    second_largest_industry_employment_fraction    = "{:,.1f}%".format(second_largest_industry_employment_fraction) 
+    second_largest_industry_employment             = "{:,.0f}".format(second_largest_industry_employment)
+
+    third_largest_industry_employment_fraction     = "{:,.1f}%".format(third_largest_industry_employment_fraction) 
+    third_largest_industry_employment              = "{:,.0f}".format(third_largest_industry_employment)
 
 
-    return('The employment sector in ' +
-           county +
-           ' is ' + 
-           diversification_level +
-           ', with ' +
+
+    return(
+        #   'The employment sector in ' +
+        #    county +
+        #    ' is ' + 
+        #    diversification_level +
+        #    ', with ' +
+
+          'The ' + 
            largest_industry +
            ', ' +
            second_largest_industry +
            ', and ' +
           third_largest_industry +
-           ' accounting for the top three industries. ' +
-           'The ' +
-           largest_industry +
-           ' industry employs ' +
+           ' industries account for the top three industries, employing ' +
+
            largest_industry_employment +
-           ' people alone, accounting for ' +
-           largest_industry_employment_fraction +
-           ' of jobs in the County.'
-           )
+           ' (' +
+            largest_industry_employment_fraction +
+           '), ' +
+           
+            second_largest_industry_employment +
+           ' (' +
+           second_largest_industry_employment_fraction +
+           '), and ' +
+           
+            third_largest_industry_employment +
+           ' (' +
+           third_largest_industry_employment_fraction +
+           ') ' +
+           'workers in the County, respectively. '
+        )
+
+        #    'The ' +
+        #    largest_industry +
+        #    ' industry employs ' +
+        #    largest_industry_employment +
+        #    ' people alone, accounting for ' +
+        #    largest_industry_employment_fraction +
+        #    ' of workers in the County.'
+           
     
 def UnemploymentLanguage():
     print('Writing Unemployment Langauge')
@@ -3653,6 +3691,7 @@ def AddMap(document):
         map = document.add_picture(os.path.join(county_folder_map,'map.png'),width=Inches(6.5))
     else:    
         try:
+            FIX_MIKE_LEAHY
             #Search Google Maps for County
             options = webdriver.ChromeOptions()
             options.add_argument("--start-maximized")
@@ -3660,11 +3699,13 @@ def AddMap(document):
             browser.get('https:google.com/maps')
             
             #Write county name in box
-            Place = browser.find_element_by_class_name("tactile-searchbox-input")
+            # Place = browser.find_element_by_class_name("tactile-searchbox-input")
+            Place = browser.find_element_by_xpath("""//*[@id="searchboxinput"]""")
             Place.send_keys((county + ', ' + state))
             
             #Submit county name for search
-            Submit = browser.find_element_by_class_name('searchbox-searchbutton')
+            # Submit = browser.find_element_by_class_name('tactile-searchbox-input')
+            Submit = browser.find_element_by_xpath("""//*[@id="searchboxinput"]""")
             Submit.click()
 
             time.sleep(5)
