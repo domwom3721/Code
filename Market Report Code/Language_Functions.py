@@ -1168,11 +1168,14 @@ def CreateRentLanguage(submarket_data_frame,market_data_frame,natioanl_data_fram
     if submarket_data_frame.equals(market_data_frame): #Market
         market_or_submarket = 'Market'
 
-        if primary_market  == 'Manhattan - NY' :
+        if natioanl_data_frame['Geography Name'].iloc[0]  == 'New York - NY' :
             market_or_nation  = 'New York Metro average' 
-        else:
-            market_or_nation    = 'National average'
         
+        elif natioanl_data_frame['Geography Name'].iloc[0]  == 'United States of America':
+            market_or_nation    = 'National average'
+        else:
+            market_or_nation    = natioanl_data_frame['Geography Name'].iloc[0] + ' average'
+
         #Check if market decade growth was slower or faster than national growth
         if market_decade_rent_growth_annual > national_decade_rent_growth_annual:
               ten_year_growth_inline_or_exceeding = 'exceeding'
