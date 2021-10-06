@@ -1290,7 +1290,7 @@ def CreateRentLanguage(submarket_data_frame,market_data_frame,natioanl_data_fram
             
             '. By the end of 2020, rents had '             +
             "{growth_description}".format(growth_description = "grown " if  submarket_2020Q4_yoy_growth >= 0  else "fallen ") +                                           
-            "{:,.1f}%".format(submarket_2020Q4_yoy_growth) +
+            "{:,.1f}%".format(abs(submarket_2020Q4_yoy_growth)) +
             ' from the 2019 Q4 rent level of '             +
             submarket_2019Q4_rent                          +
             '/'                                            +
