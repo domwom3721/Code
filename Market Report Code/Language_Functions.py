@@ -977,9 +977,6 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
     # else:
     #     demand_inventory_growth_and_or_but               = '[and/but]'
 
-
-
-
     # if submarket_vacancy > lagged_submarket_vacancy:
     #     ten_year_growth_description = 'expanded'
     # elif  submarket_vacancy < lagged_submarket_vacancy:
