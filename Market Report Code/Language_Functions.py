@@ -1375,23 +1375,25 @@ def CreateConstructionLanguage(submarket_data_frame, market_data_frame, natioanl
         unit_or_sqft                        = 'units'
         under_construction                  = submarket_data_frame['Under Construction Units'].iloc[-1]
         median_construction_level           = submarket_data_frame['Under Construction Units'].median()
-        # previous_quarter_under_construction = data_frame['Under Construction Units'].iloc[-2]
         under_construction_share            = round(submarket_data_frame['Under Construction %'].iloc[-1],2)
         current_inventory                   = submarket_data_frame['Inventory Units'].iloc[-1]
         decade_ago_inventory                = submarket_data_frame['Inventory Units'].iloc[0]
         delivered_inventory                 = submarket_data_frame['Gross Delivered Units'].sum()
         demolished_inventory                = submarket_data_frame['Demolished Units'].sum()                        
+        # previous_quarter_under_construction = data_frame['Under Construction Units'].iloc[-2]
 
     else:
         unit_or_sqft                        = 'square feet'
         under_construction                  = submarket_data_frame['Under Construction SF'].iloc[-1]
         median_construction_level           = submarket_data_frame['Under Construction SF'].median()
-        # previous_quarter_under_construction = data_frame['Under Construction SF'].iloc[-2]
         under_construction_share            = round(submarket_data_frame['Under Construction %'].iloc[-1],2)
         current_inventory                   = submarket_data_frame['Inventory SF'].iloc[-1]
         decade_ago_inventory                = submarket_data_frame['Inventory SF'].iloc[0]
         delivered_inventory                 = submarket_data_frame['Gross Delivered SF'].sum()
         demolished_inventory                = submarket_data_frame['Demolished SF'].sum()
+        # previous_quarter_under_construction = data_frame['Under Construction SF'].iloc[-2]
+    
+    yoy_submarket_vacancy_growth        = submarket_data_frame['YoY Vacancy Growth'].iloc[-1]
 
     if submarket_data_frame.equals(market_data_frame):
         market_or_submarket                 = 'Market'
@@ -1405,9 +1407,9 @@ def CreateConstructionLanguage(submarket_data_frame, market_data_frame, natioanl
 
     #Section 3: Format variables
     inventory_growth_pct                        = "{:,.1f}%".format(inventory_growth_pct)
-    # delivered_inventory                         = "{:,.0f}".format(delivered_inventory)
-    # demolished_inventory                        = "{:,.0f}".format(demolished_inventory)
 
+    
+    #Section 4: Put together our variables into sentances and return the language
     #Determine if developers are historically active here
     #If theres at least 1 deliverable per quarter, active
     if median_construction_level >= 1:
@@ -1458,15 +1460,33 @@ def CreateConstructionLanguage(submarket_data_frame, market_data_frame, natioanl
 
 
 
-    #Section 4: Put together our variables into sentances and return the language
+    
     
     #Determine if the supply pipeline is active or not    
     if under_construction > 0:
         currently_active_or_inactive = 'Developers are currently active in the ' + market_or_submarket + ' with ' + millify(under_construction,'') + ' ' + unit_or_sqft + ', or the equivalent of ' + "{:,.1f}%".format(under_construction_share)   + ' of existing inventory, underway. '
-    else:
-        currently_active_or_inactive = 'Developers are not currently active in the ' + market_or_submarket + '. The empty pipeline will likely limit supply pressure on vacancies, boding well for fundamentals in the near term. '
+        if yoy_submarket_vacancy_growth > 0:
+            pipeline_vacancy_pressure    = 'The active pipeline will likely add upward pressure to vacancy rates in the near term.'
+        else:
+            pipeline_vacancy_pressure    = ''
 
-    return(developers_historically_active_or_inactive + currently_active_or_inactive)
+    elif under_construction <= 0 :
+        currently_active_or_inactive = 'Developers are not currently active in the ' + market_or_submarket + '. ' 
+        pipeline_vacancy_pressure    = 'The empty pipeline will likely limit supply pressure on vacancies, boding well for fundamentals in the near term. '
+
+    pipeline_vacancy_pressure
+    return(developers_historically_active_or_inactive + currently_active_or_inactive + pipeline_vacancy_pressure)
+
+
+
+
+
+
+
+
+
+
+
 
     #Old Code below:
     #Determine 10 year inventory growth   
