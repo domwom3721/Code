@@ -1132,24 +1132,24 @@ def CreateRentLanguage(submarket_data_frame,market_data_frame,natioanl_data_fram
     #historical average (pre 2020 average)
     if submarket_2019Q4_yoy_growth > submarket_2019Q3_yoy_growth: #rent growth accelerated
         if submarket_2019Q4_yoy_growth > submarket_pre_2020_average_yoy_rent_growth: #above historical average
-            submarket_pre_pandemic_yoy_growth_description = 'accelerated, and was above the historical average,'
+            submarket_pre_pandemic_yoy_growth_description = 'accelerated above the previous quarter, and was above the historical average,'
         
         elif submarket_2019Q4_yoy_growth < submarket_pre_2020_average_yoy_rent_growth:  #below historical average
-            submarket_pre_pandemic_yoy_growth_description = 'accelerated, but remained below the historical average,'
+            submarket_pre_pandemic_yoy_growth_description = 'accelerated above the previous quarter, but remained below the historical average,'
 
         elif submarket_2019Q4_yoy_growth == submarket_pre_2020_average_yoy_rent_growth: #equal to historical average
-            submarket_pre_pandemic_yoy_growth_description = 'accelerated, and was in line with the historical average,'
+            submarket_pre_pandemic_yoy_growth_description = 'accelerated above the previous quarter, and was in line with the historical average,'
 
     
     elif submarket_2019Q4_yoy_growth < submarket_2019Q3_yoy_growth: #rent growth softend
         if submarket_2019Q4_yoy_growth > submarket_pre_2020_average_yoy_rent_growth:  #above historical average
-            submarket_pre_pandemic_yoy_growth_description = 'softened, but was above the historical average,'
+            submarket_pre_pandemic_yoy_growth_description = 'softened below the previous quarter, but was above the historical average,'
 
         elif submarket_2019Q4_yoy_growth < submarket_pre_2020_average_yoy_rent_growth: #below historical average
-            submarket_pre_pandemic_yoy_growth_description = 'softened, and was below the historical average,'
+            submarket_pre_pandemic_yoy_growth_description = 'softened below the previous quarter, and was below the historical average,'
 
         elif submarket_2019Q4_yoy_growth == submarket_pre_2020_average_yoy_rent_growth: #equal to historical average
-            submarket_pre_pandemic_yoy_growth_description = 'softened, but was in line with the historical average,'
+            submarket_pre_pandemic_yoy_growth_description = 'softened below the previous quarter, but was in line with the historical average,'
 
     
     elif submarket_2019Q4_yoy_growth == submarket_2019Q3_yoy_growth: #rent growth constant
@@ -1280,7 +1280,7 @@ def CreateRentLanguage(submarket_data_frame,market_data_frame,natioanl_data_fram
             'expanded ' +
             national_decade_rent_growth_annual +
             ' per annum during that time. ' +
-            'In 2019 Q4, rent growth in the '+
+            'In 2019 Q4, annual rent growth in the '+
             market_or_submarket +
             ' ' +
             submarket_pre_pandemic_yoy_growth_description + 
@@ -1341,7 +1341,7 @@ def CreateRentLanguage(submarket_data_frame,market_data_frame,natioanl_data_fram
             ', where rents expanded ' +
             market_decade_rent_growth_annual +
             ' per annum during that time. ' +
-            'In 2019 Q4, rent growth in the '+
+            'In 2019 Q4, annual rent growth in the '+
             market_or_submarket +
             ' ' +
             submarket_pre_pandemic_yoy_growth_description +  
