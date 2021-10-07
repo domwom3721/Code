@@ -140,6 +140,7 @@ def CreateOverviewLanguage(submarket_data_frame,market_data_frame,natioanl_data_
     avg_vacancy                         = submarket_data_frame['Vacancy Rate'].mean()
 
     #Get most recent cap rate and change in cap rate
+    year_ago_cap_rate                   = submarket_data_frame['Market Cap Rate'].iloc[-1] 
     cap_rate                            = submarket_data_frame['Market Cap Rate'].iloc[-1] 
     avg_cap_rate                        = submarket_data_frame['Market Cap Rate'].mean() 
     cap_rate_yoy_change                 = submarket_data_frame['YoY Market Cap Rate Growth'].iloc[-1]
@@ -157,13 +158,60 @@ def CreateOverviewLanguage(submarket_data_frame,market_data_frame,natioanl_data_
 
 
     #Relationship betweeen current cap rate and the historical average
+
+    #Cap Rate Below historical average
     if cap_rate < avg_cap_rate:
-        cap_rate_above_below_average = 'below'
+        
+        #Cap Rate a year ago was above the historical average
+        if year_ago_cap_rate > avg_cap_rate:
+            cap_rate_above_below_average = 'falling below'
+
+        #Cap Rate a year ago was below the historical average
+        elif year_ago_cap_rate < avg_cap_rate:
+            cap_rate_above_below_average = 'remaining below'
+        
+        #Cap Rate a year ago was equal to the historical average
+        elif year_ago_cap_rate == avg_cap_rate:
+            cap_rate_above_below_average = 'falling below'
+
+    #Cap Rate above historical average
     elif cap_rate > avg_cap_rate:
-        cap_rate_above_below_average = 'above'
-    else:
-        cap_rate_above_below_average = 'at'
+                
+        #Cap Rate a year ago was above the historical average
+        if year_ago_cap_rate > avg_cap_rate:
+            cap_rate_above_below_average = 'remaining above'
+            
+
+        #Cap Rate a year ago was below the historical average
+        elif year_ago_cap_rate < avg_cap_rate:
+            cap_rate_above_below_average = 'moving above'
+            
+        #Cap Rate a year ago was equal to the historical average
+        elif year_ago_cap_rate == avg_cap_rate:
+            cap_rate_above_below_average = 'moving above'
+            
+
+        # cap_rate_above_below_average = 'above'
     
+    #Cap equals  historical average
+    elif  cap_rate == avg_cap_rate:
+        #Cap Rate a year ago was above the historical average
+        if year_ago_cap_rate > avg_cap_rate:
+            cap_rate_above_below_average = 'falling to'
+
+        #Cap Rate a year ago was below the historical average
+        elif year_ago_cap_rate < avg_cap_rate:
+            cap_rate_above_below_average = 'moving to'
+        
+        #Cap Rate a year ago was equal to the historical average
+        elif year_ago_cap_rate == avg_cap_rate:
+            cap_rate_above_below_average = 'remaining at'
+
+        # cap_rate_above_below_average = 'at'
+    
+
+
+
     #Describe YoY change in cap rates
     if cap_rate_yoy_change > 0:
         cap_rate_change_description = 'expanded '
