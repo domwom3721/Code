@@ -1136,7 +1136,7 @@ def CreateMarketReport():
         df_slices         = df2[df2['Geography Name'] == market].copy()        #df for the primary market with the quality/subtype slices
 
         #A dataframe that tracks all submarkets in a market at the latest quarter
-        df_submarkets     = df.loc[(df['Geography Name'].isin(submarkets) == True) & (df['Period'] == latest_quarter)]
+        df_submarkets     = df.loc[(df['Geography Name'].isin(submarkets) == True) & (df['Period'] == latest_quarter)].copy()
         if len(df_submarkets) > 0:
             assert df_submarkets['Geography Type'].all() == 'Submarket'
         assert len(df_market_cut) > 0
