@@ -247,7 +247,7 @@ def CreateOverviewLanguage(submarket_data_frame,market_data_frame,natioanl_data_
                                 'The pandemic appears to have accelerated that trend in the ' +
                                 market_or_submarket +
                                 '. ' +
-                                'This disruption has expanded vacancy rates ' + "{:,.0f}bps".format(vacancy_change) + ' to ' + "{:,.1f}%".format(vacancy) + '. ' + 'With vacancy rates expanding over the past year, rents have contracted ' + "{:,.1f}%".format(yoy_rent_growth) + '.') 
+                                'This disruption has expanded vacancy rates ' + "{:,.0f} bps".format(vacancy_change) + ' to ' + "{:,.1f}%".format(vacancy) + '. ' + 'With vacancy rates expanding over the past year, rents have contracted ' + "{:,.1f}%".format(yoy_rent_growth) + '.') 
 
         elif yoy_rent_growth < 0 and vacancy_change < 0:
             overview_sector_specific_language =  (' Prior to 2020 consumer demand was shifting from brick-and-mortar stores towards online channels, putting pressure on vacancy rates and rent growth across most markets. ' + 
