@@ -1535,14 +1535,14 @@ def CreateConstructionLanguage(submarket_data_frame, market_data_frame, natioanl
         currently_active_or_inactive = 'Developers are currently active in the ' + market_or_submarket + ' with ' + millify(under_construction,'') + ' ' + unit_or_sqft + ', or the equivalent of ' + "{:,.1f}%".format(under_construction_share)   + ' of existing inventory, underway. '
         if yoy_submarket_vacancy_growth > 0:
             pipeline_vacancy_pressure    = 'The active pipeline will likely add upward pressure to vacancy rates in the near term.'
-        else:
-            pipeline_vacancy_pressure    = ''
+        elif yoy_submarket_vacancy_growth <= 0:
+            pipeline_vacancy_pressure    = 'Demand in the ' + market_or_submarket + ' has outpaced new deliverables but could slow in the near term due to seasonal trends.'
 
     elif under_construction <= 0 :
         currently_active_or_inactive = 'Developers are not currently active in the ' + market_or_submarket + '. ' 
         pipeline_vacancy_pressure    = 'The empty pipeline will likely limit supply pressure on vacancies, boding well for fundamentals in the near term. '
 
-    pipeline_vacancy_pressure
+    
     return(developers_historically_active_or_inactive + currently_active_or_inactive + pipeline_vacancy_pressure)
 
 
