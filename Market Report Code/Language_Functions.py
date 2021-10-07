@@ -406,7 +406,7 @@ def CreateOverviewLanguage(submarket_data_frame,market_data_frame,natioanl_data_
                 cap_rate_yoy_change                +
                 ' to a rate of '                   +
                 cap_rate                           +
-                ', falling '                       +
+                ', '                               +
                 cap_rate_above_below_average       +
                 ' the long-term average.'
                                     )
