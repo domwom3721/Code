@@ -55,7 +55,7 @@ map_location                   =  os.path.join(project_location,'Data','Maps','C
 
 #Decide if you want to export data in excel files in the county folder
 data_export = True
-# data_export = False
+data_export = False
 
 #Set formatting paramaters for reports
 primary_font                  = 'Avenir Next LT Pro Light' 
