@@ -1696,6 +1696,10 @@ def CreateSaleLanguage(submarket_data_frame,market_data_frame,natioanl_data_fram
     if current_transaction_count > 1 or current_transaction_count == 0:
         sales_count_was_or_were      = 'were'
         sales_count_sale_or_sales    = 'sales'
+        if current_transaction_count ==0:
+            sales_count_sale_or_sales    = 'transactions'
+
+
         if current_transaction_count == 0:
             current_transaction_count = 'no'
     else:
@@ -1779,9 +1783,12 @@ def CreateSaleLanguage(submarket_data_frame,market_data_frame,natioanl_data_fram
              ' '                                             +
             current_transaction_count                        +
             ' '                                              +
-            sales_count_sale_or_sales                        + 
+            sales_count_sale_or_sales                        +
+            "{recorded}".format(recorded = " recorded" if current_transaction_count == 'no'  else "") +
             for_a_sale_volume_of                             +
             '.'                                              +
+            
+            #Second paragraph
             ' Market pricing, based on the estimated price movement of all properties in the ' +
             submarket_or_market                              +
             ', sat at '                                      +
