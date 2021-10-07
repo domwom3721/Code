@@ -40,6 +40,7 @@ project_location               =  os.path.join(dropbox_root,'Research','Projects
 output_location                = os.path.join(dropbox_root,'Research','Market Analysis','Market')                       #The folder where we store our current reports, production
 output_location                = os.path.join(project_location,'Output','Market Reports')                               #The folder where we store our current reports, testing folder
 map_location                   = os.path.join(project_location,'Data','Maps','CoStar Maps')                             #Folders with maps png files  
+general_data_location          =  os.path.join(project_location,'Data','General Data')
 costar_data_location           = os.path.join(project_location,'Data','CoStar Data')                                    #Folder with clean CoStar CSV files
 costar_writeup_location        = os.path.join(project_location,'Data','CoStar Writeups')                                #Folder with clean CoStar CSV files
 
@@ -1301,7 +1302,7 @@ def CreateDirectoryCSV():
                                 'Document Name': dropbox_document_names})
 
         #Merge the dataframe with a list of states and the inital of who is assigned to complete them
-        assigned_to_df                          = pd.read_excel(os.path.join(costar_data_location,'Supplemental Data','Assigned To States.xlsx')) 
+        assigned_to_df                          = pd.read_excel(os.path.join(general_data_location,'Assigned To States.xlsx')) 
         dropbox_df                              = pd.merge(dropbox_df,assigned_to_df, on=['State'],how = 'left') 
         # print(dropbox_df)
 

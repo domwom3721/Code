@@ -48,6 +48,7 @@ dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropb
 project_location               =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Projects','Research Report Automation Project') 
 main_output_location           =  os.path.join(project_location,'Output','Area Reports') #Testing
 main_output_location           =  os.path.join(dropbox_root,'Research','Market Analysis','Area') #Production
+general_data_location          =  os.path.join(project_location,'Data','General Data')
 data_location                  =  os.path.join(project_location,'Data','Area Reports Data')
 graphics_location              =  os.path.join(project_location,'Data','Graphics')
 map_location                   =  os.path.join(project_location,'Data','Maps','County Maps')
@@ -4240,7 +4241,10 @@ def CreateDirectoryCSV():
                            'Status':dropbox_statuses,
                            'Document Name': dropbox_document_names})
     dropbox_df = dropbox_df.sort_values(by=['State','Market Research Name'])
-
+    
+    assigned_to_df                          = pd.read_excel(os.path.join(general_data_location,'Assigned To States.xlsx')) 
+    dropbox_df                              = pd.merge(dropbox_df,assigned_to_df, on=['State'],how = 'left') 
+    
     csv_name = 'Dropbox Areas.csv'
     service_api_csv_name = f'Dropbox Areas-{datetime.now().timestamp()}.csv'
 
