@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 #Function that takes a number as input and writes it in words (eg: 5,000,000 ---> '5 million')
 def millify(n,modifier):
     millnames = ['','k',' million',' billion',' trillion']
+    
     try:
         n = float(n)
         millidx = max(0,min(len(millnames)-1,
@@ -17,16 +18,12 @@ def millify(n,modifier):
             n = "{:,.0f}".format(n)
         else:
             n =  modifier + '{:.1f}{}'.format(n / 10**(3 * millidx), millnames[millidx])
-        
-        #Do this to avoid .0 in numbers
-        if n[-2:] == '.0':
-            return(n[0:len(n)-2])
-            
-        elif n[-3:-1] == '.0':
-            n = n.replace('.0','',1)
-            return(n)
 
+        #Do this to avoid .0 in numbers
+        n = n.replace('.0','',1)
         return(n)
+
+        
     except Exception as e:
         print(e)
         return(n)
