@@ -12,11 +12,21 @@ def millify(n,modifier):
                             int(math.floor(0 if n == 0 else math.log10(abs(n))/3))))
                             
         if n >= 1000000:
-            return modifier + '{:.1f}{}'.format(n / 10**(3 * millidx), millnames[millidx])
+            n = modifier + '{:.1f}{}'.format(n / 10**(3 * millidx), millnames[millidx])
         elif n < 1000:
-            return "{:,.0f}".format(n)
+            n = "{:,.0f}".format(n)
         else:
-            return modifier + '{:.1f}{}'.format(n / 10**(3 * millidx), millnames[millidx])
+            n =  modifier + '{:.1f}{}'.format(n / 10**(3 * millidx), millnames[millidx])
+        
+        #Do this to avoid .0 in numbers
+        if n[-2:] == '.0':
+            return(n[0:len(n)-2])
+            
+        elif n[-3:-1] == '.0':
+            n = n.replace('.0','',1)
+            return(n)
+
+        return(n)
     except Exception as e:
         print(e)
         return(n)
