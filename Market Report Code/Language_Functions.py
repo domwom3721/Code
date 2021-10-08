@@ -2300,7 +2300,7 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
                             
     outlook_conclusion_language =  (
                             'Looking ahead to the ' +
-                            'final quarter of 2021 ' + 
+                            'final quarter of 2021' + 
                             ', it is likely that demand will ' +
                             '[continue to pick up/stabilize/remain muted]' +
                             ' with rents ' +
