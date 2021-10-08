@@ -2794,8 +2794,6 @@ def EmploymentBreakdownLanguage(county_industry_breakdown):
         third_largest_industry_employment             = ''
         third_largest_industry_employment_fraction    = ''
     
-    #Classify employment diversification level
-    # diversification_level = '[fairly diversified/diversified/concentrated]'
 
     #Now sort by location quotient to find the highest realative concentration industries
     county_industry_breakdown                           = county_industry_breakdown.sort_values(by=['lq_month3_emplvl'])
@@ -2845,16 +2843,7 @@ def EmploymentBreakdownLanguage(county_industry_breakdown):
 
 
         )
-
-        #    'The ' +
-        #    largest_industry +
-        #    ' industry employs ' +
-        #    largest_industry_employment +
-        #    ' people alone, accounting for ' +
-        #    largest_industry_employment_fraction +
-        #    ' of workers in the County.'
-           
-    
+  
 def UnemploymentLanguage():
     print('Writing Unemployment Langauge')
     latest_period                  = county_employment['period'].iloc[-1]
@@ -3071,31 +3060,25 @@ def EmploymentGrowthLanguage(county_industry_breakdown):
         employment_loss_1year_all_most_some                     = '[all/most/some]'
 
 
-    
-
-
-
-    
-
     #Get industry that has grown the slowest over the last year in the county
     county_industry_breakdown                 = county_industry_breakdown.sort_values(by=['1 Year Employment Growth'])
     slowest_growing_industry_1y               = county_industry_breakdown['industry_code'].iloc[0]
     slowest_growth_industry_1y                = county_industry_breakdown['1 Year Employment Growth'].iloc[0]
     slowest_growth_industry_1y                = "{:,.1f}%".format(abs(slowest_growth_industry_1y))
 
-    #Get list of industries that have had positive 1 year growth
-    county_industry_breakdown_positive_1y_growth          = county_industry_breakdown.loc[county_industry_breakdown['1 Year Employment Growth'] > 0]
+    # #Get list of industries that have had positive 1 year growth
+    # county_industry_breakdown_positive_1y_growth          = county_industry_breakdown.loc[county_industry_breakdown['1 Year Employment Growth'] > 0]
     
-    #Create empty string that we will fill with all the industries that have grown over the last year
-    positive_1_year_growth_industries_list                = ''
-    for count,industry in enumerate(county_industry_breakdown_positive_1y_growth['industry_code'].to_list()):
-        if count == 0:
-            positive_1_year_growth_industries_list = positive_1_year_growth_industries_list + industry
+    # #Create empty string that we will fill with all the industries that have grown over the last year
+    # positive_1_year_growth_industries_list                = ''
+    # for count,industry in enumerate(county_industry_breakdown_positive_1y_growth['industry_code'].to_list()):
+    #     if count == 0:
+    #         positive_1_year_growth_industries_list = positive_1_year_growth_industries_list + industry
 
-        elif count == len(county_industry_breakdown_positive_1y_growth['industry_code'].to_list()):
-            positive_1_year_growth_industries_list = positive_1_year_growth_industries_list + ', and' + industry #last industry
-        else:
-            positive_1_year_growth_industries_list = positive_1_year_growth_industries_list + ', ' + industry #last industry
+    #     elif count == len(county_industry_breakdown_positive_1y_growth['industry_code'].to_list()):
+    #         positive_1_year_growth_industries_list = positive_1_year_growth_industries_list + ', and' + industry #last industry
+    #     else:
+    #         positive_1_year_growth_industries_list = positive_1_year_growth_industries_list + ', ' + industry #last industry
 
     
 
@@ -3106,7 +3089,7 @@ def EmploymentGrowthLanguage(county_industry_breakdown):
             qcew_year +
             ' Quarterly Census of Employment and Wages, ' +
             county +
-            ' has seen employment '+
+            ' has seen private employment '+
             five_year_county_employment_expand_or_contract +
             ' ' +
             five_year_county_employment_growth_pct +
@@ -3149,12 +3132,12 @@ def EmploymentGrowthLanguage(county_industry_breakdown):
               ' levels.')
 
               
-    if  positive_1_year_growth_industries_list != '':
-        emplopyment_growth_language = (emplopyment_growth_language +        
-              ' In fact, just the ' +
-              positive_1_year_growth_industries_list +
-              ' industries have seen stable growth. '
-               )
+    # if  positive_1_year_growth_industries_list != '':
+    #     emplopyment_growth_language = (emplopyment_growth_language +        
+    #           ' In fact, just the ' +
+    #           positive_1_year_growth_industries_list +
+    #           ' industries have seen stable growth. '
+    #            )
 
     return(emplopyment_growth_language)
 
