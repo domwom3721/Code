@@ -3503,7 +3503,6 @@ def OutlookLanguage():
            'while different sectors will continue to feel its effects in varying degrees for quite some time.' +
            "\n" +
            "\n" +
-           "\n" +
            'With the public health situation improving, ' +
            state_name +
            ' recently lifted most COVID-related restrictions. ' +
