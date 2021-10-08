@@ -147,7 +147,7 @@ def CreateOverviewLanguage(submarket_data_frame,market_data_frame,natioanl_data_
     avg_vacancy                         = submarket_data_frame['Vacancy Rate'].mean()
 
     #Get most recent cap rate and change in cap rate
-    year_ago_cap_rate                   = submarket_data_frame['Market Cap Rate'].iloc[-1] 
+    year_ago_cap_rate                   = submarket_data_frame['Market Cap Rate'].iloc[-5] 
     cap_rate                            = submarket_data_frame['Market Cap Rate'].iloc[-1] 
     avg_cap_rate                        = submarket_data_frame['Market Cap Rate'].mean() 
     cap_rate_yoy_change                 = submarket_data_frame['YoY Market Cap Rate Growth'].iloc[-1]
