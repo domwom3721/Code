@@ -2841,7 +2841,7 @@ def EmploymentBreakdownLanguage(county_industry_breakdown):
            ') ' +
            'workers in the County, respectively. ' +
 
-            "{high_concentration_sentence}".format(high_concentration_sentence = (county + ' has an especially large fraction of workers in the ' + highest_relative_concentration_industry + """ industry. In fact, its """ +  "{:,.1f}%".format(highest_relative_concentration_employment_fraction) + ' fraction of workers is ' +  "{:,.1f}".format(highest_relative_concentration_industry_lq) + ' times higher than the Natioanl average.'   ) if highest_relative_concentration_industry_lq >= 1.25  else "") 
+            "{high_concentration_sentence}".format(high_concentration_sentence = (county + ' has an especially large fraction of workers in the ' + highest_relative_concentration_industry + """ industry. In fact, its """ +  "{:,.1f}%".format(highest_relative_concentration_employment_fraction) + ' fraction of workers is ' +  "{:,.1f}".format(highest_relative_concentration_industry_lq) + ' times higher than the National average.'   ) if highest_relative_concentration_industry_lq >= 1.25  else "") 
 
 
         )
