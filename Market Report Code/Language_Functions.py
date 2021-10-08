@@ -1934,6 +1934,18 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
 
     #Section 3: Begin Formatting variables
 
+    if sector == "Multifamily":
+        sector_specific_outlook_language=('Strong economic growth and a drastically improving public health situation helped boost multifamily fundamentals over the first three quarters of 2021. With demand and rent growth indicators surging, investors have regained confidence in the sector, and sales volume has returned to more normal levels over the past few quarters. Still, a few headwinds exist that could put upward pressure on vacancies over the next few quarters. The ' + market_or_submarket + ' still faces a robust near-term supply pipeline, and those units will deliver amid a potential slowdown in demand due to seasonality and the fading effects of fiscal stimulus that has helped thousands of people pay rent. Furthermore, single-family starts have ramped up, and the increase in new for-sale housing could draw higher-income renters away from luxury properties.')
+    
+    elif sector == "Office":
+        sector_specific_outlook_language=('The first half of 2021 remained in line with pandemic-era trends in terms of office market performance. Although leasing activity has picked up slightly, it remained rather subdued. Many tenants continue to downsize and adopt hybrid work models, limiting demand and rent growth. Investment volume remains subdued, but investors are looking at alternatives such as the medical office sector or single-tenant assets with sticky tenants and lengthy leases in place. Looking ahead over the next few quarters, supply additions will be met with muted demand, limiting improvement in rents and values.')
+
+    elif sector == "Retail":
+        sector_specific_outlook_language=('The new year has delivered encouraging news for the retail sector: Retail sales activity surged as the year commenced, vaccine rollouts are supporting strong consumer confidence metrics, and leasing activity among many tenant segments remains strong.  Such positive news does not, however, overshadow the complexity and nuance that the sector possesses. Indeed, a tale of two recoveries continues to unfold, and property performance continues to vary significantly by subtype, location, class, and tenant composition. Even with the vaccines, it is probable retailers will continue to face turbulence in the coming quarters. Those effects will likely linger for the foreseeable future, impacting demand, rent growth, and the capital markets in the process.')
+    
+    elif sector == "Industrial":
+        sector_specific_outlook_language=("""The new year has brought much needed support to the nation's economy and to its consumers, who continue to buy record amounts of goods online. In response, industrial users continue to seek more warehouse space closer to the consumer as they evolve their supply chains to meet the demand for fast delivery times. Industrial's rent growth prospects continue to lead across sectors, as well, with both retail and office posting rent declines as multifamily gradually regains momentum after plateauing throughout much of 2020. Still, following the national theme, most markets are set to experience a deceleration in rent growth. With such strength prevailing throughout industrial's operating environment, and with other sectors and asset classes registering more volatility and relatively weaker performance, investors continue to aggressively pursue industrial acquisitions. Looking ahead over the next few quarters, demand from consumers, tenants, and investors will continue driving growth in fundamentals.""")
+
     #Section 4: Begin putting sentances togehter with our variables
     general_outlook_language = ('Current fundamentals in the ' +
                             market_or_submarket +
@@ -1973,21 +1985,9 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
 
 
 
-    if sector == "Multifamily":
-        sector_specific_outlook_language=('Strong economic growth and a drastically improving public health situation helped boost multifamily fundamentals over the first three quarters of 2021. With demand and rent growth indicators surging, investors have regained confidence in the sector, and sales volume has returned to more normal levels over the past few quarters. Still, a few headwinds exist that could put upward pressure on vacancies over the next few quarters. The ' + market_or_submarket + ' still faces a robust near-term supply pipeline, and those units will deliver amid a potential slowdown in demand due to seasonality and the fading effects of fiscal stimulus that has helped thousands of people pay rent. Furthermore, single-family starts have ramped up, and the increase in new for-sale housing could draw higher-income renters away from luxury properties.')
-    
-    elif sector == "Office":
-        sector_specific_outlook_language=('The first half of 2021 remained in line with pandemic-era trends in terms of office market performance. Although leasing activity has picked up slightly, it remained rather subdued. Many tenants continue to downsize and adopt hybrid work models, limiting demand and rent growth. Investment volume remains subdued, but investors are looking at alternatives such as the medical office sector or single-tenant assets with sticky tenants and lengthy leases in place. Looking ahead over the next few quarters, supply additions will be met with muted demand, limiting improvement in rents and values.')
-
-    elif sector == "Retail":
-        sector_specific_outlook_language=('The new year has delivered encouraging news for the retail sector: Retail sales activity surged as the year commenced, vaccine rollouts are supporting strong consumer confidence metrics, and leasing activity among many tenant segments remains strong.  Such positive news does not, however, overshadow the complexity and nuance that the sector possesses. Indeed, a tale of two recoveries continues to unfold, and property performance continues to vary significantly by subtype, location, class, and tenant composition. Even with the vaccines, it is probable retailers will continue to face turbulence in the coming quarters. Those effects will likely linger for the foreseeable future, impacting demand, rent growth, and the capital markets in the process.')
-    
-    elif sector == "Industrial":
-        sector_specific_outlook_language=("""The new year has brought much needed support to the nation's economy and to its consumers, who continue to buy record amounts of goods online. In response, industrial users continue to seek more warehouse space closer to the consumer as they evolve their supply chains to meet the demand for fast delivery times. Industrial's rent growth prospects continue to lead across sectors, as well, with both retail and office posting rent declines as multifamily gradually regains momentum after plateauing throughout much of 2020. Still, following the national theme, most markets are set to experience a deceleration in rent growth. With such strength prevailing throughout industrial's operating environment, and with other sectors and asset classes registering more volatility and relatively weaker performance, investors continue to aggressively pursue industrial acquisitions. Looking ahead over the next few quarters, demand from consumers, tenants, and investors will continue driving growth in fundamentals.""")
-
 
     #Section 5: Combine sentances and return the conclusion langage
-    return(general_outlook_language + '\n' + '\n' + sector_specific_outlook_language)
+    return(sector_specific_outlook_language  + '\n' + '\n' + general_outlook_language)
 
 
 
