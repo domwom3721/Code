@@ -1962,16 +1962,141 @@ def CreateSaleLanguage(submarket_data_frame,market_data_frame,natioanl_data_fram
 #Language for outlook section
 def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_frame,market_title,primary_market,sector,writeup_directory):
 
-    #Section 1: Begin making variables for the overview language that come from the data:     
+    #Section 1: Begin making variables for the overview language that come from the data:
+    if sector == "Multifamily":
+        rent_var                = 'Market Effective Rent/Unit'
+        rent_growth_var         = 'YoY Market Effective Rent/Unit Growth'
+        qoq_rent_growth_var     = 'QoQ Market Effective Rent/Unit Growth'
+        unit_or_sqft            = 'unit'
+        net_absorption_var_name = 'Absorption Units'
+        inventory_var_name      = 'Inventory Units'
+        asset_value             = submarket_data_frame['Asset Value/Unit'].iloc[-1]
+        asset_value_change      = submarket_data_frame['YoY Asset Value/Unit Growth'].iloc[-1]
+        unit_or_sqft_singular   = 'unit'
+
+    else:
+        rent_var                = 'Market Rent/SF'
+        rent_growth_var         = 'YoY Rent Growth'
+        qoq_rent_growth_var     = 'QoQ Rent Growth'
+        net_absorption_var_name = 'Net Absorption SF'
+        inventory_var_name      = 'Inventory SF'
+        unit_or_sqft            = 'SF'
+        asset_value             = submarket_data_frame['Asset Value/Sqft'].iloc[-1]
+        asset_value_change      = submarket_data_frame['YoY Asset Value/Sqft Growth'].iloc[-1]
+        unit_or_sqft_singular   = 'SF'
+
+    #Determine if market of submarket
     if submarket_data_frame.equals(market_data_frame):
         market_or_submarket = 'Market'
     else:
         market_or_submarket = 'Submarket'
     
+    leasing_change                      = submarket_data_frame[(net_absorption_var_name + ' 12 Mo')].iloc[-1] -  submarket_data_frame[(net_absorption_var_name + ' 12 Mo')].iloc[-5]
+    inventory_change                    = submarket_data_frame[inventory_var_name].iloc[-1] -  submarket_data_frame[inventory_var_name].iloc[-5]
+
+    vacancy_change                         = submarket_data_frame['YoY Vacancy Growth'].iloc[-1]
+    year_ago_cap_rate                      = submarket_data_frame['Market Cap Rate'].iloc[-5] 
+    cap_rate                               = submarket_data_frame['Market Cap Rate'].iloc[-1] 
+    avg_cap_rate                           = submarket_data_frame['Market Cap Rate'].mean() 
+    cap_rate_change                        = submarket_data_frame['YoY Market Cap Rate Growth'].iloc[-1]
+    current_period                         = str(submarket_data_frame['Period'].iloc[-1]) #Get most recent quarter
+    submarket_yoy_growth                   =  submarket_data_frame[rent_growth_var].iloc[-1]
+    submarket_qoq_growth                   =  submarket_data_frame[qoq_rent_growth_var].iloc[-1]
+    submarket_previous_quarter_yoy_growth  =  submarket_data_frame[rent_growth_var].iloc[-2]
+    
     #Section 2: Begin making varaiables that are conditional on the variables we have created in section 1
+    #Describe YoY change in asset values
+    if asset_value_change > 0:
+        asset_value_change_description = 'expanded'
+    elif asset_value_change < 0:
+        asset_value_change_description = 'compressed'
+    else:
+        asset_value_change_description = 'remained steady'
+    
+    #Describe relationship between quarterly growth and annual rent growth
+    if submarket_previous_quarter_yoy_growth > submarket_yoy_growth:
+        qoq_pushing_or_contracting_annual_growth = 'contracting annual growth to'
 
-    #Section 3: Begin Formatting variables
+    elif submarket_previous_quarter_yoy_growth < submarket_yoy_growth:
+        qoq_pushing_or_contracting_annual_growth = 'pushing annual growth to'
+    
+    elif submarket_previous_quarter_yoy_growth == submarket_yoy_growth:
+        qoq_pushing_or_contracting_annual_growth = 'keeping annual growth at'
+    else:
+        qoq_pushing_or_contracting_annual_growth = '[contracting/pushing] annual growth to'
 
+    #Determine change in cap rate
+    if cap_rate_change > 0:
+        cap_rate_change_description  = 'expanded'
+
+    elif cap_rate_change < 0:
+        cap_rate_change_description  = 'compressed'
+
+    else:
+        cap_rate_change_description  = 'remained stable'
+    
+    
+    #Relationship betweeen current cap rate and the historical average
+    #Cap Rate Below historical average
+    if cap_rate < avg_cap_rate:
+        
+        #Cap Rate a year ago was above the historical average
+        if year_ago_cap_rate > avg_cap_rate:
+            cap_rate_above_below_average = 'falling below'
+
+        #Cap Rate a year ago was below the historical average
+        elif year_ago_cap_rate < avg_cap_rate:
+            cap_rate_above_below_average = 'remaining below'
+        
+        #Cap Rate a year ago was equal to the historical average
+        elif year_ago_cap_rate == avg_cap_rate:
+            cap_rate_above_below_average = 'falling below'
+
+    #Cap Rate above historical average
+    elif cap_rate > avg_cap_rate:
+                
+        #Cap Rate a year ago was above the historical average
+        if year_ago_cap_rate > avg_cap_rate:
+            cap_rate_above_below_average = 'remaining above'
+            
+
+        #Cap Rate a year ago was below the historical average
+        elif year_ago_cap_rate < avg_cap_rate:
+            cap_rate_above_below_average = 'moving above'
+            
+        #Cap Rate a year ago was equal to the historical average
+        elif year_ago_cap_rate == avg_cap_rate:
+            cap_rate_above_below_average = 'moving above'
+            
+    #Cap equals  historical average
+    elif  cap_rate == avg_cap_rate:
+        #Cap Rate a year ago was above the historical average
+        if year_ago_cap_rate > avg_cap_rate:
+            cap_rate_above_below_average = 'falling to'
+
+        #Cap Rate a year ago was below the historical average
+        elif year_ago_cap_rate < avg_cap_rate:
+            cap_rate_above_below_average = 'moving to'
+        
+        #Cap Rate a year ago was equal to the historical average
+        elif year_ago_cap_rate == avg_cap_rate:
+            cap_rate_above_below_average = 'remaining at'
+
+   
+    #Describe out change in fundamentals
+    if submarket_yoy_growth >= 0     and vacancy_change <= 0: #if rent is growing (or flat) and vacancy is falling (or flat) we call fundamentals improving
+        fundamentals_change = 'improving'
+    elif submarket_yoy_growth < 0 and vacancy_change > 0 : #if rent is falling and vacancy is rising we call fundamentals softening
+        fundamentals_change = 'softening'
+    elif (submarket_yoy_growth > 0   and vacancy_change  > 0) or (submarket_yoy_growth < 0 and vacancy_change < 0 ) : #if rents are falling but vacancy is also falling OR vice versa, then mixed
+        fundamentals_change = 'mixed'
+    elif (submarket_yoy_growth == 0 and vacancy_change == 0): #no change in rent or vacancy
+        fundamentals_change = 'stable'
+    else:
+        fundamentals_change = '[improving/softening/mixed/stable]'
+    
+     
+    #Sector Specific language
     if sector == "Multifamily":
         sector_specific_outlook_language=('Strong economic growth and a drastically improving public health situation helped boost multifamily fundamentals over the first three quarters of 2021. With demand and rent growth indicators surging, investors have regained confidence in the sector, and sales volume has returned to more normal levels over the past few quarters. Still, a few headwinds exist that could put upward pressure on vacancies over the next few quarters. The ' + market_or_submarket + ' still faces a robust near-term supply pipeline, and those units will deliver amid a potential slowdown in demand due to seasonality and the fading effects of fiscal stimulus that has helped thousands of people pay rent. Furthermore, single-family starts have ramped up, and the increase in new for-sale housing could draw higher-income renters away from luxury properties.')
     
@@ -1984,28 +2109,198 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
     elif sector == "Industrial":
         sector_specific_outlook_language=("""The new year has brought much needed support to the nation's economy and to its consumers, who continue to buy record amounts of goods online. In response, industrial users continue to seek more warehouse space closer to the consumer as they evolve their supply chains to meet the demand for fast delivery times. Industrial's rent growth prospects continue to lead across sectors, as well, with both retail and office posting rent declines as multifamily gradually regains momentum after plateauing throughout much of 2020. Still, following the national theme, most markets are set to experience a deceleration in rent growth. With such strength prevailing throughout industrial's operating environment, and with other sectors and asset classes registering more volatility and relatively weaker performance, investors continue to aggressively pursue industrial acquisitions. Looking ahead over the next few quarters, demand from consumers, tenants, and investors will continue driving growth in fundamentals.""")
 
-    #Section 4: Begin putting sentances togehter with our variables
-    general_outlook_language = ('Current fundamentals in the ' +
+
+
+    #Inventory expanded over past year
+    if inventory_change > 0:
+
+        #Vacancy increased
+        if vacancy_change > 0:
+
+            #12m net absorption grew over past year
+            if leasing_change > 0:
+                fundamentals_clause = 'that demand has increased, but fallen short of rising inventory levels. Together, vacancy rates expanded over the past year. With vacancy rates expanding, '
+
+            #12m net absorption declined over past year
+            elif  leasing_change < 0:
+                fundamentals_clause = 'a decrease in demand along with rising inventory levels. Together, vacancy rates have expanded over the past year. With vacancy rates expanding, '
+
+               
+            #12m net absorption flat over past year
+            elif leasing_change == 0:
+                fundamentals_clause = 'stagnant demand along with rising inventory levels. Together, vacancy rates have expanded over the past year. With vacancy rates expanding, '
+                
+        #Vacancy decreased
+        elif vacancy_change < 0:
+            #12m net absorption grew over past year
+            if leasing_change > 0:
+                fundamentals_clause = 'growing demand despite an increase in inventory. With demand outpacing new inventory, vacancy rates have compresssed over the past year. With vacancy rates compressing,'
+
+            #12m net absorption declined over past year
+            elif  leasing_change < 0:
+                fundamentals_clause = 'that despite falling demand and rising inventory levels, demolitions have aided the sector and vacancy rates have compresssed over the past year. With vacancy rates compressing,'
+               
+            #12m net absorption flat over past year
+            elif leasing_change == 0:
+                fundamentals_clause = 'stable demand despite rising inventory levels. Together, vacancy rates have compresssed over the past year. With vacancy rates compressing,'
+
+        #Vacancy flat
+        elif vacancy_change == 0:
+
+            #12m net absorption grew over past year
+            if leasing_change > 0:
+                fundamentals_clause = 'that despite new supply additions over the past year, demand has kept pace and vacancy rates have managed to stay in line with last years vacancy rate. With stable vacancy rates,'
+
+            #12m net absorption declined over past year
+            elif  leasing_change < 0:
+                fundamentals_clause = 'stable demand despite rising inventory levels. Together, vacancy rates have remained stable over the past year. With vacancy rates stable,'
+               
+            #12m net absorption flat over past year
+            elif leasing_change == 0:
+                fundamentals_clause = 'that despite rising inventory levels and with no change in demand, vacancy rates have managed to stay in line with last years vacancy rate. With stable vacancy rates,'
+
+    #Inventory contracted over the past year
+    elif inventory_change < 0:
+
+        #Vacancy increased
+        if vacancy_change > 0:
+
+            #12m net absorption grew over past year
+            if leasing_change > 0:
+                fundamentals_clause = 'that despite a decrease in inventory levels and a recent rise in demand, vacancy rates have expanded over the past year. With vacancy rates expanding, '
+
+            #12m net absorption declined over past year
+            elif  leasing_change < 0:
+                fundamentals_clause = 'that despite a decrease in inventory levels, demand has fallen too, expanding vacancy rates over the past year. With vacancy rates expanding, '
+               
+            #12m net absorption flat over past year
+            elif leasing_change == 0:
+                fundamentals_clause = 'that despite a decrease in inventory levels, demand remained flat, expanding vacancy rates over the past year. With vacancy rates expanding, '
+
+        #Vacancy decreased
+        elif vacancy_change < 0:
+            #12m net absorption grew over past year
+            if leasing_change > 0:
+                fundamentals_clause = 'positive trends. Inventory levels have contracted and leasing activity picked up, compressing vacancy rates over the past year. With vacancy rates compressing,'
+
+            #12m net absorption declined over past year
+            elif  leasing_change < 0:
+                fundamentals_clause = 'that despite a decrease in absorption levels, the market_or_submarket has been aided by a decrease in inventory, compressing vacancy rates over the past year. With vacancy rates compressing,'
+               
+            #12m net absorption flat over past year
+            elif leasing_change == 0:
+                fundamentals_clause = 'positive trends. Despite flat absorption over the past year, inventory has decreased, allowing for vacancy rate compression. With vacancy rates compressing,'
+
+        #Vacancy flat
+        elif vacancy_change == 0:
+            #12m net absorption grew over past year
+            if leasing_change > 0:
+                fundamentals_clause = 'Despite falling inventory and growing demand,'
+
+            #12m net absorption declined over past year
+            elif  leasing_change < 0:
+                fundamentals_clause = 'Despite falling inventory levels, with demand falling,'
+               
+            #12m net absorption flat over past year
+            elif leasing_change == 0:
+                fundamentals_clause = 'Despite falling inventory levels and no change in demand,'
+
+    #Inventory flat over the past year
+    elif inventory_change == 0:
+
+        #Vacancy increased
+        if vacancy_change > 0:
+
+            #12m net absorption grew over past year
+            if leasing_change > 0:
+                fundamentals_clause = 'that despite a stable inventory count and rising demand, vacancy rates have increased. With vacancy rates expanding, '
+
+
+            #12m net absorption declined over past year
+            elif  leasing_change < 0:
+                fundamentals_clause = 'that despite no new additions to the inventory, demand has fallen, expanding vacancy rates. With vacancy rates expanding, '
+
+               
+            #12m net absorption flat over past year
+            elif leasing_change == 0:
+                fundamentals_clause = 'that despite no change in inventory or demand, vacancy rates have expanded over the past year. With vacancy rates expanding, '
+
+        #Vacancy decreased
+        elif vacancy_change < 0:
+
+            #12m net absorption grew over past year
+            if leasing_change > 0:
+                fundamentals_clause = 'that demand picked up in the absence of inventory growth, compressing vacancy rates over the past year. With vacancy rates compressing, '
+
+            #12m net absorption declined over past year
+            elif  leasing_change < 0:
+                fundamentals_clause = 'that although demand has declined, vacancy rates have been aided by an absence of inventory growth, allowing for vacancy rate compression. With vacancy rates compressing,'
+               
+            #12m net absorption flat over past year
+            elif leasing_change == 0:
+                fundamentals_clause = 'that despite flat demand and no change in inventory, vacancy rates have compressed over the past year.With vacancy rates compressing,'
+
+                        
+        #Vacancy flat
+        elif vacancy_change == 0:
+
+            #12m net absorption grew over past year
+            if leasing_change > 0:
+                fundamentals_clause = 'that demand picked up in the absence of inventory growth, but vacancy rates have been stable over the past year. With stable vacancy rates,'
+
+
+            #12m net absorption declined over past year
+            elif  leasing_change < 0:
+                fundamentals_clause = 'that although demand has declined, vacancy rates have been aided by an absence of inventory growth, allowing for steady vacancy rates. With stable vacancy rates,'
+               
+            #12m net absorption flat over past year
+            elif leasing_change == 0:
+                fundamentals_clause = 'that despite flat demand and no change in inventory, vacancy rates have remained steady over the past year. With stable vacancy rates,'
+
+
+
+
+        
+    #Section 3: Begin Formatting variables
+
+
+    #Section 4: Begin putting sentences togehter with our variables
+    capital_markets_summary = (
+                ' With fundamentals '              +
+                fundamentals_change                +
+                 ' for '                           +
+                 sector.lower()                    +
+                 ' properties in the '             +
+                 market_or_submarket               +
+                ', values have '                   +
+                asset_value_change_description     +
+                ' over the past year to '          +
+                "${:,.0f}/". format(asset_value)   + 
+                unit_or_sqft_singular              +
+                ' and cap rates have '             +
+                cap_rate_change_description        +
+                ' '                                +
+               "{:,.0f} bps".format(abs(cap_rate_change)) +
+                ' to a rate of '                   +
+                "{:,.1f}%".format(cap_rate)        +
+                ', '                               +
+                cap_rate_above_below_average       +
+                ' the long-term average.'
+                                    )
+
+    
+    general_outlook_language = ('In the ' +
                             market_or_submarket +
-                            ' indicate general ' +
-                            '[stability/instability]' +
-                            ' in demand while the count of new deliverables have been ' + 
-                            '[expanding/steady/limited/absent]' +
-                            '. Together, vacancy rates have ' +
-                            '[managed to remain stable/expanded considerably/compressed]'  +
-                            ' over the course of the pandemic. ' +
-                            'Rents responded by ' + 
-                            '[remaining stable/expanding/softening]' +
-                            '. The general ' +
-                            '[stability/instability/acceleration/deceleration]' +
-                            ' in fundamentals have helped improve the capital market, resulting in ' +
-                            '[stable/accelerating/decelerating]' +
-                            ' growth in property values across the sector. ' +
-                            '\n' +
-                            '\n' +
-                            'Looking ahead over the ' +
-                            '2nd half of ' + 
-                            '2021' +
+                            ', current fundamentals '
+                            ' indicate '             + 
+                            fundamentals_clause +
+                            ' quarterly growth in ' + current_period + ' reached ' +  "{:,.1f}%".format(submarket_qoq_growth) + ', ' + qoq_pushing_or_contracting_annual_growth + ' ' +  "{:,.1f}%".format(submarket_yoy_growth) + '. ' +
+                            capital_markets_summary)
+                            
+                            
+    outlook_conclusion_language =  (
+                            'Looking ahead to the ' +
+                            'final quarter of 2021 ' + 
                             ', it is likely that demand will ' +
                             '[continue to pick up/stabilize/remain muted]' +
                             ' with rents ' +
@@ -2019,13 +2314,34 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
                             '[improving/softening]'+
                             ', values will likely ' +
                             '[expand/compress/stabilize]'+
-                            '.')
+                            '.'
+                            )
+
+
+    #Section 5: Combine sentences and return the conclusion langage
+    return(sector_specific_outlook_language  + '\n' + '\n' + general_outlook_language + '\n' + '\n' + outlook_conclusion_language)
 
 
 
 
-    #Section 5: Combine sentances and return the conclusion langage
-    return(sector_specific_outlook_language  + '\n' + '\n' + general_outlook_language)
+
+
+
+        #Old Code Below:
+                            # 'general [stability/instability]' +
+                            # ' in demand while the count of new deliverables have been ' + 
+                            # '[expanding/steady/limited/absent]' +
+                            # '. Together, vacancy rates have ' +
+                            # '[managed to remain stable/expanded considerably/compressed]'  +
+                            # ' over the course of the pandemic. ' +
+                            # 'Rents responded by ' + 
+                            # '[remaining stable/expanding/softening]' +
+                            # '. The general ' +
+                            # '[stability/instability/acceleration/deceleration]' +
+                            # ' in fundamentals have helped improve the capital market, resulting in ' +
+                            # '[stable/accelerating/decelerating]' +
+                            # ' growth in property values across the sector. '
+                            # )
 
 
 
