@@ -2801,7 +2801,7 @@ def EmploymentBreakdownLanguage(county_industry_breakdown):
     county_industry_breakdown                           = county_industry_breakdown.sort_values(by=['lq_month3_emplvl'])
     highest_relative_concentration_industry             = county_industry_breakdown['industry_code'].iloc[-1]
     highest_relative_concentration_industry_lq          = county_industry_breakdown['lq_month3_emplvl'].iloc[-1]
-    highest_relative_concentration_employment_fraction  = county_industry_breakdown['lq_month3_emplvl'].iloc[-1]
+    highest_relative_concentration_employment_fraction  = county_industry_breakdown['employment_fraction'].iloc[-1]
 
     
 
@@ -2840,7 +2840,7 @@ def EmploymentBreakdownLanguage(county_industry_breakdown):
            third_largest_industry_employment_fraction +
            ') ' +
            'workers in the County, respectively. ' +
-           
+
             "{high_concentration_sentence}".format(high_concentration_sentence = (county + ' has an especially large fraction of workers in the ' + highest_relative_concentration_industry + """ industry. In fact, its """ +  "{:,.1f}%".format(highest_relative_concentration_employment_fraction) + ' fraction of workers is ' +  "{:,.1f}".format(highest_relative_concentration_industry_lq) + ' times higher than the Natioanl average.'   ) if highest_relative_concentration_industry_lq >= 1.25  else "") 
 
 
