@@ -687,10 +687,10 @@ def SupplyDemandSection():
     vacancy_table_width = 1.2
     AddTable(document,data_for_vacancy_table,vacancy_table_width)
     
-    #shouldnt this blank paragraph be in primary_font?        
-    blank_paragraph_after_vac_table = document.add_paragraph('')
-    blank_paragraph_after_vac_table.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-    blank_paragraph_after_vac_table.paragraph_format.space_after = Pt(0)
+    # #shouldnt this blank paragraph be in primary_font?        
+    # blank_paragraph_after_vac_table = document.add_paragraph('')
+    # blank_paragraph_after_vac_table.paragraph_format.space_after = Pt(primary_space_after_paragraph)
+    # blank_paragraph_after_vac_table.paragraph_format.space_after = Pt(0)
 
 
     #Absorption rate Graph
@@ -722,9 +722,9 @@ def RentSecton():
     AddTable(document,data_for_rent_table, col_width = 1.2)
   
 
-    blank_paragraph_after_rent_table = document.add_paragraph('')
-    blank_paragraph_after_rent_table.paragraph_format.space_after = Pt(6)
-    blank_paragraph_after_rent_table.paragraph_format.space_after = Pt(0)
+    # blank_paragraph_after_rent_table = document.add_paragraph('')
+    # blank_paragraph_after_rent_table.paragraph_format.space_after = Pt(6)
+    # blank_paragraph_after_rent_table.paragraph_format.space_after = Pt(0)
 
     #Insert rent growth graph
     if os.path.exists(os.path.join(output_directory,'rent_growth.png')):
@@ -737,7 +737,7 @@ def ConstructionSection():
     AddHeading(document,'Construction & Future Supply',2)
     constr_paragraph = document.add_paragraph(construction_languge)
     constr_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    constr_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
+    constr_paragraph.paragraph_format.space_after = Pt(0)
     constr_paragraph.paragraph_format.space_before = Pt(0)
 
     #Insert construction graph
@@ -790,7 +790,7 @@ def CapitalMarketsSection():
 
     capital_paragraph = document.add_paragraph(sale_language_1)
     capital_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    capital_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+    capital_paragraph.paragraph_format.space_after  = Pt(0)
     capital_paragraph.paragraph_format.space_before = Pt(0)
 
     #Sales Volume Graphs
@@ -802,7 +802,7 @@ def CapitalMarketsSection():
 
     capital_paragraph2 = document.add_paragraph(sale_language_2)
     capital_paragraph2.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    capital_paragraph2.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+    capital_paragraph2.paragraph_format.space_after  = Pt(0)
     capital_paragraph2.paragraph_format.space_before = Pt(0)
 
     #Create data for sales table (Market)
