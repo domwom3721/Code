@@ -3626,6 +3626,7 @@ def AddTitle(document):
 
     above_map_paragraph = document.add_paragraph('This report was compiled using data as of ' + current_quarter + ' unless otherwise noted. Data is from a number of sources including the U.S. Bureau of Labor Statistics, U.S. Bureau of Economic Analysis, and U.S. Census Bureau.')
     above_map_style = above_map_paragraph.style
+    above_map_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
     above_map_style.font.size = Pt(9)
     above_map_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
 
@@ -4089,7 +4090,7 @@ def InfrastructureSection(document):
 
     #Insert the transit graphics(car, bus,plane, train)
     tab = document.add_table(rows=1, cols=2)
-    for pic in ['car.png','train.png','bus.png','plane.png']:
+    for pic in ['car.png','train.png','plane.png']:
         row_cells = tab.add_row().cells
         paragraph = row_cells[0].paragraphs[0]
         run = paragraph.add_run()
@@ -4099,7 +4100,7 @@ def InfrastructureSection(document):
     
 
 
-    transit_language = [car_language,train_language,bus_language,plane_language]
+    transit_language = [car_language,train_language,plane_language]
     
     #Loop through the rows in the table
     for current_row ,row in enumerate(tab.rows): 
