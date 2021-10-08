@@ -3679,7 +3679,6 @@ def AddMap(document):
         map = document.add_picture(os.path.join(county_folder_map,'map.png'),width=Inches(6.5))
     else:    
         try:
-            FIX_MIKE_LEAHY
             #Search Google Maps for County
             options = webdriver.ChromeOptions()
             options.add_argument("--start-maximized")
@@ -3687,13 +3686,12 @@ def AddMap(document):
             browser.get('https:google.com/maps')
             
             #Write county name in box
-            # Place = browser.find_element_by_class_name("tactile-searchbox-input")
-            Place = browser.find_element_by_xpath("""//*[@id="searchboxinput"]""")
+             # Place = browser.find_element_by_xpath("""""")
+            Place = browser.find_element_by_class_name("tactile-searchbox-input")
             Place.send_keys((county + ', ' + state))
             
             #Submit county name for search
-            # Submit = browser.find_element_by_class_name('tactile-searchbox-input')
-            Submit = browser.find_element_by_xpath("""//*[@id="searchboxinput"]""")
+            Submit = browser.find_element_by_class_name('nhb85d-BIqFsb')
             Submit.click()
 
             time.sleep(5)
