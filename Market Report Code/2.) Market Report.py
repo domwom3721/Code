@@ -1403,6 +1403,9 @@ def CreateDirectoryCSV():
                     
                     if file == 'CoStar Markets.csv':
                         continue
+                    if ('Archive' in dirpath) or ('Quality Control' in dirpath):
+                        continue
+                    
                     full_path = dirpath + '/' + file
                     
                     #Parse sector and other info from file path string
