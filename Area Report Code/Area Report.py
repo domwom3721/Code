@@ -4183,7 +4183,7 @@ def CreateDirectoryCSV():
         else:
             for file in filenames:
                     
-                if file == 'Dropbox Areas.csv' or '.docx' not in file:
+                if file == 'Dropbox Areas.csv' or '.docx' not in file or ('Archive' in dirpath):
                     continue
                 full_path = dirpath + '/' + file
 
