@@ -2370,7 +2370,7 @@ def CreateDirectoryCSV():
         else:
             for file in filenames:
                 
-                if file == 'Dropbox Neighborhoods.csv':
+                if file == 'Dropbox Neighborhoods.csv' or ('Archive' in dirpath):
                     continue
                 
                 full_path = dirpath + '/' + file
