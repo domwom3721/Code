@@ -4,6 +4,7 @@
     #Loops through these 4 files, loops through each of the markets and submarkets (geographic areas) and creates a directory and word document
     #The word document is a report that reports tables and graphs generated from the data files
 
+from math import pi
 import os
 import time
 import numpy as np
@@ -903,7 +904,7 @@ def GetOverviewTable():
 
 
     elif market == primary_market: #market report
-        data_for_overview_table[0] = ['',market_title,'YoY','QoQ',df_nation['Geography Name'].iloc[0],'YoY','QoQ']
+        data_for_overview_table[0] = ['',primary_market_title,'YoY','QoQ',df_nation['Geography Name'].iloc[0],'YoY','QoQ']
     else:
         data_for_overview_table[0] = ['',market_title,'YoY','QoQ',primary_market,'YoY','QoQ']
 
@@ -1107,7 +1108,7 @@ def CreateMarketReport():
     global market_clean,market_title,output_directory,map_directory
     global df_market_cut,df_primary_market,df_nation, df_submarkets ,df_slices
     global latest_quarter,document,data_for_overview_table,data_for_vacancy_table,data_for_rent_table,report_path
-    global primary_market,market
+    global primary_market,market,primary_market_title
     
     # remove slashes from market names so we can save as folder name
     market_clean = CleanMarketName(market)
@@ -1159,9 +1160,10 @@ def CreateMarketReport():
             market_title = market.replace(primary_market + ' -','').strip()
         else:
             market_title = primary_market.replace(' - ' + state,'').strip()
+        primary_market_title    = primary_market.replace(' - ' + state,'').strip()
 
         #This function calls all the graph functions defined in the Graph_Functions.py file
-        CreateAllGraphs(submarket_data_frame = df_market_cut , market_data_frame = df_primary_market, natioanl_data_frame = df_nation , folder = output_directory, market_title = market_title, primary_market = primary_market, sector = sector)
+        CreateAllGraphs(submarket_data_frame = df_market_cut , market_data_frame = df_primary_market, natioanl_data_frame = df_nation , folder = output_directory, market_title = market_title, primary_market = primary_market_title, sector = sector)
 
         #Create Data for overview table
         #There are 4 possible permuations for this table (market/apt, market/nonapt, submarket/apt, submakert/nonapt)
