@@ -310,9 +310,19 @@ def CleanMarketName(market_name):
     if clean_market_name[-1] == '.':
         clean_market_name = clean_market_name.replace(""".""",'')
     clean_market_name = clean_market_name.strip()
-
-
     return(clean_market_name)
+
+def UniqueZipCodes(list1):
+    # insert the list to the set
+    list_set = set(list1)
+    # convert the set to the list
+    unique_list = (list(list_set))
+    
+    #convert from string to int
+    for i in range(0, len(unique_list)):
+        unique_list[i] = int(unique_list[i])
+
+    return(unique_list)
 
 def CreateEmptySalesforceLists():
     global  dropbox_primary_markets,dropbox_markets,dropbox_sectors, dropbox_sectors_codes
@@ -1305,85 +1315,44 @@ def CreateDirectoryCSV():
         #Merge the dataframe with a list of states and the inital of who is assigned to complete them
         assigned_to_df                          = pd.read_excel(os.path.join(general_data_location,'Assigned To States.xlsx')) 
         dropbox_df                              = pd.merge(dropbox_df,assigned_to_df, on=['State'],how = 'left') 
-        print(dropbox_df)
         
 
         #Create a version of market research name for merge without "SUB" when the submarket name matches the market name
         dropbox_df['Market Research Name Alternative']  = dropbox_df['Market Research Name'].str.replace(' SUB','')
 
-        #We are now going to merge our dataframe with the list of markets and submarkets with the zip codes associated with each market and submarket
+        #We are now going to merge our dataframe with the list of markets and submarkets with the zip codes associated with each submarket
+        
         #We first import and clean that zip code level dataset (convert to one row per submarket with a list of zip codes in it)
         df_zipcodes                                     = pd.read_excel(os.path.join(costar_data_location,'Supplemental Data','Zip to Submarket.xlsx'), dtype={'PostalCode': object} ) 
         df_zipcodes                                     = df_zipcodes.loc[(df_zipcodes['PropertyType'] == 'Office') | (df_zipcodes['PropertyType'] == 'Retail') | (df_zipcodes['PropertyType'] == 'Industrial') | (df_zipcodes['PropertyType'] == 'Multi-Family')]
-        df_zipcodes.loc[df_zipcodes['PropertyType']     == 'Multi-Family', 'PropertyType'] = 'Multifamily'
-
+        df_zipcodes.loc[df_zipcodes['PropertyType']     == 'Multi-Family', 'PropertyType'] = 'Multifamily' #Change spelling of multifamily
         df_zipcodes['state']                            = df_zipcodes['MarketName'].str[-2:]
         df_zipcodes['SubmarketName']                    = df_zipcodes['SubmarketName'].apply(CleanMarketName)
-
         df_zipcodes['Market Research Name Alternative'] = df_zipcodes['state'] + ' - ' + df_zipcodes['SubmarketName'] +  ' - ' +  df_zipcodes['PropertyType'] #form a variable to match on
         df_zipcodes                                     = df_zipcodes.groupby(['Market Research Name Alternative'])['PostalCode'].apply(list)
         df_zipcodes                                     = df_zipcodes.reset_index()
 
         #Now merge the zip code data with our costar markets csv
-        dropbox_df                                      = pd.merge(dropbox_df, df_zipcodes, on='Market Research Name Alternative',how = 'left') 
+        dropbox_df                                      = pd.merge(dropbox_df, df_zipcodes, on='Market Research Name Alternative',how = 'left')
+        
+        #Replace the Nan zip code values with an empty list
+        dropbox_df['PostalCode']                        = dropbox_df['PostalCode'].apply(lambda d: d if isinstance(d, list) else [])
+        
+        #Aggregate all zip code lists across each market into single list into its own dataframe to merge back in
+        dropbox_df_market_zipcodes                      = dropbox_df.groupby(['Market','Property Type']).agg({'PostalCode': 'sum'}).reset_index()
+        dropbox_df_market_zipcodes                      = dropbox_df_market_zipcodes.rename(columns={"PostalCode": "Market Zip Codes"})
 
-
-
-        #Now get all the zip codes associated with all the submarkets in each market and place them in the zipcode field for our markets
-        #Split into 2 dataframes, one with submarkets one with markets then append them together
-        dropbox_submarkets_df                           = dropbox_df.loc[dropbox_df['Analysis Type'] == 'Submarket'] 
-        dropbox_markets_df                              = dropbox_df.loc[dropbox_df['Analysis Type'] == 'Market'] 
-        dropbox_markets_collapsed_df                    = dropbox_df.groupby(['Market','Property Type']).agg({'PostalCode':list}).reset_index()
-
-        #Drop the postalcode column in the markets dataframe and replace it with the collapsed dataframe via merge
-        dropbox_markets_df                              = dropbox_markets_df.drop(columns =['PostalCode'])
-        dropbox_markets_df                              = pd.merge(dropbox_markets_df, dropbox_markets_collapsed_df, on=['Market','Property Type'],how = 'left') 
-
-        #Now that we have added the zip codes to the markets dataframe, we will flaten the list of lists currently in the PostalCode field and remove duplicates
-        # function used for removing nested 
-        # lists in python. 
-        def reemovNestings(l):
-            for i in l:
-                if type(i) == list:
-                    reemovNestings(i)
-                else:
-                    output.append(i)
-            return(output)
-
-        def unique(list1):
-            x = np.array(list1)
-            x = np.unique(x)
-            x = x[x!='nan']
-            return(x)
-
-        for i in range(len(dropbox_markets_df)):
-            output                                   = []
-            dropbox_markets_df['PostalCode'].iloc[i] = reemovNestings(dropbox_markets_df['PostalCode'].iloc[i])
-            dropbox_markets_df['PostalCode'].iloc[i] = unique(dropbox_markets_df['PostalCode'].iloc[i])
-            
-        #edit the zip code list format in the markets dataframe
-        dropbox_markets_df['PostalCode']    = dropbox_markets_df['PostalCode'].astype(str)
-        dropbox_markets_df['PostalCode']    = dropbox_markets_df['PostalCode'].str.replace("""' '""",',')
-        dropbox_markets_df['PostalCode']    = dropbox_markets_df['PostalCode'].str.replace("""'
-        '""",',')
-        dropbox_markets_df['PostalCode']    = dropbox_markets_df['PostalCode'].str.replace("""'""",'')
-        dropbox_markets_df['PostalCode']    = dropbox_markets_df['PostalCode'].str.replace("""nan""",'')
-        dropbox_markets_df['PostalCode']    = dropbox_markets_df['PostalCode'].str.replace("""[[]]""",'')
-        dropbox_markets_df['PostalCode']    = dropbox_markets_df['PostalCode'].str.strip()
-
-        #edit the zip code list format in the submarkets dataframe
-        dropbox_submarkets_df['PostalCode'] = dropbox_submarkets_df['PostalCode'].astype(str)
-        dropbox_submarkets_df['PostalCode'] = dropbox_submarkets_df['PostalCode'].str.replace("""'""",'')
-        dropbox_submarkets_df['PostalCode'] = dropbox_submarkets_df['PostalCode'].str.replace(""", """,',')
-        dropbox_submarkets_df['PostalCode'] = dropbox_submarkets_df['PostalCode'].str.replace("""nan""",'[]')
-        dropbox_submarkets_df['PostalCode'] = dropbox_submarkets_df['PostalCode'].str.strip()
-
-        #Now put the split dataframes back together
-        dropbox_df                          = dropbox_submarkets_df.append(dropbox_markets_df,ignore_index=True)
-        dropbox_df                          = dropbox_df.sort_values(by=['Property Type','Market','Submarket']).reset_index()
-        dropbox_df                          = dropbox_df.drop(columns =['index','Market Research Name Alternative'])
-
-
+        #Merge in the market zip codes into the costar csv dataframe 
+        dropbox_df                                      = pd.merge(dropbox_df, dropbox_df_market_zipcodes, on = ['Market','Property Type'],how = 'left')
+        
+        #Replace the empty lists with the aggregate list of zipcodes for markets
+        dropbox_df.loc[dropbox_df['Analysis Type']      == 'Market', 'PostalCode'] = dropbox_df['Market Zip Codes']
+        dropbox_df                                       = dropbox_df.drop(columns=['Market Zip Codes','Market Research Name Alternative'])
+        dropbox_df                                       = dropbox_df.rename(columns={"PostalCode": "Zip Codes"})
+        
+        #Now clean the zip code variable by keeping only unique values and dropping the quotation marks around each zip code 
+        dropbox_df['Zip Codes'] = dropbox_df['Zip Codes'].apply(UniqueZipCodes)
+        
         #Now we have to add the custom market reports to our dataframe, loop through the directory and get all document names and merge in with our main df (keeping only the ones we didn't already have)
         dropbox_links                  = []
         dropbox_research_names         = []
@@ -1394,8 +1363,7 @@ def CreateDirectoryCSV():
         dropbox_states                 = []
         dropbox_versions               = []
         dropbox_statuses               = []
-        dropbox_document_names         = []
-
+        dropbox_document_names         = [] 
 
         for (dirpath, dirnames, filenames) in os.walk(output_location):
             if filenames == []:
@@ -1488,8 +1456,7 @@ def CreateDirectoryCSV():
                     dropbox_research_names.append(research_name)
                     dropbox_states.append(state_name)
                 
-            
-
+        
         all_files_dropbox_df = pd.DataFrame({'Market Research Name':dropbox_research_names,
                                 'Market':dropbox_markets,
                             'Analysis Type': dropbox_analysis_types,
@@ -1501,8 +1468,6 @@ def CreateDirectoryCSV():
                             'Status':dropbox_statuses,
                             'Document Name': dropbox_document_names})
         all_files_dropbox_df = all_files_dropbox_df.sort_values(by=['State','Market Research Name'])
-
-
 
         #Drop the rows in this dataframe that are already in our main dropbox df
         all_files_dropbox_df = all_files_dropbox_df.loc[(all_files_dropbox_df['Dropbox Links'].isin(dropbox_df['Dropbox Links'])) == False   ]        
