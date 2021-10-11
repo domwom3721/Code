@@ -38,7 +38,7 @@ start_time = time.time()
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
 project_location               =  os.path.join(dropbox_root,'Research','Projects','Research Report Automation Project') #Main Folder that stores all output, code, and documentation
 output_location                = os.path.join(dropbox_root,'Research','Market Analysis','Market')                       #The folder where we store our current reports, production
-output_location                = os.path.join(project_location,'Output','Market Reports')                               #The folder where we store our current reports, testing folder
+output_location                = os.path.join(project_location,'Output','Market')                               #The folder where we store our current reports, testing folder
 map_location                   = os.path.join(project_location,'Data','Maps','CoStar Maps')                             #Folders with maps png files  
 general_data_location          =  os.path.join(project_location,'Data','General Data')
 costar_data_location           = os.path.join(project_location,'Data','CoStar Data')                                    #Folder with clean CoStar CSV files
@@ -307,9 +307,10 @@ def CleanMarketName(market_name):
     clean_market_name = market_name.replace("""/""",' ')
     clean_market_name = clean_market_name.replace(""":""",'')
     clean_market_name = clean_market_name.replace("""'""",'')
+    if clean_market_name[-1] == '.':
+        clean_market_name = clean_market_name.replace(""".""",'')
     clean_market_name = clean_market_name.strip()
-    # if clean_market_name == 'Manhattan - NY':
-    #     clean_market_name = 'Manhattan'
+
 
     return(clean_market_name)
 
@@ -1304,7 +1305,8 @@ def CreateDirectoryCSV():
         #Merge the dataframe with a list of states and the inital of who is assigned to complete them
         assigned_to_df                          = pd.read_excel(os.path.join(general_data_location,'Assigned To States.xlsx')) 
         dropbox_df                              = pd.merge(dropbox_df,assigned_to_df, on=['State'],how = 'left') 
-        # print(dropbox_df)
+        print(dropbox_df)
+        
 
         #Create a version of market research name for merge without "SUB" when the submarket name matches the market name
         dropbox_df['Market Research Name Alternative']  = dropbox_df['Market Research Name'].str.replace(' SUB','')
@@ -1503,9 +1505,7 @@ def CreateDirectoryCSV():
 
 
         #Drop the rows in this dataframe that are already in our main dropbox df
-        all_files_dropbox_df = all_files_dropbox_df.loc[(all_files_dropbox_df['Dropbox Links'].isin(dropbox_df['Dropbox Links'])) == False   ]
-
-        
+        all_files_dropbox_df = all_files_dropbox_df.loc[(all_files_dropbox_df['Dropbox Links'].isin(dropbox_df['Dropbox Links'])) == False   ]        
 
         #Export the CoStar Markets export
         dropbox_df = dropbox_df.append(all_files_dropbox_df)
