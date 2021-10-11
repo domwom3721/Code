@@ -3485,7 +3485,7 @@ def HousingLanguage():
                             'continued growth' +
                             ' in values. In fact, the median home list price currently sits at ' +
                             current_county_mlp +
-                            ', an ' +
+                            ', ' +
                             increase_or_decrease +
                             ' of ' +
                             yoy_county_mlp_growth +
