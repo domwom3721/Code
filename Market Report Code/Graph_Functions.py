@@ -609,12 +609,11 @@ def CreateRentGrowthGraph(submarket_data_frame,market_data_frame,natioanl_data_f
     fig.write_image(os.path.join(folder,'rent_growth.png'),engine='kaleido',scale=scale)
 
 def CreateAllGraphs(submarket_data_frame,market_data_frame,natioanl_data_frame,folder,market_title,primary_market,sector):
-
     CreateSalesVolumeGraph(submarket_data_frame = submarket_data_frame, folder = folder)
-    CreateAssetValueGraph(submarket_data_frame = submarket_data_frame, market_data_frame = market_data_frame, natioanl_data_frame = natioanl_data_frame, folder = folder,market_title=market_title, primary_market = primary_market, sector = sector)
-    CreateAbsorptionGraph(submarket_data_frame = submarket_data_frame, market_data_frame = market_data_frame, natioanl_data_frame = natioanl_data_frame, folder = folder,market_title=market_title, primary_market = primary_market, sector = sector)
-    CreateConstructionGraph(submarket_data_frame = submarket_data_frame, folder = folder,sector = sector)
-    CreateRentGrowthGraph(submarket_data_frame = submarket_data_frame, market_data_frame = market_data_frame, natioanl_data_frame = natioanl_data_frame, folder = folder,market_title=market_title, primary_market = primary_market, sector = sector)
+    CreateAssetValueGraph(submarket_data_frame = submarket_data_frame, market_data_frame = market_data_frame, natioanl_data_frame = natioanl_data_frame, folder = folder, market_title = market_title, primary_market = primary_market, sector = sector)
+    CreateAbsorptionGraph(submarket_data_frame = submarket_data_frame, market_data_frame = market_data_frame, natioanl_data_frame = natioanl_data_frame, folder = folder, market_title = market_title, primary_market = primary_market, sector = sector)
+    CreateConstructionGraph(submarket_data_frame = submarket_data_frame, folder = folder, sector = sector)
+    CreateRentGrowthGraph(submarket_data_frame = submarket_data_frame, market_data_frame = market_data_frame, natioanl_data_frame = natioanl_data_frame, folder = folder, market_title = market_title, primary_market = primary_market, sector = sector)
 
     for png in ['asset_values.png','absorption_rate.png','sales_volume.png','construction_volume.png','rent_growth.png']:
         png_path = os.path.join(folder,png)

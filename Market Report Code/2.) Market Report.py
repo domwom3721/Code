@@ -903,7 +903,7 @@ def GetOverviewTable():
 
 
     elif market == primary_market: #market report
-        data_for_overview_table[0] = ['',market,'YoY','QoQ',df_nation['Geography Name'].iloc[0],'YoY','QoQ']
+        data_for_overview_table[0] = ['',market_title,'YoY','QoQ',df_nation['Geography Name'].iloc[0],'YoY','QoQ']
     else:
         data_for_overview_table[0] = ['',market_title,'YoY','QoQ',primary_market,'YoY','QoQ']
 
@@ -1113,20 +1113,19 @@ def CreateMarketReport():
     market_clean = CleanMarketName(market)
     market_title = market_clean.replace(primary_market + ' -','').strip()
     
-
-
+    #Create output, map, and writeup folders for the market of submarket
     output_directory    = CreateOutputDirectory()
     map_directory       = CreateMapDirectory()
     writeup_directory   = CreateWriteupDirectory()
  
-
-    
-    
-
+  
+    #Create a dataframe that only has rows for the market or submarket itself
     df_market_cut     = df[df['Geography Name'] == market].copy()                  #df for the market or submarket only
-    # print(df_market_cut)
+    
+    #Get the latest quarter
+    latest_quarter = df_market_cut.iloc[-1]['Period']
 
-    latest_quarter = df_market_cut.iloc[-1]['Period']     #Get latest quarter
+    #Get the document name and file path for the report
     report_path = CreateReportFilePath()
 
     if write_reports_yes_or_no == 'y':
@@ -1155,11 +1154,15 @@ def CreateMarketReport():
         assert len(df_primary_market) > 0
         assert len(df_nation) > 0
 
-        
+        #Strip the primary market out of the submarket name
+        if market != primary_market:
+            market_title = market.replace(primary_market + ' -','').strip()
+        else:
+            market_title = primary_market.replace(' - ' + state,'').strip()
 
         #This function calls all the graph functions defined in the Graph_Functions.py file
-        CreateAllGraphs(submarket_data_frame = df_market_cut , market_data_frame = df_primary_market, natioanl_data_frame = df_nation , folder = output_directory, market_title = market_title, primary_market = primary_market, sector=sector)
-  
+        CreateAllGraphs(submarket_data_frame = df_market_cut , market_data_frame = df_primary_market, natioanl_data_frame = df_nation , folder = output_directory, market_title = market_title, primary_market = primary_market, sector = sector)
+
         #Create Data for overview table
         #There are 4 possible permuations for this table (market/apt, market/nonapt, submarket/apt, submakert/nonapt)
         data_for_overview_table = GetOverviewTable()
@@ -1174,7 +1177,6 @@ def CreateMarketReport():
         GetLanguage(writeup_directory = writeup_directory)
 
         
-
         #Skip the reports we have already done
         if os.path.exists(report_path.replace('_draft','_FINAL',1)) or os.path.exists(report_path.replace('_draft','- FINAL',1)) or os.path.exists(report_path.replace('_draft',' - FINAL',1)):
             pass
@@ -1197,7 +1199,6 @@ def CreateMarketReport():
             #Temp fix to replace Manhattan - NY with Manhattan
             for paragraph in document.paragraphs:
                 if 'Manhattan - NY' in paragraph.text:
-                    # print paragraph.text
                     paragraph.text = paragraph.text.replace('Manhattan - NY','Manhattan')
 
             # Save report
