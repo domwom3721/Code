@@ -1393,7 +1393,7 @@ def CreateDirectoryCSV():
 
         group_df   = dropbox_df.groupby(['Market Research Name']).size().reset_index(name='Market Research Name Count')
         dropbox_df = pd.merge(dropbox_df, group_df, on='Market Research Name',how = 'left')
-        assert dropbox_df['Market Research Name Count'] == 1
+        assert dropbox_df['Market Research Name Count'].all() == 1
         dropbox_df = dropbox_df.drop(columns=['Market Research Name Count'])
 
 
