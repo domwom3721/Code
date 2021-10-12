@@ -856,10 +856,27 @@ def CapitalMarketsSection():
 def OutlookSection():
     #Outlook Section
     AddHeading(document,'Outlook',2)
-    conclusion_paragraph = document.add_paragraph(outlook_language)
-    conclusion_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    conclusion_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
-    conclusion_paragraph.paragraph_format.space_before = Pt(0)
+
+    outlook_language_splt = outlook_language.split(('\n' + '\n')) #split on paragraph
+    assert len(outlook_language_splt) == 3 #make sure there are 3 paragraphs
+    outlook_language1 = outlook_language_splt[0]
+    outlook_language2 = outlook_language_splt[1]
+    outlook_language3 = outlook_language_splt[2]
+
+    conclusion_paragraph1 = document.add_paragraph(outlook_language1)
+    conclusion_paragraph1.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    conclusion_paragraph1.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+    conclusion_paragraph1.paragraph_format.space_before = Pt(0)
+
+    conclusion_paragraph2 = document.add_paragraph(outlook_language2)
+    conclusion_paragraph2.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    conclusion_paragraph2.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+    conclusion_paragraph2.paragraph_format.space_before = Pt(0)
+
+    conclusion_paragraph3 = document.add_paragraph(outlook_language3)
+    conclusion_paragraph3.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    conclusion_paragraph3.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+    conclusion_paragraph3.paragraph_format.space_before = Pt(0)
 
 def AppendixSection():
     if market == primary_market:
@@ -1593,8 +1610,7 @@ if output_location == os.path.join(dropbox_root,'Research','Market Analysis','Ma
                     csv_path=os.path.join(output_location, service_api_csv_name),
                     dropbox_dir='https://www.dropbox.com/home/Research/Market Analysis/Market/')
 
-print('Finished, you rock')
-print("--- %s seconds ---" % (time.time() - start_time))        
+print('Finished, you rock ',"--- %s seconds ---" % (time.time() - start_time))        
 
 
 
