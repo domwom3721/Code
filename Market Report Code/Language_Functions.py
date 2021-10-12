@@ -2031,13 +2031,11 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
 
     #Determine change in cap rate
     if cap_rate_change > 0:
-        cap_rate_change_description  = 'expanded'
-
+        cap_rate_change_description  = 'expanded ' + "{:,.0f} bps".format(abs(cap_rate_change)) + ' to a rate of '            
     elif cap_rate_change < 0:
-        cap_rate_change_description  = 'compressed'
-
+        cap_rate_change_description  = 'compressed ' + "{:,.0f} bps".format(abs(cap_rate_change)) + ' to a rate of '       
     else:
-        cap_rate_change_description  = 'remained stable'
+        cap_rate_change_description  = 'remained stable at '
     
     
     #Relationship betweeen current cap rate and the historical average
@@ -2326,9 +2324,6 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
                 unit_or_sqft_singular              +
                 ' and cap rates have '             +
                 cap_rate_change_description        +
-                ' '                                +
-               "{:,.0f} bps".format(abs(cap_rate_change)) +
-                ' to a rate of '                   +
                 "{:,.1f}%".format(cap_rate)        +
                 ', '                               +
                 cap_rate_above_below_average       +
