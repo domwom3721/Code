@@ -1991,9 +1991,9 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
     else:
         market_or_submarket = 'Submarket'
     
-    leasing_change                      = submarket_data_frame[(net_absorption_var_name + ' 12 Mo')].iloc[-1] -  submarket_data_frame[(net_absorption_var_name + ' 12 Mo')].iloc[-5]
-    inventory_change                    = submarket_data_frame[inventory_var_name].iloc[-1] -  submarket_data_frame[inventory_var_name].iloc[-5]
-
+    leasing_change                         = submarket_data_frame[(net_absorption_var_name + ' 12 Mo')].iloc[-1] -  submarket_data_frame[(net_absorption_var_name + ' 12 Mo')].iloc[-5]
+    inventory_change                       = submarket_data_frame[inventory_var_name].iloc[-1] -  submarket_data_frame[inventory_var_name].iloc[-5]
+    under_construction_share               = round(submarket_data_frame['Under Construction %'].iloc[-1],2)
     vacancy_change                         = submarket_data_frame['YoY Vacancy Growth'].iloc[-1]
     year_ago_cap_rate                      = submarket_data_frame['Market Cap Rate'].iloc[-5] 
     cap_rate                               = submarket_data_frame['Market Cap Rate'].iloc[-1] 
@@ -2103,7 +2103,27 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
         values_likely_change = '[expand/compress/stabilize]'
 
     
-     
+    #Forcast rent growth in 4th quarter
+    if submarket_yoy_growth > 0:
+       rent_future_path= 'accelerating'
+    elif submarket_yoy_growth < 0:
+        rent_future_path= 'compressing'
+    elif submarket_yoy_growth == 0:
+        rent_future_path= 'stabilizing'
+    else:
+        rent_future_path = '[stabilizing/accelerating/compressing]'
+    
+    #Forcast demand growth in 4th quarter
+    if vacancy_change > 0:
+       demand_future_path= 'remain muted'
+    elif vacancy_change < 0:
+        demand_future_path= 'continue to pick up'
+    elif vacancy_change == 0:
+        demand_future_path= 'stabilize'
+    else:
+        demand_future_path = '[continue to pick up/stabilize/remain muted]' 
+    
+      
 
     #Use the change in inventory, vacancy, and abosprtion over the past year to create a clause on market funamentals
     #Inventory expanded over past year
@@ -2274,6 +2294,20 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
 
 
     #Section 4: Begin putting sentences togehter with our variables
+    large_supply_pipeline_threshold = 5
+    if vacancy_change > 0 and under_construction_share == 0:
+        pipeline_sentence = ('However, an empty supply pipeline could allow for vacancy to stabilize. ' )
+    elif vacancy_change < 0 and under_construction_share >= large_supply_pipeline_threshold:
+        pipeline_sentence = ('However, a large supply pipeline could put upward pressure on vacancy rates. ' )
+    elif vacancy_change > 0 and under_construction_share >= large_supply_pipeline_threshold:
+        pipeline_sentence = ('Furthermore, a large supply pipeline could put futher upward pressure on vacancy rates. ' )
+    elif vacancy_change < 0 and under_construction_share == 0:
+        pipeline_sentence = ('Furthermore, an empty supply pipeline should allow for further vacancy rate compression. ' )
+    else:
+        pipeline_sentence = ('')
+
+
+
     capital_markets_summary = (
                 ' With fundamentals '              +
                 fundamentals_change                +
@@ -2311,14 +2345,11 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
                             'Looking ahead to the ' +
                             'final quarter of 2021' + 
                             ', it is likely that demand will ' +
-                            '[continue to pick up/stabilize/remain muted]' +
+                            demand_future_path +
                             ' with rents ' +
-                            '[stabilizing/accelerating/compressing]' +
+                            rent_future_path +
                             ' further. ' +
-                            '[Although/However]' + 
-                            ', ' +
-                            '[an empty/ a large]' + 
-                            ' supply pipeline could allow for vacancy to stabilize. ' +
+                            pipeline_sentence +
                             'With fundamentals ' +
                             fundamentals_change +
                             ', values will likely ' +
