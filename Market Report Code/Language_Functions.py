@@ -329,7 +329,7 @@ def CreateOverviewLanguage(submarket_data_frame,market_data_frame,natioanl_data_
             overview_sector_specific_language = ('Industrial enters the fourth quarter in among the best shape of any of the major property types. ' + 
                                 'A pandemic driven spike in e-commerce sales along with significant growth in third-party logistics providers continues to drive demand. ' + 
                                 sector + ' properties in the ' + market_or_submarket + 
-                                ' benefited from these demand drivers, leading to positive net absorption and continued growth in rents.' )
+                                ' benefited from these demand drivers, leading to vacancy rate compression and positive growth in rents.' )
 
     #Create the Office sepecific language
     if sector == "Office": 
