@@ -3439,37 +3439,34 @@ def HousingLanguage():
         
         #Format variables
         current_county_mlp      = "${:,.0f}".format(current_county_mlp)
-        yoy_county_mlp_growth   = "{:,.0f}%".format(yoy_county_mlp_growth)
-        yoy_national_mlp_growth = "{:,.0f}%".format(yoy_national_mlp_growth)
-
-
-
-
+    
         #If we have the metro realtor data
         if isinstance(msa_mlp, pd.DataFrame) == True:
             yoy_msa_mlp_growth = ((msa_mlp['Median List Price'].iloc[-1]/msa_mlp['Median List Price'].iloc[-13]) - 1 ) * 100
-            yoy_msa_mlp_growth = "{:,.0f}%".format(yoy_msa_mlp_growth)
 
             return('Not only did the pandemic shock the economy, but it has had different economic effects on sectors and regions. ' +
                                 'For example, the residential housing market in the United States has been robust since the initial shutdown in Q1 and Q2 2020 slowed demand and halted price growth. ' +
                                 'But, historically low mortgage rates, the desire for more space, and the ability to work from home have led to the highest number of home' +
                                 ' sales while historically low inventory levels have pushed values to record highs in most counties and metros across the Nation. ' +
-                                'In ' +
+                                "{however_or_in}".format(however_or_in = "In " if  yoy_county_mlp_growth >= 0  else "However, in ") +                                           
                                 county +
                                 ', Realtor.com data points to ' +
-                                'continued growth' +
+                                "{growth_description}".format(growth_description = "continued " if  yoy_county_mlp_growth >= 0  else "negative") +                                           
+                                ' growth'                       +
                                 ' in values. In fact, the median home list price currently sits at ' +
                                 current_county_mlp +
-                                ', ' +
+                                ', ' +                                        
                                  increase_or_decrease+
                                 ' of ' +
-                                yoy_county_mlp_growth +
+                               "{:,.0f}%".format(abs(yoy_county_mlp_growth)) +
                                 ' compared to ' +
-                                yoy_msa_mlp_growth +
+                                "{msa_growth_description}".format(msa_growth_description = "an increase of " if  yoy_msa_mlp_growth >= 0  else "a decrease of ") +                                           
+                                 "{:,.0f}%".format(abs(yoy_msa_mlp_growth)) +
                                 ' for the ' +
                                 cbsa_name +
                                 ' Metro and ' +
-                                yoy_national_mlp_growth +
+                                "{national_growth_description}".format(national_growth_description = "an increase of " if  yoy_national_mlp_growth >= 0  else "a decrease of ") +      
+                                "{:,.0f}%".format(abs(yoy_national_mlp_growth)) +
                                 ' across the Nation over the past year.'
                                 )
 
@@ -3482,15 +3479,17 @@ def HousingLanguage():
                             'In ' +
                             county +
                             ', Realtor.com data points to ' +
-                            'continued growth' +
+                            "{growth_description}".format(growth_description = "continued " if  yoy_county_mlp_growth >= 0  else "negative") +                                           
+                            ' growth' +
                             ' in values. In fact, the median home list price currently sits at ' +
                             current_county_mlp +
                             ', ' +
                             increase_or_decrease +
                             ' of ' +
-                            yoy_county_mlp_growth +
+                           "{:,.0f}%".format(abs(yoy_county_mlp_growth)) +
                             ' compared to ' +
-                            yoy_national_mlp_growth +
+                             "{national_growth_description}".format(national_growth_description = "an increase of " if  yoy_national_mlp_growth >= 0  else "a decrease of ") +      
+                            "{:,.0f}%".format(abs(yoy_national_mlp_growth)) +
                             ' across the Nation over the past year.'
                             )
 
