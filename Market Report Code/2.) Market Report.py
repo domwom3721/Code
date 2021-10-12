@@ -1373,6 +1373,30 @@ def CreateDirectoryCSV():
         #Now clean the zip code variable by keeping only unique values and dropping the quotation marks around each zip code 
         dropbox_df['Zip Codes'] = dropbox_df['Zip Codes'].apply(UniqueZipCodes)
         
+        #Change the market research names if there are duplicates. For example, "CBD" is a fairly common market reearch name
+        group_df   = dropbox_df.groupby(['Market Research Name']).size().reset_index(name='Market Research Name Count')
+        dropbox_df = pd.merge(dropbox_df, group_df, on='Market Research Name',how = 'left')
+        
+        dropbox_df['Market 1'] = dropbox_df['Market'].str.split('-')
+
+        dropbox_df['Market Research Name 1'] = dropbox_df['Market Research Name'].str.split(' - ')
+        dropbox_df['Market Research Name 2'] = dropbox_df['Market Research Name'].str.split(' - ')
+        dropbox_df['Market Research Name 3'] = dropbox_df['Market Research Name'].str.split(' - ')
+
+        dropbox_df['Market 1'] = dropbox_df['Market 1'].str[1]
+        dropbox_df['Market Research Name 1'] = dropbox_df['Market Research Name 1'].str[0]
+        dropbox_df['Market Research Name 2'] = dropbox_df['Market Research Name 2'].str[1]
+        dropbox_df['Market Research Name 3'] = dropbox_df['Market Research Name 3'].str[2]
+
+        dropbox_df.loc[(dropbox_df['Market Research Name Count']      > 1) & (dropbox_df['Analysis Type'] == 'Submarket')  , 'Market Research Name'] = dropbox_df['Market Research Name 1'] + ' - ' + dropbox_df['Market Research Name 2'] + ' (' + dropbox_df['Market 1'] + ') - ' + dropbox_df['Market Research Name 3'] 
+        dropbox_df = dropbox_df.drop(columns=['Market 1','Market Research Name 1','Market Research Name 2','Market Research Name 3','Market Research Name Count'])
+
+        group_df   = dropbox_df.groupby(['Market Research Name']).size().reset_index(name='Market Research Name Count')
+        dropbox_df = pd.merge(dropbox_df, group_df, on='Market Research Name',how = 'left')
+        assert dropbox_df['Market Research Name Count'] == 1
+        dropbox_df = dropbox_df.drop(columns=['Market Research Name Count'])
+
+
         #Now we have to add the custom market reports to our dataframe, loop through the directory and get all document names and merge in with our main df (keeping only the ones we didn't already have)
         dropbox_links                  = []
         dropbox_research_names         = []
