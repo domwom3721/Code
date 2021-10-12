@@ -789,8 +789,8 @@ def ConstructionSection():
 def CapitalMarketsSection():
     #Captial Markets Section
     AddHeading(document,'Capital Markets',2)
-
     #Split the capital market language into 2 paragraphs
+    
     if len(sale_language.split('Market pricing')) >= 2:
         sale_language_1   = sale_language.split('Market pricing')[0]
         sale_language_2   = 'Market pricing' + sale_language.split('Market pricing')[1]

@@ -45,8 +45,8 @@ def PullCoStarWriteUp(section_names,writeup_directory):
             for narrative,title in zip(narrative_bodies,narrative_titles):
                 title_text = title.text 
                 for section_name in section_names:
+                    master_narrative = ''
                     if section_name in title_text:
-                        master_narrative = ''
                         for count,p in enumerate(narrative.find_all("p")):
                             text  = p.get_text()
                             text = text.replace(' 3, & 4 & 5 Star',' class A, B, and C')
@@ -91,10 +91,14 @@ def PullCoStarWriteUp(section_names,writeup_directory):
                                 master_narrative = master_narrative       + text
                             else:
                                 master_narrative = master_narrative + '\n' + '\n' +text
-                        if len(master_narrative) > 1:
-                            return(master_narrative)
+
+                    if len(master_narrative) > 1:     
+                        return(master_narrative)
+            return('')
+
         except Exception as e:
             print(e)
+            return('')
     else:
         return('')
 
