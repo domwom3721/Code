@@ -2086,14 +2086,22 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
     #Describe out change in fundamentals
     if submarket_yoy_growth >= 0     and vacancy_change <= 0: #if rent is growing (or flat) and vacancy is falling (or flat) we call fundamentals improving
         fundamentals_change = 'improving'
+        values_likely_change = 'expand'
     elif submarket_yoy_growth < 0 and vacancy_change > 0 : #if rent is falling and vacancy is rising we call fundamentals softening
         fundamentals_change = 'softening'
+        values_likely_change = 'compress'
     elif (submarket_yoy_growth > 0   and vacancy_change  > 0) or (submarket_yoy_growth < 0 and vacancy_change < 0 ) : #if rents are falling but vacancy is also falling OR vice versa, then mixed
         fundamentals_change = 'mixed'
+        values_likely_change = 'stabilize'
+
     elif (submarket_yoy_growth == 0 and vacancy_change == 0): #no change in rent or vacancy
         fundamentals_change = 'stable'
+        values_likely_change = 'stabilize'
+        
     else:
         fundamentals_change = '[improving/softening/mixed/stable]'
+        values_likely_change = '[expand/compress/stabilize]'
+
     
      
 
@@ -2312,9 +2320,9 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
                             '[an empty/ a large]' + 
                             ' supply pipeline could allow for vacancy to stabilize. ' +
                             'With fundamentals ' +
-                            '[improving/softening]'+
+                            fundamentals_change +
                             ', values will likely ' +
-                            '[expand/compress/stabilize]'+
+                            values_likely_change+
                             '.'
                             )
 
