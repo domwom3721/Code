@@ -1214,7 +1214,7 @@ def CreateMarketReport():
     UpdateSalesforceMarketList(markets_list = dropbox_primary_markets, submarkets_list = dropbox_markets, sector_list = dropbox_sectors, sector_code_list = dropbox_sectors_codes, dropbox_links_list = dropbox_links)
 
 def user_selects_market(market_list):
-    if len(df_list) == 4 or market_list = []:
+    if len(df_list) == 4 or market_list == []:
         return(market_list)
     
     market_list.insert(0,'All')
