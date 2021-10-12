@@ -2709,8 +2709,10 @@ def OverviewLanguage():
     #If in a metro area refer to the effect on that economy, else use the county name
     if cbsa != '':
         greater_area = 'Greater ' + cbsa_name + ' area economy'
+        metro_or_county = 'Metro'
     else:
         greater_area =  county + ' economy'
+        metro_or_county = 'County'
 
 
 
@@ -2748,7 +2750,8 @@ def OverviewLanguage():
                    'The availability of and widespread use of vaccinations have aided the economy over the first half of 2021, but the Delta variant has led to recent worry and restrictions, that could slow growth over the 2nd half of 2021. ')
     if fully_recovered_employment == False:
         boiler_plate = boiler_plate + ('While fundamentals are pointing in the right direction, it will likely take some time for the ' +
-                'metro to fully return to pre-pandemic levels of employment.')
+               metro_or_county +
+                ' to fully return to pre-pandemic levels of employment.')
 
 
     try:
