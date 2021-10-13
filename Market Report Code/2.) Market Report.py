@@ -4,9 +4,6 @@
     #Loops through these 4 files, loops through each of the markets and submarkets (geographic areas) and creates a directory and word document
     #The word document is a report that reports tables and graphs generated from the data files
 
-# from math import pi
-# import re
-# import numpy as np
 import os
 import time
 import pandas as pd
@@ -723,7 +720,7 @@ def SupplyDemandSection():
     
 def RentSecton():
     try:
-        rent_language_splitter = 'In the'
+        rent_language_splitter = 'In 2019 Q4'
         rent_language1 = rent_language.split(rent_language_splitter)[0]
         rent_language2 = rent_language_splitter + rent_language.split(rent_language_splitter)[1]
         rent_language2 = rent_language2.lstrip() 
