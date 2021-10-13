@@ -4,12 +4,12 @@
     #Loops through these 4 files, loops through each of the markets and submarkets (geographic areas) and creates a directory and word document
     #The word document is a report that reports tables and graphs generated from the data files
 
-from math import pi
+# from math import pi
+# import re
+# import numpy as np
 import os
 import time
-import numpy as np
 import pandas as pd
-import re
 from tkinter import *
 from tkinter import ttk
 
