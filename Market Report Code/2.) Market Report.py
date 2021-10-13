@@ -481,9 +481,9 @@ def SetStyle():
 def MakeReportTitle():
     #Write title Heading
     if market == primary_market:
-        title = document.add_heading(market_title + ': ' + sector + ' Market Analysis',level=1)
+        title = document.add_heading(market_title + ': ' + sector + ' Market Analysis'    + ' DRAFTDRAFTDRAFT',level=1)
     else:
-        title = document.add_heading(market_title + ': ' + sector + ' Submarket Analysis',level=1)
+        title = document.add_heading(market_title + ': ' + sector + ' Submarket Analysis' + ' DRAFTDRAFTDRAFT',level=1)
     title.style = document.styles['Heading 2']
     title.paragraph_format.space_after  = Pt(12)
     title.paragraph_format.space_before = Pt(6)
