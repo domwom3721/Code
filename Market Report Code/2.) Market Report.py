@@ -725,7 +725,7 @@ def RentSecton():
     try:
         rent_language_splitter = 'In the'
         rent_language1 = rent_language.split(rent_language_splitter)[0]
-        rent_language2 = rent_language_splitter + demand_language.split(rent_language_splitter)[1]
+        rent_language2 = rent_language_splitter + rent_language.split(rent_language_splitter)[1]
         rent_language2 = rent_language2.lstrip() 
     except:
         rent_language1 = rent_language
