@@ -575,7 +575,6 @@ def OverviewSection():
     summary_paragraph_style.font.size = Pt(9)
     summary_format = document.styles['Normal'].paragraph_format
     summary_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
-    # summary_paragraph_style.widow_control = True
 
     #Overview table title
     overview_table_title_paragraph = document.add_paragraph('Sector Fundamentals')
@@ -610,7 +609,6 @@ def OverviewSection():
     else:
         market_or_submarket = 'Submarket'
     
-    document.add_paragraph('')
     preamble_language = ('Supply and demand indicators, including inventory levels, absorption, vacancy, and rental rates for ' +
                          sector.lower() +
                          ' space in the ' +
@@ -621,6 +619,7 @@ def OverviewSection():
     table_preamble = document.add_paragraph(preamble_language)
     table_preamble.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
     table_preamble.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+    table_preamble.paragraph_format.space_before = Pt(6)
 
     #Market performance table for primary markets
     if market == primary_market:
@@ -678,11 +677,21 @@ def OverviewSection():
 def SupplyDemandSection():
     #Supply and Demand Section
     AddHeading(document,'Supply & Demand',2)
-    supply_demand_paragraph = document.add_paragraph(demand_language)
-    supply_demand_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    supply_demand_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
-    supply_demand_paragraph.paragraph_format.space_before = Pt(0)
-    supply_demand_paragraph_style = supply_demand_paragraph.style
+    try:
+        demand_language_splitter = 'In the'
+        demand_language1 = demand_language.split(demand_language_splitter)[0]
+        demand_language2 = demand_language_splitter + demand_language.split(demand_language_splitter)[1]
+        demand_language2 = demand_language2.lstrip() 
+    except:
+        demand_language1 = demand_language
+        demand_language2 = ''
+
+
+    supply_demand_paragraph1 = document.add_paragraph(demand_language1)
+    supply_demand_paragraph1.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    supply_demand_paragraph1.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+    supply_demand_paragraph1.paragraph_format.space_before = Pt(0)
+    supply_demand_paragraph_style = supply_demand_paragraph1.style
     supply_demand_paragraph_style.font.name = primary_font
 
     #Vacancy Table
@@ -693,17 +702,16 @@ def SupplyDemandSection():
     for run in vacancy_table_title_paragraph.runs:
         font = run.font
         font.name = 'Avenir Next LT Pro Medium'
-    
- 
-
+     
     vacancy_table_width = 1.2
     AddTable(document,data_for_vacancy_table,vacancy_table_width)
     
-    # #shouldnt this blank paragraph be in primary_font?        
-    # blank_paragraph_after_vac_table = document.add_paragraph('')
-    # blank_paragraph_after_vac_table.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-    # blank_paragraph_after_vac_table.paragraph_format.space_after = Pt(0)
-
+    supply_demand_paragraph2 = document.add_paragraph(demand_language2)
+    supply_demand_paragraph2.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    supply_demand_paragraph2.paragraph_format.space_after  = Pt(0)
+    supply_demand_paragraph2.paragraph_format.space_before = Pt(6)
+    supply_demand_paragraph_style = supply_demand_paragraph2.style
+    supply_demand_paragraph_style.font.name = primary_font
 
     #Absorption rate Graph
     if os.path.exists(os.path.join(output_directory,'absorption_rate.png')):
@@ -714,13 +722,21 @@ def SupplyDemandSection():
         absorption_format.space_after = Pt(0)
     
 def RentSecton():
-    
+    try:
+        rent_language_splitter = 'In the'
+        rent_language1 = rent_language.split(rent_language_splitter)[0]
+        rent_language2 = rent_language_splitter + demand_language.split(rent_language_splitter)[1]
+        rent_language2 = rent_language2.lstrip() 
+    except:
+        rent_language1 = rent_language
+        rent_language2 = ''
+
     #Rent Paragraph
     AddHeading(document,'Rents',3)       
-    rent_paragraph = document.add_paragraph(rent_language)
-    rent_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    rent_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-    rent_paragraph.paragraph_format.space_before = Pt(0)
+    rent_paragraph1 = document.add_paragraph(rent_language1)
+    rent_paragraph1.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    rent_paragraph1.paragraph_format.space_after = Pt(primary_space_after_paragraph)
+    rent_paragraph1.paragraph_format.space_before = Pt(0)
     
 
     #Rent Table
@@ -732,18 +748,18 @@ def RentSecton():
                     font = run.font
                     font.name = 'Avenir Next LT Pro Medium'
     AddTable(document,data_for_rent_table, col_width = 1.2)
-  
-
-    # blank_paragraph_after_rent_table = document.add_paragraph('')
-    # blank_paragraph_after_rent_table.paragraph_format.space_after = Pt(6)
-    # blank_paragraph_after_rent_table.paragraph_format.space_after = Pt(0)
+    
+    rent_paragraph2 = document.add_paragraph(rent_language2)
+    rent_paragraph2.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    rent_paragraph2.paragraph_format.space_after = Pt(0)
+    rent_paragraph2.paragraph_format.space_before = Pt(6)
 
     #Insert rent growth graph
     if os.path.exists(os.path.join(output_directory,'rent_growth.png')):
         rent_growth_figure = document.add_picture(os.path.join(output_directory,'rent_growth.png'),width=Inches(6.5))
         last_paragraph = document.paragraphs[-1] 
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    
+
 def ConstructionSection():
     #Construction Section
     AddHeading(document,'Construction & Future Supply',2)
@@ -791,12 +807,13 @@ def CapitalMarketsSection():
     AddHeading(document,'Capital Markets',2)
     #Split the capital market language into 2 paragraphs
     
-    if len(sale_language.split('Market pricing')) >= 2:
-        sale_language_1   = sale_language.split('Market pricing')[0]
-        sale_language_2   = 'Market pricing' + sale_language.split('Market pricing')[1]
-    else:
+    try:
+        splitter = 'Market pricing'
+        sale_language_1   = sale_language.split(splitter)[0]
+        sale_language_2   = splitter + sale_language.split('Market pricing')[1]
+    except:
         sale_language_1   = sale_language
-        sale_language_2   = sale_language
+        sale_language_2   = ''
 
 
 
