@@ -2896,7 +2896,7 @@ def UnemploymentLanguage():
     april_2020_jobs        = april_2020_jobs['Employment'].iloc[-1]
     
     percent_below_pre_pandemic_employment_levels = (1 - (latest_county_employment/feb_2020_jobs) ) *100
-    percent_below_pre_pandemic_employment_levels = "{:,.0f}%".format(percent_below_pre_pandemic_employment_levels)
+    # percent_below_pre_pandemic_employment_levels = "{:,.0f}%".format(percent_below_pre_pandemic_employment_levels)
 
     spring_job_losses_2020     =   feb_2020_jobs - april_2020_jobs
     spring_job_losses_2020_pct =   (spring_job_losses_2020/feb_2020_jobs) * 100
@@ -2932,9 +2932,8 @@ def UnemploymentLanguage():
           up_or_down +
            ' ' +
            one_year_percent_employment_fall +
-           ' on a year-over-year basis but remain ' +
-           percent_below_pre_pandemic_employment_levels +
-           ' below pre-pandemic levels (Feb 2020).'
+           ' on a year-over-year basis '    +
+            "{above_pre_pandemic_emp}".format(above_pre_pandemic_emp = ('and are above pre-pandemic levels (Feb 2020).') if percent_below_pre_pandemic_employment_levels <= 0  else            ('but remain ' + "{:,.0f}%".format(percent_below_pre_pandemic_employment_levels) + ' below pre-pandemic levels (Feb 2020).')) +     
             ' The unemployment rate has '+
             'compressed' +
             ' to the current rate of ' +
