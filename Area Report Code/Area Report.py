@@ -235,7 +235,7 @@ def GetCountyPCI(fips,observation_start):
 def GetCountyResidentPopulation(fips,observation_start):
     print('Getting County Population')
     #Resident Population 
-    resident_population_series_names = pd.read_excel(os.path.join(data_location,'GeoFRED_Resident_Population_by_County_Thousands_of_Persons.xls'),
+    resident_population_series_names = pd.read_excel(os.path.join(data_location,'FRED Series Names','GeoFRED_Resident_Population_by_County_Thousands_of_Persons.xls'),
                 dtype={'Region Code': object
                       })
     resident_population_series_names = resident_population_series_names.loc[resident_population_series_names['Region Code'] == fips]
@@ -460,7 +460,7 @@ def GetCountyIndustryGrowthBreakdown(fips,year,qtr):
 def GetCountyMedianListPrice(fips,observation_start):
     print('Getting County MLP')
     try:
-        mlp_series_names = pd.read_excel(os.path.join(data_location,'GeoFRED_Market_Hotness__Median_Listing_Price_by_County_U.S._Dollars.xls'),
+        mlp_series_names = pd.read_excel(os.path.join(data_location,'FRED Series Names','GeoFRED_Market_Hotness__Median_Listing_Price_by_County_U.S._Dollars.xls'),
                     dtype={'Region Code': object
                         })
         mlp_series_names = mlp_series_names.loc[mlp_series_names['Region Code'] == fips]
@@ -564,7 +564,7 @@ def GetMSAGDP(cbsa,observation_start):
 def GetMSAResidentPopulation(cbsa,observation_start):
     print('Getting MSA Population')
     #Resident Population 
-    resident_population_series_names = pd.read_excel(os.path.join(data_location,'GeoFRED_Resident_Population_by_Metropolitan_Statistical_Area_Thousands_of_Persons.xls'),
+    resident_population_series_names = pd.read_excel(os.path.join(data_location,'FRED Series Names','GeoFRED_Resident_Population_by_Metropolitan_Statistical_Area_Thousands_of_Persons.xls'),
                 dtype={'Region Code': object
                       })
     resident_population_series_names['Region Code'] = resident_population_series_names['Region Code'].astype(str)
@@ -582,7 +582,7 @@ def GetMSAResidentPopulation(cbsa,observation_start):
 def GetMSAPCI(cbsa,observation_start):
     print('Getting MSA PCI')
     #Per Capita Personal Income
-    pci_series_names = pd.read_excel(os.path.join(data_location,'GeoFRED_Per_Capita_Personal_Income_by_Metropolitan_Statistical_Area_Dollars.xls'),
+    pci_series_names = pd.read_excel(os.path.join(data_location,'FRED Series Names','GeoFRED_Per_Capita_Personal_Income_by_Metropolitan_Statistical_Area_Dollars.xls'),
                 dtype={'Region Code': object
                       })
 
