@@ -51,7 +51,7 @@ from wikipedia.wikipedia import random
 #Define file paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
 project_location               =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Projects', 'Research Report Automation Project') 
-main_output_location           =  os.path.join(project_location,'Output','Neighborhood Reports') #testing
+main_output_location           =  os.path.join(project_location,'Output','Neighborhood') #testing
 main_output_location           =  os.path.join(dropbox_root,'Research','Market Analysis','Neighborhood') #production
 data_location                  =  os.path.join(project_location,'Data','Neighborhood Reports Data')
 graphics_location              =  os.path.join(project_location,'Data','Graphics')
