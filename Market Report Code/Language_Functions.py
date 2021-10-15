@@ -564,7 +564,9 @@ def CreateOverviewLanguage(submarket_data_frame,market_data_frame,natioanl_data_
 
     #Section 4.2: Create the conclusion of the overivew language
     overview_conclusion_language = (
-                ' With fundamentals '              +
+                ' '                                +
+                "{with_or_despite}".format(with_or_despite = "Despite" if ((asset_value_change_description == 'compressed' and fundamentals_change == 'improving') or (asset_value_change_description == 'expanded' and fundamentals_change == 'softening') )  else "With") +     
+                ' fundamentals '                   +
                 fundamentals_change                +
                  ' for '                           +
                  sector.lower()                    +
@@ -1749,7 +1751,7 @@ def CreateConstructionLanguage(submarket_data_frame, market_data_frame, natioanl
     #Section 2: Begin making varaiables that are conditional on the variables we have created in section 1
 
     #Section 3: Format variables
-    inventory_growth_pct                        = "{:,.1f}%".format(inventory_growth_pct)
+    # inventory_growth_pct                        = "{:,.1f}%".format(inventory_growth_pct)
 
     
     #Section 4: Put together our variables into sentances and return the language
@@ -1762,8 +1764,9 @@ def CreateConstructionLanguage(submarket_data_frame, market_data_frame, natioanl
                                         unit_or_sqft        +
                                         ' to the '          +
                                          market_or_submarket + 
-                                        ' over that time, expanding inventory by ' +
-                                         inventory_growth_pct +
+                                        ' over that time, '  +
+                                        "{inventory_expand_contract}".format(inventory_expand_contract = "expanding inventory by " if  inventory_growth_pct >= 0  else "but inventory contracted by ") +                                           
+                                         "{:,.1f}%".format(abs(inventory_growth_pct)) +
                                           '. '
                                         )
     #Inactive devlopers
