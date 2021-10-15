@@ -1532,16 +1532,11 @@ def CreateRentLanguage(submarket_data_frame,market_data_frame,natioanl_data_fram
             unit_or_sqft +
             ', the rents in the ' +
             market_or_submarket + 
-            ' are roughly ' +
-            national_rent_discount +
-            ' ' +
-            cheaper_or_more_expensive_national +
-            ' than the ' +
-            market_or_nation +
-            ' where rents sit at ' +
-            national_market_rent +
-             '/' +
-            unit_or_sqft +
+            ' are '             +
+            "{market_nation_rent_relationship}".format(market_nation_rent_relationship = "equal to " if (primary_market_rent == national_market_rent )  else   ('roughly ' + national_rent_discount + ' ' + cheaper_or_more_expensive_national + ' than ')) +
+            'the ' +
+            market_or_nation +            
+            "{national_rent_level}".format(national_rent_level = "" if (primary_market_rent == national_market_rent)  else     (' where rents sit at ' + national_market_rent + '/' + unit_or_sqft )) +
             '. ' +
             'Rents in the ' +
             market_or_submarket +
@@ -1594,17 +1589,14 @@ def CreateRentLanguage(submarket_data_frame,market_data_frame,natioanl_data_fram
             unit_or_sqft +
             ', rents in the ' +
             market_or_submarket + 
-            ' are roughly ' +
-            primary_rent_discount +
-            ' ' +
-            cheaper_or_more_expensive_primary +
-            ' than the ' +
+            ' are '             +
+            "{submarket_market_rent_relationship}".format(submarket_market_rent_relationship = "equal to " if (current_rent == primary_market_rent)  else   ('roughly ' + primary_rent_discount + ' ' + cheaper_or_more_expensive_primary + ' than ')) +
+            'the ' +
             market_or_nation +
-            ' where rents sit at ' +
-            primary_market_rent +
-             '/' +
-            unit_or_sqft +
+            "{market_rent_level}".format(market_rent_level = "" if (current_rent == primary_market_rent)  else     (' where rents sit at ' + primary_market_rent + '/' + unit_or_sqft )) +
             '. ' +
+            
+            
             'Rents in the ' +
             market_or_submarket +
             ' have ' +
