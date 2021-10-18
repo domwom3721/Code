@@ -12,42 +12,68 @@ import shutil
 #Define file location pre paths
 project_location               =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Projects','Research Report Automation Project')  
 costar_data_location           =  os.path.join(project_location,'Data','CoStar Data') 
+sector                         = input('Enter the name of the prop type: Multifamily, Office, Industrial, or Retail')
 
-#Define location of raw CoStar data files
-raw_custom_file_downloads      =  os.path.join(os.environ['USERPROFILE'], 'Downloads','CommercialDataGrid.xlsx') 
-raw_custom_file_downloads_mf   =  os.path.join(os.environ['USERPROFILE'], 'Downloads','MultifamilyDataGrid.xlsx') 
-raw_custom_file                =  os.path.join(costar_data_location,'Raw Data','CommercialDataGrid.xlsx')
-raw_custom_file_mf             =  os.path.join(costar_data_location,'Raw Data','MultifamilyDataGrid.xlsx') 
+#Define the location of the downloaded files and where we want to move them to
+if sector != 'Multifamily':
+    raw_download_data_file            = os.path.join(os.environ['USERPROFILE'], 'Downloads','CommercialDataGrid.xlsx') 
+    raw_main_data_file                = os.path.join(costar_data_location,'Raw Data','CommercialDataGrid.xlsx')
+    
+    raw_download_sales_volume_file    =  os.path.join(os.environ['USERPROFILE'], 'Downloads','Sales Volume & Market Sale Price Per SF.xlsx') 
+    raw_sales_volume_file             =  os.path.join(costar_data_location,'Raw Data','Sales Volume & Market Sale Price Per SF.xlsx')
+    
+    raw_download_market_cap_rate_file = os.path.join(os.environ['USERPROFILE'], 'Downloads','Market Cap Rate.xlsx') 
+    raw_market_cap_rate_file          = os.path.join(costar_data_location,'Raw Data','Market Cap Rate.xlsx')
+
+
+else:
+    raw_download_data_file            = os.path.join(os.environ['USERPROFILE'], 'Downloads','MultifamilyDataGrid.xlsx') 
+    raw_main_data_file                = os.path.join(costar_data_location,'Raw Data','MultifamilyDataGrid.xlsx') 
+    
+    raw_download_sales_volume_file    = os.path.join(os.environ['USERPROFILE'], 'Downloads','Sales Volume & Market Sale Price Per Unit.xlsx') 
+    raw_sales_volume_file             = os.path.join(costar_data_location,'Raw Data','Sales Volume & Market Sale Price Per Unit.xlsx')
+    
+    raw_download_market_cap_rate_file = os.path.join(os.environ['USERPROFILE'], 'Downloads','Market Cap Rate.xlsx') 
+    raw_market_cap_rate_file          = os.path.join(costar_data_location,'Raw Data','Market Cap Rate.xlsx')
 
 clean_custom_file              =  os.path.join(costar_data_location,'Clean Data','Clean Custom CoStar Data.xlsx') 
 
+
+
 #move exported data from downloads fodler into data folder
-if os.path.exists(raw_custom_file_downloads):
-    shutil.move(raw_custom_file_downloads, raw_custom_file)
-elif os.path.exists(raw_custom_file_downloads_mf):
-    shutil.move(raw_custom_file_downloads_mf, raw_custom_file_mf)
+if os.path.exists(raw_download_data_file):
+    shutil.move(raw_download_data_file,raw_main_data_file )
 
-sector                      = input('Enter the name of the prop type: Multifamily, Office, Industrial, or Retail')
-# sector                         = 'Multifamily'
+if os.path.exists(raw_download_sales_volume_file):
+    shutil.move(raw_download_sales_volume_file, raw_sales_volume_file)
 
-if os.path.exists(raw_custom_file_mf) and sector == 'Multifamily':
-    df_custom  = pd.read_excel(raw_custom_file_mf,
-                    dtype={'Sales Volume Transactions': object
-                        }      ) 
+if os.path.exists(raw_download_market_cap_rate_file):
+    shutil.move(raw_download_market_cap_rate_file,raw_market_cap_rate_file )
 
-elif os.path.exists(raw_custom_file) and sector != 'Multifamily':
-    #Import raw CoStar data as pandas data frames
-    df_custom  = pd.read_excel(raw_custom_file,
-                    dtype={'Sales Volume Transactions': object
-                        }      ) 
-    
+#Now our downloaded data files are in the raw data folder, we will merge them together into a single clean file we export
+df_custom                            = pd.read_excel(raw_main_data_file)
+df_custom_sales_volume               = pd.read_excel(raw_sales_volume_file)
+df_custom_market_cap_rate            = pd.read_excel(raw_market_cap_rate_file)
 
+#Start by changing market cap rate variable name
+df_custom_market_cap_rate =  df_custom_market_cap_rate.rename(columns={"Current Search": "Market Cap Rate"})
+
+#Remove white space from period variable name in main custom dataframe
+df_custom =  df_custom.rename(columns={"  Period": "Period"})
+
+#Merge in the cap rate and sales volume dataframe with the regular custom dataframe
+df_custom                 =  pd.merge(df_custom, df_custom_sales_volume, on=['Period'],how = 'left') 
+df_custom                 =  pd.merge(df_custom, df_custom_market_cap_rate, on=['Period'],how = 'left') 
+
+#Sort oldest to newest
+df_custom                 =  df_custom.sort_values(by=['Period'])
+print(df_custom)
+
+#Get input from the user
 df_custom['Geography Type'] = 'Metro'
 df_custom['Geography Name'] = input('Enter the name of the market with the following format: Abilene - TX')
-# df_custom['Geography Name'] = 'Adams County - IL'
 
-# print(df_custom)
-	
+
 
 def StripVarName(df):
     df = df.rename(columns=lambda x: x.strip())
@@ -205,7 +231,6 @@ def MainClean(df,sector): #Calls all cleaning functions and returns cleaned data
 
 
 #Data cleaning
-
 df_custom =  MainClean(df_custom,sector)
 # print(df_custom)
 
