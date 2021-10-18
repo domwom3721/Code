@@ -69,6 +69,7 @@ def PullCoStarWriteUp(section_names,writeup_directory):
                             text = text.replace('5-Star','class A')
                             text = text.replace(' 3 Star ',' class C ')
                             text = text.replace('3 Star','class C')
+                            text = text.replace('3-Star','class C')
                             text = text.replace(' 2 Star ',' class C ')
                             text = text.replace('2 Stars','class C')
                             text = text.replace('2 Star','class C')
@@ -2468,7 +2469,7 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
                             
     outlook_conclusion_language =  (
                             'Looking ahead to the ' +
-                            'final quarter of 2021' + 
+                            'near-term' + 
                             ', it is likely that demand will ' +
                             demand_future_path +
                             ' with rents ' +

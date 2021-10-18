@@ -491,7 +491,7 @@ def MakeReportTitle():
     # title.paragraph_style.widow_control = True
     title_style = title.style
     title_style.font.name = "Avenir Next LT Pro Light"
-    title_style.font.size = Pt(18)
+    title_style.font.size = Pt(14)
     title_style.font.bold = False
     title_style.font.color.rgb = RGBColor.from_string('3F65AB')
     title_style.element.xml
@@ -601,7 +601,7 @@ def OverviewSection():
 
 
     #Preamble to historical performance table
-    if df_market_cut.equals(df_primary_market):
+    if market == primary_market:
         market_or_submarket = 'Market'
     else:
         market_or_submarket = 'Submarket'
