@@ -2691,21 +2691,6 @@ def OverviewLanguage():
     jobs_recovered              = "{:,}".format(jobs_recovered)
     spring_job_losses_2020_pct  = "{:,.1f}%".format(spring_job_losses_2020_pct)
     
-    #Determine if state was covid hotspot or not and how harsh their lockdown was
-    try:
-        state_lockdown_df           =  pd.read_csv(os.path.join(data_location,'US States - Covid Hotpots and Restriction Harshness Classification.csv'),)
-        state_lockdown_df           = state_lockdown_df.loc[state_lockdown_df['State Code'] == state]
-        assert len(state_lockdown_df) == 1
-        covid_hotspot_was_or_wasnot = state_lockdown_df['HotSpot'].iloc[-1]
-        covid_lockdown_conjunction  = state_lockdown_df['Conjunction'].iloc[-1] 
-        covid_lockdown_description  = state_lockdown_df['Lockdown'].iloc[-1]
-
-    except Exception as e:
-        print(e)
-        covid_hotspot_was_or_wasnot = '[was/was not]'
-        covid_lockdown_conjunction  = '[so/but]'
-        covid_lockdown_description  = '[relatively harsh/relaxed]'
-
     #If in a metro area refer to the effect on that economy, else use the county name
     if cbsa != '':
         greater_area = 'Greater ' + cbsa_name + ' area economy'
