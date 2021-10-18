@@ -52,6 +52,7 @@ def PullCoStarWriteUp(section_names,writeup_directory):
                             text = text.replace(' 3, & 4 & 5 Star',' class A, B, and C')
                             text = text.replace('1 & 2 and 3 Star','class C') 
                             text = text.replace(' 1, & 2 & 3 Star',' class C')
+                            text = text.replace(' 1, 2, and 3 Star',' class C')
                             text = text.replace(' 4 & 5 Star ',' class A and B ')
                             text = text.replace(' 4 and 5-star  ',' class A and B ')
                             text = text.replace(' 4 and 5 Star ',' class A and B ')
