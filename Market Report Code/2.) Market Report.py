@@ -1180,8 +1180,6 @@ def CreateMarketReport():
 
         #A dataframe that tracks all submarkets in a market at the latest quarter
         df_submarkets     = df.loc[(df['Geography Name'].isin(submarkets) == True) & (df['Period'] == latest_quarter)].copy()
-        if len(df_submarkets) > 0:
-            assert df_submarkets['Geography Type'].all() == 'Submarket'
         assert len(df_market_cut) > 0
         assert len(df_primary_market) > 0
         assert len(df_nation) > 0
