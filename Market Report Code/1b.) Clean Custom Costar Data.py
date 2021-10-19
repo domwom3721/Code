@@ -307,8 +307,8 @@ if sector == 'Multifamily':
     df_custom['YoY Asset Value/Unit Growth']        = round( (((df_custom['Asset Value/Unit']  / df_custom['4 Quarters Ago Asset Value/Unit'])   - 1) * 100),                    1)
 
     #Market Rent
-    df_custom['Previous Quarter Market Effective Rent/Unit'] = df.groupby('Geography Name')['Market Effective Rent/Unit'].shift(1)
-    df_custom['4 Quarters Ago Market Effective Rent/Unit']   = df.groupby('Geography Name')['Market Effective Rent/Unit'].shift(4)
+    df_custom['Previous Quarter Market Effective Rent/Unit'] = df_custom.groupby('Geography Name')['Market Effective Rent/Unit'].shift(1)
+    df_custom['4 Quarters Ago Market Effective Rent/Unit']   = df_custom.groupby('Geography Name')['Market Effective Rent/Unit'].shift(4)
 
     df_custom['QoQ Market Effective Rent/Unit Growth']        = round( (((df_custom['Market Effective Rent/Unit']   / df_custom['Previous Quarter Market Effective Rent/Unit']) - 1) * 100),                    1)
     df_custom['YoY Market Effective Rent/Unit Growth']        = round( (((df_custom['Market Effective Rent/Unit']  / df_custom['4 Quarters Ago Market Effective Rent/Unit'])   - 1) * 100),                    1)
@@ -317,8 +317,8 @@ if sector == 'Multifamily':
     df_custom['Previous Quarter Absorption Units'] = df_custom.groupby('Geography Name')['Absorption Units'].shift(1)
     df_custom['4 Quarters Ago Absorption Units']   = df_custom.groupby('Geography Name')['Absorption Units'].shift(4)
 
-    df_custom['QoQ Absorption Units Growth']        = round((df_custom['Absorption Units']   - df['Previous Quarter Absorption Units'])    / abs(df_custom['Previous Quarter Absorption Units'])  * 100,1)              
-    df_custom['YoY Absorption Units Growth']        = round((df_custom['Absorption Units']   - df['4 Quarters Ago Absorption Units'])      /  abs(df_custom['4 Quarters Ago Absorption Units'])   * 100 ,1)           
+    df_custom['QoQ Absorption Units Growth']        = round((df_custom['Absorption Units']   - df_custom['Previous Quarter Absorption Units'])    / abs(df_custom['Previous Quarter Absorption Units'])  * 100,1)              
+    df_custom['YoY Absorption Units Growth']        = round((df_custom['Absorption Units']   - df_custom['4 Quarters Ago Absorption Units'])      /  abs(df_custom['4 Quarters Ago Absorption Units'])   * 100 ,1)           
         
 
 else:            
