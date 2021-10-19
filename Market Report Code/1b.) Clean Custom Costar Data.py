@@ -24,8 +24,8 @@ elif sector == 'i':
 elif sector == 'r':
     sector = 'Retail'
 
-#geography_name                 = input('Enter the name of the market with the following format: Abilene - TX')
-geography_name                 = 'Example - NY'
+geography_name                 = input('Enter the name of the market with the following format: Abilene - TX')
+# geography_name                 = 'Example - NY'
 
 
 #Define file location pre paths
