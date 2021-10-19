@@ -122,6 +122,7 @@ while df_custom['Period'].iloc[-1] != latest_period:
 df_custom['Geography Type'] = 'Metro'
 df_custom['Geography Name'] = geography_name
 
+
 def StripVarName(df):
     df = df.rename(columns=lambda x: x.strip())
     return(df)
@@ -158,6 +159,10 @@ def CleanNetAbsorption(df,sector):
         df.loc[df['Net Absorption SF'] == '-', 'Net Absorption SF'] = 0
         df['Net Absorption SF']        = pd.to_numeric(df['Net Absorption SF'])
         return(df)
+    else:
+        df.loc[df['Absorption Units'] == '-', 'Absorption Units'] = 0
+        df['Absorption Units']        = pd.to_numeric(df['Absorption Units'])
+        return(df)
     
 def DestringVariablesConvertToNumeric(df,sector):
 
@@ -179,7 +184,6 @@ def DestringVariablesConvertToNumeric(df,sector):
                 'Market Effective Rent Growth',
                 'Under Construction Units',
                 'Inventory Units',
-                'Absorption Units',
                 'Absorption %',
                 'Sales Volume Transactions'
                 ]
@@ -215,6 +219,7 @@ def DestringVariablesConvertToNumeric(df,sector):
                 df[var] = df[var].str.replace(',', '', regex=False)
                 df[var] = df[var].str.replace('%', '', regex=False)
                 df[var] = df[var].str.replace('-', '', regex=False)
+                '-'
                 df[var] = pd.to_numeric(df[var])
         except Exception as e:
             pass
@@ -252,8 +257,15 @@ def MainClean(df,sector): #Calls all cleaning functions and returns cleaned data
     df = KeepLast10Years(df,['Geography Name'])
     df = CreateYearAndQuarterVariables(df)
     df['Sales Volume Transactions']  = 0
+
+    
+
+
+
     if sector != 'Multifamily':
-        df  = df.rename(columns={'Vacant Percent % Total': "Vacancy Rate",'Total Available Percent % Total':'Availability Rate','Sales Volume':'Total Sales Volume',
+        df  = df.rename(columns={'Vacant Percent % Total': "Vacancy Rate",
+                                'Total Available Percent % Total':'Availability Rate',
+                                'Sales Volume':'Total Sales Volume',
                                 'Net Absorption SF Total':'Net Absorption SF',
                                 'Rent/SF':'Market Rent/SF',
                                 'Price/SF': 'Asset Value',
@@ -269,8 +281,9 @@ def MainClean(df,sector): #Calls all cleaning functions and returns cleaned data
         
         df['Asset Value'] = df['Asset Value'] * df['Inventory Units']
 
+
     df = DestringVariablesConvertToNumeric(df,sector)
-    # df = CleanNetAbsorption(df,sector)
+    df = CleanNetAbsorption(df,sector)
     df = ConvertPercenttoPercentagePoints(df,sector)
     df = FillBlanksWithZero(df,sector)
     return(df)
@@ -279,6 +292,7 @@ def MainClean(df,sector): #Calls all cleaning functions and returns cleaned data
 #Data cleaning
 df_custom =  MainClean(df_custom,sector)
 df_custom['Geography Name'] = df_custom['Geography Name'].str.replace('New York City', 'Manhattan', regex=False)
+
 
 #Clean the Sqft and Unit variables seperately
 if sector == 'Multifamily':
@@ -292,7 +306,8 @@ if sector == 'Multifamily':
 
     
     #Create variable for inventory growth rate
-    df_custom['Inventory Growth'] = round(((df_custom['Inventory Units'] / df_custom['Lagged Inventory Units']) - 1)  * 100,2)
+    df_custom['Inventory Units Growth'] = df_custom['Inventory Units'] - df['Lagged Inventory Units']
+    df_custom['Inventory Growth']       = round(((df_custom['Inventory Units'] / df_custom['Lagged Inventory Units']) - 1)  * 100,2)
 
     #Create variable for percent under construction
     df_custom['Under Construction %'] = (df_custom['Under Construction Units']/df_custom['Inventory Units'] ) *100
@@ -352,7 +367,8 @@ else:
     df_custom['YoY Rent Growth']        = round( (((df_custom['Market Rent/SF']  / df_custom['4 Quarters Ago Market Rent/SF'])   - 1) * 100),                    1)
 
     #Create variable for inventory growth rate
-    df_custom['Inventory Growth'] = round(((df_custom['Inventory SF'] / df_custom['Lagged Inventory SF']) - 1)  * 100,2)
+    df_custom['Inventory SF Growth'] = df_custom['Inventory SF'] - df_custom['Lagged Inventory SF']  
+    df_custom['Inventory Growth']    = round(((df_custom['Inventory SF'] / df_custom['Lagged Inventory SF']) - 1)  * 100,2)
 
     #Create variable for percent under construction
     df_custom['Under Construction %'] = (df_custom['Under Construction SF']/df_custom['Inventory SF'] ) *100
@@ -398,7 +414,6 @@ df_custom['YoY Transactions Growth']         = round(  (((df_custom['Sales Volum
 
 
 #market cap rate
-df_custom['Market Cap Rate']                 = 0
 df_custom['Previous Quarter Market Cap Rate'] = df_custom.groupby('Geography Name')['Market Cap Rate'].shift(1)
 df_custom['4 Quarters Ago Market Cap Rate']   = df_custom.groupby('Geography Name')['Market Cap Rate'].shift(4)
 
