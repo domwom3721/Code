@@ -9,8 +9,22 @@ import numpy as np
 import shutil
 
 #Get user input for sector and geography
-sector                         = input('Enter the name of the prop type: Multifamily, Office, Industrial, or Retail')
-# geography_name                 = input('Enter the name of the market with the following format: Abilene - TX')
+sector                         = input('Enter the name of the prop type: Multifamily, Office, Industrial, or Retail (m/o/r/i)')
+
+while (sector != 'm' ) and (sector != 'i' ) and (sector != 'o' )  and (sector != 'r' ):
+    print('Not an accepted sector, try again')
+    sector                         = input('Enter the name of the prop type: Multifamily, Office, Industrial, or Retail (m/o/r/i')
+
+if sector == 'm':
+    sector = 'Multifamily'
+elif sector == 'o':
+    sector = 'Office'
+elif sector == 'i':
+    sector = 'Industrial'
+elif sector == 'r':
+    sector = 'Retail'
+
+#geography_name                 = input('Enter the name of the market with the following format: Abilene - TX')
 geography_name                 = 'Example - NY'
 
 
@@ -21,29 +35,35 @@ costar_data_location           =  os.path.join(project_location,'Data','CoStar D
 #Define the location of the downloaded files and where we want to move them to
 if sector != 'Multifamily':
     raw_download_data_file            = os.path.join(os.environ['USERPROFILE'], 'Downloads','CommercialDataGrid.xlsx') 
-    raw_main_data_file                = os.path.join(costar_data_location,'Raw Data','CommercialDataGrid.xlsx')
+    raw_main_data_file                = os.path.join(costar_data_location,'Raw Data','Custom County Data','CommercialDataGrid.xlsx')
     
     raw_download_sales_volume_file    =  os.path.join(os.environ['USERPROFILE'], 'Downloads','Sales Volume & Market Sale Price Per SF.xlsx') 
-    raw_sales_volume_file             =  os.path.join(costar_data_location,'Raw Data','Sales Volume & Market Sale Price Per SF.xlsx')
+    raw_sales_volume_file             =  os.path.join(costar_data_location,'Raw Data','Custom County Data','Sales Volume & Market Sale Price Per SF.xlsx')
     
     raw_download_market_cap_rate_file = os.path.join(os.environ['USERPROFILE'], 'Downloads','Market Cap Rate.xlsx') 
-    raw_market_cap_rate_file          = os.path.join(costar_data_location,'Raw Data','Market Cap Rate.xlsx')
+    raw_market_cap_rate_file          = os.path.join(costar_data_location,'Raw Data','Custom County Data','Market Cap Rate.xlsx')
 
     raw_download_market_rent_file     = os.path.join(os.environ['USERPROFILE'], 'Downloads','Market Rent Per SF.xlsx') 
-    raw_market_rent_file              = os.path.join(costar_data_location,'Raw Data','Market Rent Per SF.xlsx')
-
+    raw_market_rent_file              = os.path.join(costar_data_location,'Raw Data','Custom County Data','Market Rent Per SF.xlsx')
+    
+    clean_main_data_file              = os.path.join(costar_data_location,'Clean Data','retail_clean.csv')
 
 else:
     raw_download_data_file            = os.path.join(os.environ['USERPROFILE'], 'Downloads','MultifamilyDataGrid.xlsx') 
-    raw_main_data_file                = os.path.join(costar_data_location,'Raw Data','MultifamilyDataGrid.xlsx') 
+    raw_main_data_file                = os.path.join(costar_data_location,'Raw Data','Custom County Data','MultifamilyDataGrid.xlsx') 
     
     raw_download_sales_volume_file    = os.path.join(os.environ['USERPROFILE'], 'Downloads','Sales Volume & Market Sale Price Per Unit.xlsx') 
-    raw_sales_volume_file             = os.path.join(costar_data_location,'Raw Data','Sales Volume & Market Sale Price Per Unit.xlsx')
+    raw_sales_volume_file             = os.path.join(costar_data_location,'Raw Data','Custom County Data','Sales Volume & Market Sale Price Per Unit.xlsx')
     
     raw_download_market_cap_rate_file = os.path.join(os.environ['USERPROFILE'], 'Downloads','Market Cap Rate.xlsx') 
-    raw_market_cap_rate_file          = os.path.join(costar_data_location,'Raw Data','Market Cap Rate.xlsx')
+    raw_market_cap_rate_file          = os.path.join(costar_data_location,'Raw Data','Custom County Data','Market Cap Rate.xlsx')
 
-clean_custom_file              =  os.path.join(costar_data_location,'Clean Data','Clean Custom CoStar Data.xlsx') 
+    raw_download_market_rent_file     = os.path.join(os.environ['USERPROFILE'], 'Downloads','Market Rent Per SF.xlsx') 
+    raw_market_rent_file              = os.path.join(costar_data_location,'Raw Data','Custom County Data','Market Rent Per SF.xlsx')
+    
+    clean_main_data_file              = os.path.join(costar_data_location,'Clean Data','mf_clean.csv')
+
+clean_custom_file                      =  os.path.join(costar_data_location,'Clean Data','Clean Custom CoStar Data.xlsx') 
 
 
 
@@ -57,13 +77,17 @@ if os.path.exists(raw_download_sales_volume_file):
 if os.path.exists(raw_download_market_cap_rate_file):
     shutil.move(raw_download_market_cap_rate_file,raw_market_cap_rate_file )
 
-if os.path.exists(raw_download_market_rent_file):
+if os.path.exists(raw_download_market_rent_file) and (sector != 'Multifamily'):
     shutil.move(raw_download_market_rent_file,raw_market_rent_file )
 
 #Now our downloaded data files are in the raw data folder, we will merge them together into a single clean file we export
 df_custom                            = pd.read_excel(raw_main_data_file)
 df_custom_sales_volume               = pd.read_excel(raw_sales_volume_file)
 df_custom_market_cap_rate            = pd.read_excel(raw_market_cap_rate_file)
+df_clean_file_for_last_period        = pd.read_csv(clean_main_data_file)
+
+#Get the latest period
+latest_period = df_clean_file_for_last_period['Period'].iloc[-1]
 
 #For non MF, rename the rent variable
 if sector != 'Multifamily':
@@ -88,13 +112,15 @@ if sector != 'Multifamily':
 
 #Sort oldest to newest
 df_custom                 =  df_custom.sort_values(by=['Period'])
-print(df_custom)
 
-#Get input from the user
+#Restrict to latest quarter we are doing reports on 
+while df_custom['Period'].iloc[-1] != latest_period:
+    df_custom = df_custom[0:len(df_custom) -1]
+
+
+
 df_custom['Geography Type'] = 'Metro'
 df_custom['Geography Name'] = geography_name
-
-
 
 def StripVarName(df):
     df = df.rename(columns=lambda x: x.strip())
@@ -250,22 +276,8 @@ def MainClean(df,sector): #Calls all cleaning functions and returns cleaned data
     return(df)
 
 
-
 #Data cleaning
 df_custom =  MainClean(df_custom,sector)
-# print(df_custom)
-
-
-
-
-
-
-
-
-
-#Loop through the 4 dataframes: create variables we will use in our report/figures 
-# for df_custom in [df_custom_custom]:
-
 df_custom['Geography Name'] = df_custom['Geography Name'].str.replace('New York City', 'Manhattan', regex=False)
 
 #Clean the Sqft and Unit variables seperately
@@ -313,101 +325,93 @@ else:
     #Create laggd variables
     df_custom['Lagged Inventory SF']       = df_custom.groupby('Geography Name')['Inventory SF'].shift(1)
 
-
     #Create variable for absorption rate 
     df_custom['Net Absorption SF']         = pd.to_numeric(df_custom['Net Absorption SF'])
-    df_custom['Absorption Rate']           = round((df_custom['Net Absorption SF'] / df['Inventory SF']) * 100,2 )
+    df_custom['Absorption Rate']           = round((df_custom['Net Absorption SF'] / df_custom['Inventory SF']) * 100,2 )
 
-            
     #Absorption SF
     df_custom['Previous Quarter Net Absorption SF'] = df_custom.groupby('Geography Name')['Net Absorption SF'].shift(1)
     df_custom['4 Quarters Ago Net Absorption SF']   = df_custom.groupby('Geography Name')['Net Absorption SF'].shift(4)
 
     df_custom['QoQ Net Absorption SF Growth']        = round((df_custom['Net Absorption SF']   - df_custom['Previous Quarter Net Absorption SF'])    / abs(df_custom['Previous Quarter Net Absorption SF'])  * 100,1)              
-    df_custom['YoY Net Absorption SF Growth']        = round((df_custom['Net Absorption SF']   - df_custom['4 Quarters Ago Net Absorption SF'])      /  abs(df_custom['4 Quarters Ago Net Absorption SF'])   * 100 ,1)           
-        
+    df_custom['YoY Net Absorption SF Growth']        = round((df_custom['Net Absorption SF']   - df_custom['4 Quarters Ago Net Absorption SF'])      /  abs(df_custom['4 Quarters Ago Net Absorption SF'])   * 100 ,1)                 
 
     #Availability Rate 
-    df['Previous Quarter Availability Rate'] = df.groupby('Geography Name')['Availability Rate'].shift(1)
-    df['4 Quarters Ago Availability Rate']   = df.groupby('Geography Name')['Availability Rate'].shift(4)
+    df_custom['Previous Quarter Availability Rate'] = df_custom.groupby('Geography Name')['Availability Rate'].shift(1)
+    df_custom['4 Quarters Ago Availability Rate']   = df_custom.groupby('Geography Name')['Availability Rate'].shift(4)
 
-    df['QoQ Availability Rate Growth']        = round((df['Availability Rate'] - df['Previous Quarter Availability Rate']) * 100,0)
-    df['YoY Availability Rate Growth']        = round((df['Availability Rate'] - df['4 Quarters Ago Availability Rate'])   * 100,0)
-
-    df['Availability Rate']                   = round(df['Availability Rate'],1)
-
-
+    df_custom['QoQ Availability Rate Growth']        = round((df_custom['Availability Rate'] - df_custom['Previous Quarter Availability Rate']) * 100,0)
+    df_custom['YoY Availability Rate Growth']        = round((df_custom['Availability Rate'] - df_custom['4 Quarters Ago Availability Rate'])   * 100,0)
+    df_custom['Availability Rate']                   = round(df_custom['Availability Rate'],1)
 
     #Market Rent
-    df['Previous Quarter Market Rent/SF'] = df.groupby('Geography Name')['Market Rent/SF'].shift(1)
-    df['4 Quarters Ago Market Rent/SF']   = df.groupby('Geography Name')['Market Rent/SF'].shift(4)
+    df_custom['Previous Quarter Market Rent/SF'] = df_custom.groupby('Geography Name')['Market Rent/SF'].shift(1)
+    df_custom['4 Quarters Ago Market Rent/SF']   = df_custom.groupby('Geography Name')['Market Rent/SF'].shift(4)
 
-    df['QoQ Rent Growth']        = round( (((df['Market Rent/SF']  / df['Previous Quarter Market Rent/SF']) - 1) * 100),                    1)
-    df['YoY Rent Growth']        = round( (((df['Market Rent/SF']  / df['4 Quarters Ago Market Rent/SF'])   - 1) * 100),                    1)
+    df_custom['QoQ Rent Growth']        = round( (((df_custom['Market Rent/SF']  / df_custom['Previous Quarter Market Rent/SF']) - 1) * 100),                    1)
+    df_custom['YoY Rent Growth']        = round( (((df_custom['Market Rent/SF']  / df_custom['4 Quarters Ago Market Rent/SF'])   - 1) * 100),                    1)
 
-    
     #Create variable for inventory growth rate
-    df['Inventory Growth'] = round(((df['Inventory SF'] / df['Lagged Inventory SF']) - 1)  * 100,2)
-
+    df_custom['Inventory Growth'] = round(((df_custom['Inventory SF'] / df_custom['Lagged Inventory SF']) - 1)  * 100,2)
 
     #Create variable for percent under construction
-    df['Under Construction %'] = (df['Under Construction SF']/df['Inventory SF'] ) *100
+    df_custom['Under Construction %'] = (df_custom['Under Construction SF']/df_custom['Inventory SF'] ) *100
 
     #Asset Value per sqft
-    df['Asset Value/Sqft']     = round((df['Asset Value']/df['Inventory SF']),2)
+    df_custom['Asset Value/Sqft']     = round((df_custom['Asset Value']/df_custom['Inventory SF']),2)
 
-    df['Previous Quarter Asset Value/Sqft'] = df.groupby('Geography Name')['Asset Value/Sqft'].shift(1)
-    df['4 Quarters Ago Asset Value/Sqft']   = df.groupby('Geography Name')['Asset Value/Sqft'].shift(4)
+    df_custom['Previous Quarter Asset Value/Sqft'] = df_custom.groupby('Geography Name')['Asset Value/Sqft'].shift(1)
+    df_custom['4 Quarters Ago Asset Value/Sqft']   = df_custom.groupby('Geography Name')['Asset Value/Sqft'].shift(4)
 
-    df['QoQ Asset Value/Sqft Growth']        = round( (((df['Asset Value/Sqft']  / df['Previous Quarter Asset Value/Sqft']) - 1) * 100),                    1)
-    df['YoY Asset Value/Sqft Growth']        = round( (((df['Asset Value/Sqft']  / df['4 Quarters Ago Asset Value/Sqft'])   - 1) * 100),                    1)
+    df_custom['QoQ Asset Value/Sqft Growth']        = round( (((df_custom['Asset Value/Sqft']  / df_custom['Previous Quarter Asset Value/Sqft']) - 1) * 100),                    1)
+    df_custom['YoY Asset Value/Sqft Growth']        = round( (((df_custom['Asset Value/Sqft']  / df_custom['4 Quarters Ago Asset Value/Sqft'])   - 1) * 100),                    1)
 
 
 
 #Making Variables for all sectors
-df['Previous Quarter Vacancy'] = df.groupby('Geography Name')['Vacancy Rate'].shift(1)
-df['4 Quarters Ago Vacancy']   = df.groupby('Geography Name')['Vacancy Rate'].shift(4)
+df_custom['Previous Quarter Vacancy'] = df_custom.groupby('Geography Name')['Vacancy Rate'].shift(1)
+df_custom['4 Quarters Ago Vacancy']   = df_custom.groupby('Geography Name')['Vacancy Rate'].shift(4)
 
-df['QoQ Vacancy Growth']        = round((df['Vacancy Rate'] - df['Previous Quarter Vacancy']) * 100,0)
-df['YoY Vacancy Growth']        = round((df['Vacancy Rate'] - df['4 Quarters Ago Vacancy'])   * 100,0)
+df_custom['QoQ Vacancy Growth']        = round((df_custom['Vacancy Rate'] - df_custom['Previous Quarter Vacancy']) * 100,0)
+df_custom['YoY Vacancy Growth']        = round((df_custom['Vacancy Rate'] - df_custom['4 Quarters Ago Vacancy'])   * 100,0)
 
 #Absorption
-df['Previous Quarter Absorption Rate'] =  df.groupby('Geography Name')['Absorption Rate'].shift(1)
-df['4 Quarters Ago Absorption Rate']   =  df.groupby('Geography Name')['Absorption Rate'].shift(4)
+df_custom['Previous Quarter Absorption Rate'] =  df_custom.groupby('Geography Name')['Absorption Rate'].shift(1)
+df_custom['4 Quarters Ago Absorption Rate']   =  df_custom.groupby('Geography Name')['Absorption Rate'].shift(4)
 
-df['QoQ Absorption Growth']        = round((df['Absorption Rate'] - df['Previous Quarter Absorption Rate']) * 100,0)
-df['YoY Absorption Growth']        = round((df['Absorption Rate'] - df['4 Quarters Ago Absorption Rate'])   * 100,0)
+df_custom['QoQ Absorption Growth']        = round((df_custom['Absorption Rate'] - df_custom['Previous Quarter Absorption Rate']) * 100,0)
+df_custom['YoY Absorption Growth']        = round((df_custom['Absorption Rate'] - df_custom['4 Quarters Ago Absorption Rate'])   * 100,0)
 
 #Sales Volume
-df['Previous Quarter Total Sales Volume'] = df.groupby('Geography Name')['Total Sales Volume'].shift(1)
-df['4 Quarters Ago Total Sales Volume']   = df.groupby('Geography Name')['Total Sales Volume'].shift(4)
+df_custom['Previous Quarter Total Sales Volume'] = df_custom.groupby('Geography Name')['Total Sales Volume'].shift(1)
+df_custom['4 Quarters Ago Total Sales Volume']   = df_custom.groupby('Geography Name')['Total Sales Volume'].shift(4)
 
-df['QoQ Total Sales Volume Growth']        = round( (((df['Total Sales Volume']  / df['Previous Quarter Total Sales Volume']) - 1) * 100),                    0)
-df['YoY Total Sales Volume Growth']        = round( (((df['Total Sales Volume']  / df['4 Quarters Ago Total Sales Volume'])   - 1) * 100),                    0)
+df_custom['QoQ Total Sales Volume Growth']        = round( (((df_custom['Total Sales Volume']  / df_custom['Previous Quarter Total Sales Volume']) - 1) * 100),                    0)
+df_custom['YoY Total Sales Volume Growth']        = round( (((df_custom['Total Sales Volume']  / df_custom['4 Quarters Ago Total Sales Volume'])   - 1) * 100),                    0)
 
 #Transactions
-df['Previous Quarter Sales Volume Transactions'] = df.groupby('Geography Name')['Sales Volume Transactions'].shift(1)
-df['4 Quarters Ago Sales Volume Transactions']   = df.groupby('Geography Name')['Sales Volume Transactions'].shift(4)
+df_custom['Previous Quarter Sales Volume Transactions'] = df_custom.groupby('Geography Name')['Sales Volume Transactions'].shift(1)
+df_custom['4 Quarters Ago Sales Volume Transactions']   = df_custom.groupby('Geography Name')['Sales Volume Transactions'].shift(4)
 
-df['QoQ Transactions Growth']         = round(  (((df['Sales Volume Transactions']/df['Previous Quarter Sales Volume Transactions']) - 1)  * 100)            ,0)
-df['YoY Transactions Growth']         = round(  (((df['Sales Volume Transactions']/df['4 Quarters Ago Sales Volume Transactions'])   - 1)  * 100)            ,0)
+df_custom['QoQ Transactions Growth']         = round(  (((df_custom['Sales Volume Transactions']/df_custom['Previous Quarter Sales Volume Transactions']) - 1)  * 100)            ,0)
+df_custom['YoY Transactions Growth']         = round(  (((df_custom['Sales Volume Transactions']/df_custom['4 Quarters Ago Sales Volume Transactions'])   - 1)  * 100)            ,0)
 
 
 #market cap rate
-df['Market Cap Rate']                 = 0
-df['Previous Quarter Market Cap Rate'] = df.groupby('Geography Name')['Market Cap Rate'].shift(1)
-df['4 Quarters Ago Market Cap Rate']   = df.groupby('Geography Name')['Market Cap Rate'].shift(4)
+df_custom['Market Cap Rate']                 = 0
+df_custom['Previous Quarter Market Cap Rate'] = df_custom.groupby('Geography Name')['Market Cap Rate'].shift(1)
+df_custom['4 Quarters Ago Market Cap Rate']   = df_custom.groupby('Geography Name')['Market Cap Rate'].shift(4)
 
-df['QoQ Market Cap Rate Growth']        = round((df['Market Cap Rate'] - df['Previous Quarter Market Cap Rate']) * 100,0)
-df['YoY Market Cap Rate Growth']        = round((df['Market Cap Rate'] - df['4 Quarters Ago Market Cap Rate'])   * 100,0)
+df_custom['QoQ Market Cap Rate Growth']        = round((df_custom['Market Cap Rate'] - df_custom['Previous Quarter Market Cap Rate']) * 100,0)
+df_custom['YoY Market Cap Rate Growth']        = round((df_custom['Market Cap Rate'] - df_custom['4 Quarters Ago Market Cap Rate'])   * 100,0)
 
 # #Round  3 percentage variables we report in overview table
-# df['Market Cap Rate']            = round(df['Market Cap Rate'],1)
-df['Vacancy Rate']               = round(df['Vacancy Rate'],1)
-df['Absorption Rate']            = round(df['Absorption Rate'],1)
+# df_custom['Market Cap Rate']            = round(df_custom['Market Cap Rate'],1)
+df_custom['Vacancy Rate']               = round(df_custom['Vacancy Rate'],1)
+df_custom['Absorption Rate']            = round(df_custom['Absorption Rate'],1)
 
 
-
+print(df_custom)
 df_custom.to_excel(clean_custom_file)
 
 
