@@ -994,6 +994,9 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
             #12m net absorption flat over past year
             elif leasing_change == 0:
                 leasing_activity_intro_clause = 'Despite no change in demand, with rising inventory levels,'
+
+            else:
+                leasing_activity_intro_clause = ''
                 
         #Vacancy decreased
         elif yoy_submarket_vacancy_growth < 0:
@@ -1008,6 +1011,9 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
             #12m net absorption flat over past year
             elif leasing_change == 0:
                 leasing_activity_intro_clause = 'Despite no change in demand and rising inventory levels,'
+            
+            else:
+                leasing_activity_intro_clause = ''
 
         #Vacancy flat
         elif yoy_submarket_vacancy_growth == 0:
@@ -1023,6 +1029,12 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
             #12m net absorption flat over past year
             elif leasing_change == 0:
                 leasing_activity_intro_clause = 'Despite rising inventory levels, with no change in demand,'
+            
+            else:
+                leasing_activity_intro_clause = ''
+
+        else:
+            leasing_activity_intro_clause = ''
 
     #Inventory contracted over the past year
     elif inventory_change < 0:
@@ -1041,6 +1053,9 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
             #12m net absorption flat over past year
             elif leasing_change == 0:
                 leasing_activity_intro_clause = 'Despite falling demand and no change in demand,'
+            
+            else:
+                leasing_activity_intro_clause = ''
 
         #Vacancy decreased
         elif yoy_submarket_vacancy_growth < 0:
@@ -1055,6 +1070,9 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
             #12m net absorption flat over past year
             elif leasing_change == 0:
                 leasing_activity_intro_clause = 'With falling inventory levels and no change in demand,'
+            
+            else:
+                leasing_activity_intro_clause = ''
 
         #Vacancy flat
         elif yoy_submarket_vacancy_growth == 0:
@@ -1069,6 +1087,9 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
             #12m net absorption flat over past year
             elif leasing_change == 0:
                 leasing_activity_intro_clause = 'Despite falling inventory levels and no change in demand,'
+        
+        else:
+            leasing_activity_intro_clause = ''
 
     #Inventory flat over the past year
     elif inventory_change == 0:
@@ -1087,6 +1108,9 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
             #12m net absorption flat over past year
             elif leasing_change == 0:
                 leasing_activity_intro_clause = 'Despite a lack of inventory growth and no change in net absorption over the previous 12 months,'
+            
+            else:
+                leasing_activity_intro_clause = ''
 
         #Vacancy decreased
         elif yoy_submarket_vacancy_growth < 0:
@@ -1102,6 +1126,11 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
             #12m net absorption flat over past year
             elif leasing_change == 0:
                 leasing_activity_intro_clause = 'With demand and inventory levels flat,'
+            
+            else:
+                leasing_activity_intro_clause = ''
+
+        
 
         #Vacancy flat
         elif yoy_submarket_vacancy_growth == 0:
@@ -1117,6 +1146,14 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
             #12m net absorption flat over past year
             elif leasing_change == 0:
                 leasing_activity_intro_clause = 'With demand and inventory levels flat,'
+            else:
+                leasing_activity_intro_clause = ''
+        
+        else:
+            leasing_activity_intro_clause = ''
+    
+    else:
+            leasing_activity_intro_clause = ''
 
 
     #Section 3: Format Variables
@@ -2284,6 +2321,9 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
             #12m net absorption flat over past year
             elif leasing_change == 0:
                 fundamentals_clause = 'stagnant demand along with rising inventory levels. Together, vacancy rates have expanded over the past year. With vacancy rates expanding,'
+            
+            else:
+                fundamentals_clause = ''
                 
         #Vacancy decreased
         elif vacancy_change < 0:
@@ -2299,6 +2339,9 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
             elif leasing_change == 0:
                 fundamentals_clause = 'stable demand despite rising inventory levels. Together, vacancy rates have compresssed over the past year. With vacancy rates compressing,'
 
+            else:
+                fundamentals_clause = ''
+
         #Vacancy flat
         elif vacancy_change == 0:
 
@@ -2313,6 +2356,11 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
             #12m net absorption flat over past year
             elif leasing_change == 0:
                 fundamentals_clause = 'that despite rising inventory levels and with no change in demand, vacancy rates have managed to stay in line with last years vacancy rate. With stable vacancy rates,'
+
+            else:
+                fundamentals_clause = ''
+        else:
+            fundamentals_clause = ''
 
     #Inventory contracted over the past year
     elif inventory_change < 0:
@@ -2332,6 +2380,9 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
             elif leasing_change == 0:
                 fundamentals_clause = 'that despite a decrease in inventory levels, demand remained flat, expanding vacancy rates over the past year. With vacancy rates expanding,'
 
+            else:
+                fundamentals_clause = ''
+
         #Vacancy decreased
         elif vacancy_change < 0:
             #12m net absorption grew over past year
@@ -2346,6 +2397,8 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
             elif leasing_change == 0:
                 fundamentals_clause = 'positive trends. Despite flat absorption over the past year, inventory has decreased, allowing for vacancy rate compression. With vacancy rates compressing,'
 
+            else:
+                fundamentals_clause = ''
         #Vacancy flat
         elif vacancy_change == 0:
             #12m net absorption grew over past year
@@ -2359,6 +2412,11 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
             #12m net absorption flat over past year
             elif leasing_change == 0:
                 fundamentals_clause = 'Despite falling inventory levels and no change in demand,'
+            
+            else:
+                fundamentals_clause = ''
+        else:
+            fundamentals_clause = ''
 
     #Inventory flat over the past year
     elif inventory_change == 0:
@@ -2380,6 +2438,9 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
             elif leasing_change == 0:
                 fundamentals_clause = 'that despite no change in inventory or demand, vacancy rates have expanded over the past year. With vacancy rates expanding,'
 
+            else:
+                fundamentals_clause = ''
+
         #Vacancy decreased
         elif vacancy_change < 0:
 
@@ -2395,7 +2456,8 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
             elif leasing_change == 0:
                 fundamentals_clause = 'that despite flat demand and no change in inventory, vacancy rates have compressed over the past year.With vacancy rates compressing,'
 
-                        
+            else:
+                fundamentals_clause = ''            
         #Vacancy flat
         elif vacancy_change == 0:
 
@@ -2411,7 +2473,15 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
             #12m net absorption flat over past year
             elif leasing_change == 0:
                 fundamentals_clause = 'that despite flat demand and no change in inventory, vacancy rates have remained steady over the past year. With stable vacancy rates,'
+            
+            else:
+                fundamentals_clause = ''
+        else:
+            fundamentals_clause = ''
     
+    else:
+        fundamentals_clause = ''
+
     #Sector Specific language
     if sector == "Multifamily":
         sector_specific_outlook_language=('Strong economic growth and a drastically improving public health situation helped boost multifamily fundamentals over the first three quarters of 2021. With demand and rent growth indicators surging, investors have regained confidence in the sector, and sales volume has returned to more normal levels over the past few quarters. Still, a few headwinds exist that could put upward pressure on vacancies over the next few quarters. The ' + market_or_submarket + ' still faces a robust near-term supply pipeline, and those units will deliver amid a potential slowdown in demand due to seasonality and the fading effects of fiscal stimulus that has helped thousands of people pay rent. Furthermore, single-family starts have ramped up, and the increase in new for-sale housing could draw higher-income renters away from luxury properties.')
