@@ -37,10 +37,13 @@ df_multifamily  = pd.read_csv(raw_multifamily_file,
 df_office       = pd.read_csv(raw_office_file,
                   dtype={'Sales Volume Transactions': object,
                          'Total Sales Volume':object,
+                         'Sold Building SF': object,
                         'Transaction Sale Price/SF':object,
                         'Under Construction Buildings':object,
                         'Asset Value': object,
                         'Availability Rate': object,
+                        'Available SF': object,
+                        'Average Sale Price': object,
                         'Existing Buildings':object,
                         'Asset Value':object,
                         'Total Sales Volume':object,
@@ -59,7 +62,10 @@ df_office       = pd.read_csv(raw_office_file,
                         'Market Rent Growth':object,
                         'Market Rent Growth 12 Mo':object,
                         'Available SF':object,
-                        'Vacacny Rate':object
+                        'Vacacny Rate':object,
+                        'Median Cap Rate':object,
+                        'Median Price/Bldg SF':object,
+                        'Demand SF': object,
 
                         }     )
 
@@ -243,7 +249,7 @@ def FillBlanksWithZero(df,sector):
     if sector == 'Multifamily':
         var_list_to_replace_blanks = ['Sales Volume Transactions','Total Sales Volume','Under Construction Units','Absorption Units']
     else:
-        var_list_to_replace_blanks = ['Sales Volume Transactions','Total Sales Volume','Under Construction SF','Net Absorption SF']
+        var_list_to_replace_blanks = ['Sales Volume Transactions','Total Sales Volume','Under Construction SF','Net Absorption SF','Sold Building SF']
 
     for var in var_list_to_replace_blanks:
         df[var] = df[var].fillna(0)
