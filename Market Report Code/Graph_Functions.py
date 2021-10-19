@@ -46,15 +46,16 @@ def CreateSalesVolumeGraph(submarket_data_frame,folder):
             )
 
     # Add scatter points for transaction counts
-    fig.add_trace(
-    go.Scatter(x=submarket_data_frame['Period'],
-            y=submarket_data_frame['Sales Volume Transactions'],
-            name='Transaction Count (R)',
-            marker=dict(color="#4160D3", size=9),
-            mode = 'markers'
-            )
-    ,secondary_y=True)  
- 
+    if submarket_data_frame['Sales Volume Transactions'].max() > 0:
+        fig.add_trace(
+        go.Scatter(x=submarket_data_frame['Period'],
+                y=submarket_data_frame['Sales Volume Transactions'],
+                name='Transaction Count (R)',
+                marker=dict(color="#4160D3", size=9),
+                mode = 'markers'
+                )
+        ,secondary_y=True)  
+    
     #Default behavior for scatter plots in this package is to give some space between origin and first dot, this corrects that
     fig.update_layout(xaxis_range=[-1,len(submarket_data_frame['Period'])])
 
