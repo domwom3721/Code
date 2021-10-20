@@ -28,8 +28,8 @@ elif sector == 'i':
 elif sector == 'r':
     sector = 'Retail'
 
-# geography_name                 = input('Enter the name of the market with the following format: Abilene - TX')
-geography_name                 = 'Morris & Essex Line Corridor - NJ'
+geography_name                 = input('Enter the name of the market with the following format: Abilene - TX')
+
 
 
 
