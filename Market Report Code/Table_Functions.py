@@ -300,7 +300,7 @@ def CreateRowDataForTable(data_frame,data_frame2,data_frame3,var1,var2,var3,modi
         second_spot +=1
         
     for count,cell in enumerate(row_data_list):
-        if cell == 'nan' or cell == 'inf' or cell == 'nan%' or cell == 'inf%' or cell =='nan bps' or cell =='inf bps':
+        if cell == 'nan' or cell == 'inf' or cell == '-inf%'  or cell == '-inf' or cell == 'nan%' or cell == 'inf%' or cell =='nan bps' or cell =='inf bps':
             row_data_list[count] = 'NA'
     return(row_data_list)
 
