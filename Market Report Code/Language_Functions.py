@@ -2392,7 +2392,7 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
 
             #12m net absorption declined over past year
             elif  leasing_change < 0:
-                fundamentals_clause = 'that despite a decrease in absorption levels, the market_or_submarket has been aided by a decrease in inventory, compressing vacancy rates over the past year. With vacancy rates compressing,'
+                fundamentals_clause = 'that despite a decrease in absorption levels, the ' + market_or_submarket  + ' has been aided by a decrease in inventory, compressing vacancy rates over the past year. With vacancy rates compressing,'
                
             #12m net absorption flat over past year
             elif leasing_change == 0:
