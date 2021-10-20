@@ -1230,7 +1230,9 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
             #Sentence 3
             '. In the '                                                 +
             quarter                                                     +
-            ' quarter, the '                                            +
+            ' quarter, '                                                +
+            sector                                                      + 
+            ' tenants in the '                                          +
             market_or_submarket                                         +
             net_absorption_description                                  +
             net_absorption                                              +
