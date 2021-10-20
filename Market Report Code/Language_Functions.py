@@ -2504,7 +2504,7 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
     #Section 3: Begin Formatting variables
 
 
-    #Section 4: Begin putting sentences togehter with our variables
+    #Section 4: Begin putting sentences together with our variables
     large_supply_pipeline_threshold = 5
     if vacancy_change > 0 and under_construction_share == 0:
         pipeline_sentence = ('However, an empty supply pipeline could allow for vacancy to stabilize. ' )
@@ -2540,11 +2540,12 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
                                     )
 
     
-    general_outlook_language = ('In the ' +
-                            market_or_submarket +
-                            ', current fundamentals '
-                            'indicate '             + 
-                            fundamentals_clause +
+    general_outlook_language = ('Current fundamentals for ' +
+                            sector                          +    
+                            ' properties in the '           +
+                            market_or_submarket             +
+                            'indicate '                     + 
+                            fundamentals_clause             +
                             ' quarterly growth in ' + current_period + ' reached ' +  "{:,.1f}%".format(submarket_qoq_growth) + ', ' + qoq_pushing_or_contracting_annual_growth + ' ' +  "{:,.1f}%".format(submarket_yoy_growth) + '. ' +
                             capital_markets_summary)
                             
