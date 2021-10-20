@@ -273,7 +273,7 @@ def ConvertPercenttoPercentagePoints(df,sector):
         rate_vars = [ 
                      'Vacancy Rate',
                      'Market Cap Rate',
-                     'Availability Rate'
+                    #  'Availability Rate'
                     ]
     else:
         rate_vars = [
