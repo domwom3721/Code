@@ -260,6 +260,14 @@ def FillBlanksWithZero(df,sector):
 
     return(df)
 
+def CleanAssetValue(df,sector):
+    if sector != 'Multifamily':        
+        df['Asset Value'] = df['Asset Value'] * df['Inventory SF']
+
+    elif sector == 'Multifamily':
+        df['Asset Value'] = df['Asset Value'] * df['Inventory Units']
+    return(df)
+
 def ConvertPercenttoPercentagePoints(df,sector):
     if sector == 'Multifamily':
         rate_vars = [ 
@@ -273,7 +281,6 @@ def ConvertPercenttoPercentagePoints(df,sector):
                     ]
     
     for var in rate_vars:
-        # print(var)
         df[var] = round((df[var] * 100),3)
     return(df)
 
@@ -302,10 +309,7 @@ def MainClean(df,sector): #Calls all cleaning functions and returns cleaned data
     df = KeepLast10Years(df,['Geography Name'])
     df = CreateYearAndQuarterVariables(df)
     df = RenameVariables(df,sector)
-
-    if sector != 'Multifamily':        
-        df['Asset Value'] = df['Asset Value'] * df['Inventory SF']
-
+    df = CleanAssetValue(df,sector)
     df = DestringVariablesConvertToNumeric(df,sector)
     df = CleanSalesVolume(df)
     df = CleanNetAbsorption(df,sector)
@@ -447,12 +451,17 @@ df_custom['4 Quarters Ago Market Cap Rate']   = df_custom.groupby('Geography Nam
 df_custom['QoQ Market Cap Rate Growth']        = round((df_custom['Market Cap Rate'] - df_custom['Previous Quarter Market Cap Rate']) * 100,0)
 df_custom['YoY Market Cap Rate Growth']        = round((df_custom['Market Cap Rate'] - df_custom['4 Quarters Ago Market Cap Rate'])   * 100,0)
 
-# #Round  3 percentage variables we report in overview table
+#Round  3 percentage variables we report in overview table
 df_custom['Market Cap Rate']            = round(df_custom['Market Cap Rate'],2)
 df_custom['Vacancy Rate']               = round(df_custom['Vacancy Rate'],2)
 df_custom['Absorption Rate']            = round(df_custom['Absorption Rate'],2)
 
 
+
+
+
+
+#Section 8: Export cleaned data as excel file
 print(df_custom)
 df_custom.to_excel(clean_custom_file)
 
