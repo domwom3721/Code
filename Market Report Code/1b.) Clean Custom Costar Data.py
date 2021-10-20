@@ -3,12 +3,16 @@
 
 #Import packages we will be using
 import os
-from tkinter.constants import E
+from tkinter.constants import E, S
 import pandas as pd
 import numpy as np
 import shutil
+\
 
-#Get user input for sector and geography
+
+
+
+#Section 1: Get user input for sector and geography
 sector                         = input('Enter the name of the prop type: Multifamily, Office, Industrial, or Retail (m/o/r/i)')
 
 while (sector != 'm' ) and (sector != 'i' ) and (sector != 'o' )  and (sector != 'r' ):
@@ -24,11 +28,17 @@ elif sector == 'i':
 elif sector == 'r':
     sector = 'Retail'
 
-geography_name                 = input('Enter the name of the market with the following format: Abilene - TX')
-# geography_name                 = 'Example - NY'
+# geography_name                 = input('Enter the name of the market with the following format: Abilene - TX')
+geography_name                 = 'Morris & Essex Line Corridor - NJ'
 
 
-#Define file location pre paths
+
+
+
+
+
+
+#Section 2: Define file location pre paths
 project_location               =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Projects','Research Report Automation Project')  
 costar_data_location           =  os.path.join(project_location,'Data','CoStar Data') 
 
@@ -67,7 +77,14 @@ clean_custom_file                      =  os.path.join(costar_data_location,'Cle
 
 
 
-#Move exported data from downloads fodler into data folder
+
+
+
+
+
+
+
+#Section 3: Move exported data from downloads folder into data folder
 if os.path.exists(raw_download_data_file):
     shutil.move(raw_download_data_file,raw_main_data_file )
 
@@ -80,15 +97,38 @@ if os.path.exists(raw_download_market_cap_rate_file):
 if os.path.exists(raw_download_market_rent_file) and (sector != 'Multifamily'):
     shutil.move(raw_download_market_rent_file,raw_market_rent_file )
 
-#Now our downloaded data files are in the raw data folder, we will merge them together into a single clean file we export
-df_custom                            = pd.read_excel(raw_main_data_file)
+
+
+
+
+
+
+
+#Section 4: Read in our downloaded files as dataframes 
+# Now our downloaded data files are in the raw data folder, we will merge them together into a single clean file we export
+df_custom                            = pd.read_excel(raw_main_data_file )
 df_custom_sales_volume               = pd.read_excel(raw_sales_volume_file)
 df_custom_market_cap_rate            = pd.read_excel(raw_market_cap_rate_file)
 df_clean_file_for_last_period        = pd.read_csv(clean_main_data_file)
 
-#Get the latest period
-latest_period = df_clean_file_for_last_period['Period'].iloc[-1]
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#Section 5: Merge all dataframes together into the df_custom dataframe
 #For non MF, rename the rent variable
 if sector != 'Multifamily':
     df_custom_market_rent            = pd.read_excel(raw_market_rent_file)
@@ -110,29 +150,33 @@ if sector != 'Multifamily':
     df_custom                 =  pd.merge(df_custom, df_custom_market_rent, on=['Period'],how = 'left') 
 
 
-#Sort oldest to newest
-df_custom                 =  df_custom.sort_values(by=['Period'])
-
-#Restrict to latest quarter we are doing reports on 
-while df_custom['Period'].iloc[-1] != latest_period:
-    df_custom = df_custom[0:len(df_custom) -1]
 
 
 
-df_custom['Geography Type'] = 'Metro'
-df_custom['Geography Name'] = geography_name
 
+
+
+#Section 6: Data cleaning
+
+def NameGeography(df):
+    df['Geography Type'] = 'Metro'
+    df['Geography Name'] = geography_name
+    return(df)
 
 def StripVarName(df):
     df = df.rename(columns=lambda x: x.strip())
     return(df)
 
-def KeepLast10Years(df,groupbylist): #Cut down to last 10 years
-    df = df.groupby(groupbylist).tail(41)
-    return(df)
-
 def SortData(df): #Sorts by geography and quarter
     df = df.sort_values(by=['Geography Name','Period'])
+    #Restrict to latest quarter we are doing reports on 
+    latest_period = df_clean_file_for_last_period['Period'].iloc[-1] #Get the latest period
+    while df['Period'].iloc[-1] != latest_period:
+        df = df[0:len(df) -1]
+    return(df)
+
+def KeepLast10Years(df,groupbylist): #Cut down to last 10 years
+    df = df.groupby(groupbylist).tail(41)
     return(df)
 
 def CreateYearAndQuarterVariables(df): #seperates the period variable into 2 components (year and quarter)
@@ -167,41 +211,21 @@ def CleanNetAbsorption(df,sector):
 def DestringVariablesConvertToNumeric(df,sector):
 
     if sector == 'Multifamily':
-        vars_list_to_destring = ['Average Sale Price',
+        vars_list_to_destring = [
                 'Market Cap Rate',
                 'Vacancy Rate', 
                 'Asset Value',
-                'Total Sales Volume',
-                'Cap Rate',
-                'Existing Buildings',
-                'Market Sale Price Growth',
-                'Occupancy Rate',
-                'Median Cap Rate',
-                'Under Construction Buildings',
-                'Year',
                 'Market Effective Rent/Unit',
-                'Market Effective Rent Growth 12 Mo',
-                'Market Effective Rent Growth',
                 'Under Construction Units',
                 'Inventory Units',
-                'Absorption %',
-                'Sales Volume Transactions'
                 ]
     else:
-        vars_list_to_destring = ['Average Sale Price',
+        vars_list_to_destring = [
                 'Market Cap Rate',
                 'Vacancy Rate',
                 'Availability Rate', 
                 'Asset Value',
-                'Total Sales Volume',
-                'Cap Rate',
-                'Existing Buildings',
-                'Market Sale Price Growth',
-                'Occupancy Rate',
-                'Median Cap Rate',
-                'Under Construction Buildings',
                 'Year',
-                'Sales Volume Transactions',
                 'Inventory SF',
                 'Under Construction SF',
                 'Market Rent/SF',
@@ -210,19 +234,19 @@ def DestringVariablesConvertToNumeric(df,sector):
                 'Available SF'
                 ]
 
+    for var in vars_list_to_destring:         
+        if df[var].dtype == 'object': #only do the following for string variables
+            df[var] = df[var].str.replace('$', '', regex=False)
+            df[var] = df[var].str.replace(',', '', regex=False)
+            df[var] = df[var].str.replace('%', '', regex=False)
+            df[var] = df[var].str.replace('-', '', regex=False)
+            df[var] = df[var].str.replace('-', '', regex=False)
+            df[var] = pd.to_numeric(df[var])
+    return(df)
 
-    for var in vars_list_to_destring:
-        try:
-           
-            if df[var].dtype == 'object': #only do the following for string variables
-                df[var] = df[var].str.replace('$', '', regex=False)
-                df[var] = df[var].str.replace(',', '', regex=False)
-                df[var] = df[var].str.replace('%', '', regex=False)
-                df[var] = df[var].str.replace('-', '', regex=False)
-                '-'
-                df[var] = pd.to_numeric(df[var])
-        except Exception as e:
-            pass
+def CleanSalesVolume(df): #seperates the period variable into 2 components (year and quarter)
+    df.loc[df['Total Sales Volume'] == '-', 'Total Sales Volume'] = '0'
+    df['Total Sales Volume'] = pd.to_numeric(df['Total Sales Volume'])
     return(df)
 
 def FillBlanksWithZero(df,sector):
@@ -238,31 +262,29 @@ def FillBlanksWithZero(df,sector):
 
 def ConvertPercenttoPercentagePoints(df,sector):
     if sector == 'Multifamily':
-        # print(df['Absorption Percent'])
-        rate_vars = ['Absorption Percent',
-                    'Vacancy Rate',
+        rate_vars = [ 
+                     'Vacancy Rate',
+                     'Market Cap Rate',
                     ]
     else:
-        rate_vars = ['Vacancy Rate',
-                    'Market Cap Rate', ]
+        rate_vars = [
+                    'Vacancy Rate',
+                    'Market Cap Rate', 
+                    ]
     
     for var in rate_vars:
         # print(var)
-        df[var] = round((df[var] * 100),2)
+        df[var] = round((df[var] * 100),3)
     return(df)
 
-def MainClean(df,sector): #Calls all cleaning functions and returns cleaned dataframes
-    df = StripVarName(df)
-    df = SortData(df)
-    df = KeepLast10Years(df,['Geography Name'])
-    df = CreateYearAndQuarterVariables(df)
-    df['Sales Volume Transactions']  = 0
+def RenameVariables(df,sector):
+    if sector == 'Multifamily':
+        df  = df.rename(columns={'Vacancy Percent': "Vacancy Rate",'Total Available Percent % Total':'Availability Rate','Sales Volume':'Total Sales Volume',
+                                'Rent/Unit':'Market Rent/SF',
+                                'Price/Unit': 'Asset Value',
+                                 'Effective Rent Per Unit':'Market Effective Rent/Unit'})
 
-    
-
-
-
-    if sector != 'Multifamily':
+    else:
         df  = df.rename(columns={'Vacant Percent % Total': "Vacancy Rate",
                                 'Total Available Percent % Total':'Availability Rate',
                                 'Sales Volume':'Total Sales Volume',
@@ -270,31 +292,36 @@ def MainClean(df,sector): #Calls all cleaning functions and returns cleaned data
                                 'Rent/SF':'Market Rent/SF',
                                 'Price/SF': 'Asset Value',
                                })
-       
-        
-        df['Asset Value'] = df['Asset Value'] * df['Inventory SF']
-    else:
-        df  = df.rename(columns={'Vacancy Percent': "Vacancy Rate",'Total Available Percent % Total':'Availability Rate','Sales Volume':'Total Sales Volume',
-                                'Rent/Unit':'Market Rent/SF',
-                                'Sale Price Per Unit': 'Asset Value',
-                                 'Effective Rent Per Unit':'Market Effective Rent/Unit'})
-        
-        df['Asset Value'] = df['Asset Value'] * df['Inventory Units']
 
+    return(df)
+
+def MainClean(df,sector): #Calls all cleaning functions and returns cleaned dataframes
+    df = NameGeography(df)
+    df = StripVarName(df)
+    df = SortData(df)
+    df = KeepLast10Years(df,['Geography Name'])
+    df = CreateYearAndQuarterVariables(df)
+    df = RenameVariables(df,sector)
+
+    if sector != 'Multifamily':        
+        df['Asset Value'] = df['Asset Value'] * df['Inventory SF']
 
     df = DestringVariablesConvertToNumeric(df,sector)
+    df = CleanSalesVolume(df)
     df = CleanNetAbsorption(df,sector)
     df = ConvertPercenttoPercentagePoints(df,sector)
+    df['Sales Volume Transactions']  = 0
     df = FillBlanksWithZero(df,sector)
     return(df)
 
-
-#Data cleaning
 df_custom =  MainClean(df_custom,sector)
-df_custom['Geography Name'] = df_custom['Geography Name'].str.replace('New York City', 'Manhattan', regex=False)
 
 
-#Clean the Sqft and Unit variables seperately
+
+
+
+
+#Section 7: Create New Variables
 if sector == 'Multifamily':
 
     #Create laggd variables
@@ -306,7 +333,7 @@ if sector == 'Multifamily':
 
     
     #Create variable for inventory growth rate
-    df_custom['Inventory Units Growth'] = df_custom['Inventory Units'] - df['Lagged Inventory Units']
+    df_custom['Inventory Units Growth'] = df_custom['Inventory Units'] - df_custom['Lagged Inventory Units']
     df_custom['Inventory Growth']       = round(((df_custom['Inventory Units'] / df_custom['Lagged Inventory Units']) - 1)  * 100,2)
 
     #Create variable for percent under construction
@@ -421,9 +448,9 @@ df_custom['QoQ Market Cap Rate Growth']        = round((df_custom['Market Cap Ra
 df_custom['YoY Market Cap Rate Growth']        = round((df_custom['Market Cap Rate'] - df_custom['4 Quarters Ago Market Cap Rate'])   * 100,0)
 
 # #Round  3 percentage variables we report in overview table
-# df_custom['Market Cap Rate']            = round(df_custom['Market Cap Rate'],1)
-df_custom['Vacancy Rate']               = round(df_custom['Vacancy Rate'],1)
-df_custom['Absorption Rate']            = round(df_custom['Absorption Rate'],1)
+df_custom['Market Cap Rate']            = round(df_custom['Market Cap Rate'],2)
+df_custom['Vacancy Rate']               = round(df_custom['Vacancy Rate'],2)
+df_custom['Absorption Rate']            = round(df_custom['Absorption Rate'],2)
 
 
 print(df_custom)
