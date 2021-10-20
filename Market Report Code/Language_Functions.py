@@ -578,8 +578,8 @@ def CreateOverviewLanguage(submarket_data_frame,market_data_frame,natioanl_data_
     overview_conclusion_language = (
                 ' '                                +
                 "{with_or_despite}".format(with_or_despite = "Despite" if ((asset_value_change_description == 'compressed' and fundamentals_change == 'improving') or (asset_value_change_description == 'expanded' and fundamentals_change == 'softening') )  else "With") +     
-                ' fundamentals '                   +
                 fundamentals_change                +
+                ' fundamentals '                   +
                  ' for '                           +
                  sector.lower()                    +
                  ' properties in the '             +
