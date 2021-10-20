@@ -577,7 +577,7 @@ def CreateOverviewLanguage(submarket_data_frame,market_data_frame,natioanl_data_
     #Section 4.2: Create the conclusion of the overivew language
     overview_conclusion_language = (
                 ' '                                +
-                "{with_or_despite}".format(with_or_despite = "Despite" if ((asset_value_change_description == 'compressed' and fundamentals_change == 'improving') or (asset_value_change_description == 'expanded' and fundamentals_change == 'softening') )  else "With") +     
+                "{with_or_despite}".format(with_or_despite = "Despite " if ((asset_value_change_description == 'compressed' and fundamentals_change == 'improving') or (asset_value_change_description == 'expanded' and fundamentals_change == 'softening') )  else "With ") +     
                 fundamentals_change                +
                 ' fundamentals '                   +
                  ' for '                           +
@@ -2455,7 +2455,7 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
                
             #12m net absorption flat over past year
             elif leasing_change == 0:
-                fundamentals_clause = 'that despite flat demand and no change in inventory, vacancy rates have compressed over the past year.With vacancy rates compressing,'
+                fundamentals_clause = 'that despite flat demand and no change in inventory, vacancy rates have compressed over the past year. With vacancy rates compressing,'
 
             else:
                 fundamentals_clause = ''            
