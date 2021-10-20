@@ -1988,7 +1988,7 @@ def CreateSaleLanguage(submarket_data_frame,market_data_frame,natioanl_data_fram
     
     
     #Determine if market or submarket
-    if submarket_data_frame.equals(market_data_frame):
+    if submarket_data_frame['Geography Name'].equals(market_data_frame['Geography Name']):
         submarket_or_market           = 'Market'
     else:
         submarket_or_market           = 'Submarket'
