@@ -984,57 +984,57 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
 
             #12m net absorption grew over past year
             if leasing_change > 0:
-                leasing_activity_intro_clause = 'Despite demand picking up, with rising inventory levels,'
+                leasing_activity_intro_clause = 'Despite demand picking up, with rising inventory levels, vacancy rates have '
 
             #12m net absorption declined over past year
             elif  leasing_change < 0:
-                leasing_activity_intro_clause = 'With falling demand and rising inventory levels,'
+                leasing_activity_intro_clause = 'With falling demand and rising inventory levels, vacancy rates have '
 
                
             #12m net absorption flat over past year
             elif leasing_change == 0:
-                leasing_activity_intro_clause = 'Despite no change in demand, with rising inventory levels,'
+                leasing_activity_intro_clause = 'Despite no change in demand, with rising inventory levels, vacancy rates have '
 
             else:
-                leasing_activity_intro_clause = ''
+                leasing_activity_intro_clause = 'Vacancy rates have '
                 
         #Vacancy decreased
         elif yoy_submarket_vacancy_growth < 0:
             #12m net absorption grew over past year
             if leasing_change > 0:
-                leasing_activity_intro_clause = 'Despite growing inventory levels, with demand picking up,'
+                leasing_activity_intro_clause = 'Despite growing inventory levels, with demand picking up, vacancy rates have '
 
             #12m net absorption declined over past year
             elif  leasing_change < 0:
-                leasing_activity_intro_clause = 'Despite falling demand and rising inventory levels,'
+                leasing_activity_intro_clause = 'Despite falling demand and rising inventory levels, vacancy rates have '
                
             #12m net absorption flat over past year
             elif leasing_change == 0:
-                leasing_activity_intro_clause = 'Despite no change in demand and rising inventory levels,'
+                leasing_activity_intro_clause = 'Despite no change in demand and rising inventory levels, vacancy rates have '
             
             else:
-                leasing_activity_intro_clause = ''
+                leasing_activity_intro_clause = 'Vacancy rates have '
 
         #Vacancy flat
         elif yoy_submarket_vacancy_growth == 0:
 
             #12m net absorption grew over past year
             if leasing_change > 0:
-                leasing_activity_intro_clause = 'Despite demand picking up, with rising inventory levels,'
+                leasing_activity_intro_clause = 'Despite demand picking up, with rising inventory levels, vacancy rates have '
 
             #12m net absorption declined over past year
             elif  leasing_change < 0:
-                leasing_activity_intro_clause = 'Despite falling demand and rising inventory levels,'
+                leasing_activity_intro_clause = 'Despite falling demand and rising inventory levels, vacancy rates have '
                
             #12m net absorption flat over past year
             elif leasing_change == 0:
-                leasing_activity_intro_clause = 'Despite rising inventory levels, with no change in demand,'
+                leasing_activity_intro_clause = 'Despite rising inventory levels, with no change in demand, vacancy rates have '
             
             else:
-                leasing_activity_intro_clause = ''
+                leasing_activity_intro_clause = 'Vacancy rates have '
 
         else:
-            leasing_activity_intro_clause = ''
+            leasing_activity_intro_clause = 'Vacancy rates have '
 
     #Inventory contracted over the past year
     elif inventory_change < 0:
@@ -1044,52 +1044,52 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
 
             #12m net absorption grew over past year
             if leasing_change > 0:
-                leasing_activity_intro_clause = 'Despite falling inventory levels and growing demand,'
+                leasing_activity_intro_clause = 'Despite falling inventory levels and growing demand, vacancy rates have '
 
             #12m net absorption declined over past year
             elif  leasing_change < 0:
-                leasing_activity_intro_clause = 'Despite falling inventory levels, with falling demand,'
+                leasing_activity_intro_clause = 'Despite falling inventory levels, with falling demand, vacancy rates have '
                
             #12m net absorption flat over past year
             elif leasing_change == 0:
-                leasing_activity_intro_clause = 'Despite falling demand and no change in demand,'
+                leasing_activity_intro_clause = 'Despite falling demand and no change in demand, vacancy rates have '
             
             else:
-                leasing_activity_intro_clause = ''
+                leasing_activity_intro_clause = 'Vacancy rates have '
 
         #Vacancy decreased
         elif yoy_submarket_vacancy_growth < 0:
             #12m net absorption grew over past year
             if leasing_change > 0:
-                leasing_activity_intro_clause = 'With falling inventory levels and growing demand'
+                leasing_activity_intro_clause = 'With falling inventory levels and growing demand, vacancy rates have '
 
             #12m net absorption declined over past year
             elif  leasing_change < 0:
-                leasing_activity_intro_clause = 'Despite falling demand, with falling inventory levels,'
+                leasing_activity_intro_clause = 'Despite falling demand, with falling inventory levels, vacancy rates have '
                
             #12m net absorption flat over past year
             elif leasing_change == 0:
-                leasing_activity_intro_clause = 'With falling inventory levels and no change in demand,'
+                leasing_activity_intro_clause = 'With falling inventory levels and no change in demand, vacancy rates have '
             
             else:
-                leasing_activity_intro_clause = ''
+                leasing_activity_intro_clause = 'Vacancy rates have '
 
         #Vacancy flat
         elif yoy_submarket_vacancy_growth == 0:
             #12m net absorption grew over past year
             if leasing_change > 0:
-                leasing_activity_intro_clause = 'Despite falling inventory and growing demand,'
+                leasing_activity_intro_clause = 'Despite falling inventory and growing demand, vacancy rates have '
 
             #12m net absorption declined over past year
             elif  leasing_change < 0:
-                leasing_activity_intro_clause = 'Despite falling inventory levels, with demand falling,'
+                leasing_activity_intro_clause = 'Despite falling inventory levels, with demand falling, vacancy rates have '
                
             #12m net absorption flat over past year
             elif leasing_change == 0:
-                leasing_activity_intro_clause = 'Despite falling inventory levels and no change in demand,'
+                leasing_activity_intro_clause = 'Despite falling inventory levels and no change in demand, vacancy rates have '
         
         else:
-            leasing_activity_intro_clause = ''
+            leasing_activity_intro_clause = 'Vacancy rates have '
 
     #Inventory flat over the past year
     elif inventory_change == 0:
@@ -1099,36 +1099,36 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
 
             #12m net absorption grew over past year
             if leasing_change > 0:
-                leasing_activity_intro_clause = 'Despite a lack of inventory growth and accelerating demand,'
+                leasing_activity_intro_clause = 'Despite a lack of inventory growth and accelerating demand, vacancy rates have '
 
             #12m net absorption declined over past year
             elif  leasing_change < 0:
-                leasing_activity_intro_clause = 'With no inventory growth, but falling demand,'
+                leasing_activity_intro_clause = 'With no inventory growth, but falling demand, vacancy rates have '
                
             #12m net absorption flat over past year
             elif leasing_change == 0:
-                leasing_activity_intro_clause = 'Despite a lack of inventory growth and no change in net absorption over the previous 12 months,'
+                leasing_activity_intro_clause = 'Despite a lack of inventory growth and no change in net absorption over the previous 12 months, vacancy rates have '
             
             else:
-                leasing_activity_intro_clause = ''
+                leasing_activity_intro_clause = 'Vacancy rates have '
 
         #Vacancy decreased
         elif yoy_submarket_vacancy_growth < 0:
 
             #12m net absorption grew over past year
             if leasing_change > 0:
-                leasing_activity_intro_clause = 'With demand picking up in the absence of inventory growth,'
+                leasing_activity_intro_clause = 'With demand picking up in the absence of inventory growth, vacancy rates have '
 
             #12m net absorption declined over past year
             elif  leasing_change < 0:
-                leasing_activity_intro_clause = 'Although demand has declined, in the absence of inventory growth,'
+                leasing_activity_intro_clause = 'Although demand has declined, in the absence of inventory growth, vacancy rates have '
                
             #12m net absorption flat over past year
             elif leasing_change == 0:
-                leasing_activity_intro_clause = 'With demand and inventory levels flat,'
+                leasing_activity_intro_clause = 'With demand and inventory levels flat, vacancy rates have '
             
             else:
-                leasing_activity_intro_clause = ''
+                leasing_activity_intro_clause = 'Vacancy rates have '
 
         
 
@@ -1137,23 +1137,23 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
 
             #12m net absorption grew over past year
             if leasing_change > 0:
-                leasing_activity_intro_clause = 'Despite rising demand and the absence of inventory growth,'
+                leasing_activity_intro_clause = 'Despite rising demand and the absence of inventory growth, vacancy rates have '
 
             #12m net absorption declined over past year
             elif  leasing_change < 0:
-                leasing_activity_intro_clause = 'Despite falling demand, with no inventory growth,'
+                leasing_activity_intro_clause = 'Despite falling demand, with no inventory growth, vacancy rates have '
                
             #12m net absorption flat over past year
             elif leasing_change == 0:
-                leasing_activity_intro_clause = 'With demand and inventory levels flat,'
+                leasing_activity_intro_clause = 'With demand and inventory levels flat, vacancy rates have '
             else:
-                leasing_activity_intro_clause = ''
+                leasing_activity_intro_clause = 'Vacancy rates have '
         
         else:
-            leasing_activity_intro_clause = ''
+            leasing_activity_intro_clause = 'Vacancy rates have '
     
     else:
-            leasing_activity_intro_clause = ''
+            leasing_activity_intro_clause = 'Vacancy rates have '
 
 
     #Section 3: Format Variables
@@ -1209,7 +1209,6 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
 
             #Sentence 2
             leasing_activity_intro_clause                               +
-            ' vacancy rates have '                                      +
             yoy_submarket_vacancy_growth_description                    +
             ' '                                                         +
             yoy_submarket_vacancy_growth                                +
