@@ -2519,7 +2519,7 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
 
 
     capital_markets_summary = (
-                ' With fundamentals '              +
+                'With fundamentals '              +
                 fundamentals_change                +
                  ' for '                           +
                  sector.lower()                    +
