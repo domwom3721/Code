@@ -229,9 +229,9 @@ def DestringVariablesConvertToNumeric(df,sector):
                 'Inventory SF',
                 'Under Construction SF',
                 'Market Rent/SF',
-                'Market Rent Growth',
-                'Market Rent Growth 12 Mo',
-                'Available SF'
+                # 'Market Rent Growth',
+                # 'Market Rent Growth 12 Mo',
+                # 'Available SF'
                 ]
 
     for var in vars_list_to_destring:         
