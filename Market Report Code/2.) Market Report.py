@@ -566,7 +566,6 @@ def OverviewSection():
     #Overview Paragraph
     if type(overview_language) == list:
             for pargraph in overview_language:
-                print(pargraph)
                 summary_paragraph = document.add_paragraph(pargraph)
                 summary_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
                 summary_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
@@ -800,7 +799,7 @@ def ConstructionSection():
             constr_paragraph = document.add_paragraph(paragraph)
             constr_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
             constr_paragraph.paragraph_format.space_after = Pt(0)
-            constr_paragraph.paragraph_format.space_before = Pt(0)
+            constr_paragraph.paragraph_format.space_before = Pt(6)
 
     else:
         constr_paragraph = document.add_paragraph(construction_languge)
@@ -825,7 +824,7 @@ def CapitalMarketsSection():
             capital_paragraph = document.add_paragraph(paragraph)
             capital_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
             capital_paragraph.paragraph_format.space_after  = Pt(0)
-            capital_paragraph.paragraph_format.space_before = Pt(0)
+            capital_paragraph.paragraph_format.space_before = Pt(6)
     else:
         try:
             splitter = 'Market pricing'
