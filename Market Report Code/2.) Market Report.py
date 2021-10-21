@@ -564,15 +564,27 @@ def OverviewSection():
     AddHeading(document,'Overview',2)
     
     #Overview Paragraph
-    summary_paragraph = document.add_paragraph(overview_language)
-    summary_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    summary_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-    summary_paragraph_style = summary_paragraph.style
-    summary_paragraph_style.font.name = primary_font
-    summary_paragraph_style.font.size = Pt(9)
-    summary_format = document.styles['Normal'].paragraph_format
-    summary_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
-
+    if type(overview_language) == list:
+            for pargraph in overview_language:
+                print(pargraph)
+                summary_paragraph = document.add_paragraph(pargraph)
+                summary_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+                summary_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
+                summary_paragraph_style = summary_paragraph.style
+                summary_paragraph_style.font.name = primary_font
+                summary_paragraph_style.font.size = Pt(9)
+                summary_format = document.styles['Normal'].paragraph_format
+                summary_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
+    else:
+        summary_paragraph = document.add_paragraph(overview_language)
+        summary_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        summary_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
+        summary_paragraph_style = summary_paragraph.style
+        summary_paragraph_style.font.name = primary_font
+        summary_paragraph_style.font.size = Pt(9)
+        summary_format = document.styles['Normal'].paragraph_format
+        summary_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
+    
     #Overview table title
     overview_table_title_paragraph = document.add_paragraph('Sector Fundamentals')
     overview_table_title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -674,22 +686,32 @@ def OverviewSection():
 def SupplyDemandSection():
     #Supply and Demand Section
     AddHeading(document,'Supply & Demand',2)
-    try:
-        demand_language_splitter = 'In the'
-        demand_language1 = demand_language.split(demand_language_splitter)[0]
-        demand_language2 = demand_language_splitter + demand_language.split(demand_language_splitter)[1]
-        demand_language2 = demand_language2.lstrip() 
-    except:
-        demand_language1 = demand_language
-        demand_language2 = ''
+
+    if type(demand_language) == list:
+        for paragraph in demand_language:
+            supply_demand_paragraph1 = document.add_paragraph(paragraph)
+            supply_demand_paragraph1.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+            supply_demand_paragraph1.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+            supply_demand_paragraph1.paragraph_format.space_before = Pt(0)
+            supply_demand_paragraph_style = supply_demand_paragraph1.style
+            supply_demand_paragraph_style.font.name = primary_font
+    else:
+        try:
+            demand_language_splitter = 'In the'
+            demand_language1 = demand_language.split(demand_language_splitter)[0]
+            demand_language2 = demand_language_splitter + demand_language.split(demand_language_splitter)[1]
+            demand_language2 = demand_language2.lstrip() 
+        except:
+            demand_language1 = demand_language
+            demand_language2 = ''
 
 
-    supply_demand_paragraph1 = document.add_paragraph(demand_language1)
-    supply_demand_paragraph1.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    supply_demand_paragraph1.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
-    supply_demand_paragraph1.paragraph_format.space_before = Pt(0)
-    supply_demand_paragraph_style = supply_demand_paragraph1.style
-    supply_demand_paragraph_style.font.name = primary_font
+        supply_demand_paragraph1 = document.add_paragraph(demand_language1)
+        supply_demand_paragraph1.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        supply_demand_paragraph1.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+        supply_demand_paragraph1.paragraph_format.space_before = Pt(0)
+        supply_demand_paragraph_style = supply_demand_paragraph1.style
+        supply_demand_paragraph_style.font.name = primary_font
 
     #Vacancy Table
     vacancy_table_title_paragraph = document.add_paragraph('Vacancy Rates')
@@ -703,12 +725,15 @@ def SupplyDemandSection():
     vacancy_table_width = 1.2
     AddTable(document,data_for_vacancy_table,vacancy_table_width)
     
-    supply_demand_paragraph2 = document.add_paragraph(demand_language2)
-    supply_demand_paragraph2.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    supply_demand_paragraph2.paragraph_format.space_after  = Pt(0)
-    supply_demand_paragraph2.paragraph_format.space_before = Pt(6)
-    supply_demand_paragraph_style = supply_demand_paragraph2.style
-    supply_demand_paragraph_style.font.name = primary_font
+    if type(demand_language) == list:
+        pass
+    else:
+        supply_demand_paragraph2 = document.add_paragraph(demand_language2)
+        supply_demand_paragraph2.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        supply_demand_paragraph2.paragraph_format.space_after  = Pt(0)
+        supply_demand_paragraph2.paragraph_format.space_before = Pt(6)
+        supply_demand_paragraph_style = supply_demand_paragraph2.style
+        supply_demand_paragraph_style.font.name = primary_font
 
     #Absorption rate Graph
     if os.path.exists(os.path.join(output_directory,'absorption_rate.png')):
@@ -719,21 +744,28 @@ def SupplyDemandSection():
         absorption_format.space_after = Pt(0)
     
 def RentSecton():
-    try:
-        rent_language_splitter = 'In 2019 Q4'
-        rent_language1 = rent_language.split(rent_language_splitter)[0]
-        rent_language2 = rent_language_splitter + rent_language.split(rent_language_splitter)[1]
-        rent_language2 = rent_language2.lstrip() 
-    except:
-        rent_language1 = rent_language
-        rent_language2 = ''
+    AddHeading(document,'Rents',3)   
+    if type(rent_language) == list:
+        for paragraph in rent_language:
+            rent_paragraph1 = document.add_paragraph(paragraph)
+            rent_paragraph1.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+            rent_paragraph1.paragraph_format.space_after = Pt(primary_space_after_paragraph)
+            rent_paragraph1.paragraph_format.space_before = Pt(0)
+    else:
+        try:
+            rent_language_splitter = 'In 2019 Q4'
+            rent_language1 = rent_language.split(rent_language_splitter)[0]
+            rent_language2 = rent_language_splitter + rent_language.split(rent_language_splitter)[1]
+            rent_language2 = rent_language2.lstrip() 
+        except:
+            rent_language1 = rent_language
+            rent_language2 = ''
 
-    #Rent Paragraph
-    AddHeading(document,'Rents',3)       
-    rent_paragraph1 = document.add_paragraph(rent_language1)
-    rent_paragraph1.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    rent_paragraph1.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-    rent_paragraph1.paragraph_format.space_before = Pt(0)
+        #Rent Paragraph
+        rent_paragraph1 = document.add_paragraph(rent_language1)
+        rent_paragraph1.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        rent_paragraph1.paragraph_format.space_after = Pt(primary_space_after_paragraph)
+        rent_paragraph1.paragraph_format.space_before = Pt(0)
     
 
     #Rent Table
@@ -746,10 +778,13 @@ def RentSecton():
                     font.name = 'Avenir Next LT Pro Medium'
     AddTable(document,data_for_rent_table, col_width = 1.2)
     
-    rent_paragraph2 = document.add_paragraph(rent_language2)
-    rent_paragraph2.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    rent_paragraph2.paragraph_format.space_after = Pt(0)
-    rent_paragraph2.paragraph_format.space_before = Pt(6)
+    if type(rent_language) == list:
+        pass
+    else:
+        rent_paragraph2 = document.add_paragraph(rent_language2)
+        rent_paragraph2.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        rent_paragraph2.paragraph_format.space_after = Pt(0)
+        rent_paragraph2.paragraph_format.space_before = Pt(6)
 
     #Insert rent growth graph
     if os.path.exists(os.path.join(output_directory,'rent_growth.png')):
@@ -760,10 +795,18 @@ def RentSecton():
 def ConstructionSection():
     #Construction Section
     AddHeading(document,'Construction & Future Supply',2)
-    constr_paragraph = document.add_paragraph(construction_languge)
-    constr_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    constr_paragraph.paragraph_format.space_after = Pt(0)
-    constr_paragraph.paragraph_format.space_before = Pt(0)
+    if type(construction_languge) == list:
+        for paragraph in construction_languge:
+            constr_paragraph = document.add_paragraph(paragraph)
+            constr_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+            constr_paragraph.paragraph_format.space_after = Pt(0)
+            constr_paragraph.paragraph_format.space_before = Pt(0)
+
+    else:
+        constr_paragraph = document.add_paragraph(construction_languge)
+        constr_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        constr_paragraph.paragraph_format.space_after = Pt(0)
+        constr_paragraph.paragraph_format.space_before = Pt(0)
 
     #Insert construction graph
     if os.path.exists(os.path.join(output_directory,'construction_volume.png')):
@@ -773,51 +816,31 @@ def ConstructionSection():
     else:
         pass
 
-    # #Create data for construction table (Market)
-    # if df_market_cut.equals(df_primary_market):
-    #     if sector == 'Multifamily':
-    #         data_for_sales_table = [['Property',	'Submarket',	'Tenant',	'Units',	'Type'],['X' for i in range(5)],['X' for i in range(5)],['X' for i in range(5)],['X' for i in range(5)]]
-    #     else:
-    #         data_for_sales_table = [['Property',	'Submarket',	'Tenant',	'SF', 'Type'],['X' for i in range(5)],['X' for i in range(5)],['X' for i in range(5)],['X' for i in range(5)]]
-        
-    #     #Key Sales Table
-    #     sales_table_title_paragraph = document.add_paragraph('Key Sales Transactions ' + latest_quarter)
-    #     sales_table_title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    #     sales_table_title_paragraph.paragraph_format.space_after  = Pt(6)
-    #     sales_table_title_paragraph.paragraph_format.space_before = Pt(12)
-    #     for run in sales_table_title_paragraph.runs:
-    #         font = run.font
-    #         font.name = 'Avenir Next LT Pro Medium'
-
-    #     AddTable(document,data_for_sales_table,col_width=1)
-    #     document.add_paragraph('')
-    
-    # #Create data for sales table (Submarket)
-    # else:
-    #     if sector == 'Multifamily':
-    #         data_for_sales_table = [['Property',		'Tenant',	'Units',	'Type'],['X' for i in range(4)],['X' for i in range(4)],['X' for i in range(4)],['X' for i in range(4)]]
-    #     else:
-    #         data_for_sales_table = [['Property',		'Tenant',	'SF', 'Type'],['X' for i in range(4)],['X' for i in range(4)],['X' for i in range(4)],['X' for i in range(4)]]
-
 def CapitalMarketsSection():
     #Captial Markets Section
     AddHeading(document,'Capital Markets',2)
     #Split the capital market language into 2 paragraphs
-    
-    try:
-        splitter = 'Market pricing'
-        sale_language_1   = sale_language.split(splitter)[0]
-        sale_language_2   = splitter + sale_language.split('Market pricing')[1]
-    except:
-        sale_language_1   = sale_language
-        sale_language_2   = ''
+    if type(sale_language) == list:
+        for paragraph in sale_language:
+            capital_paragraph = document.add_paragraph(paragraph)
+            capital_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+            capital_paragraph.paragraph_format.space_after  = Pt(0)
+            capital_paragraph.paragraph_format.space_before = Pt(0)
+    else:
+        try:
+            splitter = 'Market pricing'
+            sale_language_1   = sale_language.split(splitter)[0]
+            sale_language_2   = splitter + sale_language.split('Market pricing')[1]
+        except:
+            sale_language_1   = sale_language
+            sale_language_2   = ''
 
 
 
-    capital_paragraph = document.add_paragraph(sale_language_1)
-    capital_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    capital_paragraph.paragraph_format.space_after  = Pt(0)
-    capital_paragraph.paragraph_format.space_before = Pt(0)
+        capital_paragraph = document.add_paragraph(sale_language_1)
+        capital_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        capital_paragraph.paragraph_format.space_after  = Pt(0)
+        capital_paragraph.paragraph_format.space_before = Pt(0)
 
     #Sales Volume Graphs
     if os.path.exists(os.path.join(output_directory,'sales_volume.png')):
@@ -826,10 +849,13 @@ def CapitalMarketsSection():
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         document.add_paragraph('')
 
-    capital_paragraph2 = document.add_paragraph(sale_language_2)
-    capital_paragraph2.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    capital_paragraph2.paragraph_format.space_after  = Pt(0)
-    capital_paragraph2.paragraph_format.space_before = Pt(0)
+    if type(sale_language) == list:
+        pass
+    else:
+        capital_paragraph2 = document.add_paragraph(sale_language_2)
+        capital_paragraph2.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        capital_paragraph2.paragraph_format.space_after  = Pt(0)
+        capital_paragraph2.paragraph_format.space_before = Pt(0)
 
     #Create data for sales table (Market)
     if df_market_cut.equals(df_primary_market):
@@ -870,27 +896,34 @@ def CapitalMarketsSection():
 def OutlookSection():
     #Outlook Section
     AddHeading(document,'Outlook',2)
+    if type(outlook_language) == list:
+        for paragarph in outlook_language:
+            conclusion_paragraph = document.add_paragraph(paragarph)
+            conclusion_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+            conclusion_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+            conclusion_paragraph.paragraph_format.space_before = Pt(0)
 
-    outlook_language_splt = outlook_language.split(('\n' + '\n')) #split on paragraph
-    assert len(outlook_language_splt) == 3 #make sure there are 3 paragraphs
-    outlook_language1 = outlook_language_splt[0]
-    outlook_language2 = outlook_language_splt[1]
-    outlook_language3 = outlook_language_splt[2]
+    else:
+        outlook_language_splt = outlook_language.split(('\n' + '\n')) #split on paragraph
+        assert len(outlook_language_splt) == 3 #make sure there are 3 paragraphs
+        outlook_language1 = outlook_language_splt[0]
+        outlook_language2 = outlook_language_splt[1]
+        outlook_language3 = outlook_language_splt[2]
 
-    conclusion_paragraph1 = document.add_paragraph(outlook_language1)
-    conclusion_paragraph1.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    conclusion_paragraph1.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
-    conclusion_paragraph1.paragraph_format.space_before = Pt(0)
+        conclusion_paragraph1 = document.add_paragraph(outlook_language1)
+        conclusion_paragraph1.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        conclusion_paragraph1.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+        conclusion_paragraph1.paragraph_format.space_before = Pt(0)
 
-    conclusion_paragraph2 = document.add_paragraph(outlook_language2)
-    conclusion_paragraph2.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    conclusion_paragraph2.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
-    conclusion_paragraph2.paragraph_format.space_before = Pt(0)
+        conclusion_paragraph2 = document.add_paragraph(outlook_language2)
+        conclusion_paragraph2.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        conclusion_paragraph2.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+        conclusion_paragraph2.paragraph_format.space_before = Pt(0)
 
-    conclusion_paragraph3 = document.add_paragraph(outlook_language3)
-    conclusion_paragraph3.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    conclusion_paragraph3.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
-    conclusion_paragraph3.paragraph_format.space_before = Pt(0)
+        conclusion_paragraph3 = document.add_paragraph(outlook_language3)
+        conclusion_paragraph3.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        conclusion_paragraph3.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+        conclusion_paragraph3.paragraph_format.space_before = Pt(0)
 
 def AppendixSection():
     if market == primary_market:

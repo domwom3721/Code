@@ -45,7 +45,7 @@ def PullCoStarWriteUp(section_names,writeup_directory):
             for narrative,title in zip(narrative_bodies,narrative_titles):
                 title_text = title.text 
                 for section_name in section_names:
-                    master_narrative = ''
+                    master_narrative = []
                     if section_name in title_text:
                         for count,p in enumerate(narrative.find_all("p")):
                             text  = p.get_text()
@@ -99,14 +99,13 @@ def PullCoStarWriteUp(section_names,writeup_directory):
                             #Now remove bad characters
                             for char in ['ï','»','¿','â','€']:
                                 text = text.replace(char,'')
+                            master_narrative.append(text)
 
 
-                            if count == 0:
-                                master_narrative = master_narrative       + text
-                            else:
-                                master_narrative = master_narrative + '\n' + '\n' +text
 
-                    if len(master_narrative) > 1:     
+                       
+
+                    if len(master_narrative) > 0:     
                         return(master_narrative)
             return('')
 
