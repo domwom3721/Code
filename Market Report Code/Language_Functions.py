@@ -416,7 +416,7 @@ def CreateOverviewLanguage(submarket_data_frame,market_data_frame,natioanl_data_
         elif  yoy_rent_growth > 0 and vacancy_change < 0:
             overview_sector_specific_language = ('Industrial enters the fourth quarter in among the best shape of any of the major property types. ' + 
                                 'A pandemic driven spike in e-commerce sales along with significant growth in third-party logistics providers continues to drive demand for industrial space. ' + 
-                                'These macro trends have positively affected ' + sector.lower() + ' properties in the ' + market_or_submarket + ' With vacancy rates compressing over the past year, rents have expanded ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + ' since 2020 Q3. ')
+                                'These macro trends have positively affected ' + sector.lower() + ' properties in the ' + market_or_submarket + '. With vacancy rates compressing over the past year, rents have expanded ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + ' since 2020 Q3. ')
         
         #Positive rent growth, no vacancy growth
         elif  yoy_rent_growth > 0 and vacancy_change == 0:
