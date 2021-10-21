@@ -36,8 +36,8 @@ def PullCoStarWriteUp(section_names,writeup_directory):
     html_file = os.path.join(writeup_directory,'CoStar - Markets & Submarkets.html')
     if  os.path.exists(html_file):
         try:
-            with open(html_file) as fp:
-                soup = BeautifulSoup(fp, 'html.parser')
+            with open(html_file,encoding='utf8') as fp:
+                soup = BeautifulSoup(fp, 'html.parser',)
 
             narrative_bodies = soup.find_all("div", {"class": "cscc-narrative-text"})
             narrative_titles = soup.find_all("div", {"class": "cscc-detail-narrative__title"})
