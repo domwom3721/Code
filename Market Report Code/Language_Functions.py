@@ -2484,10 +2484,16 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
     
     else:
         fundamentals_clause = ''
-
+    
+    large_supply_pipeline_threshold = 5
+    
     #Sector Specific language
     if sector == "Multifamily":
-        sector_specific_outlook_language=('Strong economic growth and a drastically improving public health situation helped boost multifamily fundamentals over the first three quarters of 2021. With demand and rent growth indicators surging, investors have regained confidence in the sector, and sales volume has returned to more normal levels over the past few quarters. Still, a few headwinds exist that could put upward pressure on vacancies over the next few quarters. The ' + market_or_submarket + ' still faces a robust near-term supply pipeline, and those units will deliver amid a potential slowdown in demand due to seasonality and the fading effects of fiscal stimulus that has helped thousands of people pay rent. Furthermore, single-family starts have ramped up, and the increase in new for-sale housing could draw higher-income renters away from luxury properties.')
+        sector_specific_outlook_language=('Strong economic growth and a drastically improving public health situation helped boost multifamily fundamentals over the first three quarters of 2021. With demand and rent growth indicators surging, investors have regained confidence in the sector, and sales volume has returned to more normal levels over the past few quarters. ' + 
+                                        "{headwinds_description}".format(headwinds_description = "" if under_construction_share < large_supply_pipeline_threshold  else ('Still, a few headwinds exist that could put upward pressure on vacancies over the next few quarters. The ' + market_or_submarket + ' still faces a robust near-term supply pipeline, and those units will deliver amid a potential slowdown in demand due to seasonality and the fading effects of fiscal stimulus that has helped thousands of people pay rent. Furthermore, single-family starts have ramped up, and the increase in new for-sale housing could draw higher-income renters away from luxury properties.') ) 
+                                        )
+                                          
+                                          
     
     elif sector == "Office":
         sector_specific_outlook_language=('The first three quarters of 2021 remained in line with pandemic-era trends in terms of office market performance. Although leasing activity has picked up slightly, it remained rather subdued. Many tenants continue to downsize and adopt hybrid work models, limiting demand and rent growth. Investment volume remains subdued, but investors are looking at alternatives such as the medical office sector or single-tenant assets with sticky tenants and lengthy leases in place. Looking ahead over the next few quarters, supply additions will be met with muted demand, limiting improvement in rents and values.')
@@ -2507,7 +2513,7 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
 
 
     #Section 4: Begin putting sentences together with our variables
-    large_supply_pipeline_threshold = 5
+ 
     if vacancy_change > 0 and under_construction_share == 0:
         pipeline_sentence = ('However, an empty supply pipeline could allow for vacancy to stabilize. ' )
     elif vacancy_change < 0 and under_construction_share >= large_supply_pipeline_threshold:
