@@ -811,7 +811,7 @@ def GetNationalMedianListPrice(observation_start):
     return(usa_mlp_df)
 
 def GetNationalUnemploymentRate(start_year,end_year):
-    print('Getting State UR')
+    print('Getting National UR')
     #Seasonally-adjusted unemployment rate
     series_name = 'LNS14000000'
     national_ur_df = bls.series(series_name,start_year=start_year,end_year=end_year) 
