@@ -347,10 +347,10 @@ def CreateRowDataForWideTable(data_frame,data_frame2,data_frame3,data_frame4,var
         data_frame4[var1] = data_frame4[var1].map('${:,.0f}'.format)
 
     elif modifier == '$' and sector != 'Multifamily':
-        data_frame[var1]  = data_frame[var1].map('${:,.1f}'.format)
-        data_frame2[var1] = data_frame2[var1].map('${:,.1f}'.format)
-        data_frame3[var1] = data_frame3[var1].map('${:,.1f}'.format)
-        data_frame4[var1] = data_frame4[var1].map('${:,.1f}'.format)
+        data_frame[var1]  = data_frame[var1].map('${:,.2f}'.format)
+        data_frame2[var1] = data_frame2[var1].map('${:,.2f}'.format)
+        data_frame3[var1] = data_frame3[var1].map('${:,.2f}'.format)
+        data_frame4[var1] = data_frame4[var1].map('${:,.2f}'.format)
    
     else:
         data_frame[var1]  = data_frame[var1].map('{:,.1f}%'.format)
