@@ -2331,15 +2331,15 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
         elif vacancy_change < 0:
             #12m net absorption grew over past year
             if leasing_change > 0:
-                fundamentals_clause = 'growing demand despite an increase in inventory. With demand outpacing new inventory, vacancy rates have compresssed over the past year. With vacancy rates compressing,'
+                fundamentals_clause = 'growing demand despite an increase in inventory. With demand outpacing new inventory, vacancy rates have compressed over the past year. With vacancy rates compressing,'
 
             #12m net absorption declined over past year
             elif  leasing_change < 0:
-                fundamentals_clause = 'that despite falling demand and rising inventory levels, demolitions have aided the sector and vacancy rates have compresssed over the past year. With vacancy rates compressing,'
+                fundamentals_clause = 'that despite falling demand and rising inventory levels, demolitions have aided the sector and vacancy rates have compressed over the past year. With vacancy rates compressing,'
                
             #12m net absorption flat over past year
             elif leasing_change == 0:
-                fundamentals_clause = 'stable demand despite rising inventory levels. Together, vacancy rates have compresssed over the past year. With vacancy rates compressing,'
+                fundamentals_clause = 'stable demand despite rising inventory levels. Together, vacancy rates have compressed over the past year. With vacancy rates compressing,'
 
             else:
                 fundamentals_clause = ''
