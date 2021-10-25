@@ -2930,9 +2930,9 @@ def UnemploymentLanguage():
 
     return( 
             #Sentence 1: Discuss current unemployment
-            'The unemployment rate in' +
+            'The unemployment rate in ' +
             county + 
-            'has '+
+            ' has '+
             '[compressed/expanded/remained stable]' +
             ' over the past year '
             ' to the current rate of ' +
