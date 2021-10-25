@@ -201,7 +201,13 @@ def GetCurrentQuarterAndYear():
 
     return[year,quarter]
 
+
+
+
+
 #Data functions
+
+#County Data
 def GetCountyGDP(fips,observation_start):
     print('Getting County GDP')
     county_gdp_series_code = 'REALGDPALL' + fips
@@ -549,6 +555,10 @@ def GetCountyData():
         print(e,'No median home list data price available')
         county_mlp                    = ''
 
+
+
+
+
 #MSA Data
 def GetMSAGDP(cbsa,observation_start):
     print('Getting MSA GDP')
@@ -692,6 +702,10 @@ def GetMSAData():
         except:
             msa_mlp                     = ''
 
+
+
+
+
 #State Data
 def GetStateGDP(state,observation_start):
     print('Getting State GDP')
@@ -774,6 +788,9 @@ def GetStateData():
     state_employment                 = GetStateEmployment(fips = fips,start_year=start_year,end_year=end_year)
     state_pci                        = GetStatePCI(state = state, observation_start = observation_start_less1)
     state_resident_pop               = GetStateResidentPopulation(state = state,observation_start=('01/01/' + str(end_year -11)))
+
+
+
 
 #National Data
 def GetNationalPCI(observation_start):
@@ -869,6 +886,11 @@ def GetNationalData():
     national_unemployment              = GetNationalUnemploymentRate(start_year = start_year, end_year=end_year)
     national_employment                = GetNationalEmployment(start_year = start_year, end_year=end_year)
     national_gdp                       = GetNationalGDP(observation_start = observation_start)
+
+
+
+
+
 
 #Graph Functions
 def CreateUnemploymentRateEmploymentGrowthGraph(folder):
@@ -2631,7 +2653,6 @@ def CreateNationalGDPGraph(folder):
 
     fig.write_image(os.path.join(folder,'national_gdp_rate.png'),engine='kaleido',scale=scale)
      
-
 def CreateGraphs():
     print('Creating Graphs')
     CreateUnemploymentRateEmploymentGrowthGraph(folder = county_folder)
@@ -2650,6 +2671,11 @@ def CreateGraphs():
     CreateNationalUnemploymentGraph(folder=county_folder)
     CreateNationalEmploymentGrowthGraph(folder=county_folder)
     CreateNationalGDPGraph(folder = county_folder)
+
+
+
+
+
 
 #Language Functions
 def millify(n):
@@ -2899,38 +2925,42 @@ def UnemploymentLanguage():
     april_2020_unemployment_rate        = county_unemployment_rate.loc[(county_unemployment_rate['periodName']=='April') & (county_unemployment_rate['year']=='2020')]
     april_2020_unemployment_rate        = april_2020_unemployment_rate['unemployment_rate'].iloc[-1]
     april_2020_unemployment_rate        = "{:,.1f}%".format(april_2020_unemployment_rate)
+    
 
-    return('At the onset of the pandemic last spring, ' +
-            county +
-            ' area employers shed ' +
-            spring_job_losses_2020_pct +
-            """ of its workforce,""" +
-            ' expanding the unemployment rate from ' +
-            feb_2020_unemployment_rate +
-            ' in February 2020 to ' +
-            april_2020_unemployment_rate +
-            ' just two months later. '
-            'As of '+
-           latest_period +
-           ', payrolls are ' +
-          up_or_down +
-           ' ' +
-           one_year_percent_employment_fall +
-           ' on a year-over-year basis '    +
-            "{above_pre_pandemic_emp}".format(above_pre_pandemic_emp = ('and are above pre-pandemic levels (Feb 2020).') if percent_below_pre_pandemic_employment_levels <= 0  else            ('but remain ' + "{:,.0f}%".format(percent_below_pre_pandemic_employment_levels) + ' below pre-pandemic levels (Feb 2020).')) +     
-            ' The unemployment rate has '+
-            'compressed' +
+
+    return( 
+            #Sentence 1: Discuss current unemployment
+            'The unemployment rate in' +
+            county + 
+            'has '+
+            '[compressed/expanded/remained stable]' +
+            ' over the past year '
             ' to the current rate of ' +
-           latest_county_unemployment +
-           '—'+
-          state_county_unemployment_difference +
+            latest_county_unemployment +
+            '. '                         +
+
+            
+          #Sentence 2: Discuss how unemployment rate compares to state
+          'This unemployment rate is ' +
+           state_county_unemployment_difference +
            ' ' +
            state_county_unemployment_above_or_below +
            ' the ' +
            state_name + 
            ' rate of '+
            latest_state_unemployment + 
-           '.')
+           '. '                     +
+
+
+        #Sentence 3: Discuss growth in total employment
+            'As of '+
+           latest_period +
+           ', total employment is ' +
+          up_or_down +
+           ' ' +
+           one_year_percent_employment_fall +
+           ' on a year-over-year basis.'       
+           )
 
 def TourismEmploymentLanguage():
     county_industry_breakdown_lang      = county_industry_breakdown.sort_values(by=['month3_emplvl'])
@@ -3052,22 +3082,6 @@ def EmploymentGrowthLanguage(county_industry_breakdown):
     slowest_growth_industry_1y                = county_industry_breakdown['1 Year Employment Growth'].iloc[0]
     slowest_growth_industry_1y                = "{:,.1f}%".format(abs(slowest_growth_industry_1y))
 
-    # #Get list of industries that have had positive 1 year growth
-    # county_industry_breakdown_positive_1y_growth          = county_industry_breakdown.loc[county_industry_breakdown['1 Year Employment Growth'] > 0]
-    
-    # #Create empty string that we will fill with all the industries that have grown over the last year
-    # positive_1_year_growth_industries_list                = ''
-    # for count,industry in enumerate(county_industry_breakdown_positive_1y_growth['industry_code'].to_list()):
-    #     if count == 0:
-    #         positive_1_year_growth_industries_list = positive_1_year_growth_industries_list + industry
-
-    #     elif count == len(county_industry_breakdown_positive_1y_growth['industry_code'].to_list()):
-    #         positive_1_year_growth_industries_list = positive_1_year_growth_industries_list + ', and' + industry #last industry
-    #     else:
-    #         positive_1_year_growth_industries_list = positive_1_year_growth_industries_list + ', ' + industry #last industry
-
-    
-
 
     emplopyment_growth_language = ('According to the Q' +
             qcew_qtr +
@@ -3103,9 +3117,9 @@ def EmploymentGrowthLanguage(county_industry_breakdown):
             ' ' +
             slowest_growth_industry_5y +
             ' over the previous five years.'
-             ' Over the past year, the pandemic has caused ' +
+             ' Over the past year, ' +
              employment_loss_1year_all_most_some + 
-             ' industries to lose employees.' +
+             ' industries have lost employees.' +
              ' The ' +
              slowest_growing_industry_1y +
               ' sector saw the largest decline in employees and remains '+
@@ -3167,11 +3181,7 @@ def ProductionLanguage(county_data_frame,msa_data_frame,state_data_frame):
     #Fomrmat variables
     latest_county_gdp_growth =  "{:,.1f}%".format(latest_county_gdp_growth)
 
-    return('The longest U.S. economic expansion since the end of WWII came to an abrupt end in 2020 as the pandemic ' +
-           'essentially shut down the economy. ' +
-           'Following this unprecedented plunge in 2020 Q2 ('+ 
-           'real GDP nosedived at an annualized rate of 31%), '+ 
-           'economic activity rebounded sharply in the third and fourth quarter. ' + 
+    return(
             'While GDP data at the county level is not yet available, '      +
            latest_period +
            ' data from the U.S. Bureau of Economic Analysis points to '+
@@ -3187,13 +3197,7 @@ def ProductionLanguage(county_data_frame,msa_data_frame,state_data_frame):
             msa_or_state_gdp_growth +
             ' for the ' +
             msa_or_state +
-            '.' + 
-            ' Recent news reinforces the assumption that vaccinations will continue to be widely available,' +
-            ' which should help life and business return to some semblance of ' +
-            """"normal".""" +
-             ' Yet the pandemic’s effects on spending, the labor market, and monetary policy are unlikely to fully dissipate in the near term. ' +
-             ' The level of national real GDP has now returned to pre-pandemic levels, ' +  
-             'but rising case counts of the Delta variant have led to increased concern that some form of restrictions are needed, which could slow growth further.'
+            '.' 
         )
 
 def IncomeLanguage():
@@ -3406,10 +3410,7 @@ def HousingLanguage():
     print('Writing Housing Langauge')
 
     if isinstance(county_mlp, pd.DataFrame) == False:
-        return('Not only did the pandemic shock the economy, but it has had different economic effects on sectors and regions. ' +
-                            'For example, the residential housing market in the United States has been robust since the initial shutdown in Q1 and Q2 2020. ' +
-                            'Historically low mortgage rates, the desire for more space, and the ability to work from home have led to the highest number of home' +
-                            ' sales while historically low inventory levels have pushed values to record highs in most counties and metros across the Nation. ' )
+        return('' )
     else:
         current_county_mlp = county_mlp['Median List Price'].iloc[-1]
         yoy_county_mlp_growth = ((county_mlp['Median List Price'].iloc[-1]/county_mlp['Median List Price'].iloc[-13]) - 1 ) * 100   
@@ -3430,11 +3431,8 @@ def HousingLanguage():
         if isinstance(msa_mlp, pd.DataFrame) == True:
             yoy_msa_mlp_growth = ((msa_mlp['Median List Price'].iloc[-1]/msa_mlp['Median List Price'].iloc[-13]) - 1 ) * 100
 
-            return('Not only did the pandemic shock the economy, but it has had different economic effects on sectors and regions. ' +
-                                'For example, the residential housing market in the United States has been robust since the initial shutdown in Q1 and Q2 2020 slowed demand and halted price growth. ' +
-                                'But, historically low mortgage rates, the desire for more space, and the ability to work from home have led to the highest number of home' +
-                                ' sales while historically low inventory levels have pushed values to record highs in most counties and metros across the Nation. ' +
-                                "{however_or_in}".format(however_or_in = "In " if  yoy_county_mlp_growth >= 0  else "However, in ") +                                           
+            return(
+                                "In " +                                           
                                 county +
                                 ', Realtor.com data points to ' +
                                 "{growth_description}".format(growth_description = "continued" if  yoy_county_mlp_growth >= 0  else "negative") +                                           
@@ -3458,11 +3456,8 @@ def HousingLanguage():
 
         #If we don't have metro realtor.com data                        
         else: 
-            return('Not only did the pandemic shock the economy, but it has had different economic effects on sectors and regions. ' +
-                            'For example, the residential housing market in the United States has been robust since the initial shutdown in Q1 and Q2 2020. ' +
-                            'Historically low mortgage rates, the desire for more space, and the ability to work from home have led to the highest number of home' +
-                            ' sales while historically low inventory levels have pushed values to record highs in most counties and metros across the Nation. ' +
-                            'In ' +
+            return(
+                          'In ' +
                             county +
                             ', Realtor.com data points to ' +
                             "{growth_description}".format(growth_description = "continued " if  yoy_county_mlp_growth >= 0  else "negative") +                                           
@@ -3481,19 +3476,12 @@ def HousingLanguage():
 
 def OutlookLanguage():
     print('Writing Outlook Langauge')
-    return('The longest U.S. expansion came to an abrupt halt in March as COVID swept across the country.' +
-           ' While the economic recovery is under way, the effects of the COVID pandemic will continue to reverberate across the U.S. economy in 2021.' +
-           ' However, the shocks that are being felt from the pandemic do not appear to be as economically catastrophic as the initial shock.' +
-           ' Still, the economic outlook remains very dependent on the evolution of vaccination levels, ' +
-           'while different sectors will continue to feel its effects in varying degrees for quite some time.' +
-           "\n" +
-           "\n" +
-           'With the public health situation improving, ' +
-           state_name +
-           ' recently lifted most COVID-related restrictions. ' +
-           'The loosening of restrictions should help support job growth in coming months, although there are signs that there could be some friction along the way' +
-           ' with the recent rise in Delta variant cases.')
-
+    return('The outlook for the ' +
+            county +
+            ' economy is '+
+            '[positive/poor]' +
+            '.')
+            
 def CreateLanguage():
     global overview_language
     global emplopyment_industry_breakdown_language,emplopyment_growth_language,unemplopyment_language,tourism_employment_language
@@ -3553,14 +3541,6 @@ def CreateLanguage():
         print('problem with unemployment language')
         unemplopyment_language = ''
 
-
-    try:
-        tourism_employment_language = TourismEmploymentLanguage()
-    except:
-        print('problem with tourism employment language')
-        tourism_employment_language = ''
-
-
     try:    
         emplopyment_growth_language = EmploymentGrowthLanguage(county_industry_breakdown=county_industry_growth_breakdown)
     except:
@@ -3579,6 +3559,18 @@ def CreateLanguage():
     except:
         print('problem with income langauge')
         income_language= ''
+
+
+
+
+
+
+
+
+
+
+
+
 
 #Report document related functions
 def SetPageMargins(document,margin_size):
@@ -3950,21 +3942,24 @@ def EmploymentSection(document):
         Citation(document,'U.S. Bureau of Labor Statistics')
 
     
-    top_emp_paragraph = document.add_paragraph("""The Region’s largest employers shown below illustrates the size of the top industries in the region, accounting for the majority of the top Employers.""")
-    top_emp_paragraph.paragraph_format.space_after = Pt(0)
-    top_emp_paragraph.paragraph_format.space_after = Pt(6)
-    top_emp_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    # top_emp_paragraph = document.add_paragraph("""The Region’s largest employers shown below illustrates the size of the top industries in the region, accounting for the majority of the top Employers.""")
+    # top_emp_paragraph.paragraph_format.space_after = Pt(0)
+    # top_emp_paragraph.paragraph_format.space_after = Pt(6)
+    # top_emp_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
     
-    table_paragraph = document.add_paragraph('The Region’s Largest Employers')
-    table_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    table_paragraph.paragraph_format.space_after  = Pt(6)
-    table_paragraph.paragraph_format.space_before = Pt(12)
-    for run in table_paragraph.runs:
-        font = run.font
-        font.name = 'Avenir Next LT Pro Medium'
+    # table_paragraph = document.add_paragraph('The Region’s Largest Employers')
+    # table_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    # table_paragraph.paragraph_format.space_after  = Pt(6)
+    # table_paragraph.paragraph_format.space_before = Pt(12)
+    # for run in table_paragraph.runs:
+    #     font = run.font
+    #     font.name = 'Avenir Next LT Pro Medium'
 
-    AddTable(document=document,data_for_table=[['Company Name','Industry'],['X','X'],['X','X'],['X','X'],['X','X'],['X','X'],['X','X'],['X','X'],['X','X'],['X','X'],['X','X'] ])
-    Citation(document=document,text='')
+    # AddTable(document=document,data_for_table=[['Company Name','Industry'],['X','X'],['X','X'],['X','X'],['X','X'],['X','X'],['X','X'],['X','X'],['X','X'],['X','X'],['X','X'] ])
+    # Citation(document=document,text='')
+
+
+
     emp_paragraph2 = document.add_paragraph(unemplopyment_language)
     emp_paragraph2.paragraph_format.space_after = Pt(0)
     emp_paragraph2.paragraph_format.space_after = Pt(6)
@@ -4015,14 +4010,6 @@ def ProductionSection(document):
         gdp_format.space_after = Pt(0)
         Citation(document,'U.S. Bureau of Economic Analysis')
     
-    #Add paragraph specific to tourism if the county has a large share of tourism employment
-    if tourism_employment_language != '':
-        document.add_paragraph('')
-        tourism_paragraph = document.add_paragraph(tourism_employment_language)
-        tourism_paragraph.paragraph_format.space_after = Pt(0)
-        tourism_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-        tourism_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-
 def DemographicsSection(document):
     print('Writing Demographic Section')
     AddHeading(document = document, title = 'Demographics',            heading_level = 2)
@@ -4222,7 +4209,8 @@ def CreateDirectoryCSV():
     service_api_csv_name = f'Dropbox Areas-{datetime.now().timestamp()}.csv'
 
     dropbox_df.to_csv(os.path.join(main_output_location, csv_name),index=False)
-    dropbox_df.to_csv(os.path.join(main_output_location, service_api_csv_name),index=False)
+    if main_output_location == os.path.join(dropbox_root,'Research','Market Analysis','Area'):
+        dropbox_df.to_csv(os.path.join(main_output_location, service_api_csv_name),index=False)
 
 def Main():
     SetGraphFormatVariables()
