@@ -2736,16 +2736,16 @@ def OverviewLanguage():
                   'The unemployment rate currently sits at ' +
                  "{:,.1f}%".format(current_unemployment)     +
                   ', '                                       +
-                  '[above/below]/equal to]'                  +
+                  '[above/below/equal to]'                  +
                   ' its historical average and '             +
                   '[above/below/equal to]'                   +
-                  'the state level of '                      +
+                  ' the state level of '                      +
                   'X%. '
 
                 #Employment growth and breakdown
                 'The largest industry in terms of employment in ' +
                 county                                            +
-                'is '                                             +
+                ' is '                                             +
                 'XYZ'                                             +
                 ' which employs '                                 +
                 'X%'                                              +
