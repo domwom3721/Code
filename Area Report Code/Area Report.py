@@ -2683,26 +2683,31 @@ def OverviewLanguage():
 
     #Section 2: Create an economic overview paragraph using the data we have on the county, MSA, and state
     current_period             = str(county_employment['period'].iloc[-1])
+    current_unemployment       = county_unemployment_rate['unemployment_rate'].iloc[-1]
 
-    feb_2020_jobs              = county_employment.loc[(county_employment['periodName']=='February') & (county_employment['year'] == '2020') ]
-    feb_2020_jobs              = feb_2020_jobs['Employment'].iloc[-1]
+
+
+
+
+    # feb_2020_jobs              = county_employment.loc[(county_employment['periodName']=='February') & (county_employment['year'] == '2020') ]
+    # feb_2020_jobs              = feb_2020_jobs['Employment'].iloc[-1]
     
-    april_2020_jobs            = county_employment.loc[(county_employment['periodName']=='April') & (county_employment['year']=='2020')]
-    april_2020_jobs            = april_2020_jobs['Employment'].iloc[-1]
+    # april_2020_jobs            = county_employment.loc[(county_employment['periodName']=='April') & (county_employment['year']=='2020')]
+    # april_2020_jobs            = april_2020_jobs['Employment'].iloc[-1]
     
 
-    current_jobs               = county_employment['Employment'].iloc[-1]
+    # current_jobs               = county_employment['Employment'].iloc[-1]
 
-    spring_job_losses_2020     =   feb_2020_jobs - april_2020_jobs
-    spring_job_losses_2020_pct =   (spring_job_losses_2020/feb_2020_jobs) * 100
+    # spring_job_losses_2020     =   feb_2020_jobs - april_2020_jobs
+    # spring_job_losses_2020_pct =   (spring_job_losses_2020/feb_2020_jobs) * 100
 
-    jobs_recovered             =   current_jobs  - april_2020_jobs
-    jobs_recovered_pct         = ((jobs_recovered/spring_job_losses_2020)) * 100
+    # jobs_recovered             =   current_jobs  - april_2020_jobs
+    # jobs_recovered_pct         = ((jobs_recovered/spring_job_losses_2020)) * 100
     
-    spring_job_losses_2020      = "{:,}".format(spring_job_losses_2020)
-    jobs_recovered_pct          = "{:,.1f}%".format(jobs_recovered_pct)
-    jobs_recovered              = "{:,}".format(jobs_recovered)
-    spring_job_losses_2020_pct  = "{:,.1f}%".format(spring_job_losses_2020_pct)
+    # spring_job_losses_2020      = "{:,}".format(spring_job_losses_2020)
+    # jobs_recovered_pct          = "{:,.1f}%".format(jobs_recovered_pct)
+    # jobs_recovered              = "{:,}".format(jobs_recovered)
+    # spring_job_losses_2020_pct  = "{:,.1f}%".format(spring_job_losses_2020_pct)
     
     #If in a metro area refer to the effect on that economy, else use the county name
     if cbsa != '':
@@ -2713,29 +2718,40 @@ def OverviewLanguage():
         metro_or_county = 'County'
 
 
-    economic_overview_paragraph = ('The COVID crisis halted the global economy including the '+
-                  greater_area      +
-                   '. '             + 
-                   'At the onset of the pandemic last spring, ' +
-                   county + 
-                   ' area employers shed over ' + 
-                   spring_job_losses_2020 +
-                   ' jobs (' +
-                    spring_job_losses_2020_pct +
-                   ' of the labor market)' +
-                   ', as social distancing protocols were put in place and ' + 
-                   'operating restrictions were imposed on many businesses in the retail, office, and hospitality sectors. ' +
-                   'Fortunately, consumer spending and lower case counts resulted in record Q3 GDP growth, fueling improvement in the labor market over the course of 2021. ' +
-                   'As of ' +
-                   current_period +
-                   ', employers have recouped ' +
-                   jobs_recovered_pct +
-                   ' (' +
-                   jobs_recovered +
-                   ')'
-                   ' of those jobs. ' +
-                   'The availability of and widespread use of vaccinations have aided the economy over the first half of 2021, '+
-                   'but the Delta variant has led to recent worry and restrictions, that could slow growth over the 2nd half of 2021. ')
+    economic_overview_paragraph = (
+
+                    #GDP Sentence
+                   'As of '                  +
+                   current_period            +
+                   ', '                      +
+                   county                    + 
+                   """'s"""                  +
+                   ' economy is growing at ' +
+                   'X%'                      +
+                   ' per year. '             +
+                   
+
+
+                  #Unemployment sentence
+                  'The unemployment rate currently sits at ' +
+                 "{:,.1f}%".format(current_unemployment)     +
+                  ', '                                       +
+                  '[above/below]/equal to]'                  +
+                  ' its historical average and '             +
+                  '[above/below/equal to]'                   +
+                  'the state level of '                      +
+                  'X%. '
+
+                #Employment growth and breakdown
+                'The largest industry in terms of employment in ' +
+                county                                            +
+                'is '                                             +
+                'XYZ'                                             +
+                ' which employs '                                 +
+                'X%'                                              +
+                ' of all workers in the County.'
+
+                   )
     
     
     #Section 3: Put together our 3 sections and return it
