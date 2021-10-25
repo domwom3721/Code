@@ -47,7 +47,7 @@ from wikipedia.wikipedia import random
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
 project_location               =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Projects','Research Report Automation Project') 
 main_output_location           =  os.path.join(project_location,'Output','Area') #Testing
-main_output_location           =  os.path.join(dropbox_root,'Research','Market Analysis','Area') #Production
+# main_output_location           =  os.path.join(dropbox_root,'Research','Market Analysis','Area') #Production
 general_data_location          =  os.path.join(project_location,'Data','General Data')
 data_location                  =  os.path.join(project_location,'Data','Area Reports Data')
 graphics_location              =  os.path.join(project_location,'Data','Graphics')
@@ -2662,6 +2662,26 @@ def millify(n):
 
 def OverviewLanguage():
     print('Writing Overview Langauge')
+
+
+    #Section 1: Grab summary text from Wikipedia
+    try:
+        wikipeida_summary      =  wikipedia.summary((county + ',' + state))
+        wikipeida_summary      = wikipeida_summary.replace('the U.S. state of ','')
+    except Exception as e:
+        print(e)
+        wikipeida_summary      = ''
+
+    try:
+        # page                                    = wikipedia.page((county + ',' + state))
+        wikipeida_economy_summary                 = wikipedia.page((county + ',' + state)).section('Economy')
+        assert wikipeida_economy_summary != None
+    except Exception as e:
+        print(e)
+        wikipeida_economy_summary               = ''
+
+
+    #Section 2: Create an economic overview paragraph using the data we have on the county, MSA, and state
     current_period             = str(county_employment['period'].iloc[-1])
 
     feb_2020_jobs              = county_employment.loc[(county_employment['periodName']=='February') & (county_employment['year'] == '2020') ]
@@ -2679,13 +2699,6 @@ def OverviewLanguage():
     jobs_recovered             =   current_jobs  - april_2020_jobs
     jobs_recovered_pct         = ((jobs_recovered/spring_job_losses_2020)) * 100
     
-    #Check if total employment has recovered from Covid losses
-    if jobs_recovered_pct >= 100:
-        fully_recovered_employment = True
-    else:
-        fully_recovered_employment = False
-
-
     spring_job_losses_2020      = "{:,}".format(spring_job_losses_2020)
     jobs_recovered_pct          = "{:,.1f}%".format(jobs_recovered_pct)
     jobs_recovered              = "{:,}".format(jobs_recovered)
@@ -2700,10 +2713,7 @@ def OverviewLanguage():
         metro_or_county = 'County'
 
 
-
-
-
-    boiler_plate = ('The COVID crisis halted the global economy including the '+
+    economic_overview_paragraph = ('The COVID crisis halted the global economy including the '+
                   greater_area      +
                    '. '             + 
                    'At the onset of the pandemic last spring, ' +
@@ -2715,14 +2725,6 @@ def OverviewLanguage():
                    ' of the labor market)' +
                    ', as social distancing protocols were put in place and ' + 
                    'operating restrictions were imposed on many businesses in the retail, office, and hospitality sectors. ' +
-                   #state_name +
-                   #' ' +
-                   #covid_hotspot_was_or_wasnot +
-                   #' a hotspot for the virus, ' + 
-                   #covid_lockdown_conjunction +
-                   #' policymakers imposed a ' +
-                   #covid_lockdown_description +
-                   #' lockdown across the state. ' + 
                    'Fortunately, consumer spending and lower case counts resulted in record Q3 GDP growth, fueling improvement in the labor market over the course of 2021. ' +
                    'As of ' +
                    current_period +
@@ -2731,33 +2733,14 @@ def OverviewLanguage():
                    ' (' +
                    jobs_recovered +
                    ')'
-                 ' of those jobs. ' +
-                   'The availability of and widespread use of vaccinations have aided the economy over the first half of 2021, but the Delta variant has led to recent worry and restrictions, that could slow growth over the 2nd half of 2021. ')
-    if fully_recovered_employment == False:
-        boiler_plate = boiler_plate + ('While fundamentals are pointing in the right direction, it will likely take some time for the ' +
-               metro_or_county +
-                ' to fully return to pre-pandemic levels of employment.')
-
-
-    try:
-        summary                =  wikipedia.summary((county + ',' + state))
-        summary                = summary.replace('the U.S. state of ','')
-        page                   = wikipedia.page((county + ',' + state))
-        economy                = page.section('Economy')
-        if economy != None:
-            return(summary + 
-                  "\n"     +
-                  "\n"     +
-                   economy + 
-                   "\n" +
-                   "\n"     +
-                   boiler_plate
-            )
-        else:
-            return(summary + "\n" + "\n"  + boiler_plate)
-
-    except:
-        return(boiler_plate)
+                   ' of those jobs. ' +
+                   'The availability of and widespread use of vaccinations have aided the economy over the first half of 2021, '+
+                   'but the Delta variant has led to recent worry and restrictions, that could slow growth over the 2nd half of 2021. ')
+    
+    
+    #Section 3: Put together our 3 sections and return it
+    overview_language = [wikipeida_summary,wikipeida_economy_summary, economic_overview_paragraph]
+    return(overview_language)
 
 def EmploymentBreakdownLanguage(county_industry_breakdown):
     print('Writing Employment Breakdown Langauge')
@@ -3911,14 +3894,16 @@ def OverviewSection(document):
     print('Writing Overview Section')
     AddHeading(document = document, title = 'Overview',            heading_level = 2)
 
-    
-    summary_paragraph = document.add_paragraph(overview_language)
-    summary_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-    summary_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    summary_format = document.styles['Normal'].paragraph_format
-    summary_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
-    summary_style =  summary_paragraph.style
-    summary_style.font.name =primary_font
+    for paragraph in overview_language:
+        if paragraph == '': #Skip blank sections
+            continue
+        summary_paragraph = document.add_paragraph(paragraph)
+        summary_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
+        summary_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        summary_format = document.styles['Normal'].paragraph_format
+        summary_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
+        summary_style =  summary_paragraph.style
+        summary_style.font.name =primary_font
     
 
     #Overview table title
