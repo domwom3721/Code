@@ -3908,7 +3908,6 @@ def OverviewSection(document):
     run = page_break_paragraph.add_run()
     run.add_break(WD_BREAK.PAGE)
     
-
 def EmploymentSection(document):
     print('Writing Employment Section')
     AddHeading(document = document, title = 'Employment',            heading_level = 2)
@@ -3976,6 +3975,10 @@ def EmploymentSection(document):
     ur_format = document.styles['Normal'].paragraph_format
     ur_format.space_after = Pt(0)
 
+    page_break_paragraph = document.add_paragraph('')
+    run = page_break_paragraph.add_run()
+    run.add_break(WD_BREAK.PAGE)
+
 def ProductionSection(document):
     print('Writing Production Section')
     AddHeading(document = document, title = 'Economic Production',            heading_level = 2)
@@ -3992,6 +3995,10 @@ def ProductionSection(document):
         gdp_format = document.styles['Normal'].paragraph_format
         gdp_format.space_after = Pt(0)
         Citation(document,'U.S. Bureau of Economic Analysis')
+    
+    page_break_paragraph = document.add_paragraph('')
+    run = page_break_paragraph.add_run()
+    run.add_break(WD_BREAK.PAGE)
     
 def DemographicsSection(document):
     print('Writing Demographic Section')
@@ -4026,6 +4033,10 @@ def DemographicsSection(document):
 
     pop_format = document.styles['Normal'].paragraph_format
     pop_format.space_after = Pt(0)
+
+    page_break_paragraph = document.add_paragraph('')
+    run = page_break_paragraph.add_run()
+    run.add_break(WD_BREAK.PAGE)
 
 def InfrastructureSection(document):
     print('Writing Infrastructure Section')
