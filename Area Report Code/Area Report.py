@@ -2852,9 +2852,9 @@ def UnemploymentLanguage():
 
     one_year_percent_employment_change = ((latest_county_employment/one_year_ago_county_employment) -1 ) * 100
     if one_year_percent_employment_change > 0:
-        up_or_down = 'down ' + "{:,.0f}%".format(abs(one_year_percent_employment_change)) 
-    elif one_year_percent_employment_change < 0:
         up_or_down = 'up ' + "{:,.0f}%".format(abs(one_year_percent_employment_change)) 
+    elif one_year_percent_employment_change < 0:
+        up_or_down = 'down ' + "{:,.0f}%".format(abs(one_year_percent_employment_change)) 
     elif one_year_percent_employment_change == 0:
         up_or_down = 'unchanged'
 
