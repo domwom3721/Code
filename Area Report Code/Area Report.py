@@ -2912,10 +2912,10 @@ def UnemploymentLanguage():
             ', '                       +        
             state_county_unemployment_difference +
            state_county_unemployment_above_or_below +
-           ' the ' +
+           ' the '    +
            state_name + 
-           ' rate of '+
-           latest_state_unemployment + 
+           ' rate '   +
+            "{state_unemployment}".format(state_unemployment =('of '      + latest_state_unemployment ) if (latest_county_unemployment != latest_state_unemployment)  else   ('')) +           
            '. '                     +
 
 
