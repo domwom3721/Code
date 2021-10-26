@@ -2850,17 +2850,16 @@ def UnemploymentLanguage():
     latest_county_employment       = county_employment['Employment'].iloc[-1]
     one_year_ago_county_employment = county_employment['Employment'].iloc[-13]
 
-    one_year_percent_employment_fall = (1 - (latest_county_employment/one_year_ago_county_employment) ) * 100
-    if one_year_percent_employment_fall > 0:
-        up_or_down = 'down'
-    elif one_year_percent_employment_fall < 0:
-        up_or_down = 'up'
-    else:
+    one_year_percent_employment_change = ((latest_county_employment/one_year_ago_county_employment) -1 ) * 100
+    if one_year_percent_employment_change > 0:
+        up_or_down = 'down ' + "{:,.0f}%".format(abs(one_year_percent_employment_change)) 
+    elif one_year_percent_employment_change < 0:
+        up_or_down = 'up ' + "{:,.0f}%".format(abs(one_year_percent_employment_change)) 
+    elif one_year_percent_employment_change == 0:
         up_or_down = 'unchanged'
 
     
 
-    one_year_percent_employment_fall       = "{:,.0f}%".format(abs(one_year_percent_employment_fall))
 
     
 
@@ -2924,8 +2923,6 @@ def UnemploymentLanguage():
            latest_period +
            ', total employment is ' +
           up_or_down +
-           ' ' +
-           one_year_percent_employment_fall +
            ' on a year-over-year basis.'       
            )
 
