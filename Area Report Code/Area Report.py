@@ -29,6 +29,7 @@ from census import Census
 from docx import Document
 from docx.enum.table import WD_ALIGN_VERTICAL, WD_TABLE_ALIGNMENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
+from docx.enum.text import WD_BREAK
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.oxml.table import CT_Row, CT_Tc
@@ -3902,6 +3903,11 @@ def OverviewSection(document):
 
     #Creating Overview Table
     AddTable(document = document,data_for_table = GetDataAndLanguageForOverviewTable())
+    
+    page_break_paragraph = document.add_paragraph('')
+    run = page_break_paragraph.add_run()
+    run.add_break(WD_BREAK.PAGE)
+    
 
 def EmploymentSection(document):
     print('Writing Employment Section')
