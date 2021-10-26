@@ -3128,7 +3128,11 @@ def ProductionLanguage(county_data_frame,msa_data_frame,state_data_frame):
         gdp_growth_description = 'strong'
     elif latest_county_gdp_growth < 3.5 and (latest_county_gdp_growth >= 1.25):
         gdp_growth_description = 'steady'
-    elif latest_county_gdp_growth < 1.25 and (latest_county_gdp_growth >= 0):
+    elif latest_county_gdp_growth < 1.25 and (latest_county_gdp_growth >= 0.5):
+        gdp_growth_description = 'modest'
+    elif latest_county_gdp_growth < 0.5 and (latest_county_gdp_growth >= 0.25):
+        gdp_growth_description = 'weak'
+    elif latest_county_gdp_growth < 0.25 and (latest_county_gdp_growth >= 0):
         gdp_growth_description = 'stagnant'
     elif latest_county_gdp_growth < 0 :
         gdp_growth_description = 'negative'
