@@ -2716,14 +2716,6 @@ def OverviewLanguage():
     largest_industry                                  = county_industry_breakdown['industry_code'].iloc[-1]
     largest_industry_employment_fraction              = county_industry_breakdown['employment_fraction'].iloc[-1]
 
-    # #If in a metro area refer to the effect on that economy, else use the county name
-    # if cbsa != '':
-    #     greater_area = 'Greater ' + cbsa_name + ' area economy'
-    #     metro_or_county = 'Metro'
-    # else:
-    #     greater_area =  county + ' economy'
-    #     metro_or_county = 'County'
-
     #Compare current county unemployment rate to hisorical average
     if current_unemployment > historical_average_unemployment:
         unemployment_above_below_hist_avg = 'above'
@@ -2850,7 +2842,7 @@ def EmploymentBreakdownLanguage(county_industry_breakdown):
            ') ' +
            'workers in the County, respectively. ' +
 
-            "{high_concentration_sentence}".format(high_concentration_sentence = (county + ' has an especially large share of workers in the ' + highest_relative_concentration_industry + """ industry. In fact, its """ +  "{:,.1f}%".format(highest_relative_concentration_employment_fraction) + ' fraction of workers is ' +  "{:,.1f}".format(highest_relative_concentration_industry_lq) + ' times higher than the National average.'   ) if highest_relative_concentration_industry_lq >= 1.25  else "") 
+            "{high_concentration_sentence}".format(high_concentration_sentence = (county + ' has an especially large share of workers in the ' + highest_relative_concentration_industry + """ industry. In fact, its """ +  "{:,.1f}%".format(highest_relative_concentration_employment_fraction) + ' fraction of workers is ' +  "{:,.1f}".format(highest_relative_concentration_industry_lq) + ' times higher than the National average.'   ) if highest_relative_concentration_industry_lq >= 1.75  else "") 
 
 
         )
@@ -2876,8 +2868,17 @@ def UnemploymentLanguage():
     
 
     #Get latest state and county unemployment rate
-    latest_county_unemployment     = county_unemployment_rate['unemployment_rate'].iloc[-1]
-    latest_state_unemployment      = state_unemployment_rate['unemployment_rate'].iloc[-1]
+    latest_county_unemployment          = county_unemployment_rate['unemployment_rate'].iloc[-1]
+    one_year_ago_county_unemployment    = county_unemployment_rate['unemployment_rate'].iloc[-13]
+    latest_state_unemployment           = state_unemployment_rate['unemployment_rate'].iloc[-1]
+
+    #Change in unemployment rate over past year
+    if latest_county_unemployment == one_year_ago_county_unemployment:
+        unemployment_change = 'remained stable over the past year at '
+    elif latest_county_unemployment > one_year_ago_county_unemployment:
+        unemployment_change = 'expanded over the past year to the current rate of '
+    elif latest_county_unemployment < one_year_ago_county_unemployment:
+        unemployment_change = 'compressed over the past year to the current rate of '
 
     #See if county unemployment rate is above or below state rate
     if latest_state_unemployment > latest_county_unemployment:
@@ -2896,51 +2897,23 @@ def UnemploymentLanguage():
         state_county_unemployment_difference = ''
 
 
-    
-    feb_2020_jobs          = county_employment.loc[(county_employment['periodName']=='February') & (county_employment['year'] == '2020') ]
-    feb_2020_jobs          = feb_2020_jobs['Employment'].iloc[-1]
-
-    april_2020_jobs        = county_employment.loc[(county_employment['periodName']=='April') & (county_employment['year']=='2020')]
-    april_2020_jobs        = april_2020_jobs['Employment'].iloc[-1]
-    
-    percent_below_pre_pandemic_employment_levels = (1 - (latest_county_employment/feb_2020_jobs) ) *100
-    # percent_below_pre_pandemic_employment_levels = "{:,.0f}%".format(percent_below_pre_pandemic_employment_levels)
-
-    spring_job_losses_2020     =   feb_2020_jobs - april_2020_jobs
-    spring_job_losses_2020_pct =   (spring_job_losses_2020/feb_2020_jobs) * 100
 
     latest_county_employment       = "{:,}".format(latest_county_employment)
     latest_county_unemployment     = "{:,.1f}%".format(latest_county_unemployment)
     latest_state_unemployment      = "{:,.1f}%".format(latest_state_unemployment)
-    spring_job_losses_2020_pct     = "{:,.1f}%".format(spring_job_losses_2020_pct)
 
 
-
-    feb_2020_unemployment_rate        = county_unemployment_rate.loc[(county_unemployment_rate['periodName']=='February') & (county_unemployment_rate['year']=='2020')]
-    feb_2020_unemployment_rate        = feb_2020_unemployment_rate['unemployment_rate'].iloc[-1]
-    feb_2020_unemployment_rate        = "{:,.1f}%".format(feb_2020_unemployment_rate)
-
-    april_2020_unemployment_rate        = county_unemployment_rate.loc[(county_unemployment_rate['periodName']=='April') & (county_unemployment_rate['year']=='2020')]
-    april_2020_unemployment_rate        = april_2020_unemployment_rate['unemployment_rate'].iloc[-1]
-    april_2020_unemployment_rate        = "{:,.1f}%".format(april_2020_unemployment_rate)
-    
 
 
     return( 
             #Sentence 1: Discuss current unemployment
-            'The unemployment rate in ' +
-            county + 
-            ' has '+
-            '[compressed/expanded/remained stable]' +
-            ' over the past year '
-            ' to the current rate of ' +
+            'The unemployment rate in '+
+            county                     + 
+            ' has '                    +
+          unemployment_change          +
             latest_county_unemployment +
-            '. '                         +
-
-            
-          #Sentence 2: Discuss how unemployment rate compares to state
-          'This unemployment rate is ' +
-           state_county_unemployment_difference +
+            ', '                       +        
+            state_county_unemployment_difference +
            ' ' +
            state_county_unemployment_above_or_below +
            ' the ' +
@@ -2950,7 +2923,7 @@ def UnemploymentLanguage():
            '. '                     +
 
 
-        #Sentence 3: Discuss growth in total employment
+        #Sentence 2: Discuss growth in total employment
             'As of '+
            latest_period +
            ', total employment is ' +
