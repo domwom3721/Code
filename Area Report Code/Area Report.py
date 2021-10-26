@@ -2708,75 +2708,73 @@ def OverviewLanguage():
 
 
     #Section 2: Create an economic overview paragraph using the data we have on the county, MSA, and state
-    current_period             = str(county_employment['period'].iloc[-1])
-    current_unemployment       = county_unemployment_rate['unemployment_rate'].iloc[-1]
+    current_period                                    = str(county_employment['period'].iloc[-1])
+    current_unemployment                              = county_unemployment_rate['unemployment_rate'].iloc[-1]
+    historical_average_unemployment                   = county_unemployment_rate['unemployment_rate'].mean()
+    current_gdp_growth                                = ((county_gdp['GDP'].iloc[-1]/county_gdp['GDP'].iloc[-2]) - 1 ) * 100
+    current_state_unemployment                        = state_unemployment_rate['unemployment_rate'].iloc[-1]
+    largest_industry                                  = county_industry_breakdown['industry_code'].iloc[-1]
+    largest_industry_employment_fraction              = county_industry_breakdown['employment_fraction'].iloc[-1]
 
+    # #If in a metro area refer to the effect on that economy, else use the county name
+    # if cbsa != '':
+    #     greater_area = 'Greater ' + cbsa_name + ' area economy'
+    #     metro_or_county = 'Metro'
+    # else:
+    #     greater_area =  county + ' economy'
+    #     metro_or_county = 'County'
 
-
-
-
-    # feb_2020_jobs              = county_employment.loc[(county_employment['periodName']=='February') & (county_employment['year'] == '2020') ]
-    # feb_2020_jobs              = feb_2020_jobs['Employment'].iloc[-1]
-    
-    # april_2020_jobs            = county_employment.loc[(county_employment['periodName']=='April') & (county_employment['year']=='2020')]
-    # april_2020_jobs            = april_2020_jobs['Employment'].iloc[-1]
-    
-
-    # current_jobs               = county_employment['Employment'].iloc[-1]
-
-    # spring_job_losses_2020     =   feb_2020_jobs - april_2020_jobs
-    # spring_job_losses_2020_pct =   (spring_job_losses_2020/feb_2020_jobs) * 100
-
-    # jobs_recovered             =   current_jobs  - april_2020_jobs
-    # jobs_recovered_pct         = ((jobs_recovered/spring_job_losses_2020)) * 100
-    
-    # spring_job_losses_2020      = "{:,}".format(spring_job_losses_2020)
-    # jobs_recovered_pct          = "{:,.1f}%".format(jobs_recovered_pct)
-    # jobs_recovered              = "{:,}".format(jobs_recovered)
-    # spring_job_losses_2020_pct  = "{:,.1f}%".format(spring_job_losses_2020_pct)
-    
-    #If in a metro area refer to the effect on that economy, else use the county name
-    if cbsa != '':
-        greater_area = 'Greater ' + cbsa_name + ' area economy'
-        metro_or_county = 'Metro'
-    else:
-        greater_area =  county + ' economy'
-        metro_or_county = 'County'
-
+    #Compare current county unemployment rate to hisorical average
+    if current_unemployment > historical_average_unemployment:
+        unemployment_above_below_hist_avg = 'above'
+    elif current_unemployment < historical_average_unemployment:
+        unemployment_above_below_hist_avg = 'below'
+    elif current_unemployment == historical_average_unemployment:
+        unemployment_above_below_hist_avg = 'equal to'
+        
+    #Compare current county unemployment rate to state unemployment
+    if current_unemployment > current_state_unemployment:
+        unemployment_above_below_state = 'above'
+    elif current_unemployment < current_state_unemployment:
+        unemployment_above_below_state= 'below'
+    elif current_unemployment == current_state_unemployment:
+        unemployment_above_below_state = 'equal to'
+        
 
     economic_overview_paragraph = (
-
                     #GDP Sentence
                    'As of '                  +
                    current_period            +
                    ', '                      +
                    county                    + 
                    """'s"""                  +
-                   ' economy is growing at ' +
-                   'X%'                      +
+                   ' economy is '            +
+                 "{growing_or_contracting}".format(growing_or_contracting = "growing" if (current_gdp_growth >= 0)  else   ('contracting')) +
+                   ' at ' +
+                 "{:,.1f}%".format(abs(current_gdp_growth))     +
                    ' per year. '             +
                    
-
-
                   #Unemployment sentence
-                  'The unemployment rate currently sits at ' +
-                 "{:,.1f}%".format(current_unemployment)     +
-                  ', '                                       +
-                  '[above/below/equal to]'                  +
-                  ' its historical average and '             +
-                  '[above/below/equal to]'                   +
-                  ' the state level of '                      +
-                  'X%. '
+                  'The unemployment rate currently sits at '  +
+                 "{:,.1f}%".format(current_unemployment)      +
+                  ', '                                        +
+                 unemployment_above_below_hist_avg            +
+                 ' its historical average and '              +
+                 unemployment_above_below_state                 + 
+                ' the state level of '                      +
+                  "{:,.1f}%".format(current_state_unemployment)  +
+                  '. '                                        +
 
                 #Employment growth and breakdown
                 'The largest industry in terms of employment in ' +
                 county                                            +
-                ' is '                                             +
-                'XYZ'                                             +
-                ' which employs '                                 +
-                'X%'                                              +
+                ' is '                                            +
+                largest_industry                                  +
+                ', which employs '                                 +
+               "{:,.1f}%".format(largest_industry_employment_fraction)  +
                 ' of all workers in the County.'
 
+            
                    )
     
     
