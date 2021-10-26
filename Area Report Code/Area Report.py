@@ -2699,7 +2699,6 @@ def OverviewLanguage():
         wikipeida_summary      = ''
 
     try:
-        # page                                    = wikipedia.page((county + ',' + state))
         wikipeida_economy_summary                 = wikipedia.page((county + ',' + state)).section('Economy')
         assert wikipeida_economy_summary != None
     except Exception as e:
@@ -2726,11 +2725,11 @@ def OverviewLanguage():
         
     #Compare current county unemployment rate to state unemployment
     if current_unemployment > current_state_unemployment:
-        unemployment_above_below_state = 'above'
+        unemployment_above_below_state = 'above the state level of ' +"{:,.1f}%".format(current_state_unemployment)  
     elif current_unemployment < current_state_unemployment:
-        unemployment_above_below_state= 'below'
+        unemployment_above_below_state= 'below the state level of ' +"{:,.1f}%".format(current_state_unemployment)
     elif current_unemployment == current_state_unemployment:
-        unemployment_above_below_state = 'equal to'
+        unemployment_above_below_state = 'equal to the state level'
         
 
     economic_overview_paragraph = (
@@ -2751,10 +2750,8 @@ def OverviewLanguage():
                  "{:,.1f}%".format(current_unemployment)      +
                   ', '                                        +
                  unemployment_above_below_hist_avg            +
-                 ' its historical average and '              +
-                 unemployment_above_below_state                 + 
-                ' the state level of '                      +
-                  "{:,.1f}%".format(current_state_unemployment)  +
+                 ' its historical average and '               +
+                 unemployment_above_below_state               +
                   '. '                                        +
 
                 #Employment growth and breakdown
@@ -2890,9 +2887,9 @@ def UnemploymentLanguage():
 
     #Check how far apart state and county unemployment rates are
     if abs(latest_state_unemployment - latest_county_unemployment) > 1.5:
-        state_county_unemployment_difference = 'considerably'
+        state_county_unemployment_difference = 'considerably '
     elif abs(latest_state_unemployment - latest_county_unemployment) > 0:
-        state_county_unemployment_difference = 'just slightly'
+        state_county_unemployment_difference = 'just slightly '
     else:
         state_county_unemployment_difference = ''
 
@@ -2914,7 +2911,6 @@ def UnemploymentLanguage():
             latest_county_unemployment +
             ', '                       +        
             state_county_unemployment_difference +
-           ' ' +
            state_county_unemployment_above_or_below +
            ' the ' +
            state_name + 
