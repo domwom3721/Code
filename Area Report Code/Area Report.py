@@ -3321,24 +3321,24 @@ def PopulationLanguage(national_resident_pop):
 
 def InfrastructureLanguage():
     print('Writing Infrastructure Langauge')
+
+    #Section 1: Grab language on infrastructure from Wikipedia API
     page                      =  wikipedia.page((county + ',' + state))
     infrastructure            =  page.section('Infrastructure')
-    Transportation            =  page.section('Transportation')
-    Public_transportation     =  page.section('Public transportation')
+    transportation            =  page.section('Transportation')
+    public_transportation     =  page.section('Public transportation')
 
+    infrastructure_language = [] #this is an empty list we will fill with paragraphs and return 
+    for wikipedia_section in [infrastructure,transportation,public_transportation]:
+        if wikipedia_section != None:
+            infrastructure_language.append(wikipedia_section)
+
+    #Section 2: Create basic phrase we can insert if there is nothing from Wikipedia
     infrastructure_boiler_plate = 'The '  + county + ' region has many transportation assets, including the X, X, X, and X. With access to multiple interstate systems, travel time to work is about average both within the state and nationally.'    
+    if infrastructure_language == []:
+        infrastructure_language.append(infrastructure_boiler_plate)
 
-    if Transportation != None:
-        return(infrastructure_boiler_plate  + "\n" + Transportation + "\n")
-    
-    elif  infrastructure != None:
-        return(infrastructure_boiler_plate  + "\n" + infrastructure + "\n") 
-
-    
-    elif  Public_transportation != None:
-        return(infrastructure_boiler_plate  + "\n" + Public_transportation + "\n") 
-
-    return(infrastructure_boiler_plate  + "\n")
+    return(infrastructure_language)
 
 def WikipediaTransitLanguage(category):
     #Searches through a wikipedia page for a number of section titles and returns the text from them (if any)
@@ -4019,9 +4019,13 @@ def InfrastructureSection(document):
     print('Writing Infrastructure Section')
     AddHeading(document = document, title = 'Infrastructure',            heading_level = 2)
 
-    production_paragraph = document.add_paragraph(infrastructure_language)
-    production_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-    production_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    for paragreaph in infrastructure_language:
+        production_paragraph = document.add_paragraph(paragreaph)
+        production_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
+        production_paragraph.paragraph_format.space_before = Pt(6)
+        production_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+
+
 
     table_paragraph = document.add_paragraph('Transportation Methods')
     table_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
