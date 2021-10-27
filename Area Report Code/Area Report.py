@@ -3542,7 +3542,7 @@ def OutlookLanguage():
 
     elif county_5y_growth == 0 and county_1y_growth == 0:
         county_demographic_sentence = (county + """'s""" + ' population has seen no change over the past five years.') 
-        
+
     else:
         county_demographic_sentence = ('')
 
@@ -3791,7 +3791,6 @@ def GetDataAndLanguageForOverviewTable():
     else:
         current_county_pci = 0
 
-    print('Calculating county lagged values for overview table')
 
     lagged_county_employment = county_employment['Employment'].iloc[-1 - (growth_period * 12)] #the employment data is monthly
 
