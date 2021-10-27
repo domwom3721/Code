@@ -3477,9 +3477,9 @@ def OutlookLanguage():
     county_gdp_growth_difference   =                (county_gdp_growth - national_gdp_growth ) * 100
 
     
-    county_gdp_sentence = ('Between, ' + str(county_gdp_min_year)[8:12] + ' and ' +  str(county_gdp_max_year)[8:12] + ', ' + county + ' GDP grew ' + "{:,.1f}%".format(county_gdp_growth) + '. ' +
+    county_gdp_sentence = ('Between, ' + "{:,.0f}".format(county_gdp_min_year)  + ' and ' +  "{:,.0f}".format(county_gdp_max_year)  + ', ' + county + ' GDP grew ' + "{:,.1f}%".format(county_gdp_growth) + '. ' +
                             'This growth rate ' +
-                             "{leads_or_lags}".format(leads_or_lags =('lead the national average by ' +  "{:,.0f} bps".format(county_gdp_growth_difference) + ' during this period.') if (county_gdp_growth_difference > 0)  else   ('lagged the national average by ' + "{:,.0f} bps".format(abs(county_gdp_growth_difference)) + ' during this period.')) 
+                             "{leads_or_lags}".format(leads_or_lags =('lead the national average by ' +  "{:,.0f} bps".format(county_gdp_growth_difference) + ' during this period.') if (county_gdp_growth_difference > 0)  else   ('lagged the national average by ' + "{:,.0f} bps".format(abs(county_gdp_growth_difference)) + ' during this period. ')) 
                             )
 
     #Unemployment sentence
@@ -3515,7 +3515,7 @@ def OutlookLanguage():
         
         
     county_unemployment_sentence = ('The current unemployment rate in ' + county + ' of ' + "{:,.1f}%".format(current_unemployment) + ' is ' + unemployment_above_below_hist_avg + ' its 5-year average. ' +
-                                    'It is ' + unemployment_above_below_state + ' and ' +  unemployment_above_below_national + 'the state ' +  '(' + "{:,.1f}%".format(current_state_unemployment)  + ')'  + ' and national average '  + '(' "{:,.1f}%".format(current_national_unemployment) + ')' ', respectively. '
+                                    'It is ' + unemployment_above_below_state + ' and ' +  unemployment_above_below_national + ' the state ' +  '(' + "{:,.1f}%".format(current_state_unemployment)  + ')'  + ' and national average '  + '(' "{:,.1f}%".format(current_national_unemployment) + ')' ', respectively. '
                                     )
 
     #Demographics/Population
