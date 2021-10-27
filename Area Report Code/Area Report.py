@@ -3477,7 +3477,7 @@ def OutlookLanguage():
     county_gdp_growth_difference   =                (county_gdp_growth - national_gdp_growth ) * 100
 
     
-    county_gdp_sentence = ('Between, ' + str(county_gdp_min_year)[7:11] + ' and ' +  str(county_gdp_max_year)[7:11] + ', ' + county + ' GDP grew ' + "{:,.1f}%".format(county_gdp_growth) + '. ' +
+    county_gdp_sentence = ('Between, ' + str(county_gdp_min_year)[8:12] + ' and ' +  str(county_gdp_max_year)[8:12] + ', ' + county + ' GDP grew ' + "{:,.1f}%".format(county_gdp_growth) + '. ' +
                             'This growth rate ' +
                              "{leads_or_lags}".format(leads_or_lags =('lead the national average by ' +  "{:,.0f} bps".format(county_gdp_growth_difference) + ' during this period.') if (county_gdp_growth_difference > 0)  else   ('lagged the national average by ' + "{:,.0f} bps".format(abs(county_gdp_growth_difference)) + ' during this period.')) 
                             )
@@ -3515,11 +3515,36 @@ def OutlookLanguage():
         
         
     county_unemployment_sentence = ('The current unemployment rate in ' + county + ' of ' + "{:,.1f}%".format(current_unemployment) + ' is ' + unemployment_above_below_hist_avg + ' its 5-year average. ' +
-                                    'It is ' + unemployment_above_below_state + ' and ' +  unemployment_above_below_national + 'the state ' + "{:,.1f}%".format(current_state_unemployment) + '(' + ')'  + ' and national average ' + "{:,.1f}%".format(current_national_unemployment) + '(' + ')' ', respectively.'
+                                    'It is ' + unemployment_above_below_state + ' and ' +  unemployment_above_below_national + 'the state ' +  '(' + "{:,.1f}%".format(current_state_unemployment)  + ')'  + ' and national average '  + '(' "{:,.1f}%".format(current_national_unemployment) + ')' ', respectively. '
                                     )
 
     #Demographics/Population
-    county_demographic_sentence = ('')
+    county_resident_pop['Resident Population_1year_growth'] =  (((county_resident_pop['Resident Population']/county_resident_pop['Resident Population'].shift(1))  - 1) * 100)/1
+    county_resident_pop['Resident Population_5year_growth'] =  (((county_resident_pop['Resident Population']/county_resident_pop['Resident Population'].shift(5))   - 1) * 100)/5
+    county_resident_pop['Resident Population_10year_growth'] =  (((county_resident_pop['Resident Population']/county_resident_pop['Resident Population'].shift(10)) - 1) * 100)/10
+
+    county_1y_growth  = county_resident_pop.iloc[-1]['Resident Population_1year_growth'] 
+    county_5y_growth  = county_resident_pop.iloc[-1]['Resident Population_5year_growth'] 
+    county_10y_growth = county_resident_pop.iloc[-1]['Resident Population_10year_growth']
+
+    if county_5y_growth < 0 and county_1y_growth < 0:
+        county_demographic_sentence = (county + ' contiues to experience population loss with one and five year growth rates of ' +  "{:,.1f}%".format(county_1y_growth) + ' and ' + "{:,.1f}%".format(county_5y_growth) + '.'  )
+    
+    elif county_5y_growth > 0 and county_1y_growth > 0:
+        county_demographic_sentence = (county + ' contiues to experience population gains with one and five year growth rates of ' +  "{:,.1f}%".format(county_1y_growth) + ' and ' + "{:,.1f}%".format(county_5y_growth) + '.'  )
+
+
+    elif  county_5y_growth < 0 and county_1y_growth > 0:
+        county_demographic_sentence = ('Although ' + county + ' has seen its population decline' +   "{:,.1f}%".format(abs(county_5y_growth)) +' over the past five years, growth has returned to postive levels with a most recent one year growth rate of ' +  "{:,.1f}%".format(county_1y_growth) +'.')
+        
+    elif county_5y_growth > 0 and county_1y_growth < 0:
+        county_demographic_sentence = ('Although ' + county + ' has seen its population grow ' + "{:,.1f}%".format(county_5y_growth) +  ' over the past five years, it most recently saw a one year contraction of ' +  "{:,.1f}%".format(county_1y_growth) +'.')
+
+    elif county_5y_growth == 0 and county_1y_growth == 0:
+        county_demographic_sentence = (county + """'s""" + ' population has seen no change over the past five years.') 
+        
+    else:
+        county_demographic_sentence = ('')
 
     #County Economy Summary
     county_economy_summary = (
