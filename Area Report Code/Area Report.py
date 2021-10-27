@@ -3477,7 +3477,7 @@ def OutlookLanguage():
     county_gdp_growth_difference   =                (county_gdp_growth - national_gdp_growth ) * 100
 
     
-    county_gdp_sentence = ('Between, ' + "{:,.0f}".format(county_gdp_min_year)  + ' and ' +  "{:,.0f}".format(county_gdp_max_year)  + ', ' + county + ' GDP grew ' + "{:,.1f}%".format(county_gdp_growth) + '. ' +
+    county_gdp_sentence = ('Between, ' + str(county_gdp_min_year)[6:]  + ' and ' +  str(county_gdp_max_year)[6:]  + ', ' + county + ' GDP grew ' + "{:,.1f}%".format(county_gdp_growth) + '. ' +
                             'This growth rate ' +
                              "{leads_or_lags}".format(leads_or_lags =('lead the national average by ' +  "{:,.0f} bps".format(county_gdp_growth_difference) + ' during this period.') if (county_gdp_growth_difference > 0)  else   ('lagged the national average by ' + "{:,.0f} bps".format(abs(county_gdp_growth_difference)) + ' during this period. ')) 
                             )
