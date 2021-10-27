@@ -3460,25 +3460,26 @@ def OutlookLanguage():
                                 
     national_economy_summary = ('The global economy is growing at its fastest pace in decades as COVID-19 vaccinations allow consumers and businesses in an expanding list of countries to return to pre-pandemic levels of economic activity. ' +
                                 'The United States economy contiues to recover from the aftermath of the Covid-19 pandemic with a falling unemployment rate and accelerating GDP (gross domestic product) growth. ' +
-                                'The labor market has restored almost 17 million of the 21 million jobs lost at the beginning of the pandemic, as measured by non-farm employment, bringing the unemployment rate to 4.8% as of September 2021. '
+                                'The labor market has restored almost 17 million of the 21 million jobs lost at the beginning of the pandemic, as measured by non-farm employment, bringing the unemployment rate to 4.8% as of September 2021. ' +
                                  'GDP increased at an annual rate of 6.7% in Q2 2021, according to data released by the Bureau of Economic Analysis. Growth of 6.7% in Q2 was up from the first quarter, when real GDP increased 6.3%. The increase in second quarter GDP reflected the continued economic recovery, reopening of establishments, and continued government response related to the COVID-19 pandemic. '
                                  )
 
 
     #County GDP/GDP Growth Sentence
-    county_gdp_growth              =               ((county_gdp['GDP'].iloc[-1])/(county_gdp['GDP'].iloc[0]) - 1 ) * 100
-    county_gdp_min_year            =                county_gdp_growth['Period'].min()
-    county_gdp_max_year            =                county_gdp_growth['Period'].max()
+    county_gdp_growth              =               ( (county_gdp['GDP'].iloc[-1]) / (county_gdp['GDP'].iloc[0]) - 1 ) * 100
+    county_gdp_min_year            =                county_gdp['Period'].min()
+    county_gdp_max_year            =                county_gdp['Period'].max()
 
     #Restrict to years we have for county
-    national_gdp_restricted        =               national_gdp.loc[ (national_gdp['Period'] <= county_gdp_max_year) & (national_gdp['Period'] >= county_gdp_min_year)  ]     
+    national_gdp_restricted        =               national_gdp.loc[ (national_gdp['Period'] <= county_gdp_max_year) & (national_gdp['Period'] >= county_gdp_min_year)  ]    
     national_gdp_growth            =               ((   (national_gdp_restricted['GDP'].iloc[-1])/(national_gdp_restricted['GDP'].iloc[0])   - 1 ) * 100)
 
-    county_gdp_growth_difference   = (county_gdp_growth - national_gdp_growth ) * 100
+    county_gdp_growth_difference   =                (county_gdp_growth - national_gdp_growth ) * 100
 
-    county_gdp_sentence = ('Between, ' + str(county_gdp_min_year) + ' and ' +  str(county_gdp_max_year) + ', ' + county + ' GDP grew ' + "{:,.1f}%".format(county_gdp_growth) + '. ' +
+    
+    county_gdp_sentence = ('Between, ' + str(county_gdp_min_year)[0:4] + ' and ' +  str(county_gdp_max_year)[0:4] + ', ' + county + ' GDP grew ' + "{:,.1f}%".format(county_gdp_growth) + '. ' +
                             'This growth rate ' +
-                             "{leads_or_lags}".format(leads_or_lags =('lead the national average by ' +  "{:,.0f}bps".format(county_gdp_growth_difference) + '.') if (county_gdp_growth_difference > 0)  else   ('lagged the national average by ' + "{:,.0f}bps".format(abs(county_gdp_growth_difference)) + '.')) 
+                             "{leads_or_lags}".format(leads_or_lags =('lead the national average by ' +  "{:,.0f} bps".format(county_gdp_growth_difference) + ' during this period.') if (county_gdp_growth_difference > 0)  else   ('lagged the national average by ' + "{:,.0f} bps".format(abs(county_gdp_growth_difference)) + ' during this period.')) 
                             )
 
     #Unemployment sentence
@@ -3491,8 +3492,13 @@ def OutlookLanguage():
     county_demographic_sentence = ('')
 
     #County Economy Summary
-    county_economy_summary = ('The outlook for the ' + county + ' economy is ' + '[positive/poor]' + '. ' + 
-                             county_gdp_sentence + county_unemployment_sentence + county_job_growth_sentence + county_demographic_sentence )
+    county_economy_summary = (
+                            'The outlook for the ' + county + ' economy is ' + '[positive/poor]' + '. ' + 
+                            county_gdp_sentence + 
+                            county_unemployment_sentence + 
+                            county_job_growth_sentence + 
+                            county_demographic_sentence 
+                            )
 
     return([national_economy_summary,county_economy_summary])
             
@@ -3534,12 +3540,13 @@ def CreateLanguage():
     except:
         print('problem with housing language')
         housing_language = ''
+   
     try:    
         outlook_language        = OutlookLanguage()
     except Exception as e:
         print(e,' problem with outlook language')
         outlook_language = ''
-
+   
 
     car_language           = WikipediaTransitLanguage(category = 'car' )
     train_language         = WikipediaTransitLanguage(category = 'train' ) 
