@@ -746,6 +746,10 @@ def SupplyDemandSection():
         absorption_format = document.styles['Normal'].paragraph_format
         absorption_format.space_after = Pt(0)
     
+    page_break_paragraph = document.add_paragraph('')
+    run = page_break_paragraph.add_run()
+    run.add_break(WD_BREAK.PAGE)
+    
 def RentSecton():
     AddHeading(document,'Rents',3)   
     if type(rent_language) == list:
