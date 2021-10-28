@@ -2886,7 +2886,8 @@ def UnemploymentLanguage():
 
     #Get latest state and county unemployment rate
     latest_county_unemployment          = county_unemployment_rate['unemployment_rate'].iloc[-1]
-    pre_pandemic_unemployment           = county_unemployment_rate.loc[(county_employment['periodName']=='February') & (county_employment['year'] == '2020')].iloc[-1]
+    pre_pandemic_unemployment_df        = county_unemployment_rate.loc[(county_employment['periodName']=='February') & (county_employment['year'] == '2020')]
+    pre_pandemic_unemployment           = pre_pandemic_unemployment_df.iloc[-1]
     one_year_ago_county_unemployment    = county_unemployment_rate['unemployment_rate'].iloc[-13]
     latest_state_unemployment           = state_unemployment_rate['unemployment_rate'].iloc[-1]
 
