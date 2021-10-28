@@ -14,7 +14,7 @@ def millify(n,modifier):
                             
         if n >= 1000000:
             n = modifier + '{:.1f}{}'.format(n / 10**(3 * millidx), millnames[millidx])
-        elif n < 1000:
+        elif (n < 1000) and (n > -1000):
             n = "{:,.0f}".format(n)
         else:
             n =  modifier + '{:.1f}{}'.format(n / 10**(3 * millidx), millnames[millidx])
