@@ -20,7 +20,7 @@ import json
 
 from docx import Document
 from docx.dml.color import ColorFormat
-from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING,WD_BREAK
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Inches, Pt, RGBColor
@@ -682,6 +682,10 @@ def OverviewSection():
         AddMarketPerformanceTable(document = document,market_data_frame = df_market_cut ,col_width = 1.2,sector=sector)
         document.add_paragraph('')
 
+    page_break_paragraph = document.add_paragraph('')
+    run = page_break_paragraph.add_run()
+    run.add_break(WD_BREAK.PAGE)
+
 def SupplyDemandSection():
     #Supply and Demand Section
     AddHeading(document,'Supply & Demand',2)
@@ -790,6 +794,10 @@ def RentSecton():
         rent_growth_figure = document.add_picture(os.path.join(output_directory,'rent_growth.png'),width=Inches(6.5))
         last_paragraph = document.paragraphs[-1] 
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    
+    page_break_paragraph = document.add_paragraph('')
+    run = page_break_paragraph.add_run()
+    run.add_break(WD_BREAK.PAGE)
 
 def ConstructionSection():
     #Construction Section
@@ -814,6 +822,10 @@ def ConstructionSection():
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER  
     else:
         pass
+
+    page_break_paragraph = document.add_paragraph('')
+    run = page_break_paragraph.add_run()
+    run.add_break(WD_BREAK.PAGE)
 
 def CapitalMarketsSection():
     #Captial Markets Section
@@ -891,6 +903,10 @@ def CapitalMarketsSection():
         asset_value_graph = document.add_picture(os.path.join(output_directory,'asset_values.png'),width=Inches(6.5))
         last_paragraph = document.paragraphs[-1] 
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    
+    page_break_paragraph = document.add_paragraph('')
+    run = page_break_paragraph.add_run()
+    run.add_break(WD_BREAK.PAGE)
 
 def OutlookSection():
     #Outlook Section
