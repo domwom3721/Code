@@ -2827,7 +2827,7 @@ def EmploymentBreakdownLanguage(county_industry_breakdown):
             county +
             ' employed ' +
             "{:,.0f}".format(county_industry_breakdown['month3_emplvl'].sum()) +
-            ' employees, with businesses in the ' + 
+            ' employees, with establishments in the ' + 
            largest_industry +
            ', ' +
            second_largest_industry +
@@ -3639,8 +3639,8 @@ def CreateLanguage():
 
     try:
         unemplopyment_language  = UnemploymentLanguage()
-    except:
-        print('problem with unemployment language')
+    except Exception as e:
+        print(e, ' problem with unemployment language')
         unemplopyment_language = ''
 
     try:    
@@ -3966,6 +3966,10 @@ def AddTable(document,data_for_table): #Function we use to insert our overview t
             #set column widths
             if current_column == 0:
                 cell.width = Inches(1.75)
+            elif current_column == 2:
+                cell.width = Inches(1)
+
+
 
             #add border to top row
             if current_row == 1:
