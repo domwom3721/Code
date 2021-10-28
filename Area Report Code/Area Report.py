@@ -2740,7 +2740,7 @@ def OverviewLanguage():
                    ', '                      +
                    county                    + 
                    """'s"""                  +
-                   ' economy is '            +
+                   ' economic output is '            +
                  "{growing_or_contracting}".format(growing_or_contracting = "growing" if (current_gdp_growth >= 0)  else   ('contracting')) +
                    ' at ' +
                  "{:,.1f}%".format(abs(current_gdp_growth))     +
@@ -2751,7 +2751,10 @@ def OverviewLanguage():
                  "{:,.1f}%".format(current_unemployment)      +
                   ', '                                        +
                  unemployment_above_below_hist_avg            +
-                 ' its historical average and '               +
+                 ' its five-year average '                    +
+                 'of '                                        +
+                  "{:,.1f}%".format(historical_average_unemployment)                         +
+                 ' and '               +
                  unemployment_above_below_state               +
                   '. '                                        +
 
@@ -2816,14 +2819,22 @@ def EmploymentBreakdownLanguage(county_industry_breakdown):
     
 
     return(
-          'The ' + 
+          'According to the Q' +
+            qcew_qtr +
+            ' '+
+            qcew_year +
+            ' Quarterly Census of Employment and Wages, ' +
+            county +
+            ' employed ' +
+            "{:,.0f}".format(county_industry_breakdown['month3_emplvl'].sum()) +
+            ' employees, with businesses in the ' + 
            largest_industry +
            ', ' +
            second_largest_industry +
            ', and ' +
           third_largest_industry +
-           ' industries account for the top three employers, employing ' +
-
+           ' industries accounting for the top three employers. '+
+           'These industries employ ' +
            largest_industry_employment +
            ' (' +
             largest_industry_employment_fraction +
@@ -2875,6 +2886,7 @@ def UnemploymentLanguage():
 
     #Get latest state and county unemployment rate
     latest_county_unemployment          = county_unemployment_rate['unemployment_rate'].iloc[-1]
+    pre_pandemic_unemployment           = county_unemployment_rate.loc[(county_employment['periodName']=='February') & (county_employment['year'] == '2020')].iloc[-1]
     one_year_ago_county_unemployment    = county_unemployment_rate['unemployment_rate'].iloc[-13]
     latest_state_unemployment           = state_unemployment_rate['unemployment_rate'].iloc[-1]
 
@@ -2893,6 +2905,14 @@ def UnemploymentLanguage():
         state_county_unemployment_above_or_below = 'above'
     elif latest_state_unemployment == latest_county_unemployment:
         state_county_unemployment_above_or_below = 'equal to'
+    
+    #See if county unemployment rate is above pre-pandemic levels
+    if pre_pandemic_unemployment > latest_county_unemployment:
+        pre_pandemic_unemp_above_or_below = 'has moved below'
+    elif pre_pandemic_unemployment < latest_county_unemployment:
+        pre_pandemic_unemp_above_or_below = 'remains above'
+    elif pre_pandemic_unemployment == latest_county_unemployment:
+        pre_pandemic_unemp_above_or_below = 'is equal to'
 
     #Check how far apart state and county unemployment rates are
     if abs(latest_state_unemployment - latest_county_unemployment) > 1.5:
@@ -2933,7 +2953,14 @@ def UnemploymentLanguage():
            latest_period +
            ', total employment is ' +
           up_or_down +
-           ' on a year-over-year basis.'       
+           ' on a year-over-year basis. ' +
+
+        # Is unemployment above or below pre-pandemic levels?
+        'The unemployment rate '          +
+        pre_pandemic_unemp_above_or_below +
+        ' its pre-pandemic level (Feb 2020) of ' +
+        "{:,.1f}%".format(pre_pandemic_unemployment)  +
+        '.'         
            )
 
 def TourismEmploymentLanguage():
