@@ -2547,9 +2547,8 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
                                     )
 
     
-    general_outlook_language = ('Current fundamentals for ' +
-                            sector.lower()                  +    
-                            ' properties in the '           +
+    general_outlook_language = (sector.lower()              +    
+                            ' fundamentals in the '         +
                             market_or_submarket             +
                             ' indicate '                     + 
                             fundamentals_clause             +
