@@ -688,14 +688,14 @@ def GetMSAUnemploymentRate(cbsa,start_year,end_year):
 
     #Sometiems they don't use the primary state's fips in the series
     except Exception as e:
+        print(e)
         for state_fips_code in cbsa_all_state_fips:
             try:
-                print(e)
                 #For Non-New England States
                 if state not in new_england_states:
-                    series_name = 'LAUMT' + cbsa_main_state_fips + cbsa + '00000003'
+                    series_name = 'LAUMT' + state_fips_code + cbsa + '00000003'
                 else:
-                    series_name = 'LAUMT' + cbsa_main_state_fips + necta_code + '00000003'
+                    series_name = 'LAUMT' + state_fips_code + necta_code + '00000003'
                 
 
                 msa_ur_df = bls.series(series_name,start_year=start_year,end_year=end_year) 
@@ -708,36 +708,61 @@ def GetMSAUnemploymentRate(cbsa,start_year,end_year):
                 return(msa_ur_df)
             except Exception as e:
                 print(e)
-    
 
 def GetMSAEmployment(cbsa,start_year,end_year): 
     print('Getting MSA Employment')
     #Total Employment
-    
-    if state not in new_england_states:
-        series_name = 'LAUMT' + cbsa_main_state_fips + cbsa + '00000005'
-    else:
-        series_name = 'LAUMT' + cbsa_main_state_fips + necta_code + '00000005'
+    try:
+        if state not in new_england_states:
+            series_name = 'LAUMT' + cbsa_main_state_fips + cbsa + '00000005'
+        else:
+            series_name = 'LAUMT' + cbsa_main_state_fips + necta_code + '00000005'
 
+        msa_emp_df = bls.series(series_name,start_year=(start_year-1),end_year=end_year) 
 
+        msa_emp_df['year']   = msa_emp_df['year'].astype(str)
+        msa_emp_df['period'] =    msa_emp_df['period'].str[1:3] + '/' +  msa_emp_df['year'].str[2:4]      
+        
+        msa_emp_df           = msa_emp_df.rename(columns={series_name: "Employment"})
 
-    msa_emp_df = bls.series(series_name,start_year=(start_year-1),end_year=end_year) 
+        msa_emp_df['Lagged Employment']       = msa_emp_df['Employment'].shift(12)
+        msa_emp_df['Employment Growth']       =  round(((msa_emp_df['Employment']/msa_emp_df['Lagged Employment']) - 1 ) * 100,2 )
 
-    msa_emp_df['year']   = msa_emp_df['year'].astype(str)
-    msa_emp_df['period'] =    msa_emp_df['period'].str[1:3] + '/' +  msa_emp_df['year'].str[2:4]      
-     
-    msa_emp_df           = msa_emp_df.rename(columns={series_name: "Employment"})
+        #Drop the extra year we needed to calculate growth rates
+        msa_emp_df    = msa_emp_df.loc[msa_emp_df['year'] != str(start_year-1)]
 
-    msa_emp_df['Lagged Employment']       = msa_emp_df['Employment'].shift(12)
-    msa_emp_df['Employment Growth']       =  round(((msa_emp_df['Employment']/msa_emp_df['Lagged Employment']) - 1 ) * 100,2 )
+        if data_export == True:
+            msa_emp_df.to_csv(os.path.join(county_folder,'MSA Total Employment.csv'))
+        
+        return(msa_emp_df)
+    except Exception as e:
+        print(e)
+        for state_fips_code in cbsa_all_state_fips:
+            try:
+                if state not in new_england_states:
+                    series_name = 'LAUMT' + state_fips_code + cbsa + '00000005'
+                else:
+                    series_name = 'LAUMT' + state_fips_code + necta_code + '00000005'
 
-    #Drop the extra year we needed to calculate growth rates
-    msa_emp_df    = msa_emp_df.loc[msa_emp_df['year'] != str(start_year-1)]
+                msa_emp_df = bls.series(series_name,start_year=(start_year-1),end_year=end_year) 
 
-    if data_export == True:
-        msa_emp_df.to_csv(os.path.join(county_folder,'MSA Total Employment.csv'))
-    
-    return(msa_emp_df)
+                msa_emp_df['year']   = msa_emp_df['year'].astype(str)
+                msa_emp_df['period'] =    msa_emp_df['period'].str[1:3] + '/' +  msa_emp_df['year'].str[2:4]      
+                
+                msa_emp_df           = msa_emp_df.rename(columns={series_name: "Employment"})
+
+                msa_emp_df['Lagged Employment']       = msa_emp_df['Employment'].shift(12)
+                msa_emp_df['Employment Growth']       =  round(((msa_emp_df['Employment']/msa_emp_df['Lagged Employment']) - 1 ) * 100,2 )
+
+                #Drop the extra year we needed to calculate growth rates
+                msa_emp_df    = msa_emp_df.loc[msa_emp_df['year'] != str(start_year-1)]
+
+                if data_export == True:
+                    msa_emp_df.to_csv(os.path.join(county_folder,'MSA Total Employment.csv'))
+                
+                return(msa_emp_df)
+            except Exception as e:
+                pass
 
 def GetMSAMedianListPrice(cbsa,observation_start):
     print('Getting MSA MLP')
@@ -4491,14 +4516,14 @@ def CreateDirectoryCSV():
 def Main():
     SetGraphFormatVariables()
     CreateDirectory(state = state, county = county)
-    # GetCountyData()
-    # GetMSAData()
-    # GetStateData()
-    # GetNationalData()
-    # CreateGraphs()
-    # CreateLanguage()
-    # WriteReport()
-    # CleanUpPNGs()
+    GetCountyData()
+    GetMSAData()
+    GetStateData()
+    GetNationalData()
+    CreateGraphs()
+    CreateLanguage()
+    WriteReport()
+    CleanUpPNGs()
 
 def IdentifyMSA(fips):
     #Figures out if a county is within a metropolitan statistical area and returns its CBSA code
@@ -4638,8 +4663,7 @@ for i,fips in enumerate(fips_list):
         cbsa                 = IdentifyMSA(fips)[0]
         cbsa_name            = IdentifyMSA(fips)[1]
         cbsa_main_state_fips = IdentifyMSA(fips)[2] #the state fips code of the first state listed for a msa
-        cbsa_all_state_fips  = IdentifyMSA(fips)[3]
-        print(cbsa_all_state_fips)
+        cbsa_all_state_fips  = IdentifyMSA(fips)[3] #a list of 2 digit FIPS codes for each state the MSA is in
 
         if state in new_england_states:
             necta_code           = IdentifyNecta(cbsa = cbsa)
