@@ -2801,7 +2801,7 @@ def millify(n):
     millidx = max(0,min(len(millnames)-1,
                         int(math.floor(0 if n == 0 else math.log10(abs(n))/3))))
 
-    return '{:.0f}{}'.format(n / 10**(3 * millidx), millnames[millidx])
+    return '{:.1f}{}'.format(n / 10**(3 * millidx), millnames[millidx])
 
 def OverviewLanguage():
     print('Writing Overview Langauge')
@@ -4040,14 +4040,14 @@ def GetDataAndLanguageForOverviewTable():
 
     #Format Variables
     current_county_employment = "{:,.0f}".format(current_county_employment)
-    current_county_gdp = "${:,.0f}".format(current_county_gdp)
-    current_county_pop = "{:,.0f}".format(current_county_pop)
-    current_county_pci = "${:,.0f}".format(current_county_pci)
+    current_county_gdp        = '$' + millify(current_county_gdp) 
+    current_county_pop        = "{:,.0f}".format(current_county_pop)
+    current_county_pci        = "${:,.0f}".format(current_county_pci)
 
-    county_employment_growth = "{:,.1f}%".format(county_employment_growth)
-    county_gdp_growth = "{:,.1f}%".format(county_gdp_growth)
-    county_pop_growth = "{:,.1f}%".format(county_pop_growth)
-    county_pci_growth = "{:,.1f}%".format(county_pci_growth)
+    county_employment_growth  = "{:,.1f}%".format(county_employment_growth)
+    county_gdp_growth         = "{:,.1f}%".format(county_gdp_growth)
+    county_pop_growth         = "{:,.1f}%".format(county_pop_growth)
+    county_pci_growth         = "{:,.1f}%".format(county_pci_growth)
 
 
     overview_table =([ ['Attribute','County Level Value',str(growth_period) + ' Year Growth Rate','Relative to Baseline ('+ state + ')' ], 
