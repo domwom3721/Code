@@ -2205,7 +2205,7 @@ def CreateMLPWithGrowthGraph(county_data_frame,msa_data_frame,national_data_fram
     legend=dict(
         orientation="h",
         yanchor="bottom",
-        y=legend_position ,
+        y=legend_position + .1 ,
         xanchor="center",
         x=0.5,
         font_size = tickfont_size
@@ -3604,11 +3604,14 @@ def OutlookLanguage():
 
     #National economy boiler plate
                                 
-    national_economy_summary = ('The global economy is growing at its fastest pace in decades as COVID-19 vaccinations allow consumers and businesses in an expanding list of countries to return to pre-pandemic levels of economic activity. ' +
-                                'The United States economy contiues to recover from the aftermath of the Covid-19 pandemic with a falling unemployment rate and accelerating GDP (gross domestic product) growth. ' +
+    national_economy_summary = (
+                                'The United States economy continues to recover from the aftermath of the Covid-19 pandemic. ' +
                                 'The labor market has restored almost 17 million of the 21 million jobs lost at the beginning of the pandemic, as measured by non-farm employment, bringing the unemployment rate to 4.8% as of September 2021. ' +
-                                 'GDP increased at an annual rate of 6.7% in Q2 2021, according to data released by the Bureau of Economic Analysis. Growth of 6.7% in Q2 was up from the first quarter, when real GDP increased 6.3%. '          +
-                                 'The increase in second quarter GDP reflected the continued economic recovery, reopening of establishments, and continued government response related to the COVID-19 pandemic. '
+                                'GDP increased at a historically fast annual rate of 6.7% in Q2 2021, according to data released by the Bureau of Economic Analysis. Growth of 6.7% in Q2 was up from the first quarter, when real GDP increased 6.3%. '          +
+                                'The increase in second quarter GDP reflected the continued economic recovery, reopening of establishments, and continued government response related to the COVID-19 pandemic. ' +
+                                'Supply chain issues as well as a slowdown in consumer spending growth slowed GDP growth down to 2% in the third quarter.  ' +
+                                'Supply-chain disruptions such as delays at U.S. ports and international manufacturing issues contributed to a sharp increase in inflation and pose a risk to the economic outlook. ' +
+                                'Despite supply-side challenges, many economic observers expect the economy to regain momentum in the final months of the year conditional on Covid-19 cases continuing to fall.'
                                  )
 
 
@@ -4085,9 +4088,11 @@ def AddTable(document,data_for_table): #Function we use to insert our overview t
 
             #set column widths
             if current_column == 0:
-                cell.width = Inches(1.75)
+                cell.width = Inches(1.5)
             elif current_column == 2:
-                cell.width = Inches(.75)
+                cell.width = Inches(.5)
+            elif current_column == 3:
+                cell.width = Inches(1.75)
 
 
 
