@@ -500,61 +500,112 @@ def GetCountyMedianListPrice(fips,observation_start):
         county_mlp_df.to_csv(os.path.join(county_folder,'County Median Home List Price.csv'))
     return(county_mlp_df)
 
+def GetCountyEducationLevels(fips,observation_start):
+    print('Getting County Education Levels')
+
+    #fraction with bachelor's or higher
+    county_bach_series_code = 'HC01ESTVC17' + fips
+    county_edu_df = fred.get_series(series_id = county_bach_series_code, observation_start=observation_start)
+    county_edu_df = county_edu_df.to_frame().reset_index()
+    county_edu_df.columns = ['Period','bach_frac']
+
+    if data_export == True:
+        county_edu_df.to_csv(os.path.join(county_folder,"""County Fraction With Bachelor's or Higer.csv"""))
+    
+    fraction_bachelor   = county_edu_df['bach_frac'].iloc[-1]
+
+
+
+    #fraction with HS diploma or higher
+    county_hs_series_code = 'HC01ESTVC16' + fips
+    county_edu_hs_df = fred.get_series(series_id = county_hs_series_code, observation_start=observation_start)
+    county_edu_hs_df = county_edu_hs_df.to_frame().reset_index()
+    county_edu_hs_df.columns = ['Period','Fraction With HS Diploma or Higher']
+    
+    if data_export == True:
+        county_edu_hs_df.to_csv(os.path.join(county_folder,"""County Fraction With HS or Diploma or Higer.csv"""))
+    fraction_hs         = county_edu_hs_df['Fraction With HS Diploma or Higher'].iloc[-1]
+    
+    #fraction with associates degree or higher
+    county_edu_ass_series_code = 'S1501ACSTOTAL0' + fips
+    county_edu_ass_df = fred.get_series(series_id = county_edu_ass_series_code, observation_start=observation_start)
+    county_edu_ass_df = county_edu_ass_df.to_frame().reset_index()
+    county_edu_ass_df.columns = ['Period','Fraction With Associates or Higher']
+    
+    if data_export == True:
+        county_edu_ass_df.to_csv(os.path.join(county_folder,"""County Fraction With Associates Degree or Higer.csv"""))
+    
+    fraction_ass        = county_edu_ass_df['Fraction With Associates or Higher'].iloc[-1]
+    
+    
+    return([fraction_hs,fraction_ass,fraction_bachelor])
+
 def GetCountyData():
     print('Getting County Data')
     global county_gdp, county_pci
     global county_unemployment_rate,county_employment,county_unemployment
     global county_resident_pop,county_industry_breakdown,county_industry_growth_breakdown
-    global county_mlp
+    global county_mlp, county_edu
 
+    #County GDP
     try:
         county_gdp                    = GetCountyGDP(fips = fips,observation_start = observation_start_less1)
     except Exception as e:
         print(e,' - Unable to Get County GDP Data')
         county_gdp                    = ''
-
+    
+    #County Unemployment Rate
     try:
         county_unemployment_rate      = GetCountyUnemploymentRate(fips = fips,start_year=start_year,end_year=end_year)
-    except:
-        print('Unable to Get County Unemployment Rate Data')
+    except Exception as e:
+        print(e,' Unable to Get County Unemployment Rate Data')
         county_unemployment_rate      = ''
-
+    
+    #County Total Employment
     try:
         county_employment             = GetCountyEmployment(fips = fips,start_year=start_year,end_year=end_year)
-    except:
-        print('Unable to Get County Employment Data')
+    except Exception as e:
+        print(e,' Unable to Get County Employment Data')
         county_employment             = ''
-
+    
+    #County Per Capita Income
     try:
         county_pci                    = GetCountyPCI(fips=fips, observation_start=observation_start_less1)
-    except:
-        print('Unable to Get County Per Capita Income Data')
+    except Exception as e:
+        print(e,' Unable to Get County Per Capita Income Data')
         county_pci                    = ''
 
     try:
         county_resident_pop           = GetCountyResidentPopulation(fips = fips,observation_start=('01/01/' + str(end_year -11)))
-    except:
-        print('Unable to Get County Population Data')
+    except Exception as e:
+        print(e,' Unable to Get County Population Data')
         county_resident_pop           = ''
     
     try:    
         county_industry_breakdown     = GetCountyIndustryBreakdown(fips=fips,year=qcew_year,qtr=qcew_qtr)
-    except:
-        print('Unable to get County Industry Breakdown')
+    except Exception as e:
+        print(e, ' Unable to get County Industry Breakdown')
         county_industry_breakdown     = ''
     
     try:    
         county_industry_growth_breakdown     = GetCountyIndustryGrowthBreakdown(fips=fips,year=qcew_year,qtr=qcew_qtr)
-    except:
-        print('Unable to get County Industry growth Breakdown')
+    except Exception as e:
+        print(e, ' Unable to get County Industry growth Breakdown')
         county_industry_growth_breakdown     = ''
 
-
+    #Get Median List Price
     try:  
         county_mlp                    = GetCountyMedianListPrice(fips = fips,observation_start = observation_start)
     except Exception as e: 
-        print(e,'No median home list data price available')
+        print(e,' No median home list data price available')
         county_mlp                    = ''
+    
+    #Get Education levels
+    try:  
+        county_edu                    = GetCountyEducationLevels(fips = fips,observation_start = observation_start)
+    except Exception as e: 
+        print(e,' Problem getting education levels for county')
+        county_edu                    = ''
 
 
 
@@ -954,7 +1005,7 @@ def CreateUnemploymentRateEmploymentGrowthGraph(folder):
 
     #Set formatting 
     fig.update_layout(
-    # title_text="Unemployment Rate",    
+
     title={
         'y':title_position,
         'x':0.5,
@@ -964,7 +1015,7 @@ def CreateUnemploymentRateEmploymentGrowthGraph(folder):
     legend=dict(
         orientation="h",
         yanchor="bottom",
-        y=legend_position,
+        y=legend_position + 0.1,
         xanchor="center",
         x=0.5,
         font_size = tickfont_size
@@ -1486,7 +1537,7 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
     legend=dict(
         orientation="h",
         yanchor="bottom",
-        y=legend_position ,
+        y=legend_position + 0.1 ,
         xanchor="center",
         x=0.5,
         font_size = tickfont_size
@@ -1833,7 +1884,7 @@ def CreatePopulationOverTimeWithGrowthGraph(county_resident_pop,state_resident_p
     legend=dict(
         orientation="h",
         yanchor="bottom",
-        y=legend_position ,
+        y=legend_position + 0.1 ,
         xanchor="center",
         x=0.5,
         font_size = tickfont_size
@@ -2653,7 +2704,70 @@ def CreateNationalGDPGraph(folder):
 
 
     fig.write_image(os.path.join(folder,'national_gdp_rate.png'),engine='kaleido',scale=scale)
-     
+
+def CreateEducationAttainmentGraph(folder):
+    print('Creating Education Graph')
+    fig = make_subplots(specs=[[{"secondary_y": False}]])
+
+    #County educational attainment
+    
+    fig.add_trace(
+    go.Bar(x=['High School Diploma or Higher', """Associate's Degree or Higher""", """Bachelor's Degree or Higher"""],
+            y=county_edu,
+            name=county,
+           marker_color = "#4160D3")
+        )
+
+
+
+    #Set formatting 
+    fig.update_layout(
+    title_text= county + " Educational Attainment",    
+    title={
+        'y':title_position,
+        'x':0.5,
+        'xanchor': 'center',
+        'yanchor': 'top'},
+
+    legend=dict(
+        orientation="h",
+        yanchor="bottom",
+        y=legend_position,
+        xanchor="center",
+        x=0.5,
+        font_size = tickfont_size
+                ),
+    font_family="Avenir Next LT Pro",
+    font_color='#262626',
+    font_size = 10.5,
+    paper_bgcolor=paper_backgroundcolor,
+    plot_bgcolor ="White"    
+                    )
+
+    #Add % to left axis ticks
+    fig.update_yaxes(
+        tickfont = dict(size=tickfont_size), 
+        ticksuffix = '%',  
+        title = None ,
+        secondary_y=False)                 
+                    
+    fig.update_xaxes(
+        tickfont = dict(size=tickfont_size),
+        tickangle = 0,
+        )
+
+
+    #Set size
+    fig.update_layout(
+    autosize=False,
+    height    = graph_height,
+    width     = graph_width,
+    margin=dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin,pad=0,autoexpand = True),)
+    
+
+
+    fig.write_image(os.path.join(folder,'education_levels.png'),engine='kaleido',scale=scale)
+
 def CreateGraphs():
     print('Creating Graphs')
     CreateUnemploymentRateEmploymentGrowthGraph(folder = county_folder)
@@ -2667,11 +2781,13 @@ def CreateGraphs():
         CreateMLPWithGrowthGraph(county_data_frame = county_mlp, msa_data_frame = msa_mlp, national_data_frame = national_mlp, folder = county_folder)
     except Exception as e:
         print(e)
+    
+    CreateEducationAttainmentGraph(folder = county_folder)
 
-    #National Graphs (Only use them sometimes)
-    CreateNationalUnemploymentGraph(folder=county_folder)
-    CreateNationalEmploymentGrowthGraph(folder=county_folder)
-    CreateNationalGDPGraph(folder = county_folder)
+    # #National Graphs (Only use them sometimes)
+    # CreateNationalUnemploymentGraph(folder=county_folder)
+    # CreateNationalEmploymentGrowthGraph(folder=county_folder)
+    # CreateNationalGDPGraph(folder = county_folder)
 
 
 
@@ -3491,7 +3607,8 @@ def OutlookLanguage():
     national_economy_summary = ('The global economy is growing at its fastest pace in decades as COVID-19 vaccinations allow consumers and businesses in an expanding list of countries to return to pre-pandemic levels of economic activity. ' +
                                 'The United States economy contiues to recover from the aftermath of the Covid-19 pandemic with a falling unemployment rate and accelerating GDP (gross domestic product) growth. ' +
                                 'The labor market has restored almost 17 million of the 21 million jobs lost at the beginning of the pandemic, as measured by non-farm employment, bringing the unemployment rate to 4.8% as of September 2021. ' +
-                                 'GDP increased at an annual rate of 6.7% in Q2 2021, according to data released by the Bureau of Economic Analysis. Growth of 6.7% in Q2 was up from the first quarter, when real GDP increased 6.3%. The increase in second quarter GDP reflected the continued economic recovery, reopening of establishments, and continued government response related to the COVID-19 pandemic. '
+                                 'GDP increased at an annual rate of 6.7% in Q2 2021, according to data released by the Bureau of Economic Analysis. Growth of 6.7% in Q2 was up from the first quarter, when real GDP increased 6.3%. '          +
+                                 'The increase in second quarter GDP reflected the continued economic recovery, reopening of establishments, and continued government response related to the COVID-19 pandemic. '
                                  )
 
 
@@ -3970,7 +4087,7 @@ def AddTable(document,data_for_table): #Function we use to insert our overview t
             if current_column == 0:
                 cell.width = Inches(1.75)
             elif current_column == 2:
-                cell.width = Inches(1)
+                cell.width = Inches(.75)
 
 
 
@@ -4123,9 +4240,9 @@ def ProductionSection(document):
         gdp_format.space_after = Pt(0)
         Citation(document,'U.S. Bureau of Economic Analysis')
     
-    page_break_paragraph = document.add_paragraph('')
-    run = page_break_paragraph.add_run()
-    run.add_break(WD_BREAK.PAGE)
+    # page_break_paragraph = document.add_paragraph('')
+    # run = page_break_paragraph.add_run()
+    # run.add_break(WD_BREAK.PAGE)
     
 def DemographicsSection(document):
     print('Writing Demographic Section')
@@ -4144,11 +4261,6 @@ def DemographicsSection(document):
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
 
-    #Add langauge on per capita personal income
-    # inc_paragraph = document.add_paragraph(income_language)
-    # inc_paragraph.paragraph_format.space_after = Pt(0)
-    # inc_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-
     #Per Capita Income and Income Growth
     if os.path.exists(os.path.join(county_folder,'per_capita_income_and_growth.png')):
         hhinc_fig = document.add_picture(os.path.join(county_folder,'per_capita_income_and_growth.png'),width=Inches(6.5))
@@ -4156,10 +4268,17 @@ def DemographicsSection(document):
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
 
+    #Education Graph
+    if os.path.exists(os.path.join(county_folder,'education_levels.png')):
+        edu_fig = document.add_picture(os.path.join(county_folder,'education_levels.png'),width=Inches(6.5))
+        last_paragraph = document.paragraphs[-1] 
+        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        Citation(document,'U.S. Census Bureau')
 
 
     pop_format = document.styles['Normal'].paragraph_format
     pop_format.space_after = Pt(0)
+
 
     page_break_paragraph = document.add_paragraph('')
     run = page_break_paragraph.add_run()
