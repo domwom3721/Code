@@ -2522,7 +2522,7 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
     elif vacancy_change < 0 and under_construction_share == 0:
         pipeline_sentence = ('Furthermore, an empty supply pipeline should allow for further vacancy rate compression. ' )
     else:
-        pipeline_sentence = ('')
+        pipeline_sentence = (' ')
 
 
 
