@@ -669,21 +669,46 @@ def GetMSAUnemploymentRate(cbsa,start_year,end_year):
     print('Getting MSA UR')
     #Seasonally-adjusted unemployment rate
 
-    #For Non-New England States
-    if state not in new_england_states:
-        series_name = 'LAUMT' + cbsa_main_state_fips + cbsa + '00000003'
-    else:
-        series_name = 'LAUMT' + cbsa_main_state_fips + necta_code + '00000003'
-       
+    try:
+        #For Non-New England States
+        if state not in new_england_states:
+            series_name = 'LAUMT' + cbsa_main_state_fips + cbsa + '00000003'
+        else:
+            series_name = 'LAUMT' + cbsa_main_state_fips + necta_code + '00000003'
+        
 
-    msa_ur_df = bls.series(series_name,start_year=start_year,end_year=end_year) 
-    msa_ur_df['year']   = msa_ur_df['year'].astype(str)
-    msa_ur_df['period'] =    msa_ur_df['period'].str[1:3] + '/' +  msa_ur_df['year'].str[2:4]
-    msa_ur_df = msa_ur_df.rename(columns={series_name: "unemployment_rate"})
+        msa_ur_df = bls.series(series_name,start_year=start_year,end_year=end_year) 
+        msa_ur_df['year']   = msa_ur_df['year'].astype(str)
+        msa_ur_df['period'] =    msa_ur_df['period'].str[1:3] + '/' +  msa_ur_df['year'].str[2:4]
+        msa_ur_df = msa_ur_df.rename(columns={series_name: "unemployment_rate"})
 
-    if data_export == True:
-        msa_ur_df.to_csv(os.path.join(county_folder,'MSA Unemployment Rate.csv'))
-    return(msa_ur_df)
+        if data_export == True:
+            msa_ur_df.to_csv(os.path.join(county_folder,'MSA Unemployment Rate.csv'))
+        return(msa_ur_df)
+
+    #Sometiems they don't use the primary state's fips in the series
+    except Exception as e:
+        for state_fips_code in cbsa_all_state_fips:
+            try:
+                print(e)
+                #For Non-New England States
+                if state not in new_england_states:
+                    series_name = 'LAUMT' + cbsa_main_state_fips + cbsa + '00000003'
+                else:
+                    series_name = 'LAUMT' + cbsa_main_state_fips + necta_code + '00000003'
+                
+
+                msa_ur_df = bls.series(series_name,start_year=start_year,end_year=end_year) 
+                msa_ur_df['year']   = msa_ur_df['year'].astype(str)
+                msa_ur_df['period'] =    msa_ur_df['period'].str[1:3] + '/' +  msa_ur_df['year'].str[2:4]
+                msa_ur_df = msa_ur_df.rename(columns={series_name: "unemployment_rate"})
+
+                if data_export == True:
+                    msa_ur_df.to_csv(os.path.join(county_folder,'MSA Unemployment Rate.csv'))
+                return(msa_ur_df)
+            except Exception as e:
+                print(e)
+    
 
 def GetMSAEmployment(cbsa,start_year,end_year): 
     print('Getting MSA Employment')
@@ -747,8 +772,8 @@ def GetMSAData():
         msa_employment                  = GetMSAEmployment(cbsa = cbsa,start_year=start_year,end_year=end_year)
         msa_resident_pop                = GetMSAResidentPopulation(cbsa = cbsa,observation_start=('01/01/' + str(end_year -11)))
 
+        #Median list price
         try:
-            pass
             msa_mlp                     = GetMSAMedianListPrice(cbsa = cbsa,observation_start=observation_start)
 
         except:
@@ -4466,14 +4491,14 @@ def CreateDirectoryCSV():
 def Main():
     SetGraphFormatVariables()
     CreateDirectory(state = state, county = county)
-    GetCountyData()
-    GetMSAData()
-    GetStateData()
-    GetNationalData()
-    CreateGraphs()
-    CreateLanguage()
-    WriteReport()
-    CleanUpPNGs()
+    # GetCountyData()
+    # GetMSAData()
+    # GetStateData()
+    # GetNationalData()
+    # CreateGraphs()
+    # CreateLanguage()
+    # WriteReport()
+    # CleanUpPNGs()
 
 def IdentifyMSA(fips):
     #Figures out if a county is within a metropolitan statistical area and returns its CBSA code
@@ -4500,7 +4525,6 @@ def IdentifyMSA(fips):
 
     cbsa_fips_crosswalk = cbsa_fips_crosswalk.loc[cbsa_fips_crosswalk['FIPS Code'] == fips] #restrict data to only rows with the subject county fips
     cbsa_fips_crosswalk = cbsa_fips_crosswalk.loc[cbsa_fips_crosswalk['metropolitanmicropolitanstatis'] == 'Metropolitan Statistical Area'] #restrict to msas
-    # print(cbsa_fips_crosswalk)
 
     unique_CBSA_list    = cbsa_fips_crosswalk['cbsacode'].unique()
     assert len(unique_CBSA_list) < 2
@@ -4511,13 +4535,29 @@ def IdentifyMSA(fips):
         
         #Now that we've identified the MSA, we need to know the primary state FIPS code for the BLS API. Many MSAs are in multiple states.
         cbsa_main_state = cbsa_name.split(', ')[1][0:2] #The 2 character code for the main state of the msa
-        state_fips = pd.read_csv(os.path.join(data_location,'State Names.csv')) #the dataframe with the state fips codes
-        state_fips['State FIPS'] = state_fips['State FIPS'].astype(str)
+        
+        all_states_in_msa = cbsa_name.split(', ')[1].split('-')
+
+
+
+        state_fips                = pd.read_csv(os.path.join(data_location,'State Names.csv')) #the dataframe with the state fips codes
+        state_fips['State FIPS']  = state_fips['State FIPS'].astype(str)
         state_fips['State FIPS']  =  state_fips['State FIPS'].str.zfill(2)  #cleaning the dataframe with the state fips codes
-        state_fips =  state_fips.loc[state_fips['State Code'] == cbsa_main_state] #cutting down dataframe to only the row with the state whose code we are looking up
-        cbsa_main_state_fips = state_fips.iloc[0]['State FIPS']
-      
-        return([cbsa,cbsa_name,cbsa_main_state_fips])
+        
+
+        state_fips_restricted           =  state_fips.loc[state_fips['State Code'] == cbsa_main_state] #cutting down dataframe to only the row with the state whose code we are looking up
+        cbsa_main_state_fips            =  state_fips_restricted['State FIPS'].iloc[0]
+        
+        #In case the MSA series on BLS don't use the primary state's FIPS code, collect all of the state codes for the MSA to try
+        cbsa_all_state_fips  = []
+        for state in all_states_in_msa:
+            state_fips_restricted           =  state_fips.loc[state_fips['State Code'] == state] #cutting down dataframe to only the row with the state whose code we are looking up
+            state_fip                       =  state_fips_restricted['State FIPS'].iloc[0]
+            cbsa_all_state_fips.append(state_fip)
+
+
+
+        return([cbsa,cbsa_name,cbsa_main_state_fips,cbsa_all_state_fips])
     else:
         return(['','',''])
 
@@ -4598,6 +4638,8 @@ for i,fips in enumerate(fips_list):
         cbsa                 = IdentifyMSA(fips)[0]
         cbsa_name            = IdentifyMSA(fips)[1]
         cbsa_main_state_fips = IdentifyMSA(fips)[2] #the state fips code of the first state listed for a msa
+        cbsa_all_state_fips  = IdentifyMSA(fips)[3]
+        print(cbsa_all_state_fips)
 
         if state in new_england_states:
             necta_code           = IdentifyNecta(cbsa = cbsa)
