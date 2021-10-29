@@ -3714,7 +3714,7 @@ def OutlookLanguage():
         
         
         
-    county_unemployment_sentence = ('The current unemployment rate in ' + county + ' of ' + "{:,.1f}%".format(current_unemployment) + ' is ' + unemployment_above_below_hist_avg + ' its 5-year average. ' +
+    county_unemployment_sentence = ('The current unemployment rate in ' + county + ' of ' + "{:,.1f}%".format(current_unemployment) + ' is ' + unemployment_above_below_hist_avg + ' its five-year average. ' +
                                     'It is ' + unemployment_above_below_state + ' and ' +  unemployment_above_below_national + ' the state ' +  '(' + "{:,.1f}%".format(current_state_unemployment)  + ')'  + ' and national average '  + '(' "{:,.1f}%".format(current_national_unemployment) + ')' ', respectively. '
                                     )
 
