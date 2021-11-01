@@ -504,6 +504,17 @@ def GetCountyMedianListPrice(fips,observation_start):
 def GetCountyEducationLevels(fips,observation_start):
     print('Getting County Education Levels')
 
+    #fraction with HS diploma or higher
+    county_hs_series_code = 'HC01ESTVC16' + fips
+    county_edu_hs_df = fred.get_series(series_id = county_hs_series_code, observation_start=observation_start)
+    county_edu_hs_df = county_edu_hs_df.to_frame().reset_index()
+    county_edu_hs_df.columns = ['Period','Fraction With HS Diploma or Higher']
+    
+    if data_export == True:
+        county_edu_hs_df.to_csv(os.path.join(county_folder,"""County Fraction With HS or Diploma or Higer.csv"""))
+    fraction_hs         = county_edu_hs_df['Fraction With HS Diploma or Higher'].iloc[-1]
+    
+
     #fraction with bachelor's or higher
     county_bach_series_code = 'HC01ESTVC17' + fips
     county_edu_df = fred.get_series(series_id = county_bach_series_code, observation_start=observation_start)
@@ -517,16 +528,7 @@ def GetCountyEducationLevels(fips,observation_start):
 
 
 
-    #fraction with HS diploma or higher
-    county_hs_series_code = 'HC01ESTVC16' + fips
-    county_edu_hs_df = fred.get_series(series_id = county_hs_series_code, observation_start=observation_start)
-    county_edu_hs_df = county_edu_hs_df.to_frame().reset_index()
-    county_edu_hs_df.columns = ['Period','Fraction With HS Diploma or Higher']
-    
-    if data_export == True:
-        county_edu_hs_df.to_csv(os.path.join(county_folder,"""County Fraction With HS or Diploma or Higer.csv"""))
-    fraction_hs         = county_edu_hs_df['Fraction With HS Diploma or Higher'].iloc[-1]
-    
+
     #fraction with associates degree or higher
     county_edu_ass_series_code = 'S1501ACSTOTAL0' + fips
     county_edu_ass_df = fred.get_series(series_id = county_edu_ass_series_code, observation_start=observation_start)
@@ -880,20 +882,66 @@ def GetStateEmployment(fips,start_year,end_year):
 
     return(state_emp_df)
 
+def GetStateEducationLevels(observation_start):
+    print('Getting State Education Levels')
+
+
+
+
+    #fraction with HS diploma or higher
+    state_hs_series_code    = 'GCT1501' + state
+
+    state_edu_hs_df         = fred.get_series(series_id = state_hs_series_code, observation_start=observation_start)
+    state_edu_hs_df         = state_edu_hs_df.to_frame().reset_index()
+    state_edu_hs_df.columns = ['Period','Fraction With HS Diploma or Higher']
+    
+    if data_export == True:
+        state_edu_hs_df.to_csv(os.path.join(county_folder,"""State Fraction With HS or Diploma or Higer.csv"""))
+    fraction_hs         = state_edu_hs_df['Fraction With HS Diploma or Higher'].iloc[-1]
+    
+
+
+
+    # #fraction with associates degree or higher
+    # state_edu_ass_series_code =  '' + state
+
+    # state_edu_ass_df = fred.get_series(series_id = state_edu_ass_series_code, observation_start=observation_start)
+    # state_edu_ass_df = state_edu_ass_df.to_frame().reset_index()
+    # state_edu_ass_df.columns = ['Period','Fraction With Associates or Higher']
+    
+    # if data_export == True:
+    #     state_edu_ass_df.to_csv(os.path.join(county_folder,"""State Fraction With Associates Degree or Higer.csv"""))
+    
+    # fraction_ass        = state_edu_ass_df['Fraction With Associates or Higher'].iloc[-1]
+    
+
+    #fraction with bachelor's or higher
+    state_bach_series_code = 'GCT1502' + state
+    
+    state_edu_df = fred.get_series(series_id = state_bach_series_code, observation_start=observation_start)
+    state_edu_df = state_edu_df.to_frame().reset_index()
+    state_edu_df.columns = ['Period','bach_frac']
+
+    if data_export == True:
+        state_edu_df.to_csv(os.path.join(county_folder,"""State Fraction With Bachelor's or Higer.csv"""))
+    
+    fraction_bachelor   = state_edu_df['bach_frac'].iloc[-1]
+    
+    return([fraction_hs,fraction_bachelor])
+
 def GetStateData():
     print('Getting State Data')
     global state_gdp
     global state_mhhi, state_pci
     global state_unemployment_rate,state_employment,state_unemployment
     global state_resident_pop
+    global state_edu
     state_gdp                        = GetStateGDP(state = state,observation_start = observation_start_less1)
     state_unemployment_rate          = GetStateUnemploymentRate(fips = fips,start_year=start_year,end_year=end_year)
     state_employment                 = GetStateEmployment(fips = fips,start_year=start_year,end_year=end_year)
     state_pci                        = GetStatePCI(state = state, observation_start = observation_start_less1)
     state_resident_pop               = GetStateResidentPopulation(state = state,observation_start=('01/01/' + str(end_year -11)))
-
-
-
+    state_edu                        = GetStateEducationLevels(observation_start = observation_start_less1)
 
 #National Data
 def GetNationalPCI(observation_start):
@@ -2760,13 +2808,22 @@ def CreateEducationAttainmentGraph(folder):
     print('Creating Education Graph')
     fig = make_subplots(specs=[[{"secondary_y": False}]])
 
-    #County educational attainment
+    education_levels = ['High School Diploma or Higher',"""Bachelor's Degree or Higher"""]
     
+    #County educational attainment
     fig.add_trace(
-    go.Bar(x=['High School Diploma or Higher', """Associate's Degree or Higher""", """Bachelor's Degree or Higher"""],
-            y=county_edu,
+    go.Bar(x=education_levels,
+            y=[county_edu[0],county_edu[2]],
             name=county,
            marker_color = "#4160D3")
+        )
+    
+    #Add State education levels    
+    fig.add_trace(
+    go.Bar(x=education_levels,
+            y=state_edu,
+            name=state_name,
+           marker_color = "#B3C3FF")
         )
 
 
@@ -4716,10 +4773,7 @@ for i,fips in enumerate(fips_list):
         print(e)
         print('Report Creation Failed for : ',fips)
 
-        #If a report fails on last county, let program hang so user can know about error
-        if i == len(fips_list) - 1:
-            while True:
-                pass
+
 
         
         
