@@ -4678,7 +4678,7 @@ def IdentifyMSA(fips):
 
         return([cbsa,cbsa_name,cbsa_main_state_fips,cbsa_all_state_fips])
     else:
-        return(['','',''])
+        return(['','','',''])
 
 def IdentifyNecta(cbsa):
         cbsa_necta_crosswalk = pd.read_excel(os.path.join(data_location,'cbsa_necta_crosswalk.xls'),
@@ -4754,16 +4754,21 @@ for i,fips in enumerate(fips_list):
         print('Creating Report for: ',county)
         print('This county is within: ', state_name)
 
+        print('Looking for MSA the county is in')
         cbsa                 = IdentifyMSA(fips)[0]
         cbsa_name            = IdentifyMSA(fips)[1]
-        cbsa_main_state_fips = IdentifyMSA(fips)[2] #the state fips code of the first state listed for a msa
+        cbsa_main_state_fips = IdentifyMSA(fips)[2] #the state fips code of the first state listed for a msa        
         cbsa_all_state_fips  = IdentifyMSA(fips)[3] #a list of 2 digit FIPS codes for each state the MSA is in
+        
 
         if state in new_england_states:
             necta_code           = IdentifyNecta(cbsa = cbsa)
             
         if cbsa != '':
             print('This county is part of the ' + cbsa_name + ' metro area: ',cbsa)
+        
+        
+        
         county       = county.split(",")[0]    
         Main()
         print('Report Complete')
