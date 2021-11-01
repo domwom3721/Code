@@ -3600,7 +3600,9 @@ def HousingLanguage():
         return('' )
     else:
         current_county_mlp        = county_mlp['Median List Price'].iloc[-1]
-        current_county_mlp_period = str(county_mlp['Period'].iloc[-1])
+        current_county_mlp_period = str(county_mlp['Period'].iloc[-1])[0:7]
+        current_county_mlp_period = current_county_mlp_period[5:] + '/' + current_county_mlp_period[0:4]
+
         yoy_county_mlp_growth = ((county_mlp['Median List Price'].iloc[-1]/county_mlp['Median List Price'].iloc[-13]) - 1 ) * 100   
         yoy_national_mlp_growth = ((national_mlp['Median List Price'].iloc[-1]/national_mlp['Median List Price'].iloc[-13]) - 1 ) * 100
 
@@ -4162,11 +4164,11 @@ def AddTable(document,data_for_table): #Function we use to insert our overview t
 
             #set column widths
             if current_column == 0:
-                cell.width = Inches(1)
+                cell.width = Inches(1.5)
             elif current_column == 1:
                 cell.width = Inches(1.5)
             elif current_column == 2:
-                cell.width = Inches(0.75)
+                cell.width = Inches(1.5)
             elif current_column == 3:
                 cell.width = Inches(2)
 
