@@ -22,6 +22,7 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import pyautogui
+from selenium.webdriver.common import by
 import wikipedia
 from bls_datasets import oes, qcew
 from blsconnect import RequestBLS, bls_search
@@ -3522,6 +3523,18 @@ def PopulationLanguage(national_resident_pop):
             'over the last five years.' 
             )
 
+def EducationLanguage():
+    
+    education_language = ('In ' + county + ', ' + 
+                         "{:,.1f}%".format(county_edu[0])  +
+                         ' have a high school diploma or higher, with ' + 
+                          "{:,.1f}%".format(county_edu[1])  +
+                           ' having an Associates degree or higher' + 
+                           ' and ' +  "{:,.1f}%".format(county_edu[2])  +
+                            """ having a Bachelor's degree or higher. """
+                            )
+    return([education_language])
+
 def InfrastructureLanguage():
     print('Writing Infrastructure Langauge')
 
@@ -3586,7 +3599,8 @@ def HousingLanguage():
     if isinstance(county_mlp, pd.DataFrame) == False:
         return('' )
     else:
-        current_county_mlp = county_mlp['Median List Price'].iloc[-1]
+        current_county_mlp        = county_mlp['Median List Price'].iloc[-1]
+        current_county_mlp_period = str(county_mlp['Period'].iloc[-1])
         yoy_county_mlp_growth = ((county_mlp['Median List Price'].iloc[-1]/county_mlp['Median List Price'].iloc[-13]) - 1 ) * 100   
         yoy_national_mlp_growth = ((national_mlp['Median List Price'].iloc[-1]/national_mlp['Median List Price'].iloc[-13]) - 1 ) * 100
 
@@ -3611,7 +3625,9 @@ def HousingLanguage():
                                 ', Realtor.com data points to ' +
                                 "{growth_description}".format(growth_description = "continued" if  yoy_county_mlp_growth >= 0  else "negative") +                                           
                                 ' growth'                       +
-                                ' in values. In fact, the median home list price currently sits at ' +
+                                ' in values. In fact, as of ' +
+                                current_county_mlp_period +
+                                ', the median home list price sits at ' +
                                 current_county_mlp +
                                 ', ' +                                        
                                  increase_or_decrease+
@@ -3636,7 +3652,9 @@ def HousingLanguage():
                             ', Realtor.com data points to ' +
                             "{growth_description}".format(growth_description = "continued " if  yoy_county_mlp_growth >= 0  else "negative") +                                           
                             ' growth' +
-                            ' in values. In fact, the median home list price currently sits at ' +
+                            ' in values. In fact, as of ' +
+                            current_county_mlp_period +
+                            ', the median home list price sits at ' +
                             current_county_mlp +
                             ', ' +
                             increase_or_decrease +
@@ -3659,7 +3677,7 @@ def OutlookLanguage():
                                 'The labor market has restored almost 17 million of the 21 million jobs lost at the beginning of the pandemic, as measured by non-farm employment, bringing the unemployment rate to 4.8% as of September 2021. ' +
                                 'GDP increased at a historically fast annual rate of 6.7% in Q2 2021, according to data released by the Bureau of Economic Analysis. Growth of 6.7% in Q2 was up from the first quarter, when real GDP increased 6.3%. '          +
                                 'The increase in second quarter GDP reflected the continued economic recovery, reopening of establishments, and continued government response related to the COVID-19 pandemic. ' +
-                                'Supply chain issues as well as a slowdown in consumer spending growth slowed GDP growth down to 2% in the third quarter.  ' +
+                                'Supply chain issues as well as a slowdown in consumer spending growth slowed GDP growth down to 2% in the third quarter. ' +
                                 'Supply-chain disruptions such as delays at U.S. ports and international manufacturing issues contributed to a sharp increase in inflation and pose a risk to the economic outlook. ' +
                                 'Despite supply-side challenges, many economic observers expect the economy to regain momentum in the final months of the year conditional on Covid-19 cases continuing to fall.'
                                  )
@@ -3728,10 +3746,10 @@ def OutlookLanguage():
     county_10y_growth = county_resident_pop.iloc[-1]['Resident Population_10year_growth']
 
     if county_5y_growth < 0 and county_1y_growth < 0:
-        county_demographic_sentence = (county + ' contiues to experience population loss with one and five year growth rates of ' +  "{:,.1f}%".format(county_1y_growth) + ' and ' + "{:,.1f}%".format(county_5y_growth) + '.'  )
+        county_demographic_sentence = (county + ' continues to experience population loss with one and five year growth rates of ' +  "{:,.1f}%".format(county_1y_growth) + ' and ' + "{:,.1f}%".format(county_5y_growth) + '.'  )
     
     elif county_5y_growth > 0 and county_1y_growth > 0:
-        county_demographic_sentence = (county + ' contiues to experience population gains with one and five year growth rates of ' +  "{:,.1f}%".format(county_1y_growth) + ' and ' + "{:,.1f}%".format(county_5y_growth) + '.'  )
+        county_demographic_sentence = (county + ' continues to experience population gains with one and five year growth rates of ' +  "{:,.1f}%".format(county_1y_growth) + ' and ' + "{:,.1f}%".format(county_5y_growth) + '.'  )
 
 
     elif  county_5y_growth < 0 and county_1y_growth > 0:
@@ -3762,6 +3780,7 @@ def CreateLanguage():
     global production_language,demographics_language,infrastructure_language,housing_language,outlook_language
     global car_language, train_language, bus_language, plane_language
     global population_language,income_language
+    global education_language
     print('Creating Langauge')
     
     try:
@@ -3836,7 +3855,12 @@ def CreateLanguage():
         income_language= ''
 
 
-
+    try:
+        education_language = EducationLanguage()
+    except Exception as e:
+        print(e, '--- problem with education language')
+        education_language = ''
+        
 
 
 
@@ -4138,11 +4162,13 @@ def AddTable(document,data_for_table): #Function we use to insert our overview t
 
             #set column widths
             if current_column == 0:
+                cell.width = Inches(1)
+            elif current_column == 1:
                 cell.width = Inches(1.5)
             elif current_column == 2:
-                cell.width = Inches(.5)
+                cell.width = Inches(0.75)
             elif current_column == 3:
-                cell.width = Inches(1.75)
+                cell.width = Inches(2)
 
 
 
@@ -4322,6 +4348,15 @@ def DemographicsSection(document):
         last_paragraph = document.paragraphs[-1] 
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
+    
+    #Add Education Language Paragraph
+    for paragraph in education_language:
+        if paragraph == '': #Skip blank sections
+            continue
+        education_paragraph = document.add_paragraph(paragraph)
+        education_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
+        education_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+
 
     #Education Graph
     if os.path.exists(os.path.join(county_folder,'education_levels.png')):
@@ -4363,7 +4398,7 @@ def InfrastructureSection(document):
 
     #Insert the transit graphics(car, bus,plane, train)
     tab = document.add_table(rows=1, cols=2)
-    for pic in ['car.png','train.png','plane.png']:
+    for pic in ['car.png','train.png','bus.png','plane.png']:
         row_cells = tab.add_row().cells
         paragraph = row_cells[0].paragraphs[0]
         run = paragraph.add_run()
@@ -4373,7 +4408,7 @@ def InfrastructureSection(document):
     
 
 
-    transit_language = [car_language,train_language,plane_language]
+    transit_language = [car_language,train_language,bus_language,plane_language]
     
     #Loop through the rows in the table
     for current_row ,row in enumerate(tab.rows): 
