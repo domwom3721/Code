@@ -3111,6 +3111,27 @@ def UnemploymentLanguage():
     #Get latest state and county unemployment rate
     latest_county_unemployment          = county_unemployment_rate['unemployment_rate'].iloc[-1]
 
+    if cbsa != '':
+        latest_msa_unemployment         = msa_unemployment_rate['unemployment_rate'].iloc[-1]
+        #See if county unemployment rate is above or metro  rate
+        if latest_msa_unemployment > latest_county_unemployment:
+            msa_county_unemployment_above_or_below = 'below'
+        elif latest_msa_unemployment < latest_county_unemployment:
+            msa_county_unemployment_above_or_below = 'above'
+        elif latest_msa_unemployment == latest_county_unemployment:
+            msa_county_unemployment_above_or_below = 'equal to'
+        
+        
+        #Check how far apart msa and county unemployment rates are
+        if abs(latest_msa_unemployment - latest_county_unemployment) > 1.5:
+            msa_county_unemployment_difference = 'considerably '
+        elif abs(latest_msa_unemployment - latest_county_unemployment) > 0:
+            msa_county_unemployment_difference = 'just slightly '
+        else:
+            msa_county_unemployment_difference = ''
+
+
+
 
     pre_pandemic_unemployment_df        = county_unemployment_rate.loc[(county_unemployment_rate['periodName'] =='February') & (county_unemployment_rate['year'] == '2020')]
     pre_pandemic_unemployment           = pre_pandemic_unemployment_df['unemployment_rate'].iloc[-1]
@@ -3153,42 +3174,76 @@ def UnemploymentLanguage():
 
     latest_county_employment       = "{:,}".format(latest_county_employment)
     latest_county_unemployment     = "{:,.1f}%".format(latest_county_unemployment)
+    latest_msa_unemployment        = "{:,.1f}%".format(latest_msa_unemployment)
     latest_state_unemployment      = "{:,.1f}%".format(latest_state_unemployment)
 
 
+    if cbsa == '':
+
+        return( 
+                #Sentence 1: Discuss current unemployment
+                'The unemployment rate in '+
+                county                     + 
+                ' has '                    +
+            unemployment_change          +
+                latest_county_unemployment +
+                ', '                       +        
+                state_county_unemployment_difference +
+            state_county_unemployment_above_or_below +
+            ' the '    +
+            state_name + 
+            ' rate'   +
+                "{state_unemployment}".format(state_unemployment =(' of '      + latest_state_unemployment ) if (latest_county_unemployment != latest_state_unemployment)  else   ('')) +           
+            '. '                     +
 
 
-    return( 
-            #Sentence 1: Discuss current unemployment
-            'The unemployment rate in '+
-            county                     + 
-            ' has '                    +
-          unemployment_change          +
-            latest_county_unemployment +
-            ', '                       +        
-            state_county_unemployment_difference +
-           state_county_unemployment_above_or_below +
-           ' the '    +
-           state_name + 
-           ' rate'   +
-            "{state_unemployment}".format(state_unemployment =(' of '      + latest_state_unemployment ) if (latest_county_unemployment != latest_state_unemployment)  else   ('')) +           
-           '. '                     +
+            #Sentence 2: Discuss growth in total employment
+                'As of '+
+            latest_period +
+            ', total employment is ' +
+            up_or_down +
+            ' on a year-over-year basis. ' +
+
+            # Is unemployment above or below pre-pandemic levels?
+            'The unemployment rate '          +
+            pre_pandemic_unemp_above_or_below +
+            ' its pre-pandemic level (Feb 2020) of ' +
+            "{:,.1f}%".format(pre_pandemic_unemployment)  +
+            '.'         
+            )
+    else:
+        
+        return( 
+                #Sentence 1: Discuss current unemployment
+                'The unemployment rate in '+
+                county                     + 
+                ' has '                    +
+            unemployment_change          +
+                latest_county_unemployment +
+                ', '                       +        
+                msa_county_unemployment_difference +
+            msa_county_unemployment_above_or_below +
+            ' the '    +
+            cbsa_name + 
+            ' rate'   +
+                "{msa_unemployment}".format(msa_unemployment =(' of '      + latest_msa_unemployment ) if (latest_county_unemployment != latest_msa_unemployment)  else   ('')) +           
+            '. '                     +
 
 
-        #Sentence 2: Discuss growth in total employment
-            'As of '+
-           latest_period +
-           ', total employment is ' +
-          up_or_down +
-           ' on a year-over-year basis. ' +
+            #Sentence 2: Discuss growth in total employment
+                'As of '+
+            latest_period +
+            ', total employment is ' +
+            up_or_down +
+            ' on a year-over-year basis. ' +
 
-        # Is unemployment above or below pre-pandemic levels?
-        'The unemployment rate '          +
-        pre_pandemic_unemp_above_or_below +
-        ' its pre-pandemic level (Feb 2020) of ' +
-        "{:,.1f}%".format(pre_pandemic_unemployment)  +
-        '.'         
-           )
+            # Is unemployment above or below pre-pandemic levels?
+            'The unemployment rate '          +
+            pre_pandemic_unemp_above_or_below +
+            ' its pre-pandemic level (Feb 2020) of ' +
+            "{:,.1f}%".format(pre_pandemic_unemployment)  +
+            '.'         
+            )
 
 def TourismEmploymentLanguage():
     county_industry_breakdown_lang      = county_industry_breakdown.sort_values(by=['month3_emplvl'])
@@ -3922,140 +3977,7 @@ def CreateLanguage():
         
 
 
-
-
-
-
-
-#Report document related functions
-def SetPageMargins(document,margin_size):
-    sections = document.sections
-    for section in sections:
-        section.top_margin    = Inches(margin_size)
-        section.bottom_margin = Inches(margin_size)
-        section.left_margin   = Inches(margin_size)
-        section.right_margin  = Inches(margin_size)
-
-def SetDocumentStyle(document):
-    style = document.styles['Normal']
-    font = style.font
-    font.name = 'Avenir Next LT Pro (Body)'
-    font.size = Pt(9)
-
-def AddTitle(document):
-    title = document.add_heading(county + ' Area Analysis',level=1)
-    title.style = document.styles['Heading 2']
-    title.paragraph_format.space_after  = Pt(6)
-    title.paragraph_format.space_before = Pt(12)
-    title_style = title.style
-    title_style.font.name = "Avenir Next LT Pro Light"
-    title_style.font.size = Pt(14)
-    title_style.font.bold = False
-    title_style.font.color.rgb = RGBColor.from_string('3F65AB')
-    title_style.element.xml
-    rFonts = title_style.element.rPr.rFonts
-    rFonts.set(qn("w:asciiTheme"), "Avenir Next LT Pro Light")
-
-    above_map_paragraph = document.add_paragraph('This report was compiled using data as of ' + current_quarter + ' unless otherwise noted. Data is from a number of sources including the U.S. Bureau of Labor Statistics, U.S. Bureau of Economic Analysis, and U.S. Census Bureau.')
-    above_map_style = above_map_paragraph.style
-    above_map_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    above_map_style.font.size = Pt(9)
-    above_map_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
-
-def AddHeading(document,title,heading_level): #Function we use to insert the headers other than the title header
-            heading = document.add_heading(title,level=heading_level)
-            heading.style = document.styles['Heading 3']
-            heading_style =  heading.style
-            heading_style.font.name = "Avenir Next LT Pro"
-            heading_style.font.size = Pt(11)
-            heading_style.font.bold = False
-            heading.paragraph_format.space_after  = Pt(6)
-            heading.paragraph_format.space_before = Pt(12)
-
-            #Color
-            heading_style.font.color.rgb = RGBColor.from_string('3F65AB')            
-            heading_style.element.xml
-            rFonts = heading_style.element.rPr.rFonts
-            rFonts.set(qn("w:asciiTheme"), "Avenir Next LT Pro")
-
-def Citation(document,text):
-    citation_paragraph = document.add_paragraph()
-    citation_paragraph.paragraph_format.space_after  = Pt(6)
-    citation_paragraph.paragraph_format.space_before = Pt(6)
-    run = citation_paragraph.add_run('Source: ' + text)
-    font = run.font
-    font.name = primary_font
-    font.size = Pt(8)
-    font.italic = True
-    font.color.rgb  = RGBColor.from_string('929292')
-    citation_paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-    if text != 'Google Maps':
-        pass
-        # blank_paragraph = document.add_paragraph('')
-        # blank_paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-
-def Note(document,text):
-    citation_paragraph = document.add_paragraph()
-    citation_paragraph.paragraph_format.space_after  = Pt(6)
-    citation_paragraph.paragraph_format.space_before = Pt(6)
-    run = citation_paragraph.add_run('Note: ' + text)
-    font = run.font
-    font.name = primary_font
-    font.size = Pt(8)
-    font.italic = True
-    font.color.rgb  = RGBColor.from_string('929292')
-    citation_paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-
-def AddMap(document):
-    #Add image of map
-    if os.path.exists(os.path.join(county_folder_map,'map.png')):
-        map = document.add_picture(os.path.join(county_folder_map,'map.png'),width=Inches(6.5))
-    else:    
-        try:
-            #Search Google Maps for County
-            options = webdriver.ChromeOptions()
-            options.add_argument("--start-maximized")
-            browser = webdriver.Chrome(executable_path=(os.path.join(os.environ['USERPROFILE'], 'Desktop','chromedriver.exe')),options=options)
-            browser.get('https:google.com/maps')
-            
-            #Write county name in box
-             # Place = browser.find_element_by_xpath("""""")
-            Place = browser.find_element_by_class_name("tactile-searchbox-input")
-            Place.send_keys((county + ', ' + state))
-            
-            #Submit county name for search
-            Submit = browser.find_element_by_class_name('nhb85d-BIqFsb')
-            Submit.click()
-
-            time.sleep(5)
-            zoomout = browser.find_element_by_xpath("""//*[@id="widget-zoom-out"]/div""")
-            zoomout.click()
-            time.sleep(7)
-
-            if 'Leahy' in os.environ['USERPROFILE']: #differnet machines have different screen coordinates
-                print('Using Mikes coordinates for screenshot')
-                im2 = pyautogui.screenshot(region=(1358,465, 2142, 1404) ) #left, top, width, and height
-            
-            elif 'Dominic' in os.environ['USERPROFILE']:
-                print('Using Doms coordinates for screenshot')
-                im2 = pyautogui.screenshot(region=(3680,254,1968 ,1231) ) #left, top, width, and height
-            
-            else:
-                im2 = pyautogui.screenshot(region=(1089,276, 2405, 1754) ) #left, top, width, and height
-
-            time.sleep(.25)
-            im2.save(os.path.join(county_folder_map,'map.png'))
-            im2.close()
-            time.sleep(1)
-            map = document.add_picture(os.path.join(county_folder_map,'map.png'),width=Inches(6.5))
-            browser.quit()
-        except Exception as e:
-            print(e)
-            try:
-                browser.quit()
-            except:
-                pass
-        
+#Table Realted functions 
 def GetDataAndLanguageForOverviewTable():
     print('Getting Data for overview table')
     
@@ -4221,7 +4143,7 @@ def AddTable(document,data_for_table): #Function we use to insert our overview t
 
             #set column widths
             if current_column == 0:
-                cell.width = Inches(1.5)
+                cell.width = Inches(1.75)
             elif current_column == 1:
                 cell.width = Inches(1.5)
             elif current_column == 2:
@@ -4259,7 +4181,138 @@ def AddTable(document,data_for_table): #Function we use to insert our overview t
                         font.size= Pt(9)
                     else:
                         font.name  = primary_font
-                     
+             
+
+#Report document related functions
+def SetPageMargins(document,margin_size):
+    sections = document.sections
+    for section in sections:
+        section.top_margin    = Inches(margin_size)
+        section.bottom_margin = Inches(margin_size)
+        section.left_margin   = Inches(margin_size)
+        section.right_margin  = Inches(margin_size)
+
+def SetDocumentStyle(document):
+    style = document.styles['Normal']
+    font = style.font
+    font.name = 'Avenir Next LT Pro (Body)'
+    font.size = Pt(9)
+
+def AddTitle(document):
+    title = document.add_heading(county + ' Area Analysis',level=1)
+    title.style = document.styles['Heading 2']
+    title.paragraph_format.space_after  = Pt(6)
+    title.paragraph_format.space_before = Pt(12)
+    title_style = title.style
+    title_style.font.name = "Avenir Next LT Pro Light"
+    title_style.font.size = Pt(14)
+    title_style.font.bold = False
+    title_style.font.color.rgb = RGBColor.from_string('3F65AB')
+    title_style.element.xml
+    rFonts = title_style.element.rPr.rFonts
+    rFonts.set(qn("w:asciiTheme"), "Avenir Next LT Pro Light")
+
+    above_map_paragraph = document.add_paragraph("The value of real property reflects and is influenced by the interaction of Economic Conditions, Demographics, Environmental Considerations, and Governmental Controls and Regulations. The following analysis includes pertinent aspects of the surrounding region as it pertains to the subject property. " + 
+                                                'This report was compiled using data as of ' + current_quarter + ' unless otherwise noted. Data is from a number of sources including the U.S. Bureau of Labor Statistics, the U.S. Bureau of Economic Analysis, and the U.S. Census Bureau.')
+    above_map_style = above_map_paragraph.style
+    above_map_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    above_map_style.font.size = Pt(9)
+    above_map_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+
+def AddHeading(document,title,heading_level): #Function we use to insert the headers other than the title header
+            heading = document.add_heading(title,level=heading_level)
+            heading.style = document.styles['Heading 3']
+            heading_style =  heading.style
+            heading_style.font.name = "Avenir Next LT Pro"
+            heading_style.font.size = Pt(11)
+            heading_style.font.bold = False
+            heading.paragraph_format.space_after  = Pt(6)
+            heading.paragraph_format.space_before = Pt(12)
+
+            #Color
+            heading_style.font.color.rgb = RGBColor.from_string('3F65AB')            
+            heading_style.element.xml
+            rFonts = heading_style.element.rPr.rFonts
+            rFonts.set(qn("w:asciiTheme"), "Avenir Next LT Pro")
+
+def Citation(document,text):
+    citation_paragraph = document.add_paragraph()
+    citation_paragraph.paragraph_format.space_after  = Pt(6)
+    citation_paragraph.paragraph_format.space_before = Pt(6)
+    run = citation_paragraph.add_run('Source: ' + text)
+    font = run.font
+    font.name = primary_font
+    font.size = Pt(8)
+    font.italic = True
+    font.color.rgb  = RGBColor.from_string('929292')
+    citation_paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    if text != 'Google Maps':
+        pass
+        # blank_paragraph = document.add_paragraph('')
+        # blank_paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+
+def Note(document,text):
+    citation_paragraph = document.add_paragraph()
+    citation_paragraph.paragraph_format.space_after  = Pt(6)
+    citation_paragraph.paragraph_format.space_before = Pt(6)
+    run = citation_paragraph.add_run('Note: ' + text)
+    font = run.font
+    font.name = primary_font
+    font.size = Pt(8)
+    font.italic = True
+    font.color.rgb  = RGBColor.from_string('929292')
+    citation_paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+
+def AddMap(document):
+    #Add image of map
+    if os.path.exists(os.path.join(county_folder_map,'map.png')):
+        map = document.add_picture(os.path.join(county_folder_map,'map.png'),width=Inches(6.5))
+    else:    
+        try:
+            #Search Google Maps for County
+            options = webdriver.ChromeOptions()
+            options.add_argument("--start-maximized")
+            browser = webdriver.Chrome(executable_path=(os.path.join(os.environ['USERPROFILE'], 'Desktop','chromedriver.exe')),options=options)
+            browser.get('https:google.com/maps')
+            
+            #Write county name in box
+             # Place = browser.find_element_by_xpath("""""")
+            Place = browser.find_element_by_class_name("tactile-searchbox-input")
+            Place.send_keys((county + ', ' + state))
+            
+            #Submit county name for search
+            Submit = browser.find_element_by_class_name('nhb85d-BIqFsb')
+            Submit.click()
+
+            time.sleep(5)
+            zoomout = browser.find_element_by_xpath("""//*[@id="widget-zoom-out"]/div""")
+            zoomout.click()
+            time.sleep(7)
+
+            if 'Leahy' in os.environ['USERPROFILE']: #differnet machines have different screen coordinates
+                print('Using Mikes coordinates for screenshot')
+                im2 = pyautogui.screenshot(region=(1358,465, 2142, 1404) ) #left, top, width, and height
+            
+            elif 'Dominic' in os.environ['USERPROFILE']:
+                print('Using Doms coordinates for screenshot')
+                im2 = pyautogui.screenshot(region=(3680,254,1968 ,1231) ) #left, top, width, and height
+            
+            else:
+                im2 = pyautogui.screenshot(region=(1089,276, 2405, 1754) ) #left, top, width, and height
+
+            time.sleep(.25)
+            im2.save(os.path.join(county_folder_map,'map.png'))
+            im2.close()
+            time.sleep(1)
+            map = document.add_picture(os.path.join(county_folder_map,'map.png'),width=Inches(6.5))
+            browser.quit()
+        except Exception as e:
+            print(e)
+            try:
+                browser.quit()
+            except:
+                pass
+
 def OverviewSection(document):
     print('Writing Overview Section')
     AddHeading(document = document, title = 'Overview',            heading_level = 2)
@@ -4294,7 +4347,7 @@ def OverviewSection(document):
     
 def EmploymentSection(document):
     print('Writing Employment Section')
-    AddHeading(document = document, title = 'Employment',            heading_level = 2)
+    AddHeading(document = document, title = 'Labor Market Conditions',            heading_level = 2)
     emp_paragraph = document.add_paragraph(emplopyment_industry_breakdown_language)
     emp_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
     emp_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
