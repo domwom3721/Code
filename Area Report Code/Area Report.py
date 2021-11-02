@@ -3174,7 +3174,6 @@ def UnemploymentLanguage():
 
     latest_county_employment       = "{:,}".format(latest_county_employment)
     latest_county_unemployment     = "{:,.1f}%".format(latest_county_unemployment)
-    latest_msa_unemployment        = "{:,.1f}%".format(latest_msa_unemployment)
     latest_state_unemployment      = "{:,.1f}%".format(latest_state_unemployment)
 
 
@@ -3212,6 +3211,7 @@ def UnemploymentLanguage():
             '.'         
             )
     else:
+        latest_msa_unemployment        = "{:,.1f}%".format(latest_msa_unemployment)
         
         return( 
                 #Sentence 1: Discuss current unemployment
@@ -3897,37 +3897,42 @@ def CreateLanguage():
     global education_language
     print('Creating Langauge')
     
+    #overview language
     try:
         overview_language       = OverviewLanguage()
     except:
         print('problem with overview language')
         overview_language       = ''
     
+    #Employment breakdown language
     try:
         emplopyment_industry_breakdown_language    = EmploymentBreakdownLanguage(county_industry_breakdown = county_industry_breakdown)
     except:
         print('problem with employment language')
         emplopyment_industry_breakdown_language    = ''
 
+    #Production language
     try:
         production_language     = ProductionLanguage(county_data_frame = county_gdp ,msa_data_frame = msa_gdp,state_data_frame = state_gdp)
     except Exception as e:
         print('problem with production language: ', e)
         production_language = ''
 
-
+    #Infrastructure language
     try:
         infrastructure_language = InfrastructureLanguage()
     except:
         print('problem with infrastructure language')
         infrastructure_language = ''
 
+    #Houing langauge
     try:    
         housing_language        = HousingLanguage()
     except:
         print('problem with housing language')
         housing_language = ''
    
+   #Outloook language
     try:    
         outlook_language        = OutlookLanguage()
     except Exception as e:
@@ -3942,33 +3947,36 @@ def CreateLanguage():
  
 
 
-
+    #Unemployment language
     try:
         unemplopyment_language  = UnemploymentLanguage()
+        print(unemplopyment_language)
     except Exception as e:
         print(e, ' problem with unemployment language')
         unemplopyment_language = ''
 
+    #Private Employment Growth language
     try:    
         emplopyment_growth_language = EmploymentGrowthLanguage(county_industry_breakdown=county_industry_growth_breakdown)
     except:
         print('problem with emp growth language')
         emplopyment_growth_language = ''
     
-    
+   #Population language 
     try:
         population_language = PopulationLanguage(national_resident_pop = national_resident_pop )
     except:
         print('problem with population language')
         population_language = ''
     
+    #Income Language
     try:
         income_language = IncomeLanguage()
     except:
         print('problem with income langauge')
         income_language= ''
 
-
+    #Education language
     try:
         education_language = EducationLanguage()
     except Exception as e:
@@ -4325,6 +4333,8 @@ def AddMap(document):
             except:
                 pass
 
+
+#Report Section Function s
 def OverviewSection(document):
     print('Writing Overview Section')
     AddHeading(document = document, title = 'Overview',            heading_level = 2)
@@ -4353,9 +4363,9 @@ def OverviewSection(document):
     #Creating Overview Table
     AddTable(document = document,data_for_table = GetDataAndLanguageForOverviewTable())
     
-    page_break_paragraph = document.add_paragraph('')
-    run = page_break_paragraph.add_run()
-    run.add_break(WD_BREAK.PAGE)
+    # page_break_paragraph = document.add_paragraph('')
+    # run = page_break_paragraph.add_run()
+    # run.add_break(WD_BREAK.PAGE)
     
 def EmploymentSection(document):
     print('Writing Employment Section')
@@ -4570,7 +4580,10 @@ def OutlookSection(document):
         outlook_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
         outlook_paragraph.paragraph_format.space_before = Pt(6)
         outlook_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    
+
+
+
+
 def WriteReport():
     print('Writing Report')
     #Create Document
