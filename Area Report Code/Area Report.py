@@ -3981,117 +3981,121 @@ def CreateLanguage():
 def GetDataAndLanguageForOverviewTable():
     print('Getting Data for overview table')
     
+    #Get most recent County values
     current_county_employment = county_employment['Employment'].iloc[-1]
-    
-    
-    if   (isinstance(county_gdp, pd.DataFrame) == True):
-        current_county_gdp = county_gdp['GDP'].iloc[-1]
-    else:
-        current_county_gdp = 0
+    current_county_gdp        = county_gdp['GDP'].iloc[-1]
+    current_county_pop        = county_resident_pop['Resident Population'].iloc[-1]
+    current_county_pci        = county_pci['Per Capita Personal Income'].iloc[-1]
 
-    current_county_pop = county_resident_pop['Resident Population'].iloc[-1]
-
-    if (isinstance(county_pci, pd.DataFrame) == True):
-        current_county_pci = county_pci['Per Capita Personal Income'].iloc[-1]
-    else:
-        current_county_pci = 0
-
-
+    #Get county values from 5 years ago
     lagged_county_employment = county_employment['Employment'].iloc[-1 - (growth_period * 12)] #the employment data is monthly
-
-    if   (isinstance(county_gdp, pd.DataFrame) == True):
-        lagged_county_gdp        = county_gdp['GDP'].iloc[-1 - growth_period]
-    else:
-        lagged_county_gdp        = 1
-
+    lagged_county_gdp        = county_gdp['GDP'].iloc[-1 - growth_period]
     lagged_county_pop        = county_resident_pop['Resident Population'].iloc[-1- growth_period]
+    lagged_county_pci        = county_pci['Per Capita Personal Income'].iloc[-1- growth_period]
 
-    if (isinstance(county_pci, pd.DataFrame) == True):
-        lagged_county_pci        = county_pci['Per Capita Personal Income'].iloc[-1- growth_period]
-    else:
-        lagged_county_pci         = 1
-
-    # print('Calculating county growth rates for overview table')
-
+    #Calculate county 5-year growth
     county_employment_growth = ((current_county_employment/lagged_county_employment) - 1 ) * 100
     county_gdp_growth        = ((current_county_gdp/lagged_county_gdp) - 1) * 100
     county_pop_growth        = ((current_county_pop/lagged_county_pop) - 1) * 100
     county_pci_growth        = ((current_county_pci/lagged_county_pci) - 1) * 100
     
-    #Now get state level values
-    # print('Calculating state values for overview table')
+    
 
     #Make sure we are comparing the same month to month change in values between state and county data
-    state_employment_extra_month_cut_off    = state_employment.loc[state_employment['period'] <= (county_employment['period'].max())]
-
-    if (isinstance(county_gdp, pd.DataFrame) == True):
-        state_gdp_extra_month_cut_off           = state_gdp.loc[state_gdp['Period'] <= (county_gdp['Period'].max())]
-    else:
-        state_gdp_extra_month_cut_off           = state_gdp
-    
-
+    state_employment_extra_month_cut_off    = state_employment.loc[state_employment['period']     <= (county_employment['period'].max())]
+    state_gdp_extra_month_cut_off           = state_gdp.loc[state_gdp['Period']                   <= (county_gdp['Period'].max())]
     state_resident_pop_extra_month_cut_off  = state_resident_pop.loc[state_resident_pop['Period'] <= (county_resident_pop['Period'].max())]
-    
-    if (isinstance(county_pci, pd.DataFrame) == True):
-        state_pci_extra_month_cut_off           = state_pci.loc[state_pci['Period'] <= (county_pci['Period'].max())]
-    else:
-        state_pci_extra_month_cut_off           = state_pci
+    state_pci_extra_month_cut_off           = state_pci.loc[state_pci['Period']                   <= (county_pci['Period'].max())]
 
-
-    # print('Getting current state values')
+    #Now get most recent state level values
     current_state_employment = state_employment_extra_month_cut_off['Employment'].iloc[-1]
     current_state_gdp        = state_gdp_extra_month_cut_off['GDP'].iloc[-1]
     current_state_pop        = state_resident_pop_extra_month_cut_off['Resident Population'].iloc[-1]
     current_state_pci        = state_pci_extra_month_cut_off['Per Capita Personal Income'].iloc[-1]
     
-    # print('Getting lagged state values')
+    #Get lagged state values from 5 years ago
     lagged_state_employment = state_employment_extra_month_cut_off['Employment'].iloc[-1 - (growth_period * 12)] #the employment data is monthly
-    
-    # print(state_gdp_extra_month_cut_off)
     lagged_state_gdp        = state_gdp_extra_month_cut_off['GDP'].iloc[-1 - growth_period]
     lagged_state_pop        = state_resident_pop_extra_month_cut_off['Resident Population'].iloc[-1- growth_period]
-
-    # print(state_pci_extra_month_cut_off)
     lagged_state_pci        = state_pci_extra_month_cut_off['Per Capita Personal Income'].iloc[-1- growth_period]
 
-    # print('Calculating state growth rates for overview table')
+    #Calculate 5-year growth for state
     state_employment_growth = ((current_state_employment/lagged_state_employment) - 1 ) * 100
     state_gdp_growth        = ((current_state_gdp/lagged_state_gdp) - 1) * 100
     state_pop_growth        = ((current_state_pop/lagged_state_pop) - 1) * 100
     state_pci_growth        = ((current_state_pci/lagged_state_pci) - 1) * 100
 
-    #Determine if county grew faster or slower than statef
-    if state_employment_growth > county_employment_growth:
-        employment_faster_or_slower = 'Slower than'
-    elif state_employment_growth < county_employment_growth:
-        employment_faster_or_slower = 'Faster than'
+    #Get most recent values for MSA if applicable
+    if cbsa != '':
+        #Make sure we are comparing the same month to month change in values between msa and county data
+        msa_employment_extra_month_cut_off    = msa_employment.loc[msa_employment['period']     <= (county_employment['period'].max())]
+        msa_gdp_extra_month_cut_off           = msa_gdp.loc[msa_gdp['Period']                   <= (county_gdp['Period'].max())]
+        msa_resident_pop_extra_month_cut_off  = msa_resident_pop.loc[msa_resident_pop['Period'] <= (county_resident_pop['Period'].max())]
+        msa_pci_extra_month_cut_off           = msa_pci.loc[msa_pci['Period']                   <= (county_pci['Period'].max())]
+
+        #Now get most recent msa level values
+        current_msa_employment                = msa_employment_extra_month_cut_off['Employment'].iloc[-1]
+        current_msa_gdp                       = msa_gdp_extra_month_cut_off['GDP'].iloc[-1]
+        current_msa_pop                       = msa_resident_pop_extra_month_cut_off['Resident Population'].iloc[-1]
+        current_msa_pci                       = msa_pci_extra_month_cut_off['Per Capita Personal Income'].iloc[-1]
+        
+        #Get lagged msa values from 5 years ago
+        lagged_msa_employment               = msa_employment_extra_month_cut_off['Employment'].iloc[-1 - (growth_period * 12)] #the employment data is monthly
+        lagged_msa_gdp                      = msa_gdp_extra_month_cut_off['GDP'].iloc[-1 - growth_period]
+        lagged_msa_pop                      = msa_resident_pop_extra_month_cut_off['Resident Population'].iloc[-1- growth_period]
+        lagged_msa_pci                      = msa_pci_extra_month_cut_off['Per Capita Personal Income'].iloc[-1- growth_period]
+
+        #Calculate 5-year growth for msa
+        msa_employment_growth               = ((current_msa_employment/lagged_msa_employment) - 1 ) * 100
+        msa_gdp_growth                      = ((current_msa_gdp/lagged_msa_gdp) - 1) * 100
+        msa_pop_growth                      = ((current_msa_pop/lagged_msa_pop) - 1) * 100
+        msa_pci_growth                      = ((current_msa_pci/lagged_msa_pci) - 1) * 100
+
+
+    #Use MSA growth rates for comparison
+    if cbsa != '':
+        comparison_emp_growth = msa_employment_growth
+        comparison_gdp_growth = msa_gdp_growth
+        comparison_pop_growth = msa_pop_growth
+        comparison_pci_growth = msa_pci_growth
+
+    #Use State growth rates for comparison
     else:
+        comparison_emp_growth = state_employment_growth
+        comparison_gdp_growth = state_gdp_growth
+        comparison_pop_growth = state_pop_growth
+        comparison_pci_growth = state_pci_growth
+
+    #Determine if county grew faster or slower than state or MSA
+    if comparison_emp_growth > county_employment_growth:
+        employment_faster_or_slower = 'Slower than'
+    elif comparison_emp_growth < county_employment_growth:
+        employment_faster_or_slower = 'Faster than'
+    elif comparison_emp_growth == comparison_emp_growth:
         employment_faster_or_slower = 'Equal to'
         
 
-    if state_gdp_growth > county_gdp_growth:
+    if comparison_gdp_growth > county_gdp_growth:
         gdp_faster_or_slower = 'Slower than'
-    elif state_gdp_growth < county_gdp_growth:
+    elif comparison_gdp_growth < county_gdp_growth:
         gdp_faster_or_slower = 'Faster than' 
     else:
         gdp_faster_or_slower = 'Equal to' 
 
-    if state_pop_growth > county_pop_growth:
+    if comparison_pop_growth > county_pop_growth:
         pop_faster_or_slower = 'Slower than'
-    elif state_pop_growth < county_pop_growth:
+    elif comparison_pop_growth < county_pop_growth:
         pop_faster_or_slower = 'Faster than'
     else:
         pop_faster_or_slower = 'Equal to'
 
-
-    if state_pci_growth > county_pci_growth:
+    if comparison_pci_growth > county_pci_growth:
         pci_faster_or_slower = 'Slower than'
-    elif state_pci_growth < county_pci_growth:
+    elif comparison_pci_growth < county_pci_growth:
         pci_faster_or_slower = 'Faster than' 
     else:
         pci_faster_or_slower = 'Equal to'
 
-    # print('Formatting variables')
 
     #Format Variables
     current_county_employment = "{:,.0f}".format(current_county_employment)
@@ -4105,12 +4109,20 @@ def GetDataAndLanguageForOverviewTable():
     county_pci_growth         = "{:,.1f}%".format(county_pci_growth)
 
 
-    overview_table =([ ['Attribute','County Level Value',str(growth_period) + ' Year Growth Rate','Relative to Baseline ('+ state + ')' ], 
-             ['Employment',current_county_employment,county_employment_growth,employment_faster_or_slower + ' State' ], 
-             ['GDP',current_county_gdp,county_gdp_growth,gdp_faster_or_slower + ' State'],
-             ['Population',current_county_pop,county_pop_growth,pop_faster_or_slower + ' State'], 
-             ['Per Capita Personal Income',current_county_pci,county_pci_growth,pci_faster_or_slower + ' State'] ])
+    if cbsa != '':
+        overview_table =([ ['Attribute','County Level Value',str(growth_period) + ' Year Growth Rate','Relative to Baseline ('+ 'MSA' + ')' ], 
+                ['Employment',current_county_employment,county_employment_growth,employment_faster_or_slower + ' MSA' ], 
+                ['GDP',current_county_gdp,county_gdp_growth,gdp_faster_or_slower + ' MSA'],
+                ['Population',current_county_pop,county_pop_growth,pop_faster_or_slower + ' MSA'], 
+                ['Per Capita Personal Income',current_county_pci,county_pci_growth,pci_faster_or_slower + ' MSA'] ])
     
+    else:
+        overview_table =([ ['Attribute','County Level Value',str(growth_period) + ' Year Growth Rate','Relative to Baseline ('+ state + ')' ], 
+                ['Employment',current_county_employment,county_employment_growth,employment_faster_or_slower + ' State' ], 
+                ['GDP',current_county_gdp,county_gdp_growth,gdp_faster_or_slower + ' State'],
+                ['Population',current_county_pop,county_pop_growth,pop_faster_or_slower + ' State'], 
+                ['Per Capita Personal Income',current_county_pci,county_pci_growth,pci_faster_or_slower + ' State'] ])
+        
     for list in overview_table:
         if list[1] == '$0':
             list[1] = 'NA'
