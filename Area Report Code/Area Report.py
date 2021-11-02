@@ -3950,7 +3950,7 @@ def CreateLanguage():
     #Unemployment language
     try:
         unemplopyment_language  = UnemploymentLanguage()
-        print(unemplopyment_language)
+        # print(unemplopyment_language)
     except Exception as e:
         print(e, ' problem with unemployment language')
         unemplopyment_language = ''
