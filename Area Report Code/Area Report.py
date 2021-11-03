@@ -3468,7 +3468,7 @@ def ProductionLanguage(county_data_frame,msa_data_frame,state_data_frame):
     #Fomrmat variables
     latest_county_gdp_growth =  "{:,.1f}%".format(latest_county_gdp_growth)
 
-    return(
+    return('GDP by county is a measure of the market value of final goods and services produced within a county area in a particular period. ' +
             'While GDP data at the county level is not yet available, '      +
            latest_period +
            ' data from the U.S. Bureau of Economic Analysis points to '+
@@ -3488,45 +3488,75 @@ def ProductionLanguage(county_data_frame,msa_data_frame,state_data_frame):
         )
 
 def IncomeLanguage():
-    print('Writing Demographic Langauge')
+    print('Writing Income Langauge')   
+    
+    #Get latest county income level
     latest_county_income          = round(county_pci['Per Capita Personal Income'].iloc[-1])
+    latest_county_year            = str(county_pci['Period'].iloc[-1])[0:4]  
 
-    if isinstance(msa_pci, pd.DataFrame) == True:
-        latest_msa_or_state_income          = round(msa_pci['Per Capita Personal Income'].iloc[-1])
-        metro_or_state                      = 'Metro'
-    else:
-        latest_msa_or_state_income          = round(state_pci['Per Capita Personal Income'].iloc[-1])
-        metro_or_state                      = 'State'
+    #Get County growth rates
+    county_pci['Per Capita Personal Income_1year_growth'] =  (((county_pci['Per Capita Personal Income']/county_pci['Per Capita Personal Income'].shift(1))  - 1) * 100)/1
+    county_pci['Per Capita Personal Income_3year_growth'] =  (((county_pci['Per Capita Personal Income']/county_pci['Per Capita Personal Income'].shift(3))   - 1) * 100)/3
+    county_pci['Per Capita Personal Income_5year_growth'] =  (((county_pci['Per Capita Personal Income']/county_pci['Per Capita Personal Income'].shift(5))   - 1) * 100)/5
 
-    #compare the county income to the state or msa's and see what percent higher or lower it is
-    if latest_county_income > latest_msa_or_state_income:
-        higher_or_lower = 'higher'
-        percent_higher_or_lower = ((latest_county_income/latest_msa_or_state_income) - 1) * 100
+    county_1y_growth  = county_pci.iloc[-1]['Per Capita Personal Income_1year_growth'] 
+    county_3y_growth  = county_pci.iloc[-1]['Per Capita Personal Income_3year_growth'] 
+    county_5y_growth  = county_pci.iloc[-1]['Per Capita Personal Income_5year_growth']
 
-    elif latest_county_income < latest_msa_or_state_income:
-        higher_or_lower = 'lower'
-        percent_higher_or_lower = ((latest_msa_or_state_income/latest_county_income) - 1) * 100
+    #See if 3 year income growth rate was higher or lower than 5 year growth rate
+    if county_3y_growth > county_5y_growth:
+        three_five_year_county_declined_or_expanded = 'expanded'
+    elif county_3y_growth < county_5y_growth:
+        three_five_year_county_declined_or_expanded = 'declined'
+    elif county_3y_growth == county_5y_growth:
+        three_five_year_county_declined_or_expanded = 'remained stable'
 
-    else:
-        higher_or_lower = 'same as'
-        percent_higher_or_lower = 0
+    #Get national growth rates
+    national_pci_restricted = national_pci.loc[national_pci['Period'] <= (county_pci['Period'].max())] #Restrict to last year of county data to marke sure we comapre appples to apples
+    national_pci_restricted['Per Capita Personal Income_1year_growth'] =  (((national_pci_restricted['Per Capita Personal Income']/national_pci_restricted['Per Capita Personal Income'].shift(1))  - 1) * 100)/1
+    national_pci_restricted['Per Capita Personal Income_3year_growth'] =  (((national_pci_restricted['Per Capita Personal Income']/national_pci_restricted['Per Capita Personal Income'].shift(3))   - 1) * 100)/3
+    national_pci_restricted['Per Capita Personal Income_5year_growth'] =  (((national_pci_restricted['Per Capita Personal Income']/national_pci_restricted['Per Capita Personal Income'].shift(5))   - 1) * 100)/5
 
-    #Format variables 
-    latest_county_income                 = "${:,}".format(latest_county_income)
-    latest_msa_or_state_income           = "${:,}".format(latest_msa_or_state_income)
-    percent_higher_or_lower              = "{:,.0f}%".format(percent_higher_or_lower) 
+    national_1y_growth  = national_pci_restricted.iloc[-1]['Per Capita Personal Income_1year_growth']
+    national_3y_growth  = national_pci_restricted.iloc[-1]['Per Capita Personal Income_3year_growth'] 
+    national_5y_growth  = national_pci_restricted.iloc[-1]['Per Capita Personal Income_5year_growth'] 
+    
+    
+    
+    #See if 3 year income growth rate was higher or lower than nation
+    if county_3y_growth > national_3y_growth:
+        county_vs_nation_3y_exceeds_lags = 'exceeds'
+    elif county_3y_growth < national_3y_growth:
+         county_vs_nation_3y_exceeds_lags = 'lags'
+    elif county_3y_growth == national_3y_growth:
+         county_vs_nation_3y_exceeds_lags = 'is equal to'
 
-    return('Per capita personal income is currently ' +
-            latest_county_income +
-            ', ' +
-            percent_higher_or_lower +
-            ' ' +
-            higher_or_lower +
-            ' than the ' +
-            metro_or_state +
-            ' level of '+
-            latest_msa_or_state_income +
-            '.'
+
+
+    return('Going back five years, ' +
+            county                   +
+           ' residents have seen its per capita personal income '+
+           'expand ' + 
+            "{:,.1f}%".format(county_5y_growth)     + 
+            ' per annum to the '                    +
+            latest_county_year                      + 
+            ' level of '                            +
+            "${:,}".format(latest_county_income)    +
+             '. '                                   +
+           'Over the past three years, growth has ' +
+           three_five_year_county_declined_or_expanded  +
+           ', growing '                             +
+            "{:,.1f}%".format(county_3y_growth)     + 
+            ' per annum since '                     + 
+            str(int(latest_county_year) - 3)        + 
+            '. '                                    +
+           'This growth rate '                      + 
+          county_vs_nation_3y_exceeds_lags          +
+            ' the Nation, which has '               +
+             'expanded'                             +     
+             ' '                                    +   
+             "{:,.1f}%".format(national_3y_growth)  + 
+             ' per year over the last three years.'
             )
 
 def PopulationLanguage(national_resident_pop):
@@ -3969,14 +3999,14 @@ def CreateLanguage():
         print('problem with population language')
         population_language = ''
     
-    #Income Language
+   #Income Language
     try:
         income_language = IncomeLanguage()
-    except:
-        print('problem with income langauge')
+    except Exception as e:
+        print(e,' problem with income langauge')
         income_language= ''
 
-    #Education language
+   #Education language
     try:
         education_language = EducationLanguage()
     except Exception as e:
@@ -4476,6 +4506,11 @@ def DemographicsSection(document):
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
 
+    #Add langugage on per captia income and income growth
+    income_paragraph = document.add_paragraph(income_language)
+    income_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
+    income_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    
     #Per Capita Income and Income Growth
     if os.path.exists(os.path.join(county_folder,'per_capita_income_and_growth.png')):
         hhinc_fig = document.add_picture(os.path.join(county_folder,'per_capita_income_and_growth.png'),width=Inches(6.5))
