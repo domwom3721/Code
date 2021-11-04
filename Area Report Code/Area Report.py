@@ -3383,7 +3383,7 @@ def EmploymentBreakdownLanguage(county_industry_breakdown):
     third_largest_industry_employment              = "{:,.0f}".format(third_largest_industry_employment)
     
 
-    return(
+    county_breakdown_language = (
           'According to the Q' +
             qcew_qtr +
             ' '+
@@ -3418,8 +3418,8 @@ def EmploymentBreakdownLanguage(county_industry_breakdown):
 
             "{high_concentration_sentence}".format(high_concentration_sentence = (county + ' has an especially large share of workers in the ' + highest_relative_concentration_industry + """ industry. In fact, its """ +  "{:,.1f}%".format(highest_relative_concentration_employment_fraction) + ' fraction of workers is ' +  "{:,.1f}".format(highest_relative_concentration_industry_lq) + ' times higher than the National average.'   ) if highest_relative_concentration_industry_lq >= 1.75  else "") 
 
-
         )
+    return([county_breakdown_language])
   
 def UnemploymentLanguage():
     print('Writing Unemployment Langauge')
@@ -3755,15 +3755,9 @@ def EmploymentGrowthLanguage(county_industry_breakdown):
               str(int(qcew_year) - 1) +
               ' levels.')
 
-              
-    # if  positive_1_year_growth_industries_list != '':
-    #     emplopyment_growth_language = (emplopyment_growth_language +        
-    #           ' In fact, just the ' +
-    #           positive_1_year_growth_industries_list +
-    #           ' industries have seen stable growth. '
-    #            )
 
-    return(emplopyment_growth_language)
+
+    return([emplopyment_growth_language])
 
 def ProductionLanguage(county_data_frame,msa_data_frame,state_data_frame):
     print('Writing Production Langauge')
@@ -4182,7 +4176,7 @@ def OutlookLanguage():
     
     county_gdp_sentence = ('Between, ' + str(county_gdp_min_year)[6:]  + ' and ' +  str(county_gdp_max_year)[6:]  + ', ' + county + ' GDP grew ' + "{:,.1f}%".format(county_gdp_growth) + '. ' +
                             'This growth rate ' +
-                             "{leads_or_lags}".format(leads_or_lags =('lead the national average by ' +  "{:,.0f} bps".format(county_gdp_growth_difference) + ' during this period.') if (county_gdp_growth_difference > 0)  else   ('lagged the national average by ' + "{:,.0f} bps".format(abs(county_gdp_growth_difference)) + ' during this period. ')) 
+                             "{leads_or_lags}".format(leads_or_lags =('lead the national average by ' +  "{:,.0f} bps".format(county_gdp_growth_difference) + ' during this period. ') if (county_gdp_growth_difference > 0)  else   ('lagged the national average by ' + "{:,.0f} bps".format(abs(county_gdp_growth_difference)) + ' during this period. ')) 
                             )
 
     #Unemployment sentence
@@ -4741,10 +4735,17 @@ def OverviewSection(document):
 def EmploymentSection(document):
     print('Writing Employment Section')
     AddHeading(document = document, title = 'Labor Market Conditions',            heading_level = 2)
-    emp_paragraph = document.add_paragraph(emplopyment_industry_breakdown_language)
-    emp_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-    emp_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
- 
+
+    #Add Employment Breakdown Language
+    for paragraph in emplopyment_industry_breakdown_language:
+        if paragraph == '': #Skip blank sections
+            continue
+        emp_paragraph = document.add_paragraph(paragraph)
+        emp_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
+        emp_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+
+
+
     #Add MSA employment treemap chart
     if os.path.exists(os.path.join(county_folder,'msa_employment_by_industry.png')):
         employment_tree_fig = document.add_picture(os.path.join(county_folder,'msa_employment_by_industry.png'),width=Inches(6.5))
@@ -4778,6 +4779,8 @@ def EmploymentSection(document):
 
 
 
+    
+
     emp_paragraph2 = document.add_paragraph(unemplopyment_language)
     emp_paragraph2.paragraph_format.space_after = Pt(0)
     emp_paragraph2.paragraph_format.space_after = Pt(6)
@@ -4793,12 +4796,17 @@ def EmploymentSection(document):
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Bureau of Labor Statistics')
 
-    emp_paragraph3 = document.add_paragraph(emplopyment_growth_language)
-    emp_paragraph3.paragraph_format.space_after = Pt(0)
-    emp_paragraph3.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-    emp_paragraph3.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    emp_format3 = document.styles['Normal'].paragraph_format
-    emp_format3.line_spacing_rule = WD_LINE_SPACING.SINGLE
+
+
+    #Employment growth language
+    for paragraph in emplopyment_growth_language:
+        if paragraph == '': #Skip blank sections
+            continue
+        emp_paragraph = document.add_paragraph(paragraph)
+        emp_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
+        emp_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+
+
 
     #Add MSA employment growth by industry bar chart
     if os.path.exists(os.path.join(county_folder,'msa_employment_growth_by_industry.png')):
@@ -4816,13 +4824,7 @@ def EmploymentSection(document):
         Citation(document,'U.S. Bureau of Labor Statistics')
         Note(document,'Employment growth rates are not displayed for industries where the BLS has suppressed employment data for quality or privacy concerns.')
     
-
-
-
-
-    ur_format = document.styles['Normal'].paragraph_format
-    ur_format.space_after = Pt(0)
-
+    #Add page break
     page_break_paragraph = document.add_paragraph('')
     run = page_break_paragraph.add_run()
     run.add_break(WD_BREAK.PAGE)
