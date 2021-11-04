@@ -3340,8 +3340,8 @@ def OverviewLanguage():
     overview_language = [wikipeida_summary,wikipeida_economy_summary, economic_overview_paragraph]
     return(overview_language)
 
-def EmploymentBreakdownLanguage(county_industry_breakdown):
-    print('Writing Employment Breakdown Langauge')
+def CountyEmploymentBreakdownLanguage(county_industry_breakdown):
+    print('Writing County Employment Breakdown Langauge')
     # print(county_industry_breakdown)
     #Get the largest industries
     largest_industry                                  = county_industry_breakdown['industry_code'].iloc[-1]
@@ -3419,7 +3419,88 @@ def EmploymentBreakdownLanguage(county_industry_breakdown):
             "{high_concentration_sentence}".format(high_concentration_sentence = (county + ' has an especially large share of workers in the ' + highest_relative_concentration_industry + """ industry. In fact, its """ +  "{:,.1f}%".format(highest_relative_concentration_employment_fraction) + ' fraction of workers is ' +  "{:,.1f}".format(highest_relative_concentration_industry_lq) + ' times higher than the National average.'   ) if highest_relative_concentration_industry_lq >= 1.75  else "") 
 
         )
-    return([county_breakdown_language])
+    return(county_breakdown_language)
+
+def MSAEmploymentBreakdownLanguage(msa_industry_breakdown):
+    print('Writing MSA Employment Breakdown Langauge')
+    # print(county_industry_breakdown)
+    #Get the largest industries
+    largest_industry                                  = msa_industry_breakdown['industry_code'].iloc[-1]
+    largest_industry_employment                       = msa_industry_breakdown['month3_emplvl'].iloc[-1]
+    largest_industry_employment_fraction              = msa_industry_breakdown['employment_fraction'].iloc[-1]
+    
+    second_largest_industry                           = msa_industry_breakdown['industry_code'].iloc[-2]
+    second_largest_industry_employment                = msa_industry_breakdown['month3_emplvl'].iloc[-2]
+    second_largest_industry_employment_fraction       = msa_industry_breakdown['employment_fraction'].iloc[-2]
+    
+
+    if len(msa_industry_breakdown) > 2:
+        third_largest_industry                        = msa_industry_breakdown['industry_code'].iloc[-3]
+        third_largest_industry_employment             = msa_industry_breakdown['month3_emplvl'].iloc[-3]
+        third_largest_industry_employment_fraction    = msa_industry_breakdown['employment_fraction'].iloc[-3]
+        
+    else:
+        third_largest_industry                        = ''
+        third_largest_industry_employment             = ''
+        third_largest_industry_employment_fraction    = ''
+    
+
+    #Now sort by location quotient to find the highest realative concentration industries
+    msa_industry_breakdown                              = msa_industry_breakdown.sort_values(by=['lq_month3_emplvl'])
+    highest_relative_concentration_industry             = msa_industry_breakdown['industry_code'].iloc[-1]
+    highest_relative_concentration_industry_lq          = msa_industry_breakdown['lq_month3_emplvl'].iloc[-1]
+    highest_relative_concentration_employment_fraction  = msa_industry_breakdown['employment_fraction'].iloc[-1]
+
+    
+
+    #Format Variables
+    largest_industry_employment_fraction           = "{:,.1f}%".format(largest_industry_employment_fraction) 
+    largest_industry_employment                    = "{:,.0f}".format(largest_industry_employment)
+
+    second_largest_industry_employment_fraction    = "{:,.1f}%".format(second_largest_industry_employment_fraction) 
+    second_largest_industry_employment             = "{:,.0f}".format(second_largest_industry_employment)
+
+    third_largest_industry_employment_fraction     = "{:,.1f}%".format(third_largest_industry_employment_fraction) 
+    third_largest_industry_employment              = "{:,.0f}".format(third_largest_industry_employment)
+    
+
+    msa_breakdown_language = (
+          'According to the Q' +
+            qcew_qtr +
+            ' '+
+            qcew_year +
+            ' Quarterly Census of Employment and Wages, ' +
+            cbsa_name +
+            ' employed ' +
+            "{:,.0f}".format(msa_industry_breakdown['month3_emplvl'].sum()) +
+            ' employees, with establishments in the ' + 
+           largest_industry +
+           ', ' +
+           second_largest_industry +
+           ', and ' +
+          third_largest_industry +
+           ' industries accounting for the top three employers. '+
+           'These industries employ ' +
+           largest_industry_employment +
+           ' (' +
+            largest_industry_employment_fraction +
+           '), ' +
+           
+            second_largest_industry_employment +
+           ' (' +
+           second_largest_industry_employment_fraction +
+           '), and ' +
+           
+            third_largest_industry_employment +
+           ' (' +
+           third_largest_industry_employment_fraction +
+           ') ' +
+           'workers in the Metro, respectively. ' +
+
+            "{high_concentration_sentence}".format(high_concentration_sentence = (cbsa_name + ' has an especially large share of workers in the ' + highest_relative_concentration_industry + """ industry. In fact, its """ +  "{:,.1f}%".format(highest_relative_concentration_employment_fraction) + ' fraction of workers is ' +  "{:,.1f}".format(highest_relative_concentration_industry_lq) + ' times higher than the National average.'   ) if highest_relative_concentration_industry_lq >= 1.75  else "") 
+
+        )
+    return(msa_breakdown_language)
   
 def UnemploymentLanguage():
     print('Writing Unemployment Langauge')
@@ -4423,7 +4504,7 @@ def CreateLanguage():
     
     #Employment breakdown language
     try:
-        emplopyment_industry_breakdown_language    = EmploymentBreakdownLanguage(county_industry_breakdown = county_industry_breakdown)
+        emplopyment_industry_breakdown_language    = [MSAEmploymentBreakdownLanguage(msa_industry_breakdown = msa_industry_breakdown),CountyEmploymentBreakdownLanguage(county_industry_breakdown = county_industry_breakdown)]
     except:
         print('problem with employment language')
         emplopyment_industry_breakdown_language    = ''
