@@ -2551,7 +2551,7 @@ def CreateEmploymentByIndustryGraph(county_data_frame,folder):
     #Set Title
     fig.update_layout(
     title={
-        'text': county + ' Employment Composition & Wages by Industry' + ' (' + qcew_year + ' Q' + qcew_qtr + ')',
+        'text': 'County Employment Composition & Wages by Industry' + ' (' + qcew_year + ' Q' + qcew_qtr + ')',
         'y':.985 ,
         'x':0.5,
         'xanchor': 'center',
@@ -2629,7 +2629,7 @@ def CreateEmploymentGrowthByIndustryGraph(county_data_frame,folder):
 
     #Set Title
     fig.update_layout(
-    title_text= "Private Employment Growth by Industry" + ' (' + qcew_year + ' Q' + qcew_qtr + ')',    
+    title_text= "Private Employment Growth by Industry (County)" + ' (' + qcew_year + ' Q' + qcew_qtr + ')',    
 
     title={
         'y':title_position,
@@ -2700,7 +2700,7 @@ def CreateMSAEmploymentByIndustryGraph(msa_data_frame,folder):
     #Set Title
     fig.update_layout(
     title={
-        'text': cbsa_name + ' Private Employment Composition & Wages by Industry' + ' (' + qcew_year + ' Q' + qcew_qtr + ')',
+        'text': 'MSA Private Employment Composition & Wages by Industry' + ' (' + qcew_year + ' Q' + qcew_qtr + ')',
         'y':.985 ,
         'x':0.5,
         'xanchor': 'center',
