@@ -2547,14 +2547,13 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
                                     )
 
     
-    general_outlook_language = ('Current fundamentals for ' +
-                            sector.lower()                  +    
-                            ' properties in the '           +
+    general_outlook_language = (sector.lower()              +    
+                            ' fundamentals in the '         +
                             market_or_submarket             +
                             ' indicate '                     + 
                             fundamentals_clause             +
-                            ' quarterly growth in ' + current_period + ' reached ' +  "{:,.1f}%".format(submarket_qoq_growth) + ', ' + qoq_pushing_or_contracting_annual_growth + ' ' +  "{:,.1f}%".format(submarket_yoy_growth) + '. ' +
-                            capital_markets_summary)
+                            ' quarterly growth in ' + current_period + ' reached ' +  "{:,.1f}%".format(submarket_qoq_growth) + ', ' + qoq_pushing_or_contracting_annual_growth + ' ' +  "{:,.1f}%".format(submarket_yoy_growth) + '. ')
+#                            + capital_markets_summary)
                             
                             
     outlook_conclusion_language =  (
