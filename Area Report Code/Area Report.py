@@ -3615,7 +3615,7 @@ def TourismEmploymentLanguage():
 
 def EmploymentGrowthLanguage(county_industry_breakdown):
     print('Writing Employment Growth Langauge')
-
+    
     #Track employment growth over the past 5 years
     latest_county_employment         = county_industry_breakdown['month3_emplvl'].sum()
     five_years_ago_county_employment = county_industry_breakdown['lagged_month3_emplvl'].sum()
@@ -3707,7 +3707,7 @@ def EmploymentGrowthLanguage(county_industry_breakdown):
     slowest_growth_industry_1y                = "{:,.1f}%".format(abs(slowest_growth_industry_1y))
 
 
-    emplopyment_growth_language = ('According to the Q' +
+    county_emplopyment_growth_language = ('According to the Q' +
             qcew_qtr +
             ' '+
             qcew_year +
@@ -3756,8 +3756,159 @@ def EmploymentGrowthLanguage(county_industry_breakdown):
               ' levels.')
 
 
+    
 
-    return([emplopyment_growth_language])
+
+
+    #Create MSA paragarph if applicable
+    if cbsa != '':
+        #Track employment growth over the past 5 years
+        latest_msa_employment            = msa_industry_breakdown['month3_emplvl'].sum()
+        five_years_ago_msa_employment    = msa_industry_breakdown['lagged_month3_emplvl'].sum()
+        
+
+        five_year_msa_employment_growth_pct = ((latest_msa_employment/five_years_ago_msa_employment) - 1 ) * 100
+        five_year_msa_employment_growth     = (latest_msa_employment - five_years_ago_msa_employment) 
+
+
+        #See if 5 year county employment expaded or contracted
+        if five_year_msa_employment_growth > 0:
+            five_year_msa_employment_expand_or_contract = 'expand'
+        elif five_year_msa_employment_growth < 0:
+            five_year_msa_employment_expand_or_contract = 'compress'
+        else:
+            five_year_msa_employment_expand_or_contract = 'remained stable'
+        
+
+
+        #Format 5 year county employment growth variables
+        five_year_msa_employment_growth_pct = "{:,.1f}%".format(abs(five_year_msa_employment_growth_pct))
+        five_year_msa_employment_growth     = "{:,.0f}".format(five_year_msa_employment_growth)
+
+        #Drop the industries where employment growth cant be measured properly and the unclassified industry
+        msa_industry_breakdown             = msa_industry_breakdown.loc[msa_industry_breakdown['industry_code'] != 'Unclassified']
+
+
+        #Get the fastest and slowest growing industries
+        msa_industry_breakdown5y                     = msa_industry_breakdown.loc[(county_industry_breakdown['emp_growth_invalid'] != 1) ] 
+
+        msa_industry_breakdown5y                     = msa_industry_breakdown5y.sort_values(by=['Employment Growth'])
+        fastest_growing_industry_5y                  = msa_industry_breakdown5y['industry_code'].iloc[-1]
+        second_fastest_growing_industry_5y           = msa_industry_breakdown5y['industry_code'].iloc[-2]
+        
+        if len(msa_industry_breakdown5y) > 2:
+            third_fastest_growing_industry_5y         = msa_industry_breakdown5y['industry_code'].iloc[-3]
+        else:
+            third_fastest_growing_industry_5y         = ''
+
+        slowest_growing_industry_5y                   = msa_industry_breakdown5y['industry_code'].iloc[0]
+
+        fastest_growth_industry_5y                   = msa_industry_breakdown5y['Employment Growth'].iloc[-1]
+        second_fastest_growth_industry_5y            = msa_industry_breakdown5y['Employment Growth'].iloc[-2]
+        
+        if len(msa_industry_breakdown5y) > 2:
+            third_fastest_growth_industry_5y         = msa_industry_breakdown5y['Employment Growth'].iloc[-3]
+        else:
+            third_fastest_growth_industry_5y         = ''
+
+
+        slowest_growth_industry_5y                   = msa_industry_breakdown5y['Employment Growth'].iloc[0]
+        
+        
+        #Describe the growth of the slowest growing industry
+        if slowest_growth_industry_5y < 0:
+            slowest_growth_industry_5y_description = 'collapse'
+        elif     slowest_growth_industry_5y >= 0:
+            slowest_growth_industry_5y_description = 'grow'
+
+        #Format Variables
+        fastest_growth_industry_5y               = "{:,.1f}%".format(fastest_growth_industry_5y)
+        second_fastest_growth_industry_5y        = "{:,.1f}%".format(second_fastest_growth_industry_5y)
+        slowest_growth_industry_5y               = "{:,.1f}%".format(abs(slowest_growth_industry_5y))
+
+        if len(msa_industry_breakdown) > 2:
+            third_fastest_growth_industry_5y         = "{:,.1f}%".format(third_fastest_growth_industry_5y)
+
+        msa_industry_breakdown                  = msa_industry_breakdown.loc[(msa_industry_breakdown['one_year_emp_growth_invalid'] != 1)] 
+
+        #See if all industries lost employment over the past year (or most or some)
+        msa_industry_breakdown_employment_lossers           = msa_industry_breakdown.loc[msa_industry_breakdown['1 Year Employment Growth'] < 0]  #Cut down to industries that lost employees
+        msa_industry_breakdown_employment_winners           = msa_industry_breakdown.loc[msa_industry_breakdown['1 Year Employment Growth'] >= 0] #Cut down to industries that gained employees
+
+        if len(msa_industry_breakdown_employment_lossers) == len(msa_industry_breakdown): #all industries lose employment over last year
+            employment_loss_1year_all_most_some                     = 'all'
+        elif len(msa_industry_breakdown_employment_winners) == len(msa_industry_breakdown): #no industries lose employment over last year
+            employment_loss_1year_all_most_some                     = 'no'
+        elif len(msa_industry_breakdown_employment_lossers)/len(msa_industry_breakdown) >= 0.5:#most industries lose employment over last year
+            employment_loss_1year_all_most_some                     = 'most'
+        elif len(msa_industry_breakdown_employment_lossers) > 0:
+            employment_loss_1year_all_most_some                     = 'some'                        #some industries lose employment over last year
+        else:
+            employment_loss_1year_all_most_some                     = '[all/most/some]'
+
+
+        #Get industry that has grown the slowest over the last year in the county
+        county_industry_breakdown                 = county_industry_breakdown.sort_values(by=['1 Year Employment Growth'])
+        slowest_growing_industry_1y               = county_industry_breakdown['industry_code'].iloc[0]
+        slowest_growth_industry_1y                = county_industry_breakdown['1 Year Employment Growth'].iloc[0]
+        slowest_growth_industry_1y                = "{:,.1f}%".format(abs(slowest_growth_industry_1y))
+
+
+
+        msa_emplopyment_growth_language = ('According to the Q' +
+                qcew_qtr +
+                ' '+
+                qcew_year +
+                ' Quarterly Census of Employment and Wages, ' +
+                cbsa_name + ' Metro ' +
+                ' has seen private employment '+
+                five_year_county_employment_expand_or_contract +
+                ' ' +
+                five_year_county_employment_growth_pct +
+                ' (' +
+                five_year_county_employment_growth +
+                ') ' +
+                'in total over the last five years. ' +
+                'During that time, the ' +
+                fastest_growing_industry_5y +
+                ', ' +
+                second_fastest_growing_industry_5y +
+                ', and ' +
+                third_fastest_growing_industry_5y +
+                ' industries saw the strongest growth, expanding ' +
+                fastest_growth_industry_5y +
+                ', ' +
+                second_fastest_growth_industry_5y + 
+                ', and '+
+                third_fastest_growth_industry_5y +
+                ', respectively.'+
+                ' Meanwhile, the ' +
+                slowest_growing_industry_5y +
+                ' Industry has seen employment '+
+                slowest_growth_industry_5y_description +
+                ' ' +
+                slowest_growth_industry_5y +
+                ' over the previous five years.'
+                ' Over the past year, ' +
+                employment_loss_1year_all_most_some + 
+                ' industries have lost employees.' +
+                ' The ' +
+                slowest_growing_industry_1y +
+                ' sector saw the largest decline in employees and remains '+
+                slowest_growth_industry_1y +
+                ' ' + 
+                'below Q' +
+                qcew_qtr +
+                ' ' +
+                str(int(qcew_year) - 1) +
+                ' levels.')
+    else:
+        msa_emplopyment_growth_language = ''
+
+
+
+
+    return([msa_emplopyment_growth_language,county_emplopyment_growth_language])
 
 def ProductionLanguage(county_data_frame,msa_data_frame,state_data_frame):
     print('Writing Production Langauge')
