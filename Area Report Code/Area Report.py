@@ -3613,8 +3613,8 @@ def TourismEmploymentLanguage():
     else:
         return('')
 
-def EmploymentGrowthLanguage(county_industry_breakdown):
-    print('Writing Employment Growth Langauge')
+def CountyEmploymentGrowthLanguage(county_industry_breakdown):
+    print('Writing County Employment Growth Langauge')
     
     #Track employment growth over the past 5 years
     latest_county_employment         = county_industry_breakdown['month3_emplvl'].sum()
@@ -3756,10 +3756,11 @@ def EmploymentGrowthLanguage(county_industry_breakdown):
               ' levels.')
 
 
+    return(county_emplopyment_growth_language)
+
+def MSAEmploymentGrowthLanguage(msa_industry_breakdown):
+    print('Writing MSA Employment Growth Langauge')
     
-
-
-
     #Create MSA paragarph if applicable
     if cbsa != '':
         #Track employment growth over the past 5 years
@@ -3790,7 +3791,7 @@ def EmploymentGrowthLanguage(county_industry_breakdown):
 
 
         #Get the fastest and slowest growing industries
-        msa_industry_breakdown5y                     = msa_industry_breakdown.loc[(county_industry_breakdown['emp_growth_invalid'] != 1) ] 
+        msa_industry_breakdown5y                     = msa_industry_breakdown.loc[(msa_industry_breakdown['emp_growth_invalid'] != 1) ] 
 
         msa_industry_breakdown5y                     = msa_industry_breakdown5y.sort_values(by=['Employment Growth'])
         fastest_growing_industry_5y                  = msa_industry_breakdown5y['industry_code'].iloc[-1]
@@ -3827,7 +3828,7 @@ def EmploymentGrowthLanguage(county_industry_breakdown):
         slowest_growth_industry_5y               = "{:,.1f}%".format(abs(slowest_growth_industry_5y))
 
         if len(msa_industry_breakdown) > 2:
-            third_fastest_growth_industry_5y         = "{:,.1f}%".format(third_fastest_growth_industry_5y)
+            third_fastest_growth_industry_5y    = "{:,.1f}%".format(third_fastest_growth_industry_5y)
 
         msa_industry_breakdown                  = msa_industry_breakdown.loc[(msa_industry_breakdown['one_year_emp_growth_invalid'] != 1)] 
 
@@ -3848,9 +3849,9 @@ def EmploymentGrowthLanguage(county_industry_breakdown):
 
 
         #Get industry that has grown the slowest over the last year in the county
-        county_industry_breakdown                 = county_industry_breakdown.sort_values(by=['1 Year Employment Growth'])
-        slowest_growing_industry_1y               = county_industry_breakdown['industry_code'].iloc[0]
-        slowest_growth_industry_1y                = county_industry_breakdown['1 Year Employment Growth'].iloc[0]
+        msa_industry_breakdown                    = msa_industry_breakdown.sort_values(by=['1 Year Employment Growth'])
+        slowest_growing_industry_1y               = msa_industry_breakdown['industry_code'].iloc[0]
+        slowest_growth_industry_1y                = msa_industry_breakdown['1 Year Employment Growth'].iloc[0]
         slowest_growth_industry_1y                = "{:,.1f}%".format(abs(slowest_growth_industry_1y))
 
 
@@ -3862,11 +3863,11 @@ def EmploymentGrowthLanguage(county_industry_breakdown):
                 ' Quarterly Census of Employment and Wages, ' +
                 cbsa_name + ' Metro ' +
                 ' has seen private employment '+
-                five_year_county_employment_expand_or_contract +
+                five_year_msa_employment_expand_or_contract +
                 ' ' +
-                five_year_county_employment_growth_pct +
+                five_year_msa_employment_growth_pct +
                 ' (' +
-                five_year_county_employment_growth +
+                five_year_msa_employment_growth +
                 ') ' +
                 'in total over the last five years. ' +
                 'During that time, the ' +
@@ -3908,7 +3909,7 @@ def EmploymentGrowthLanguage(county_industry_breakdown):
 
 
 
-    return([msa_emplopyment_growth_language,county_emplopyment_growth_language])
+    return(msa_emplopyment_growth_language)
 
 def ProductionLanguage(county_data_frame,msa_data_frame,state_data_frame):
     print('Writing Production Langauge')
@@ -4473,10 +4474,10 @@ def CreateLanguage():
 
     #Private Employment Growth language
     try:    
-        emplopyment_growth_language = EmploymentGrowthLanguage(county_industry_breakdown=county_industry_growth_breakdown)
-    except:
-        print('problem with emp growth language')
-        emplopyment_growth_language = ''
+        emplopyment_growth_language = [MSAEmploymentGrowthLanguage(msa_industry_breakdown=msa_industry_growth_breakdown), CountyEmploymentGrowthLanguage(county_industry_breakdown=county_industry_growth_breakdown)]
+    except Exception as e:
+        print(e, ' ---- problem with emp growth language')
+        emplopyment_growth_language = ['']
     
    #Population language 
     try:
