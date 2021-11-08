@@ -4714,27 +4714,37 @@ def GetDataAndLanguageForOverviewTable():
     county_pop_growth         = "{:,.1f}%".format(county_pop_growth)
     county_pci_growth         = "{:,.1f}%".format(county_pci_growth)
 
-
-    if cbsa != '':
-        overview_table =([ ['Attribute','County Level Value',str(growth_period) + ' Year Growth Rate','Relative to Baseline ('+ 'MSA' + ')' ], 
-                ['Employment',current_county_employment,county_employment_growth,employment_faster_or_slower + ' MSA' ], 
-                ['GDP',current_county_gdp,county_gdp_growth,gdp_faster_or_slower + ' MSA'],
-                ['Population',current_county_pop,county_pop_growth,pop_faster_or_slower + ' MSA'], 
-                ['Per Capita Personal Income',current_county_pci,county_pci_growth,pci_faster_or_slower + ' MSA'] ])
-    
-    else:
-        overview_table =([ ['Attribute','County Level Value',str(growth_period) + ' Year Growth Rate','Relative to Baseline ('+ state + ')' ], 
-                ['Employment',current_county_employment,county_employment_growth,employment_faster_or_slower + ' State' ], 
-                ['GDP',current_county_gdp,county_gdp_growth,gdp_faster_or_slower + ' State'],
-                ['Population',current_county_pop,county_pop_growth,pop_faster_or_slower + ' State'], 
-                ['Per Capita Personal Income',current_county_pci,county_pci_growth,pci_faster_or_slower + ' State'] ])
+    try:
+        if cbsa != '':
+            overview_table =([ ['Attribute','County Level Value',str(growth_period) + ' Year Growth Rate','Relative to Baseline ('+ 'MSA' + ')' ], 
+                    ['Employment',current_county_employment,county_employment_growth,employment_faster_or_slower + ' MSA' ], 
+                    ['GDP',current_county_gdp,county_gdp_growth,gdp_faster_or_slower + ' MSA'],
+                    ['Population',current_county_pop,county_pop_growth,pop_faster_or_slower + ' MSA'], 
+                    ['Per Capita Personal Income',current_county_pci,county_pci_growth,pci_faster_or_slower + ' MSA'] ])
         
-    for list in overview_table:
-        if list[1] == '$0':
-            list[1] = 'NA'
-            list[2] = 'NA'
-            list[3] = 'NA'
-    return(overview_table)
+        else:
+            overview_table =([ ['Attribute','County Level Value',str(growth_period) + ' Year Growth Rate','Relative to Baseline ('+ state + ')' ], 
+                    ['Employment',current_county_employment,county_employment_growth,employment_faster_or_slower + ' State' ], 
+                    ['GDP',current_county_gdp,county_gdp_growth,gdp_faster_or_slower + ' State'],
+                    ['Population',current_county_pop,county_pop_growth,pop_faster_or_slower + ' State'], 
+                    ['Per Capita Personal Income',current_county_pci,county_pci_growth,pci_faster_or_slower + ' State'] ])
+            
+        for list in overview_table:
+            if list[1] == '$0':
+                list[1] = 'NA'
+                list[2] = 'NA'
+                list[3] = 'NA'
+        return(overview_table)
+    except Exception as e:
+        print(e)
+        return([
+                ['Attribute','County Level Value','5 Year Growth Rate','Relative to Baseline (State Code or MSA)'],
+                ['Employment','','','[Faster than/Slower than/Equal to] [State/MSA]'],
+                ['GDP','','','[Faster than/Slower than/Equal to] [State/MSA]'],
+                ['Population','','','[Faster than/Slower than/Equal to] [State/MSA]'],
+                ['Per Capita Personal Income','','','[Faster than/Slower than/Equal to] [State/MSA]']
+                ])
+
 
 def AddTable(document,data_for_table): #Function we use to insert our overview table into the report document
     #list of list where each list is a row for our table
@@ -4959,8 +4969,10 @@ def OverviewSection(document):
         font.name = 'Avenir Next LT Pro Medium'
 
     #Creating Overview Table
-    AddTable(document = document,data_for_table = GetDataAndLanguageForOverviewTable())
-    
+    try:
+        AddTable(document = document,data_for_table = GetDataAndLanguageForOverviewTable())
+    except:
+        pass
     # page_break_paragraph = document.add_paragraph('')
     # run = page_break_paragraph.add_run()
     # run.add_break(WD_BREAK.PAGE)
