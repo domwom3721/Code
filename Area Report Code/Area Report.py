@@ -4488,7 +4488,7 @@ def OutlookLanguage():
             
 def CreateLanguage():
     global overview_language
-    global county_emplopyment_industry_breakdown_language, msa_emplopyment_industry_breakdown_language ,emplopyment_growth_language,unemplopyment_language,tourism_employment_language
+    global county_emplopyment_industry_breakdown_language, msa_emplopyment_industry_breakdown_language ,county_emplopyment_growth_language,msa_emplopyment_growth_language,unemplopyment_language,tourism_employment_language
     global production_language,demographics_language,infrastructure_language,housing_language,outlook_language
     global car_language, train_language, bus_language, plane_language
     global population_language,income_language
@@ -4560,13 +4560,20 @@ def CreateLanguage():
         print(e, ' problem with unemployment language')
         unemplopyment_language = ''
 
-    #Private Employment Growth language
+    #County Private Employment Growth language
     try:    
-        emplopyment_growth_language = [MSAEmploymentGrowthLanguage(msa_industry_breakdown=msa_industry_growth_breakdown), CountyEmploymentGrowthLanguage(county_industry_breakdown=county_industry_growth_breakdown)]
+        county_emplopyment_growth_language = [CountyEmploymentGrowthLanguage(county_industry_breakdown=county_industry_growth_breakdown)]
     except Exception as e:
-        print(e, ' ---- problem with emp growth language')
-        emplopyment_growth_language = ['']
+        print(e, ' ---- problem with county emp growth language')
+        county_emplopyment_growth_language = ['']
     
+    #MSA Private Employment Growth language
+    try:    
+        msa_emplopyment_growth_language = [MSAEmploymentGrowthLanguage(msa_industry_breakdown=msa_industry_growth_breakdown)]
+    except Exception as e:
+        print(e, ' ---- problem with msa emp growth language')
+        msa_emplopyment_growth_language = ['']
+
    #Population language 
     try:
         population_language = PopulationLanguage(national_resident_pop = national_resident_pop )
@@ -5059,14 +5066,13 @@ def EmploymentSection(document):
 
 
 
-    #Employment growth language
-    for paragraph in emplopyment_growth_language:
+    #MSA Employment growth language
+    for paragraph in msa_emplopyment_growth_language:
         if paragraph == '': #Skip blank sections
             continue
         emp_paragraph = document.add_paragraph(paragraph)
         emp_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
         emp_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-
 
 
     #Add MSA employment growth by industry bar chart
@@ -5076,6 +5082,14 @@ def EmploymentSection(document):
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Bureau of Labor Statistics')
         Note(document,'Employment growth rates are not displayed for industries where the BLS has suppressed employment data for quality or privacy concerns.')
+
+    #County Employment growth language
+    for paragraph in county_emplopyment_growth_language:
+        if paragraph == '': #Skip blank sections
+            continue
+        emp_paragraph = document.add_paragraph(paragraph)
+        emp_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
+        emp_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
 
     #Add county employment growth by industry bar chart
     if os.path.exists(os.path.join(county_folder,'employment_growth_by_industry.png')):
