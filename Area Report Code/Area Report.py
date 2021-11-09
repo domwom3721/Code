@@ -48,15 +48,15 @@ from wikipedia.wikipedia import random
 #Define file paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
 project_location               =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Projects','Research Report Automation Project') 
-# main_output_location           =  os.path.join(project_location,'Output','Area') #Testing
-main_output_location           =  os.path.join(dropbox_root,'Research','Market Analysis','Area') #Production
+main_output_location           =  os.path.join(project_location,'Output','Area') #Testing
+# main_output_location           =  os.path.join(dropbox_root,'Research','Market Analysis','Area') #Production
 general_data_location          =  os.path.join(project_location,'Data','General Data')
 data_location                  =  os.path.join(project_location,'Data','Area Reports Data')
 graphics_location              =  os.path.join(project_location,'Data','Graphics')
 map_location                   =  os.path.join(project_location,'Data','Maps','County Maps')
 
 #Decide if you want to export data in excel files in the county folder
-data_export = True
+# data_export = True
 data_export = False
 
 #Set formatting paramaters for reports
@@ -146,7 +146,7 @@ def SetGraphFormatVariables():
     graph_width  = (width_inches - marginInches)   * ppi
     graph_height = (height_inches  - marginInches) * ppi
 
-    #Set scale for resolution 1 = no change, > 1 increases resolution. Very important for run time of main script. 
+    #Set scale for resolution 1 = no change, > 1 increases resolution. Very important for run time of main script). 
     scale = 3
 
     #Set tick font size (also controls legend font size)
@@ -577,19 +577,22 @@ def GetCountyData():
     except Exception as e:
         print(e,' Unable to Get County Per Capita Income Data')
         county_pci                    = ''
-
+    
+    #County Population 
     try:
         county_resident_pop           = GetCountyResidentPopulation(fips = fips,observation_start=('01/01/' + str(end_year -11)))
     except Exception as e:
         print(e,' Unable to Get County Population Data')
         county_resident_pop           = ''
     
+    #County Industry Breakdown
     try:    
         county_industry_breakdown     = GetCountyIndustryBreakdown(fips=fips,year=qcew_year,qtr=qcew_qtr)
     except Exception as e:
         print(e, ' Unable to get County Industry Breakdown')
         county_industry_breakdown     = ''
     
+    #County Industry Growth Breakdown
     try:    
         county_industry_growth_breakdown     = GetCountyIndustryGrowthBreakdown(fips=fips,year=qcew_year,qtr=qcew_qtr)
     except Exception as e:
@@ -777,12 +780,191 @@ def GetMSAMedianListPrice(cbsa,observation_start):
         msa_mlp_df.to_csv(os.path.join(county_folder,'MSA Median Home List Price.csv'))
     return(msa_mlp_df)
 
+def GetMSAIndustryBreakdown(cbsa,year,qtr):
+    print('Getting MSA Employment Breakdown')
+
+    
+    #Pulls employment data from Quarterly Census of Employment and Wages
+    series_code      = ('C' + cbsa[0:4])
+    df_qcew          = qcew.get_data('area', rtype='dataframe', year=year, qtr=qtr, area = series_code )
+    
+    if data_export == True:
+        df_qcew.to_csv(os.path.join(county_folder,'msa_qcew_raw.csv'))
+
+    #Restrict to county-ownership level (fed,state,local,private), supersector employment
+    df_qcew          = df_qcew.loc[df_qcew['agglvl_code'] == 43] 
+    
+    #Drop suppresed employment rows
+    df_qcew          = df_qcew.loc[df_qcew['disclosure_code'] != 'N'] 
+
+    #Drop the rows where employment is 0 
+    df_qcew          = df_qcew.loc[(df_qcew['month3_emplvl'] > 0) ] 
+
+
+    #Create a seperate dataframe with just the weekly wages by industry
+    wtavg = lambda x: np.average(x.avg_wkly_wage, weights = x.month3_emplvl,axis = 0) #define function to calcuate weighted average wage
+    df_qcew_wages           = df_qcew.groupby('industry_code').apply(wtavg).reset_index()
+    df_qcew_wages.columns = ['industry_code','avg_wkly_wage']
+
+    #Create a seperate dataframe with just the location quotient by industry (averaged across sectors)
+    wtavg = lambda x: np.average(x.lq_month3_emplvl, weights = x.month3_emplvl,axis = 0) #define function to calcuate weighted average wage
+    df_qcew_lq           = df_qcew.groupby('industry_code').apply(wtavg).reset_index()
+    df_qcew_lq.columns = ['industry_code','lq_month3_emplvl']
+
+    #Collapse down to total employment across the 3 ownership codes
+    df_qcew                 = df_qcew.groupby('industry_code').agg(month3_emplvl=('month3_emplvl', 'sum'),)
+    
+    #Merge in the wage and location quotient dataframes
+    df_qcew                 = pd.merge(df_qcew, df_qcew_wages, on=('industry_code'),how='outer')
+    df_qcew                 = pd.merge(df_qcew, df_qcew_lq, on=('industry_code'),how='outer')
+
+    #Change the industry codes to names
+    replacements = {'1011':'Natural Resources & Mining', 
+                    '1012':'Construction', 
+                    '1013':'Manufacturing', 
+                    '1021':'Trade, Transportation, & Utilities', 
+                    '1022':'Information', 
+                    '1023':'Financial Activities', 
+                    '1024':'Professional & Business Services', 
+                    '1025':'Education & Health Services', 
+                    '1026':'Leisure & Hospitality', 
+                    '1027':'Other Services', 
+                    '1028':'Public Administration', 
+                    '1029':'Unclassified'}
+
+    df_qcew['industry_code'].replace(replacements, inplace=True)
+
+   
+    #Sort by total employement
+    df_qcew['employment_fraction'] = round(((df_qcew['month3_emplvl']/(df_qcew['month3_emplvl'].sum())) * 100),2)
+    df_qcew['msa'] = cbsa_name
+    df_qcew      = df_qcew.loc[df_qcew['industry_code'] != 'Unclassified']
+    df_qcew = df_qcew.sort_values(by=['month3_emplvl'])
+
+    #Export final data
+    if data_export == True:
+        df_qcew.to_csv(os.path.join(county_folder,'MSA Industry Breakdown.csv'))
+    return(df_qcew)
+
+def GetMSAIndustryGrowthBreakdown(cbsa,year,qtr):
+    print('Getting MSA Employment Growth Breakdown')
+
+
+    #Pulls employment data (and the lagged data) from Quarterly Census of Employment and Wages
+    series_code      = ('C' + cbsa[0:4])
+    df_qcew          = qcew.get_data('area', rtype='dataframe', year=year,qtr=qtr, area=series_code)
+    df_qcew_lagged   = qcew.get_data('area', rtype='dataframe', year=(str(int(year) - growth_period )),qtr=qtr, area=series_code)
+    df_qcew_lagged1  = qcew.get_data('area', rtype='dataframe', year=(str(int(year) - 1 )),qtr=qtr, area=series_code)
+
+
+
+
+    #Restrict to county-ownership level (fed,state,local,private), supersector employment
+    df_qcew          = df_qcew.loc[df_qcew['agglvl_code'] == 43] 
+    df_qcew_lagged   = df_qcew_lagged.loc[df_qcew_lagged['agglvl_code'] == 43] 
+    df_qcew_lagged1  = df_qcew_lagged1.loc[df_qcew_lagged1['agglvl_code'] == 43] 
+
+    #Restrict to private ownership 
+    df_qcew          = df_qcew.loc[df_qcew['own_code'] == 5] 
+    df_qcew_lagged   = df_qcew_lagged.loc[df_qcew_lagged['own_code'] == 5] 
+    df_qcew_lagged1  = df_qcew_lagged1.loc[df_qcew_lagged1['own_code'] == 5] 
+
+    
+    if data_export == True:
+        df_qcew.to_csv(os.path.join(county_folder,'msa_qcew_raw.csv'))
+        df_qcew_lagged.to_csv(os.path.join(county_folder,'msa_qcew_raw_lagged.csv'))
+        df_qcew_lagged1.to_csv(os.path.join(county_folder,'msa_qcew_raw_lagged1.csv'))
+
+    #Add "lagged" and "lagged1" to the column names for the lagged data
+    df_qcew_lagged   = df_qcew_lagged.add_prefix('lagged_')
+    df_qcew_lagged1  = df_qcew_lagged1.add_prefix('lagged1_')
+
+    #Remove the "lagged" and "lagged1" prefix for the industry and ownership code columns so we can merge on them
+    df_qcew_lagged   = df_qcew_lagged.rename(columns={"lagged_own_code": "own_code", "lagged_industry_code": "industry_code"})
+    df_qcew_lagged1  = df_qcew_lagged1.rename(columns={"lagged1_own_code": "own_code", "lagged1_industry_code": "industry_code"})
+
+
+    #Merge together the current quarters data with the data from 1 year ago and with the data from (5) years from now
+    df_joint = pd.merge(df_qcew, df_qcew_lagged, on=('industry_code','own_code'),how='outer')
+    df_joint = pd.merge(df_joint, df_qcew_lagged1, on=('industry_code','own_code'),how='outer') #now merge in lagged employment data
+
+    #Flag the industries and ownership type rows where the data was suppresed in the past or present
+    filter = (df_joint['disclosure_code'] == 'N') | (df_joint['lagged_disclosure_code'] == 'N')
+    df_joint['Employment Growth Invalid'] = ''
+    df_joint.loc[filter, ['Employment Growth Invalid']] = 1
+    df_joint.loc[df_joint['Employment Growth Invalid'] != 1, ['Employment Growth Invalid']] = 0
+    
+    one_year_filter = (df_joint['disclosure_code'] == 'N') | (df_joint['lagged1_disclosure_code'] == 'N' )
+    df_joint['1Y Employment Growth Invalid'] = ''
+    df_joint.loc[one_year_filter, ['1Y Employment Growth Invalid']] = 1
+    df_joint.loc[df_joint['1Y Employment Growth Invalid'] != 1, ['1Y Employment Growth Invalid']] = 0
+    
+
+    #Replace the Employment Growth Invalid column with the maximum value from each row for a given industry
+    df_joint['Employment Growth Invalid'] = df_joint.groupby('industry_code')['Employment Growth Invalid'].transform('max')
+    df_joint['1Y Employment Growth Invalid'] = df_joint.groupby('industry_code')['1Y Employment Growth Invalid'].transform('max')
+
+    #Drop the rows where employment is 0 
+    df_joint          = df_joint.loc[(df_joint['month3_emplvl'] > 0) ] 
+
+    #Create a seperate dataframe with just the current quarters weekly wages by industry
+    wtavg = lambda x: np.average(x.avg_wkly_wage, weights = x.month3_emplvl,axis = 0) #define function to calcuate weighted average wage
+    df_qcew_wages           = df_joint.groupby('industry_code').apply(wtavg).reset_index()
+    df_qcew_wages.columns = ['industry_code','avg_wkly_wage']
+
+    #Collapse down to total employment across the 3 ownership codes
+    df_joint                 = df_joint.groupby('industry_code').agg(month3_emplvl=('month3_emplvl', 'sum'),lagged_month3_emplvl=('lagged_month3_emplvl', 'sum'),lagged1_month3_emplvl=('lagged1_month3_emplvl', 'sum'),emp_growth_invalid=('Employment Growth Invalid', 'max'),one_year_emp_growth_invalid=('1Y Employment Growth Invalid', 'max'))
+    df_joint                 = pd.merge(df_joint, df_qcew_wages, on=('industry_code'),how='outer')
+
+    #Change the industry codes to names
+    replacements = {'1011':'Natural Resources & Mining', 
+                    '1012':'Construction', 
+                    '1013':'Manufacturing', 
+                    '1021':'Trade, Transportation, & Utilities', 
+                    '1022':'Information', 
+                    '1023':'Financial Activities', 
+                    '1024':'Professional & Business Services', 
+                    '1025':'Education & Health Services', 
+                    '1026':'Leisure & Hospitality', 
+                    '1027':'Other Services', 
+                    '1028':'Public Administration', 
+                    '1029':'Unclassified'}
+
+    df_joint['industry_code'].replace(replacements, inplace=True)
+
+   
+
+    #Calcualte employment growth rates
+    df_joint['Employment Growth'] = round((((df_joint['month3_emplvl'] / df_joint['lagged_month3_emplvl']) - 1 ) * 100 ),2)
+    df_joint['1 Year Employment Growth'] = round((((df_joint['month3_emplvl'] / df_joint['lagged1_month3_emplvl']) - 1 ) * 100 ),2)
+    
+    #Drop the employment growth values when the industry is not valid due to data suppression
+    growth_filter          = (df_joint['emp_growth_invalid'] == 1)
+    one_year_growth_filter = (df_joint['one_year_emp_growth_invalid'] == 1)
+
+    df_joint.loc[growth_filter,          ['Employment Growth']] = NaN
+    df_joint.loc[one_year_growth_filter, ['1 Year Employment Growth']] = NaN
+
+
+    #Sort by 5 year growth rate
+    df_joint        = df_joint.sort_values(by=['Employment Growth'])
+    df_joint['msa'] = cbsa_name
+
+
+    #Export final data
+    if data_export == True:
+        df_joint.to_csv(os.path.join(county_folder,'MSA Industry Growth Breakdown.csv'))
+
+
+    return(df_joint)
+
 def GetMSAData():
     global msa_gdp
     global msa_pci
     global msa_unemployment_rate,msa_employment,msa_unemployment
     global msa_resident_pop
     global msa_mlp
+    global msa_industry_breakdown,msa_industry_growth_breakdown
     #We create these blank variables so we can use them as function inputs for the graph functions when there is no MSA
     if cbsa == '':
             msa_gdp                         = ''
@@ -792,6 +974,8 @@ def GetMSAData():
             msa_employment                  = ''
             msa_resident_pop                = ''
             msa_mlp                         = ''
+            msa_industry_breakdown          = ''
+            msa_industry_growth_breakdown   = ''
     else:
         print('Getting MSA Data')
         msa_gdp                         = GetMSAGDP(cbsa = cbsa,observation_start=observation_start_less1)
@@ -807,6 +991,10 @@ def GetMSAData():
         except:
             msa_mlp                     = ''
 
+
+        
+        msa_industry_breakdown            = GetMSAIndustryBreakdown(      cbsa=cbsa, year = qcew_year, qtr = qcew_qtr)    
+        msa_industry_growth_breakdown     = GetMSAIndustryGrowthBreakdown(cbsa=cbsa, year = qcew_year, qtr = qcew_qtr)
 
 
 
@@ -2363,7 +2551,7 @@ def CreateEmploymentByIndustryGraph(county_data_frame,folder):
     #Set Title
     fig.update_layout(
     title={
-        'text': county + ' Employment Composition & Wages by Industry' + ' (' + qcew_year + ' Q' + qcew_qtr + ')',
+        'text': 'County Employment Composition & Wages by Industry' + ' (' + qcew_year + ' Q' + qcew_qtr + ')',
         'y':.985 ,
         'x':0.5,
         'xanchor': 'center',
@@ -2441,7 +2629,7 @@ def CreateEmploymentGrowthByIndustryGraph(county_data_frame,folder):
 
     #Set Title
     fig.update_layout(
-    title_text= "Private Employment Growth by Industry" + ' (' + qcew_year + ' Q' + qcew_qtr + ')',    
+    title_text= "Private Employment Growth by Industry (County)" + ' (' + qcew_year + ' Q' + qcew_qtr + ')',    
 
     title={
         'y':title_position,
@@ -2480,6 +2668,155 @@ def CreateEmploymentGrowthByIndustryGraph(county_data_frame,folder):
     width     = graph_width,
                     )
     fig.write_image(os.path.join(folder,'employment_growth_by_industry.png'),engine='kaleido',scale=scale)
+
+def CreateMSAEmploymentByIndustryGraph(msa_data_frame,folder):
+    print('Creating MSA Employment by Industry Breakdown Graph')
+    def format(x):
+        return "Weekly Wage: ${:,.0f}".format(x)
+    msa_data_frame['avg_wkly_wage_string'] = msa_data_frame['avg_wkly_wage'].apply(format)
+    
+
+    #Employment By Supersector Treemap
+    fig = go.Figure(
+          go.Treemap(
+    values  =   msa_data_frame['month3_emplvl'],
+    labels  =   msa_data_frame['industry_code'],
+    parents =   msa_data_frame['msa'],
+    text    =   msa_data_frame['avg_wkly_wage_string'],
+    textinfo = "label+text",
+    textposition='top left',
+    marker=dict(
+        colors= msa_data_frame['avg_wkly_wage'],
+        colorscale ='Blues',
+    ),
+
+                              
+                   )
+    )
+
+
+              
+    
+    #Set Title
+    fig.update_layout(
+    title={
+        'text': 'MSA Private Employment Composition & Wages by Industry' + ' (' + qcew_year + ' Q' + qcew_qtr + ')',
+        'y':.985 ,
+        'x':0.5,
+        'xanchor': 'center',
+        'yanchor': 'top'},  
+                    )
+    
+    #Set Font and Colors
+    fig.update_layout(
+    font_family="Avenir Next LT Pro",
+    font_color='#262626',
+    font_size = 10.5,
+    paper_bgcolor=paper_backgroundcolor,
+    plot_bgcolor ="White"
+                     )
+
+
+    #Set size and margin
+    fig.update_layout(
+    margin=dict(l=left_margin, r=right_margin, t=20, b= 0),
+    height    = graph_height,
+    width     = graph_width,
+                    )
+
+    # fig.update_yaxes(automargin = True)  
+    fig.write_image(os.path.join(folder,'msa_employment_by_industry.png'),engine='kaleido',scale=scale)
+
+def CreateMSAEmploymentGrowthByIndustryGraph(msa_data_frame,folder):
+    print('Creating MSA Employment Growth by Industry Graph')
+    annotation_position = 'outside'
+    msa_data_frame  = msa_data_frame.loc[msa_data_frame['industry_code'] != 'Unclassified'] 
+
+    #Drop industreis where we are missing 5 and 1 year growth
+    msa_data_frame  = msa_data_frame.loc[(msa_data_frame['emp_growth_invalid'] != 1) | (msa_data_frame['one_year_emp_growth_invalid'] != 1)] 
+
+    fig = go.Figure(data=[
+    #Add 5 Year Growth Bars
+    go.Bar(
+            name=str(growth_period) + ' Year Growth',      
+            x=msa_data_frame['industry_code'], 
+            y=msa_data_frame['Employment Growth'],
+            marker_color="#D7DEEA",
+            # texttemplate = "%{value:.2f}%",
+            # textposition = annotation_position,
+            # cliponaxis =  False
+            ),
+
+     #Add 1 year growth circles       
+     go.Scatter(
+            name='1 Year Growth',      
+            x=msa_data_frame['industry_code'], 
+            y=msa_data_frame['1 Year Employment Growth'],
+            marker=dict(color="#4160D3", size=9),
+            mode = 'markers',
+            # texttemplate = "%{value:.2f}%",
+            # textposition = annotation_position,
+            # cliponaxis =  False
+            ),
+    ]
+    )
+
+    fig.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
+
+    #Set X-axes format
+    fig.update_xaxes(
+        tickfont = dict(size=tickfont_size),
+        title_standoff = 0.10
+        )
+
+    #Set Y-Axes format
+    fig.update_yaxes(
+        ticksuffix = '%',
+        tickfont = dict(size=tickfont_size),
+        # visible = False
+        )                 
+
+    #Set Title
+    fig.update_layout(
+    title_text= "Private Employment Growth by Industry (MSA) " + ' (' + qcew_year + ' Q' + qcew_qtr + ')',    
+
+    title={
+        'y':title_position,
+        'x':0.5,
+        'xanchor': 'center',
+        'yanchor': 'top'},
+                    
+                    )
+    
+    #Set Legend Layout
+    fig.update_layout(
+    legend=dict(
+        orientation="h",
+        yanchor="bottom",
+        y=legend_position ,
+        xanchor="center",
+        x=0.5,
+        font_size = tickfont_size
+                )
+
+                      )
+    
+    #Set Font and Colors
+    fig.update_layout(
+    font_family="Avenir Next LT Pro",
+    font_color='#262626',
+    font_size = 10.5,
+    paper_bgcolor=paper_backgroundcolor,
+    plot_bgcolor ="White"
+                     )
+
+    #Set size and margin
+    fig.update_layout(
+    margin=dict(l=left_margin, r=right_margin, t=(top_margin + .2), b = (bottom_margin + .2)),
+    height    = graph_height,
+    width     = graph_width,
+                    )
+    fig.write_image(os.path.join(folder,'msa_employment_growth_by_industry.png'),engine='kaleido',scale=scale)
 
 def CreateMLPGraph(county_data_frame,msa_data_frame,folder):
     print('Creating Median List Price Graph')
@@ -2891,6 +3228,10 @@ def CreateGraphs():
         print(e)
     
     CreateEducationAttainmentGraph(folder = county_folder)
+    
+    if cbsa != '':
+        CreateMSAEmploymentByIndustryGraph(      msa_data_frame = msa_industry_breakdown,              folder = county_folder )
+        CreateMSAEmploymentGrowthByIndustryGraph(msa_data_frame = msa_industry_growth_breakdown,       folder = county_folder )
 
     # #National Graphs (Only use them sometimes)
     # CreateNationalUnemploymentGraph(folder=county_folder)
@@ -2999,8 +3340,8 @@ def OverviewLanguage():
     overview_language = [wikipeida_summary,wikipeida_economy_summary, economic_overview_paragraph]
     return(overview_language)
 
-def EmploymentBreakdownLanguage(county_industry_breakdown):
-    print('Writing Employment Breakdown Langauge')
+def CountyEmploymentBreakdownLanguage(county_industry_breakdown):
+    print('Writing County Employment Breakdown Langauge')
     # print(county_industry_breakdown)
     #Get the largest industries
     largest_industry                                  = county_industry_breakdown['industry_code'].iloc[-1]
@@ -3042,7 +3383,7 @@ def EmploymentBreakdownLanguage(county_industry_breakdown):
     third_largest_industry_employment              = "{:,.0f}".format(third_largest_industry_employment)
     
 
-    return(
+    county_breakdown_language = (
           'According to the Q' +
             qcew_qtr +
             ' '+
@@ -3077,8 +3418,89 @@ def EmploymentBreakdownLanguage(county_industry_breakdown):
 
             "{high_concentration_sentence}".format(high_concentration_sentence = (county + ' has an especially large share of workers in the ' + highest_relative_concentration_industry + """ industry. In fact, its """ +  "{:,.1f}%".format(highest_relative_concentration_employment_fraction) + ' fraction of workers is ' +  "{:,.1f}".format(highest_relative_concentration_industry_lq) + ' times higher than the National average.'   ) if highest_relative_concentration_industry_lq >= 1.75  else "") 
 
+        )
+    return(county_breakdown_language)
+
+def MSAEmploymentBreakdownLanguage(msa_industry_breakdown):
+    print('Writing MSA Employment Breakdown Langauge')
+    # print(county_industry_breakdown)
+    #Get the largest industries
+    largest_industry                                  = msa_industry_breakdown['industry_code'].iloc[-1]
+    largest_industry_employment                       = msa_industry_breakdown['month3_emplvl'].iloc[-1]
+    largest_industry_employment_fraction              = msa_industry_breakdown['employment_fraction'].iloc[-1]
+    
+    second_largest_industry                           = msa_industry_breakdown['industry_code'].iloc[-2]
+    second_largest_industry_employment                = msa_industry_breakdown['month3_emplvl'].iloc[-2]
+    second_largest_industry_employment_fraction       = msa_industry_breakdown['employment_fraction'].iloc[-2]
+    
+
+    if len(msa_industry_breakdown) > 2:
+        third_largest_industry                        = msa_industry_breakdown['industry_code'].iloc[-3]
+        third_largest_industry_employment             = msa_industry_breakdown['month3_emplvl'].iloc[-3]
+        third_largest_industry_employment_fraction    = msa_industry_breakdown['employment_fraction'].iloc[-3]
+        
+    else:
+        third_largest_industry                        = ''
+        third_largest_industry_employment             = ''
+        third_largest_industry_employment_fraction    = ''
+    
+
+    #Now sort by location quotient to find the highest realative concentration industries
+    msa_industry_breakdown                              = msa_industry_breakdown.sort_values(by=['lq_month3_emplvl'])
+    highest_relative_concentration_industry             = msa_industry_breakdown['industry_code'].iloc[-1]
+    highest_relative_concentration_industry_lq          = msa_industry_breakdown['lq_month3_emplvl'].iloc[-1]
+    highest_relative_concentration_employment_fraction  = msa_industry_breakdown['employment_fraction'].iloc[-1]
+
+    
+
+    #Format Variables
+    largest_industry_employment_fraction           = "{:,.1f}%".format(largest_industry_employment_fraction) 
+    largest_industry_employment                    = "{:,.0f}".format(largest_industry_employment)
+
+    second_largest_industry_employment_fraction    = "{:,.1f}%".format(second_largest_industry_employment_fraction) 
+    second_largest_industry_employment             = "{:,.0f}".format(second_largest_industry_employment)
+
+    third_largest_industry_employment_fraction     = "{:,.1f}%".format(third_largest_industry_employment_fraction) 
+    third_largest_industry_employment              = "{:,.0f}".format(third_largest_industry_employment)
+    
+
+    msa_breakdown_language = (
+          'According to the Q' +
+            qcew_qtr +
+            ' '+
+            qcew_year +
+            ' Quarterly Census of Employment and Wages, ' +
+            cbsa_name +
+            ' employed ' +
+            "{:,.0f}".format(msa_industry_breakdown['month3_emplvl'].sum()) +
+            ' employees, with establishments in the ' + 
+           largest_industry +
+           ', ' +
+           second_largest_industry +
+           ', and ' +
+          third_largest_industry +
+           ' industries accounting for the top three employers. '+
+           'These industries employ ' +
+           largest_industry_employment +
+           ' (' +
+            largest_industry_employment_fraction +
+           '), ' +
+           
+            second_largest_industry_employment +
+           ' (' +
+           second_largest_industry_employment_fraction +
+           '), and ' +
+           
+            third_largest_industry_employment +
+           ' (' +
+           third_largest_industry_employment_fraction +
+           ') ' +
+           'workers in the Metro, respectively. ' +
+
+            "{high_concentration_sentence}".format(high_concentration_sentence = (cbsa_name + ' has an especially large share of workers in the ' + highest_relative_concentration_industry + """ industry. In fact, its """ +  "{:,.1f}%".format(highest_relative_concentration_employment_fraction) + ' fraction of workers is ' +  "{:,.1f}".format(highest_relative_concentration_industry_lq) + ' times higher than the National average.'   ) if highest_relative_concentration_industry_lq >= 1.75  else "") 
 
         )
+    return(msa_breakdown_language)
   
 def UnemploymentLanguage():
     print('Writing Unemployment Langauge')
@@ -3272,9 +3694,9 @@ def TourismEmploymentLanguage():
     else:
         return('')
 
-def EmploymentGrowthLanguage(county_industry_breakdown):
-    print('Writing Employment Growth Langauge')
-
+def CountyEmploymentGrowthLanguage(county_industry_breakdown):
+    print('Writing County Employment Growth Langauge')
+    
     #Track employment growth over the past 5 years
     latest_county_employment         = county_industry_breakdown['month3_emplvl'].sum()
     five_years_ago_county_employment = county_industry_breakdown['lagged_month3_emplvl'].sum()
@@ -3366,7 +3788,7 @@ def EmploymentGrowthLanguage(county_industry_breakdown):
     slowest_growth_industry_1y                = "{:,.1f}%".format(abs(slowest_growth_industry_1y))
 
 
-    emplopyment_growth_language = ('According to the Q' +
+    county_emplopyment_growth_language = ('According to the Q' +
             qcew_qtr +
             ' '+
             qcew_year +
@@ -3414,15 +3836,161 @@ def EmploymentGrowthLanguage(county_industry_breakdown):
               str(int(qcew_year) - 1) +
               ' levels.')
 
-              
-    # if  positive_1_year_growth_industries_list != '':
-    #     emplopyment_growth_language = (emplopyment_growth_language +        
-    #           ' In fact, just the ' +
-    #           positive_1_year_growth_industries_list +
-    #           ' industries have seen stable growth. '
-    #            )
 
-    return(emplopyment_growth_language)
+    return(county_emplopyment_growth_language)
+
+def MSAEmploymentGrowthLanguage(msa_industry_breakdown):
+    print('Writing MSA Employment Growth Langauge')
+    
+    #Create MSA paragarph if applicable
+    if cbsa != '':
+        #Track employment growth over the past 5 years
+        latest_msa_employment            = msa_industry_breakdown['month3_emplvl'].sum()
+        five_years_ago_msa_employment    = msa_industry_breakdown['lagged_month3_emplvl'].sum()
+        
+
+        five_year_msa_employment_growth_pct = ((latest_msa_employment/five_years_ago_msa_employment) - 1 ) * 100
+        five_year_msa_employment_growth     = (latest_msa_employment - five_years_ago_msa_employment) 
+
+
+        #See if 5 year county employment expaded or contracted
+        if five_year_msa_employment_growth > 0:
+            five_year_msa_employment_expand_or_contract = 'expand'
+        elif five_year_msa_employment_growth < 0:
+            five_year_msa_employment_expand_or_contract = 'compress'
+        else:
+            five_year_msa_employment_expand_or_contract = 'remained stable'
+        
+
+
+        #Format 5 year county employment growth variables
+        five_year_msa_employment_growth_pct = "{:,.1f}%".format(abs(five_year_msa_employment_growth_pct))
+        five_year_msa_employment_growth     = "{:,.0f}".format(five_year_msa_employment_growth)
+
+        #Drop the industries where employment growth cant be measured properly and the unclassified industry
+        msa_industry_breakdown             = msa_industry_breakdown.loc[msa_industry_breakdown['industry_code'] != 'Unclassified']
+
+
+        #Get the fastest and slowest growing industries
+        msa_industry_breakdown5y                     = msa_industry_breakdown.loc[(msa_industry_breakdown['emp_growth_invalid'] != 1) ] 
+
+        msa_industry_breakdown5y                     = msa_industry_breakdown5y.sort_values(by=['Employment Growth'])
+        fastest_growing_industry_5y                  = msa_industry_breakdown5y['industry_code'].iloc[-1]
+        second_fastest_growing_industry_5y           = msa_industry_breakdown5y['industry_code'].iloc[-2]
+        
+        if len(msa_industry_breakdown5y) > 2:
+            third_fastest_growing_industry_5y         = msa_industry_breakdown5y['industry_code'].iloc[-3]
+        else:
+            third_fastest_growing_industry_5y         = ''
+
+        slowest_growing_industry_5y                   = msa_industry_breakdown5y['industry_code'].iloc[0]
+
+        fastest_growth_industry_5y                   = msa_industry_breakdown5y['Employment Growth'].iloc[-1]
+        second_fastest_growth_industry_5y            = msa_industry_breakdown5y['Employment Growth'].iloc[-2]
+        
+        if len(msa_industry_breakdown5y) > 2:
+            third_fastest_growth_industry_5y         = msa_industry_breakdown5y['Employment Growth'].iloc[-3]
+        else:
+            third_fastest_growth_industry_5y         = ''
+
+
+        slowest_growth_industry_5y                   = msa_industry_breakdown5y['Employment Growth'].iloc[0]
+        
+        
+        #Describe the growth of the slowest growing industry
+        if slowest_growth_industry_5y < 0:
+            slowest_growth_industry_5y_description = 'collapse'
+        elif     slowest_growth_industry_5y >= 0:
+            slowest_growth_industry_5y_description = 'grow'
+
+        #Format Variables
+        fastest_growth_industry_5y               = "{:,.1f}%".format(fastest_growth_industry_5y)
+        second_fastest_growth_industry_5y        = "{:,.1f}%".format(second_fastest_growth_industry_5y)
+        slowest_growth_industry_5y               = "{:,.1f}%".format(abs(slowest_growth_industry_5y))
+
+        if len(msa_industry_breakdown) > 2:
+            third_fastest_growth_industry_5y    = "{:,.1f}%".format(third_fastest_growth_industry_5y)
+
+        msa_industry_breakdown                  = msa_industry_breakdown.loc[(msa_industry_breakdown['one_year_emp_growth_invalid'] != 1)] 
+
+        #See if all industries lost employment over the past year (or most or some)
+        msa_industry_breakdown_employment_lossers           = msa_industry_breakdown.loc[msa_industry_breakdown['1 Year Employment Growth'] < 0]  #Cut down to industries that lost employees
+        msa_industry_breakdown_employment_winners           = msa_industry_breakdown.loc[msa_industry_breakdown['1 Year Employment Growth'] >= 0] #Cut down to industries that gained employees
+
+        if len(msa_industry_breakdown_employment_lossers) == len(msa_industry_breakdown): #all industries lose employment over last year
+            employment_loss_1year_all_most_some                     = 'all'
+        elif len(msa_industry_breakdown_employment_winners) == len(msa_industry_breakdown): #no industries lose employment over last year
+            employment_loss_1year_all_most_some                     = 'no'
+        elif len(msa_industry_breakdown_employment_lossers)/len(msa_industry_breakdown) >= 0.5:#most industries lose employment over last year
+            employment_loss_1year_all_most_some                     = 'most'
+        elif len(msa_industry_breakdown_employment_lossers) > 0:
+            employment_loss_1year_all_most_some                     = 'some'                        #some industries lose employment over last year
+        else:
+            employment_loss_1year_all_most_some                     = '[all/most/some]'
+
+
+        #Get industry that has grown the slowest over the last year in the county
+        msa_industry_breakdown                    = msa_industry_breakdown.sort_values(by=['1 Year Employment Growth'])
+        slowest_growing_industry_1y               = msa_industry_breakdown['industry_code'].iloc[0]
+        slowest_growth_industry_1y                = msa_industry_breakdown['1 Year Employment Growth'].iloc[0]
+        slowest_growth_industry_1y                = "{:,.1f}%".format(abs(slowest_growth_industry_1y))
+
+
+
+        msa_emplopyment_growth_language = ('According to the Q' +
+                qcew_qtr +
+                ' '+
+                qcew_year +
+                ' Quarterly Census of Employment and Wages, ' +
+                cbsa_name + ' Metro ' +
+                ' has seen private employment '+
+                five_year_msa_employment_expand_or_contract +
+                ' ' +
+                five_year_msa_employment_growth_pct +
+                ' (' +
+                five_year_msa_employment_growth +
+                ') ' +
+                'in total over the last five years. ' +
+                'During that time, the ' +
+                fastest_growing_industry_5y +
+                ', ' +
+                second_fastest_growing_industry_5y +
+                ', and ' +
+                third_fastest_growing_industry_5y +
+                ' industries saw the strongest growth, expanding ' +
+                fastest_growth_industry_5y +
+                ', ' +
+                second_fastest_growth_industry_5y + 
+                ', and '+
+                third_fastest_growth_industry_5y +
+                ', respectively.'+
+                ' Meanwhile, the ' +
+                slowest_growing_industry_5y +
+                ' Industry has seen employment '+
+                slowest_growth_industry_5y_description +
+                ' ' +
+                slowest_growth_industry_5y +
+                ' over the previous five years.'
+                ' Over the past year, ' +
+                employment_loss_1year_all_most_some + 
+                ' industries have lost employees.' +
+                ' The ' +
+                slowest_growing_industry_1y +
+                ' sector saw the largest decline in employees and remains '+
+                slowest_growth_industry_1y +
+                ' ' + 
+                'below Q' +
+                qcew_qtr +
+                ' ' +
+                str(int(qcew_year) - 1) +
+                ' levels.')
+    else:
+        msa_emplopyment_growth_language = ''
+
+
+
+
+    return(msa_emplopyment_growth_language)
 
 def ProductionLanguage(county_data_frame,msa_data_frame,state_data_frame):
     print('Writing Production Langauge')
@@ -3468,7 +4036,7 @@ def ProductionLanguage(county_data_frame,msa_data_frame,state_data_frame):
     #Fomrmat variables
     latest_county_gdp_growth =  "{:,.1f}%".format(latest_county_gdp_growth)
 
-    return('GDP by county is a measure of the market value of final goods and services produced within a county area in a particular period. ' +
+    return('While the longest U.S. economic expansion since the end of WWII did come to an abrupt end with 2020 Q2 real GDP decreasing at an annualized rate of 31%, economic activity rebounded sharply in the 2nd half of 2020. ' +
             'While GDP data at the county level is not yet available, '      +
            latest_period +
            ' data from the U.S. Bureau of Economic Analysis points to '+
@@ -3763,9 +4331,8 @@ def HousingLanguage():
         if isinstance(msa_mlp, pd.DataFrame) == True:
             yoy_msa_mlp_growth = ((msa_mlp['Median List Price'].iloc[-1]/msa_mlp['Median List Price'].iloc[-13]) - 1 ) * 100
 
-            return(                                           
-                                "The residential housing market in the United States has been robust since the initial shutdown in the first half of 2020. " + 
-                                "Historically low mortgage rates, the desire for more space, and the ability to work from home have led to increased demand, pushing values to record highs in most counties and metros across the Nation. In " +
+            return(
+                                "In " +                                           
                                 county +
                                 ', Realtor.com data points to ' +
                                 "{growth_description}".format(growth_description = "continued" if  yoy_county_mlp_growth >= 0  else "negative") +                                           
@@ -3937,7 +4504,7 @@ def CreateLanguage():
     
     #Employment breakdown language
     try:
-        emplopyment_industry_breakdown_language    = EmploymentBreakdownLanguage(county_industry_breakdown = county_industry_breakdown)
+        emplopyment_industry_breakdown_language    = [MSAEmploymentBreakdownLanguage(msa_industry_breakdown = msa_industry_breakdown),CountyEmploymentBreakdownLanguage(county_industry_breakdown = county_industry_breakdown)]
     except:
         print('problem with employment language')
         emplopyment_industry_breakdown_language    = ''
@@ -3988,10 +4555,10 @@ def CreateLanguage():
 
     #Private Employment Growth language
     try:    
-        emplopyment_growth_language = EmploymentGrowthLanguage(county_industry_breakdown=county_industry_growth_breakdown)
-    except:
-        print('problem with emp growth language')
-        emplopyment_growth_language = ''
+        emplopyment_growth_language = [MSAEmploymentGrowthLanguage(msa_industry_breakdown=msa_industry_growth_breakdown), CountyEmploymentGrowthLanguage(county_industry_breakdown=county_industry_growth_breakdown)]
+    except Exception as e:
+        print(e, ' ---- problem with emp growth language')
+        emplopyment_growth_language = ['']
     
    #Population language 
     try:
@@ -4178,6 +4745,7 @@ def GetDataAndLanguageForOverviewTable():
                 ['Per Capita Personal Income','','','[Faster than/Slower than/Equal to] [State/MSA]']
                 ])
 
+
 def AddTable(document,data_for_table): #Function we use to insert our overview table into the report document
     #list of list where each list is a row for our table
      
@@ -4272,7 +4840,7 @@ def AddTitle(document):
     rFonts = title_style.element.rPr.rFonts
     rFonts.set(qn("w:asciiTheme"), "Avenir Next LT Pro Light")
 
-    above_map_paragraph = document.add_paragraph("The following analysis includes pertinent aspects of the surrounding region as it pertains to the subject property. " + 
+    above_map_paragraph = document.add_paragraph("The value of real property reflects and is influenced by the interaction of Economic Conditions, Demographics, Environmental Considerations, and Governmental Controls and Regulations. The following analysis includes pertinent aspects of the surrounding region as it pertains to the subject property. " + 
                                                 'This report was compiled using data as of ' + current_quarter + ' unless otherwise noted. Data is from a number of sources including the U.S. Bureau of Labor Statistics, the U.S. Bureau of Economic Analysis, and the U.S. Census Bureau.')
     above_map_style = above_map_paragraph.style
     above_map_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
@@ -4374,7 +4942,7 @@ def AddMap(document):
                 pass
 
 
-#Report Section Function s
+#Report Section Functions
 def OverviewSection(document):
     print('Writing Overview Section')
     AddHeading(document = document, title = 'Overview',            heading_level = 2)
@@ -4412,18 +4980,31 @@ def OverviewSection(document):
 def EmploymentSection(document):
     print('Writing Employment Section')
     AddHeading(document = document, title = 'Labor Market Conditions',            heading_level = 2)
-    emp_paragraph = document.add_paragraph(emplopyment_industry_breakdown_language)
-    emp_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-    emp_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
- 
+
+    #Add Employment Breakdown Language
+    for paragraph in emplopyment_industry_breakdown_language:
+        if paragraph == '': #Skip blank sections
+            continue
+        emp_paragraph = document.add_paragraph(paragraph)
+        emp_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
+        emp_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+
+
+
+    #Add MSA employment treemap chart
+    if os.path.exists(os.path.join(county_folder,'msa_employment_by_industry.png')):
+        employment_tree_fig = document.add_picture(os.path.join(county_folder,'msa_employment_by_industry.png'),width=Inches(6.5))
+        last_paragraph = document.paragraphs[-1] 
+        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        Citation(document,'U.S. Bureau of Labor Statistics')
     
-    #Add employment treemap chart
+    #Add county employment treemap chart
     if os.path.exists(os.path.join(county_folder,'employment_by_industry.png')):
         employment_tree_fig = document.add_picture(os.path.join(county_folder,'employment_by_industry.png'),width=Inches(6.5))
         last_paragraph = document.paragraphs[-1] 
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Bureau of Labor Statistics')
-
+    
     
     # top_emp_paragraph = document.add_paragraph("""The Region’s largest employers shown below illustrates the size of the top industries in the region, accounting for the majority of the top Employers.""")
     # top_emp_paragraph.paragraph_format.space_after = Pt(0)
@@ -4443,6 +5024,8 @@ def EmploymentSection(document):
 
 
 
+    
+
     emp_paragraph2 = document.add_paragraph(unemplopyment_language)
     emp_paragraph2.paragraph_format.space_after = Pt(0)
     emp_paragraph2.paragraph_format.space_after = Pt(6)
@@ -4458,24 +5041,35 @@ def EmploymentSection(document):
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Bureau of Labor Statistics')
 
-    emp_paragraph3 = document.add_paragraph(emplopyment_growth_language)
-    emp_paragraph3.paragraph_format.space_after = Pt(0)
-    emp_paragraph3.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-    emp_paragraph3.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    emp_format3 = document.styles['Normal'].paragraph_format
-    emp_format3.line_spacing_rule = WD_LINE_SPACING.SINGLE
 
-    #Add employment growth by industry bar chart
+
+    #Employment growth language
+    for paragraph in emplopyment_growth_language:
+        if paragraph == '': #Skip blank sections
+            continue
+        emp_paragraph = document.add_paragraph(paragraph)
+        emp_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
+        emp_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+
+
+
+    #Add MSA employment growth by industry bar chart
+    if os.path.exists(os.path.join(county_folder,'msa_employment_growth_by_industry.png')):
+        msa_employment_pie_fig   = document.add_picture(os.path.join(county_folder,'msa_employment_growth_by_industry.png'),width=Inches(6.5))
+        last_paragraph           = document.paragraphs[-1] 
+        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        Citation(document,'U.S. Bureau of Labor Statistics')
+        Note(document,'Employment growth rates are not displayed for industries where the BLS has suppressed employment data for quality or privacy concerns.')
+
+    #Add county employment growth by industry bar chart
     if os.path.exists(os.path.join(county_folder,'employment_growth_by_industry.png')):
         employment_pie_fig = document.add_picture(os.path.join(county_folder,'employment_growth_by_industry.png'),width=Inches(6.5))
         last_paragraph = document.paragraphs[-1] 
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Bureau of Labor Statistics')
         Note(document,'Employment growth rates are not displayed for industries where the BLS has suppressed employment data for quality or privacy concerns.')
-
-    ur_format = document.styles['Normal'].paragraph_format
-    ur_format.space_after = Pt(0)
-
+    
+    #Add page break
     page_break_paragraph = document.add_paragraph('')
     run = page_break_paragraph.add_run()
     run.add_break(WD_BREAK.PAGE)
@@ -4627,7 +5221,6 @@ def OutlookSection(document):
         outlook_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
         outlook_paragraph.paragraph_format.space_before = Pt(6)
         outlook_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-
 
 
 
