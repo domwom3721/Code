@@ -3763,8 +3763,9 @@ def HousingLanguage():
         if isinstance(msa_mlp, pd.DataFrame) == True:
             yoy_msa_mlp_growth = ((msa_mlp['Median List Price'].iloc[-1]/msa_mlp['Median List Price'].iloc[-13]) - 1 ) * 100
 
-            return(
-                                "In " +                                           
+            return(                                           
+                                "The residential housing market in the United States has been robust since the initial shutdown in the first half of 2020. " + 
+                                "Historically low mortgage rates, the desire for more space, and the ability to work from home have led to increased demand, pushing values to record highs in most counties and metros across the Nation. In " +
                                 county +
                                 ', Realtor.com data points to ' +
                                 "{growth_description}".format(growth_description = "continued" if  yoy_county_mlp_growth >= 0  else "negative") +                                           
