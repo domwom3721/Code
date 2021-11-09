@@ -4488,7 +4488,7 @@ def OutlookLanguage():
             
 def CreateLanguage():
     global overview_language
-    global emplopyment_industry_breakdown_language,emplopyment_growth_language,unemplopyment_language,tourism_employment_language
+    global county_emplopyment_industry_breakdown_language, msa_emplopyment_industry_breakdown_language ,emplopyment_growth_language,unemplopyment_language,tourism_employment_language
     global production_language,demographics_language,infrastructure_language,housing_language,outlook_language
     global car_language, train_language, bus_language, plane_language
     global population_language,income_language
@@ -4502,12 +4502,19 @@ def CreateLanguage():
         print('problem with overview language')
         overview_language       = ''
     
-    #Employment breakdown language
+    #County Employment breakdown language
     try:
-        emplopyment_industry_breakdown_language    = [MSAEmploymentBreakdownLanguage(msa_industry_breakdown = msa_industry_breakdown),CountyEmploymentBreakdownLanguage(county_industry_breakdown = county_industry_breakdown)]
+        county_emplopyment_industry_breakdown_language    = [CountyEmploymentBreakdownLanguage(county_industry_breakdown = county_industry_breakdown)]
     except:
-        print('problem with employment language')
-        emplopyment_industry_breakdown_language    = ''
+        print('problem with county employment breakdown language')
+        county_emplopyment_industry_breakdown_language    = ''
+
+    #MSA Employment breakdown language
+    try:
+        msa_emplopyment_industry_breakdown_language    = [MSAEmploymentBreakdownLanguage(msa_industry_breakdown = msa_industry_breakdown)]
+    except:
+        print('problem with MSA employment breakdown language')
+        msa_emplopyment_industry_breakdown_language    = ''
 
     #Production language
     try:
@@ -4981,8 +4988,8 @@ def EmploymentSection(document):
     print('Writing Employment Section')
     AddHeading(document = document, title = 'Labor Market Conditions',            heading_level = 2)
 
-    #Add Employment Breakdown Language
-    for paragraph in emplopyment_industry_breakdown_language:
+    #Add MSA Employment Breakdown Language
+    for paragraph in msa_emplopyment_industry_breakdown_language:
         if paragraph == '': #Skip blank sections
             continue
         emp_paragraph = document.add_paragraph(paragraph)
@@ -4998,6 +5005,15 @@ def EmploymentSection(document):
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Bureau of Labor Statistics')
     
+    #Add County Employment Breakdown Language
+    for paragraph in county_emplopyment_industry_breakdown_language:
+        if paragraph == '': #Skip blank sections
+            continue
+        emp_paragraph = document.add_paragraph(paragraph)
+        emp_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
+        emp_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+
+
     #Add county employment treemap chart
     if os.path.exists(os.path.join(county_folder,'employment_by_industry.png')):
         employment_tree_fig = document.add_picture(os.path.join(county_folder,'employment_by_industry.png'),width=Inches(6.5))
