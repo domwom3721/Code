@@ -4090,7 +4090,7 @@ def ProductionLanguage(county_data_frame,msa_data_frame,state_data_frame):
             ' for the ' +
             msa_or_state +
             '.' )
-            
+
     boiler_plate_econ_language = ('While the longest U.S. economic expansion since the end of WWII did come to an abrupt end with 2020 Q2 real GDP decreasing at an annualized rate of 31%, economic activity has rebounded sharply since. GDP increased at a historically fast annual rate of 6.7% in Q2 2021, according to data released by the Bureau of Economic Analysis. Growth of 6.7% in Q2 was up from the first quarter, when real GDP increased 6.3%. The increase in second quarter GDP reflected the continued economic recovery, reopening of establishments, and continued government response related to the COVID-19 pandemic. Supply chain issues as well as a slowdown in consumer spending growth slowed GDP growth down to 2% in the third quarter.')
     
     return[boiler_plate_econ_language, production_language]
@@ -4428,13 +4428,12 @@ def OutlookLanguage():
     #National economy boiler plate
                                 
     national_economy_summary = (
-                                'The United States economy continues to recover from the aftermath of the Covid-19 pandemic. ' +
-                                'The labor market has restored almost 17 million of the 21 million jobs lost at the beginning of the pandemic, as measured by non-farm employment, bringing the unemployment rate to 4.8% as of September 2021. ' +
-                                'GDP increased at a historically fast annual rate of 6.7% in Q2 2021, according to data released by the Bureau of Economic Analysis. Growth of 6.7% in Q2 was up from the first quarter, when real GDP increased 6.3%. '          +
-                                'The increase in second quarter GDP reflected the continued economic recovery, reopening of establishments, and continued government response related to the COVID-19 pandemic. ' +
-                                'Supply chain issues as well as a slowdown in consumer spending growth slowed GDP growth down to 2% in the third quarter. ' +
-                                'Supply-chain disruptions such as delays at U.S. ports and international manufacturing issues contributed to a sharp increase in inflation and pose a risk to the economic outlook. ' +
-                                'Despite supply-side challenges, many economic observers expect the economy to regain momentum in the final months of the year conditional on Covid-19 cases continuing to fall.'
+                            'The United States economy continues to recover from the aftermath of the Covid-19 pandemic.' + 
+                            ' The labor market has restored almost 17 million of the 21 million jobs lost at the beginning of the pandemic, as measured by non-farm employment, bringing the unemployment rate to 4.8% as of September 2021.'+
+                            ' GDP increased at a historically fast annual rate of 6.7% in Q2 2021. ' + 
+                            'The increase in second quarter GDP reflected the continued economic recovery, reopening of establishments, and continued government response related to the COVID-19 pandemic. '+
+                            'However, supply chain issues as well as a slowdown in consumer spending, have slowed GDP growth down to 2% in the third quarter. ' +
+                            'Supply-chain disruptions such as delays at U.S. ports and international manufacturing issues contributed to a sharp increase in inflation and pose a risk to the economic outlook. Despite supply-side challenges, many economic observers expect the economy to regain momentum in the final months of the year conditional on Covid-19 cases continuing to fall. ' 
                                  )
 
 
@@ -5167,9 +5166,9 @@ def ProductionSection(document):
         gdp_format.space_after = Pt(0)
         Citation(document,'U.S. Bureau of Economic Analysis')
     
-    # page_break_paragraph = document.add_paragraph('')
-    # run = page_break_paragraph.add_run()
-    # run.add_break(WD_BREAK.PAGE)
+    page_break_paragraph = document.add_paragraph('')
+    run = page_break_paragraph.add_run()
+    run.add_break(WD_BREAK.PAGE)
     
 def DemographicsSection(document):
     print('Writing Demographic Section')
