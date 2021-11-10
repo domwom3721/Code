@@ -289,7 +289,6 @@ def GetCountyEmployment(fips,start_year,end_year):
 
     #Drop the extra year we needed to calculate growth rates
     county_emp_df    = county_emp_df.loc[county_emp_df['year'] != str(start_year-1)]
-
     if data_export == True:
         county_emp_df.to_csv(os.path.join(county_folder,'County Total Employment.csv'))
     return(county_emp_df)
@@ -564,13 +563,14 @@ def GetCountyData():
         print(e,' Unable to Get County Unemployment Rate Data')
         county_unemployment_rate      = ''
     
+
     #County Total Employment
     try:
         county_employment             = GetCountyEmployment(fips = fips,start_year=start_year,end_year=end_year)
     except Exception as e:
         print(e,' Unable to Get County Employment Data')
         county_employment             = ''
-    
+
     #County Per Capita Income
     try:
         county_pci                    = GetCountyPCI(fips=fips, observation_start=observation_start_less1)
@@ -3291,7 +3291,7 @@ def OverviewLanguage():
         
     #Compare current county unemployment rate to state unemployment
     if current_unemployment > current_state_unemployment:
-        unemployment_above_below_state = 'above the state level of ' +"{:,.1f}%".format(current_state_unemployment)  
+        unemployment_above_below_state = 'above the state level of ' + "{:,.1f}%".format(current_state_unemployment)  
     elif current_unemployment < current_state_unemployment:
         unemployment_above_below_state= 'below the state level of ' +"{:,.1f}%".format(current_state_unemployment)
     elif current_unemployment == current_state_unemployment:
@@ -3335,9 +3335,27 @@ def OverviewLanguage():
             
                    )
     
+    #Section 3: Put together a pargraph on the extent to which the coutny faced job losses during the pandemic
+    february_2020_employment_level = county_employment.loc[(county_employment['year'] == '2020') & (county_employment['periodName'] == 'February')]['Employment'].iloc[-1]
+    april_2020_employment_level    = county_employment.loc[(county_employment['year'] == '2020') & (county_employment['periodName'] == 'April')]['Employment'].iloc[-1]    
+
     
-    #Section 3: Put together our 3 sections and return it
-    overview_language = [wikipeida_summary,wikipeida_economy_summary, economic_overview_paragraph]
+    pandemic_job_losses            = february_2020_employment_level - april_2020_employment_level 
+    pandemic_job_losses_pct        = (pandemic_job_losses/february_2020_employment_level) * 100
+
+
+    covid_context_pargaraph = (
+        'The pandemic rattled the ' + county + ' area economy in the first half of 2020. At the onset of the pandemic, ' +
+        county + ' area employers shed over ' + "{:,.0f}".format(pandemic_job_losses) + ' jobs (' +  "{:,.1f}%".format(pandemic_job_losses_pct)   + ' of the labor market), as' +
+        ' social distancing protocols were put in place and operating restrictions were imposed. ' + 
+        'With the availability of vaccines, restrictions have eased, and the economy has reopened since.'
+                               )
+
+    
+
+    
+    #Section 4: Put together our 3 sections and return it
+    overview_language = [wikipeida_summary, wikipeida_economy_summary, covid_context_pargaraph, economic_overview_paragraph]
     return(overview_language)
 
 def CountyEmploymentBreakdownLanguage(county_industry_breakdown):
@@ -3592,8 +3610,18 @@ def UnemploymentLanguage():
     else:
         state_county_unemployment_difference = ''
 
+    #Get unemployment rate and emp level in Feb 2020 and Apirl 2020 
+    february_2020_employment_level = county_employment.loc[(county_employment['year'] == '2020') & (county_employment['periodName'] == 'February')]['Employment'].iloc[-1]
+    april_2020_employment_level    = county_employment.loc[(county_employment['year'] == '2020') & (county_employment['periodName'] == 'April')]['Employment'].iloc[-1]    
 
+    february_2020_unemployment_rate = county_unemployment_rate.loc[(county_unemployment_rate['year'] == '2020') & (county_unemployment_rate['periodName'] == 'February')]['unemployment_rate'].iloc[-1]
+    april_2020_unemployment_rate    = county_unemployment_rate.loc[(county_unemployment_rate['year'] == '2020') & (county_unemployment_rate['periodName'] == 'April')]['unemployment_rate'].iloc[-1]    
 
+    
+    pandemic_job_losses            = february_2020_employment_level - april_2020_employment_level 
+    pandemic_job_losses_pct        = (pandemic_job_losses/february_2020_employment_level) * 100
+    
+    #Format variables
     latest_county_employment       = "{:,}".format(latest_county_employment)
     latest_county_unemployment     = "{:,.1f}%".format(latest_county_unemployment)
     latest_state_unemployment      = "{:,.1f}%".format(latest_state_unemployment)
@@ -3602,7 +3630,13 @@ def UnemploymentLanguage():
     if cbsa == '':
 
         return( 
-                #Sentence 1: Discuss current unemployment
+                #Sentence 1: Discuss covid job losses
+                'At the onset of the pandemic last spring, ' + county + ' area employers shed ' + "{:,.1f}%".format(pandemic_job_losses_pct) + ' of its workforce, expanding the unemployment rate from ' +
+                "{:,.1f}%".format(february_2020_unemployment_rate) + ' in February 2020 to ' + 
+               "{:,.1f}%".format(april_2020_unemployment_rate) + ' just two months later. ' + 
+                
+                
+                #Sentence 2: Discuss current unemployment
                 'The unemployment rate in '+
                 county                     + 
                 ' has '                    +
@@ -3618,7 +3652,7 @@ def UnemploymentLanguage():
             '. '                     +
 
 
-            #Sentence 2: Discuss growth in total employment
+            #Sentence 3: Discuss growth in total employment
                 'As of '+
             latest_period +
             ', total employment is ' +
@@ -3635,8 +3669,12 @@ def UnemploymentLanguage():
     else:
         latest_msa_unemployment        = "{:,.1f}%".format(latest_msa_unemployment)
         
-        return( 
-                #Sentence 1: Discuss current unemployment
+        return(  #Sentence 1: Discuss covid job losses
+                'At the onset of the pandemic last spring, ' + county + ' area employers shed ' + "{:,.1f}%".format(pandemic_job_losses_pct) + ' of its workforce, expanding the unemployment rate from ' +
+                "{:,.1f}%".format(february_2020_unemployment_rate) + ' in February 2020 to ' + 
+               "{:,.1f}%".format(april_2020_unemployment_rate) + ' just two months later. ' + 
+                
+                #Sentence 2: Discuss current unemployment
                 'The unemployment rate in '+
                 county                     + 
                 ' has '                    +
@@ -3652,7 +3690,7 @@ def UnemploymentLanguage():
             '. '                     +
 
 
-            #Sentence 2: Discuss growth in total employment
+            #Sentence 3: Discuss growth in total employment
                 'As of '+
             latest_period +
             ', total employment is ' +
@@ -4036,8 +4074,7 @@ def ProductionLanguage(county_data_frame,msa_data_frame,state_data_frame):
     #Fomrmat variables
     latest_county_gdp_growth =  "{:,.1f}%".format(latest_county_gdp_growth)
 
-    return('While the longest U.S. economic expansion since the end of WWII did come to an abrupt end with 2020 Q2 real GDP decreasing at an annualized rate of 31%, economic activity rebounded sharply in the 2nd half of 2020. ' +
-            'While GDP data at the county level is not yet available, '      +
+    production_language = ('While GDP data at the county level is not yet available, '      +
            latest_period +
            ' data from the U.S. Bureau of Economic Analysis points to '+
            gdp_growth_description +
@@ -4052,8 +4089,11 @@ def ProductionLanguage(county_data_frame,msa_data_frame,state_data_frame):
             msa_or_state_gdp_growth +
             ' for the ' +
             msa_or_state +
-            '.' 
-        )
+            '.' )
+            
+    boiler_plate_econ_language = ('While the longest U.S. economic expansion since the end of WWII did come to an abrupt end with 2020 Q2 real GDP decreasing at an annualized rate of 31%, economic activity has rebounded sharply since. GDP increased at a historically fast annual rate of 6.7% in Q2 2021, according to data released by the Bureau of Economic Analysis. Growth of 6.7% in Q2 was up from the first quarter, when real GDP increased 6.3%. The increase in second quarter GDP reflected the continued economic recovery, reopening of establishments, and continued government response related to the COVID-19 pandemic. Supply chain issues as well as a slowdown in consumer spending growth slowed GDP growth down to 2% in the third quarter.')
+    
+    return[boiler_plate_econ_language, production_language]
 
 def IncomeLanguage():
     print('Writing Income Langauge')   
@@ -4326,12 +4366,15 @@ def HousingLanguage():
         
         #Format variables
         current_county_mlp      = "${:,.0f}".format(current_county_mlp)
-    
+        
+        boiler_plate_housing_language = """Not only did the pandemic shock the economy, but it has had different economic effects on sectors and regions. For example, the residential housing market in the United States has been robust since the initial shutdown in Q1 and Q2 2020. Historically low mortgage rates, the desire for more space, and the ability to work from home have led to the highest number of home sales while historically low inventory levels have pushed values to record highs in most counties and metros across the Nation. """ 
+
+
         #If we have the metro realtor data
         if isinstance(msa_mlp, pd.DataFrame) == True:
             yoy_msa_mlp_growth = ((msa_mlp['Median List Price'].iloc[-1]/msa_mlp['Median List Price'].iloc[-13]) - 1 ) * 100
 
-            return(
+            housing_langage =              (
                                 "In " +                                           
                                 county +
                                 ', Realtor.com data points to ' +
@@ -4358,7 +4401,7 @@ def HousingLanguage():
 
         #If we don't have metro realtor.com data                        
         else: 
-            return(
+            housing_langage = (
                           'In ' +
                             county +
                             ', Realtor.com data points to ' +
@@ -4377,7 +4420,7 @@ def HousingLanguage():
                             "{:,.0f}%".format(abs(yoy_national_mlp_growth)) +
                             ' across the Nation over the past year.'
                             )
-
+        return([boiler_plate_housing_language,housing_langage])
 def OutlookLanguage():
     print('Writing Outlook Langauge')
     #First pargarph is the same for every county, second one is specific to the subject county
@@ -4498,8 +4541,8 @@ def CreateLanguage():
     #overview language
     try:
         overview_language       = OverviewLanguage()
-    except:
-        print('problem with overview language')
+    except Exception as e:
+        print(e,'----------- problem with overview language')
         overview_language       = ''
     
     #County Employment breakdown language
@@ -4535,7 +4578,7 @@ def CreateLanguage():
         housing_language        = HousingLanguage()
     except:
         print('problem with housing language')
-        housing_language = ''
+        housing_language = ['']
    
    #Outloook language
     try:    
@@ -5100,17 +5143,20 @@ def EmploymentSection(document):
         Note(document,'Employment growth rates are not displayed for industries where the BLS has suppressed employment data for quality or privacy concerns.')
     
     #Add page break
-    page_break_paragraph = document.add_paragraph('')
-    run = page_break_paragraph.add_run()
-    run.add_break(WD_BREAK.PAGE)
+    # page_break_paragraph = document.add_paragraph('')
+    # run = page_break_paragraph.add_run()
+    # run.add_break(WD_BREAK.PAGE)
 
 def ProductionSection(document):
     print('Writing Production Section')
     AddHeading(document = document, title = 'Economic Production',            heading_level = 2)
     
-    production_paragraph = document.add_paragraph(production_language)
-    production_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-    production_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    for paragraph in production_language:
+        if paragraph == '':
+            continue
+        production_paragraph = document.add_paragraph(paragraph)
+        production_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
+        production_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
 
     #Add GDP Graph
     if os.path.exists(os.path.join(county_folder,'gdp.png')):
@@ -5171,13 +5217,13 @@ def DemographicsSection(document):
         Citation(document,'U.S. Census Bureau')
 
 
-    pop_format = document.styles['Normal'].paragraph_format
-    pop_format.space_after = Pt(0)
+    # pop_format = document.styles['Normal'].paragraph_format
+    # pop_format.space_after = Pt(0)
 
 
-    page_break_paragraph = document.add_paragraph('')
-    run = page_break_paragraph.add_run()
-    run.add_break(WD_BREAK.PAGE)
+    # page_break_paragraph = document.add_paragraph('')
+    # run = page_break_paragraph.add_run()
+    # run.add_break(WD_BREAK.PAGE)
 
 def InfrastructureSection(document):
     print('Writing Infrastructure Section')
@@ -5231,9 +5277,10 @@ def HousingSection(document):
     print('Writing Housing Section')
     AddHeading(document = document, title = 'Housing',            heading_level = 2)
     
-    housing_paragraph = document.add_paragraph(housing_language)
-    housing_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-    housing_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    for paragarph in housing_language:
+        housing_paragraph = document.add_paragraph(paragarph)
+        housing_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
+        housing_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
 
 
     if os.path.exists(os.path.join(county_folder,'mlp.png')):
