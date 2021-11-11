@@ -5568,13 +5568,7 @@ qcew_year               = current_year                    #for quarterly census 
 qcew_qtr                = '1'                             #for quarterly census of employment and wages
 
 
-fips_list = GetFIPSList() #Create empty list of fips codes and have the user fill the list with their desired fips
-
-
-
-
-
-for i,fips in enumerate(fips_list):
+for i,fips in enumerate(GetFIPSList()):
     assert type(fips) == str
     
     try:
