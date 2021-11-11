@@ -3981,7 +3981,7 @@ def MSAEmploymentGrowthLanguage(msa_industry_breakdown):
                 qcew_year +
                 ' Quarterly Census of Employment and Wages, ' +
                 cbsa_name + ' Metro ' +
-                ' has seen private employment '+
+                'has seen private employment '+
                 five_year_msa_employment_expand_or_contract +
                 ' ' +
                 five_year_msa_employment_growth_pct +
