@@ -4421,6 +4421,7 @@ def HousingLanguage():
                             ' across the Nation over the past year.'
                             )
         return([boiler_plate_housing_language,housing_langage])
+        
 def OutlookLanguage():
     print('Writing Outlook Langauge')
     #First pargarph is the same for every county, second one is specific to the subject county
