@@ -4421,7 +4421,7 @@ def HousingLanguage():
                             ' across the Nation over the past year.'
                             )
         return([boiler_plate_housing_language,housing_langage])
-        
+
 def OutlookLanguage():
     print('Writing Outlook Langauge')
     #First pargarph is the same for every county, second one is specific to the subject county
@@ -5405,14 +5405,14 @@ def CreateDirectoryCSV():
 def Main():
     SetGraphFormatVariables()
     CreateDirectory(state = state, county = county)
-    GetCountyData()
-    GetMSAData()
-    GetStateData()
-    GetNationalData()
-    CreateGraphs()
-    CreateLanguage()
-    WriteReport()
-    CleanUpPNGs()
+    # GetCountyData()
+    # GetMSAData()
+    # GetStateData()
+    # GetNationalData()
+    # CreateGraphs()
+    # CreateLanguage()
+    # WriteReport()
+    # CleanUpPNGs()
 
 def IdentifyMSA(fips):
     #Figures out if a county is within a metropolitan statistical area and returns its CBSA code
@@ -5489,6 +5489,63 @@ def IdentifyNecta(cbsa):
             necta_code = ''
         return(str(necta_code))
 
+def GetFIPSList():
+    #Returns a list of County FIPS codes to do reports for
+    fips_list = []
+    fips_or_cbsa = ''
+    while True:
+        if fips_or_cbsa != 'c':
+            fips_or_cbsa =  str(input('Single county reports (c) or reports for all counties in metro (m)?')).strip()
+        
+        while fips_or_cbsa != 'm' and  fips_or_cbsa != 'c' :
+            print('invalid selection')
+            fips_or_cbsa =  str(input('Single county report (c) or reports for all counties in metro (m)?')).strip()
+            
+        if fips_or_cbsa == 'm': #if user selects whole metro break out of the main loop
+            cbsacode = str(input('Enter the MSA CBSA Code')).strip()
+            cbsa_fips_crosswalk = pd.read_csv(os.path.join(data_location,'cbsa2fipsxw.csv'),dtype={'cbsacode': object,
+                    'metrodivisioncode': object,
+                    'csacode': object,
+                    'cbsatitle': object,
+                    'metropolitanmicropolitanstatis': object,
+                    'metropolitandivisiontitle': object,
+                    'csatitle': object,
+                    'countycountyequivalent': object,
+                    'statename': object,
+                    'fipsstatecode': object,
+                    'fipscountycode': object,
+                    'centraloutlyingcounty': object
+                    })
+    
+
+            #Add missing 0s
+            cbsa_fips_crosswalk['fipsstatecode']  =  cbsa_fips_crosswalk['fipsstatecode'].str.zfill(2)
+            cbsa_fips_crosswalk['fipscountycode'] =  cbsa_fips_crosswalk['fipscountycode'].str.zfill(3)
+            cbsa_fips_crosswalk['FIPS Code'] = cbsa_fips_crosswalk['fipsstatecode'] + cbsa_fips_crosswalk['fipscountycode']
+
+            cbsa_fips_crosswalk = cbsa_fips_crosswalk.loc[cbsa_fips_crosswalk['metropolitanmicropolitanstatis'] == 'Metropolitan Statistical Area'] #restrict to msas
+            cbsa_fips_crosswalk = cbsa_fips_crosswalk.loc[cbsa_fips_crosswalk['cbsacode'] == cbsacode] #restrict data to only rows for counties within the MSA
+            fips_list = cbsa_fips_crosswalk['FIPS Code'].unique()
+            break
+        
+
+
+
+        elif fips_or_cbsa == 'c':#if user selects individual fips, have them add them in manually
+            fips  =         str(input('What is the 5 digit county FIPS code?')).strip()
+            if fips == '':
+                break
+            elif fips != '' :
+                try:
+                    assert len(fips) == 5
+                    fips_list.append(fips)
+                except:
+                    print('Invalid FIPS')
+
+        
+    if fips_list != []:
+        print('Preparing Reports for the following fips: ',fips_list)
+    return(fips_list)
 
 DeclareAPIKeys()
 todays_date             = date.today()
@@ -5510,21 +5567,12 @@ observation_start_less1 = '01/01/' + str(start_year -2)   #For FRED for series 1
 qcew_year               = current_year                    #for quarterly census of employment and wages
 qcew_qtr                = '1'                             #for quarterly census of employment and wages
 
-#Create empty list of fips codes and have the user fill the list with their desired fips
-fips_list = []
-while True:
-    fips  =         str(input('What is the 5 digit county FIPS code?')).strip()
-    if fips == '':
-        break
-    elif fips != '' :
-        try:
-            assert len(fips) == 5
-            fips_list.append(fips)
-        except:
-            print('Invalid FIPS')
-            
-if fips_list != []:
-    print('Preparing Reports for the following fips: ',fips_list)
+
+fips_list = GetFIPSList() #Create empty list of fips codes and have the user fill the list with their desired fips
+
+
+
+
 
 for i,fips in enumerate(fips_list):
     assert type(fips) == str
@@ -5540,7 +5588,6 @@ for i,fips in enumerate(fips_list):
         assert len(master_county_list) == 1
 
         
-       
 
         state               = master_county_list['State'].iloc[0]    
         state_name          = GetStateName(state_code=state)
