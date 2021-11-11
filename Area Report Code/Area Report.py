@@ -5405,14 +5405,14 @@ def CreateDirectoryCSV():
 def Main():
     SetGraphFormatVariables()
     CreateDirectory(state = state, county = county)
-    # GetCountyData()
-    # GetMSAData()
-    # GetStateData()
-    # GetNationalData()
-    # CreateGraphs()
-    # CreateLanguage()
-    # WriteReport()
-    # CleanUpPNGs()
+    GetCountyData()
+    GetMSAData()
+    GetStateData()
+    GetNationalData()
+    CreateGraphs()
+    CreateLanguage()
+    WriteReport()
+    CleanUpPNGs()
 
 def IdentifyMSA(fips):
     #Figures out if a county is within a metropolitan statistical area and returns its CBSA code
