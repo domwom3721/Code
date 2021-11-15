@@ -5200,25 +5200,21 @@ def DemographicsSection(document):
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
     
-    #Add Education Language Paragraph
-    for paragraph in education_language:
-        if paragraph == '': #Skip blank sections
-            continue
-        education_paragraph = document.add_paragraph(paragraph)
-        education_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-        education_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    # #Add Education Language Paragraph
+    # for paragraph in education_language:
+    #     if paragraph == '': #Skip blank sections
+    #         continue
+    #     education_paragraph = document.add_paragraph(paragraph)
+    #     education_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
+    #     education_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
 
 
-    #Education Graph
-    if os.path.exists(os.path.join(county_folder,'education_levels.png')):
-        edu_fig = document.add_picture(os.path.join(county_folder,'education_levels.png'),width=Inches(6.5))
-        last_paragraph = document.paragraphs[-1] 
-        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        Citation(document,'U.S. Census Bureau')
-
-
-    # pop_format = document.styles['Normal'].paragraph_format
-    # pop_format.space_after = Pt(0)
+    # #Education Graph
+    # if os.path.exists(os.path.join(county_folder,'education_levels.png')):
+    #     edu_fig = document.add_picture(os.path.join(county_folder,'education_levels.png'),width=Inches(6.5))
+    #     last_paragraph = document.paragraphs[-1] 
+    #     last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    #     Citation(document,'U.S. Census Bureau')
 
 
     # page_break_paragraph = document.add_paragraph('')
