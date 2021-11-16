@@ -52,7 +52,7 @@ from wikipedia.wikipedia import random
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
 project_location               =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Projects', 'Research Report Automation Project') 
 main_output_location           =  os.path.join(project_location,'Output','Neighborhood') #testing
-main_output_location           =  os.path.join(dropbox_root,'Research','Market Analysis','Neighborhood') #production
+# main_output_location           =  os.path.join(dropbox_root,'Research','Market Analysis','Neighborhood') #production
 data_location                  =  os.path.join(project_location,'Data','Neighborhood Reports Data')
 graphics_location              =  os.path.join(project_location,'Data','Graphics')
 map_location                   =  os.path.join(project_location,'Data','Maps','Neighborhood Maps')
@@ -2693,7 +2693,8 @@ def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
         os.remove(csv_path)           
 
 # Post an update request to the Market Research Docs Service to update the database
-UpdateServiceDb(report_type='neighborhoods', 
+if main_output_location == os.path.join(dropbox_root,'Research','Market Analysis','Neighborhood'): 
+    UpdateServiceDb(report_type='neighborhoods', 
                 csv_name=service_api_csv_name, 
                 csv_path=os.path.join(main_output_location, service_api_csv_name),
                 dropbox_dir='https://www.dropbox.com/home/Research/Market Analysis/Neighborhood/')
