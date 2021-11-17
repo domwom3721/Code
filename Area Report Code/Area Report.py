@@ -4393,7 +4393,7 @@ def HousingLanguage():
                                  "{:,.0f}%".format(abs(yoy_msa_mlp_growth)) +
                                 ' for the ' +
                                 cbsa_name +
-                                ' Metro and ' +
+                                ' Metro, and ' +
                                 "{national_growth_description}".format(national_growth_description = "an increase of " if  yoy_national_mlp_growth >= 0  else "a decrease of ") +      
                                 "{:,.0f}%".format(abs(yoy_national_mlp_growth)) +
                                 ' across the Nation over the past year.'
