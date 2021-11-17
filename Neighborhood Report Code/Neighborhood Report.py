@@ -47,6 +47,9 @@ from us import states
 import us
 from wikipedia.wikipedia import random
 
+from yelpapi import YelpAPI
+import argparse
+
 
 #Define file paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
@@ -63,14 +66,6 @@ primary_space_after_paragraph = 8
 
 #Decide if you want to export data in excel files in the county folder
 data_export                   = False
-
-#Declare API Keys
-cenus_api_key                 = '18335344cf4a0242ae9f7354489ef2f8860a9f61'
-walkscore_api_key             = '057f7c0a590efb7ec06da5a8735e536d'
-google_maps_api_key           = 'AIzaSyBMcoRFOW2rxAGxURCpA4gk10MROVVflLs'
-
-c                             = Census(cenus_api_key) #Census API wrapper package
-c_area                        = CensusArea(cenus_api_key) #Census API package, sepearete extension of main package that allows for custom boundries
 
 
 #Directory Realted Functions
@@ -104,7 +99,29 @@ def ConvertListElementsToFractionOfTotal(raw_list):
     return(converted_list)
 
 #Data Gathering Related Functions
+def DeclareAPIKeys():
+    global cenus_api_key,walkscore_api_key,google_maps_api_key,yelp_api_key,yelp_api,yelp_client_id
+    global c,c_area
+    #Declare API Keys
+    cenus_api_key                 = '18335344cf4a0242ae9f7354489ef2f8860a9f61'
+    walkscore_api_key             = '057f7c0a590efb7ec06da5a8735e536d'
+    google_maps_api_key           = 'AIzaSyBMcoRFOW2rxAGxURCpA4gk10MROVVflLs'
+    yelp_client_id                = 'NY9c0_9kvOU4wfzmkkruOQ'
+    yelp_api_key                  = 'l1WjEgdgSMpU9PJtXEk0bLs4FJdsVLONqJLhbaA0gZlbFyEFUTTkxgRzBDc-_5234oLw1CLx-iWjr8w4nK_tZ_79qVIOv3yEMQ9aGcSS8xO1gkbfENCBKEl34COVYXYx'
 
+    yelp_api = YelpAPI(yelp_api_key)
+
+    c                             = Census(cenus_api_key) #Census API wrapper package
+    c_area                        = CensusArea(cenus_api_key) #Census API package, sepearete extension of main package that allows for custom boundries
+
+#Lat and Lon
+def GetLatandLon():
+    # latitude  = input('enter the latitude for the subject property') 
+    # longitude = input('enter the longitude for the subject property')
+    latitude    = 40.652490
+    longitude   = -73.658980
+    return([latitude,longitude]) 
+    
 #Household Size
 def GetHouseholdSizeData(geographic_level,hood_or_comparison_area):
     print('Getting household size data')
@@ -911,12 +928,21 @@ def GetTravelMethodData(geographic_level,hood_or_comparison_area):
         
     return(neighborhood_method_to_work_distribution) 
 
+#Non Census Sources
 def GetWalkScore(lat,lon):
     # lat = str(lat)
     # lon = str(lon) 
     # url = 'https://www.walkscore.com/score/loc/' + 'lat=' + lat + '/' + 'lng=' + lon
     # r = requests.get('https://api.github.com/events')
     return(0)
+
+def GetYelpData(lat,lon,radius):
+    # print(lat,lon)
+
+    response = yelp_api.search_query(categories='bars', longitude=lon, latitude=lat, radius = radius , limit=5)
+    # pprint(response)
+    pprint(response['businesses'][0])
+    
 
 def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     total_pop_field         = 'P001001'
@@ -1091,7 +1117,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
 #Main data function
 def GetData():
     #List of 5 Year American Community Survey Variables here: https://api.census.gov/data/2019/acs/acs5/variables.html
-    #List of 2010 Census Variables here: https://api.census.gov/data/2010/dec/sf1/variables.html
+    #List of 2010 Census Variables here:                      https://api.census.gov/data/2010/dec/sf1/variables.html
     print('Getting Data')
     global overview_table_data
     global neighborhood_household_size_distribution,comparison_household_size_distribution
@@ -1105,35 +1131,39 @@ def GetData():
     global neighborhood_household_income_data, comparison_household_income_data
     global neighborhood_top_occupations_data,comparison_top_occupations_data
     global neighborhood_year_built_data, comparison_year_built_data   
-    
     global walk_score_data
+    global yelp_data
     
-    neighborhood_household_size_distribution     = GetHouseholdSizeData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')      #Neighborhood households by size
-    neighborhood_tenure_distribution             = GetHousingTenureData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')      #Housing Tenure (owner occupied/renter)
-    neighborhood_housing_value_data              = GetHousingValues(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')          #Owner Occupied housing units by value
-    neighborhood_number_units_data               = GetNumberUnitsData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')        #Housing Units by units in building
-    neighborhood_year_built_data                 = GetHouseYearBuiltData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')     #Housing Units by year structure built
-    neighborhood_age_data                        = GetAgeData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')                #Population by age data
-    neighborhood_household_income_data           = GetHouseholdIncomeValues(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')  #Households by household income data
-    neighborhood_top_occupations_data            = GetTopOccupationsData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')     #Top Employment Occupations
-    neighborhood_time_to_work_distribution       = GetTravelTimeData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')         #Travel Time to Work
-    neighborhood_method_to_work_distribution     = GetTravelMethodData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')       #Travel Mode to Work
+    # neighborhood_household_size_distribution     = GetHouseholdSizeData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')      #Neighborhood households by size
+    # neighborhood_tenure_distribution             = GetHousingTenureData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')      #Housing Tenure (owner occupied/renter)
+    # neighborhood_housing_value_data              = GetHousingValues(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')          #Owner Occupied housing units by value
+    # neighborhood_number_units_data               = GetNumberUnitsData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')        #Housing Units by units in building
+    # neighborhood_year_built_data                 = GetHouseYearBuiltData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')     #Housing Units by year structure built
+    # neighborhood_age_data                        = GetAgeData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')                #Population by age data
+    # neighborhood_household_income_data           = GetHouseholdIncomeValues(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')  #Households by household income data
+    # neighborhood_top_occupations_data            = GetTopOccupationsData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')     #Top Employment Occupations
+    # neighborhood_time_to_work_distribution       = GetTravelTimeData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')         #Travel Time to Work
+    # neighborhood_method_to_work_distribution     = GetTravelMethodData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')       #Travel Mode to Work
 
-    comparison_household_size_distribution       = GetHouseholdSizeData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
-    comparison_tenure_distribution               = GetHousingTenureData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
-    comparison_housing_value_data                = GetHousingValues(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')    
-    comparison_number_units_data                 = GetNumberUnitsData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')    
-    comparison_year_built_data                   = GetHouseYearBuiltData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
-    comparison_age_data                          = GetAgeData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
-    comparison_household_income_data             = GetHouseholdIncomeValues(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')   
-    comparison_top_occupations_data              = GetTopOccupationsData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
-    comparison_time_to_work_distribution         = GetTravelTimeData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
+    # comparison_household_size_distribution       = GetHouseholdSizeData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
+    # comparison_tenure_distribution               = GetHousingTenureData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
+    # comparison_housing_value_data                = GetHousingValues(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')    
+    # comparison_number_units_data                 = GetNumberUnitsData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')    
+    # comparison_year_built_data                   = GetHouseYearBuiltData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
+    # comparison_age_data                          = GetAgeData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
+    # comparison_household_income_data             = GetHouseholdIncomeValues(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')   
+    # comparison_top_occupations_data              = GetTopOccupationsData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
+    # comparison_time_to_work_distribution         = GetTravelTimeData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
     
-    #Walk score
-    walk_score_data = GetWalkScore(latitude,longitude)
+    # #Walk score
+    # walk_score_data = GetWalkScore(latitude,longitude)
 
-    #Overview Table Data
-    overview_table_data = GetOverviewTable(hood_geographic_level = neighborhood_level ,comparison_geographic_level =comparison_level )
+    #Yelp Data
+    yelp_data =             GetYelpData(latitude,longitude,radius=1000) #radius in meters
+
+
+    # #Overview Table Data
+    # overview_table_data = GetOverviewTable(hood_geographic_level = neighborhood_level ,comparison_geographic_level =comparison_level )
 
 
 #Graph Related Functions
@@ -2427,40 +2457,56 @@ def Main():
     SetGraphFormatVariables()
     CreateDirectory()
     GetData()
-    CreateGraphs()
-    CreateLanguage()
-    WriteReport()
-    CleanUpPNGs()
+    # CreateGraphs()
+    # CreateLanguage()
+    # WriteReport()
+    # CleanUpPNGs()
    
 
+DeclareAPIKeys()
 
 # Get Input from User
 allowable_hood_levels       = ['p','c','sd','t',] #'z']
 allowable_comparison_levels = ['p','c','sd','t',] #'z']
 
-report_creation = input('Create new report? y/n')
+# report_creation = input('Create new report? y/n')
+report_creation = 'y'
+
 if report_creation == 'y':
 
+    #Ask user for info on subject area
     while True:
-        neighborhood_level = input('What is the geographic level of the neighborhood? (p = place,sd = subdivision, c = county,t = tract)')
+        # neighborhood_level = input('What is the geographic level of the neighborhood? (p = place,sd = subdivision, c = county,t = tract)')
+        neighborhood_level   =  'p'
+        
         if neighborhood_level not in allowable_hood_levels:
             print('Not a supported geographic level for neighborhood area')
             continue
         else:
             break
-
+    
+    #Ask user for info on comparison area
     while True:
-        comparison_level   = input('What is the geographic level of the comparison area? (p = place,sd = subdivision, c = county,t = tract)')
+        # comparison_level   = input('What is the geographic level of the comparison area? (p = place,sd = subdivision, c = county,t = tract)')
+        comparison_level     = 'c'
+        
         if comparison_level not in allowable_comparison_levels:
             print('Not a supported geographic level for comparsion area')
             continue
         else:
             break
 
-    #Get User input on neighborhood
+    #Pull Cordinates from function
+    coordinates = GetLatandLon()
+    latitude    = coordinates[0] 
+    longitude   = coordinates[1] 
+
+
+    #Get User input on neighborhood/subject area
     if neighborhood_level == 'p':
         neighborhood_level = 'place'
-        fips = input('Enter the 7 digit Census Place FIPS Code')
+        fips = '36-22876'
+        # fips = input('Enter the 7 digit Census Place FIPS Code')
         fips = fips.replace('-','').strip()
         state_fips = fips[0:2]
         hood_place_fips = fips[2:]
@@ -2565,17 +2611,16 @@ if report_creation == 'y':
         state = input('Enter the 2 letter state code of the state the custom neighborhood is in')
         assert len(state) == 2
 
-    # latitude  = input('enter the lattitude for the subject property') 
-    # longitude = input('enter the longitude for the subject property')
 
-    latitude  = ''
-    longitude = ''
+
     
 
     #Get user input on comparison area
     if comparison_level == 'c':
         comparison_level = 'county'
-        comparison_county_fips = input('Enter the 5 digit FIPS code for the comparison county')
+        # comparison_county_fips = input('Enter the 5 digit FIPS code for the comparison county')
+        comparison_county_fips = '36059'
+        
         comparison_county_fips = comparison_county_fips.replace('-','').strip()
         assert len(comparison_county_fips) == 5
         comparison_area = c.sf1.state_county(fields=['NAME'],state_fips=comparison_county_fips[0:2],county_fips=comparison_county_fips[2:])[0]['NAME']
@@ -2643,9 +2688,7 @@ if report_creation == 'y':
     try:
         wikipedia_page_search_term    = (neighborhood + ',' + state)
         page                          =  wikipedia.page(wikipedia_page_search_term)
-        # print(page)                          
-
-
+            
     except Exception as e:
         print(e)
 
