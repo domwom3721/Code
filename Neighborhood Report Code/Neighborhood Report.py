@@ -118,10 +118,10 @@ def DeclareAPIKeys():
 
 #Lat and Lon
 def GetLatandLon():
-    # latitude  = input('enter the latitude for the subject property') 
-    # longitude = input('enter the longitude for the subject property')
-    latitude    = 40.652490
-    longitude   = -73.658980
+    latitude  = input('enter the latitude for the subject property') 
+    longitude = input('enter the longitude for the subject property')
+    # latitude    = 40.652490
+    # longitude   = -73.658980
     return([latitude,longitude]) 
     
 #Household Size
@@ -930,61 +930,6 @@ def GetTravelMethodData(geographic_level,hood_or_comparison_area):
         
     return(neighborhood_method_to_work_distribution) 
 
-#Non Census Sources
-def GetWalkScore(lat,lon):
-    # lat = str(lat)
-    # lon = str(lon) 
-    # url = 'https://www.walkscore.com/score/loc/' + 'lat=' + lat + '/' + 'lng=' + lon
-    # r = requests.get('https://api.github.com/events')
-    return(0)
-
-def GetYelpData(lat,lon,radius):
-    bar_response              = yelp_api.search_query(categories='bars', longitude=lon, latitude=lat, radius = radius,sort_by = 'distance') # , limit=5)
-    closest_bar               = bar_response['businesses'][0]['name']
-    closest_bar_distance      = bar_response['businesses'][0]['distance']
-    print('The closest bar from the subject property on Yelp.com is ' + str(closest_bar) + ' which is ' + str(closest_bar_distance) + ' meters from the subjet property.')
-    
-
-    number_bar_search_results = bar_response['total']
-    print('There are ' + str(number_bar_search_results) + ' bars within ' + str(radius) + ' meters of the subjet property based on a search of Yelp.com')
-    
-
-    
-    restaurants_response             = yelp_api.search_query(categories='chinese restaurant', longitude=lon, latitude=lat, radius = radius,sort_by = 'distance') # , limit=5)
-    closest_restaurant               = restaurants_response['businesses'][0]['name']
-    closest_restaurant_distance      = restaurants_response['businesses'][0]['distance']
-    print('The closest restaurant from the subject property on Yelp.com is ' + str(closest_restaurant) + ' which is ' + str(closest_restaurant_distance) + ' meters from the subjet property.')
-    
-    number_restaurant_search_results = restaurants_response['total']
-    print('There are ' + str(number_restaurant_search_results) + ' restaurants within ' + str(radius) + ' meters of the subjet property based on a search of Yelp.com')
-    
-
-    
-    
-
-def GetGoogleAPIData(lat,lon):
-    gmaps = googlemaps.Client(key=google_maps_api_key) 
-
-    # Look up an address with reverse geocoding
-    # reverse_geocode_result = gmaps.reverse_geocode((lat,lon))
-    # pprint(reverse_geocode_result)
-
-    now = datetime.now()
-    # directions_result = gmaps.directions((lat,lon),
-                                    #  "JFK Airport",
-                                    #  mode="driving",
-                                    #  departure_time=now)
-    # directions_result = directions_result[0]['legs'][0][0]
-    # pprint(directions_result)
-    
-    # pprint(directions_result.keys())
-    # pprint(len(directions_result))
-
-    # directions_result = directions_result[0]
-    # pprint(directions_result.keys())
-    # print(type(directions_result))
-
-
 def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     total_pop_field         = 'P001001'
     total_households_field  = 'H003002'  
@@ -1155,6 +1100,80 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
               ])
     
 
+
+#Non Census Sources
+def GetWalkScore(lat,lon):
+    # lat = str(lat)
+    # lon = str(lon) 
+    # url = 'https://www.walkscore.com/score/loc/' + 'lat=' + lat + '/' + 'lng=' + lon
+    # r = requests.get('https://api.github.com/events')
+    return(0)
+
+def GetYelpData(lat,lon,radius):
+    #Return a dictionary where each key is a business caategory and the values are a list of the 5 most recomended businesseses on Yelp.com
+    business_categories = {'retail':[], 'banks, gyms':[], 'parks and recreation':[], 'education':[], 'transportation':[]}
+
+    for category in business_categories.keys():
+        response              = yelp_api.search_query(categories=category, longitude = lon, latitude = lat, radius = radius,sort_by = 'best_match')
+        
+        #Loop through the results of the yelp search and pull business names
+        for i in range(5):
+            business_name = response['businesses'][i]['name']
+            business_categories[category].append(business_name)
+    
+        time.sleep(1)
+    return(business_categories)
+    
+
+
+
+
+
+
+    # bar_response              = yelp_api.search_query(categories='bars', longitude=lon, latitude=lat, radius = radius,sort_by = 'distance') # , limit=5)
+    # closest_bar               = bar_response['businesses'][0]['name']
+    # closest_bar_distance      = bar_response['businesses'][0]['distance']
+    # pprint(bar_response)
+    # print('The closest bar from the subject property on Yelp.com is ' + str(closest_bar) + ' which is ' + str(closest_bar_distance) + ' meters from the subjet property.')
+    
+
+    # number_bar_search_results = bar_response['total']
+    # print('There are ' + str(number_bar_search_results) + ' bars within ' + str(radius) + ' meters of the subjet property based on a search of Yelp.com')
+    
+
+    
+    # restaurants_response             = yelp_api.search_query(categories='restaurant', longitude=lon, latitude=lat, radius = radius,sort_by = 'distance') # , limit=5)
+    # # pprint(restaurants_response)
+    # closest_restaurant               = restaurants_response['businesses'][0]['name']
+    # closest_restaurant_distance      = restaurants_response['businesses'][0]['distance']
+    # print('The closest restaurant from the subject property on Yelp.com is ' + str(closest_restaurant) + ' which is ' + str(closest_restaurant_distance) + ' meters from the subjet property.')
+    
+    # number_restaurant_search_results = restaurants_response['total']
+    # print('There are ' + str(number_restaurant_search_results) + ' restaurants within ' + str(radius) + ' meters of the subjet property based on a search of Yelp.com')
+    
+def GetGoogleAPIData(lat,lon):
+    gmaps = googlemaps.Client(key=google_maps_api_key) 
+
+    # Look up an address with reverse geocoding
+    reverse_geocode_result = gmaps.reverse_geocode((lat,lon))
+    pprint(reverse_geocode_result)
+
+    # now = datetime.now()
+    # directions_result = gmaps.directions((lat,lon),
+                                    #  "JFK Airport",
+                                    #  mode="driving",
+                                    #  departure_time=now)
+    # directions_result = directions_result[0]['legs'][0][0]
+    # pprint(directions_result)
+    
+    # pprint(directions_result.keys())
+    # pprint(len(directions_result))
+
+    # directions_result = directions_result[0]
+    # pprint(directions_result.keys())
+    # print(type(directions_result))
+
+
 #Main data function
 def GetData():
     #List of 5 Year American Community Survey Variables here: https://api.census.gov/data/2019/acs/acs5/variables.html
@@ -1176,36 +1195,36 @@ def GetData():
     global yelp_data
     global google_data
 
-    # neighborhood_household_size_distribution     = GetHouseholdSizeData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')      #Neighborhood households by size
-    # neighborhood_tenure_distribution             = GetHousingTenureData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')      #Housing Tenure (owner occupied/renter)
-    # neighborhood_housing_value_data              = GetHousingValues(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')          #Owner Occupied housing units by value
-    # neighborhood_number_units_data               = GetNumberUnitsData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')        #Housing Units by units in building
-    # neighborhood_year_built_data                 = GetHouseYearBuiltData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')     #Housing Units by year structure built
-    # neighborhood_age_data                        = GetAgeData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')                #Population by age data
-    # neighborhood_household_income_data           = GetHouseholdIncomeValues(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')  #Households by household income data
-    # neighborhood_top_occupations_data            = GetTopOccupationsData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')     #Top Employment Occupations
-    # neighborhood_time_to_work_distribution       = GetTravelTimeData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')         #Travel Time to Work
-    # neighborhood_method_to_work_distribution     = GetTravelMethodData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')       #Travel Mode to Work
+    neighborhood_household_size_distribution     = GetHouseholdSizeData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')      #Neighborhood households by size
+    neighborhood_tenure_distribution             = GetHousingTenureData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')      #Housing Tenure (owner occupied/renter)
+    neighborhood_housing_value_data              = GetHousingValues(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')          #Owner Occupied housing units by value
+    neighborhood_number_units_data               = GetNumberUnitsData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')        #Housing Units by units in building
+    neighborhood_year_built_data                 = GetHouseYearBuiltData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')     #Housing Units by year structure built
+    neighborhood_age_data                        = GetAgeData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')                #Population by age data
+    neighborhood_household_income_data           = GetHouseholdIncomeValues(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')  #Households by household income data
+    neighborhood_top_occupations_data            = GetTopOccupationsData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')     #Top Employment Occupations
+    neighborhood_time_to_work_distribution       = GetTravelTimeData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')         #Travel Time to Work
+    neighborhood_method_to_work_distribution     = GetTravelMethodData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')       #Travel Mode to Work
 
-    # comparison_household_size_distribution       = GetHouseholdSizeData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
-    # comparison_tenure_distribution               = GetHousingTenureData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
-    # comparison_housing_value_data                = GetHousingValues(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')    
-    # comparison_number_units_data                 = GetNumberUnitsData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')    
-    # comparison_year_built_data                   = GetHouseYearBuiltData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
-    # comparison_age_data                          = GetAgeData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
-    # comparison_household_income_data             = GetHouseholdIncomeValues(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')   
-    # comparison_top_occupations_data              = GetTopOccupationsData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
-    # comparison_time_to_work_distribution         = GetTravelTimeData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
+    comparison_household_size_distribution       = GetHouseholdSizeData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
+    comparison_tenure_distribution               = GetHousingTenureData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
+    comparison_housing_value_data                = GetHousingValues(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')    
+    comparison_number_units_data                 = GetNumberUnitsData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')    
+    comparison_year_built_data                   = GetHouseYearBuiltData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
+    comparison_age_data                          = GetAgeData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
+    comparison_household_income_data             = GetHouseholdIncomeValues(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')   
+    comparison_top_occupations_data              = GetTopOccupationsData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
+    comparison_time_to_work_distribution         = GetTravelTimeData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
     
     # #Walk score
     # walk_score_data = GetWalkScore(latitude,longitude)
 
     #Yelp Data
-    yelp_data   =             GetYelpData(lat = latitude, lon  = longitude,radius=5000) #radius in meters
-    google_data =             GetGoogleAPIData(lat = latitude, lon = longitude) #radius in meters
+    yelp_data   =             GetYelpData(lat = latitude, lon  = longitude,radius=30000) #radius in meters
+    # google_data =             GetGoogleAPIData(lat = latitude, lon = longitude) #radius in meters
 
-    # #Overview Table Data
-    # overview_table_data = GetOverviewTable(hood_geographic_level = neighborhood_level ,comparison_geographic_level =comparison_level )
+    #Overview Table Data
+    overview_table_data = GetOverviewTable(hood_geographic_level = neighborhood_level ,comparison_geographic_level =comparison_level )
 
 
 #Graph Related Functions
@@ -2052,10 +2071,22 @@ def OutlookLanguage():
           'to attract growth in the long-term.')
     pass
 
+def YelpLanguage(yelp_data):
+    #Takes a dictionary as input and returns string
+    assert type(yelp_data) == dict
+
+    return_string = ''
+    for category in yelp_data.keys(): 
+        yelp_string = category.title() + ': ' + ', '.join(yelp_data[category]) + '. '
+        return_string = return_string + yelp_string
+
+    return(return_string)
+
 def CreateLanguage():
     print('Creating Langauge')
 
     global bus_language,car_language,plane_language,train_language,transportation_language,summary_langauge,conclusion_langauge
+    global yelp_language
     try:
         transportation_language         =  page.section('Transportation')
     except:
@@ -2067,9 +2098,14 @@ def CreateLanguage():
     plane_language = WikipediaTransitLanguage(category='air')
     train_language = WikipediaTransitLanguage(category='train')
 
+    yelp_language  = YelpLanguage(yelp_data) 
+    print(yelp_language)
+
+
     summary_langauge    =  SummaryLangauge()
     conclusion_langauge = OutlookLanguage()
-    pass
+    
+
 
 
 #Report document related functions
@@ -2271,6 +2307,10 @@ def IntroSection(document):
     summary_style.font.name = primary_font
     
     AddTable(document = document,data_for_table = overview_table_data )
+
+    yelp_paragraph                               = document.add_paragraph(yelp_langauge)
+    yelp_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
+    yelp_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
 
 def NeigborhoodSection(document):
     print('Writing Neighborhood Section')
@@ -2499,10 +2539,10 @@ def Main():
     SetGraphFormatVariables()
     CreateDirectory()
     GetData()
-    # CreateGraphs()
-    # CreateLanguage()
-    # WriteReport()
-    # CleanUpPNGs()
+    CreateGraphs()
+    CreateLanguage()
+    WriteReport()
+    CleanUpPNGs()
    
 
 DeclareAPIKeys()
@@ -2547,8 +2587,8 @@ if report_creation == 'y':
     #Get User input on neighborhood/subject area
     if neighborhood_level == 'p':
         neighborhood_level = 'place'
-        fips = '36-22876'
-        # fips = input('Enter the 7 digit Census Place FIPS Code')
+        # fips = '36-22876'
+        fips = input('Enter the 7 digit Census Place FIPS Code')
         fips = fips.replace('-','').strip()
         state_fips = fips[0:2]
         hood_place_fips = fips[2:]
@@ -2660,8 +2700,8 @@ if report_creation == 'y':
     #Get user input on comparison area
     if comparison_level == 'c':
         comparison_level = 'county'
-        # comparison_county_fips = input('Enter the 5 digit FIPS code for the comparison county')
-        comparison_county_fips = '36059'
+        comparison_county_fips = input('Enter the 5 digit FIPS code for the comparison county')
+        # comparison_county_fips = '36059'
         
         comparison_county_fips = comparison_county_fips.replace('-','').strip()
         assert len(comparison_county_fips) == 5
