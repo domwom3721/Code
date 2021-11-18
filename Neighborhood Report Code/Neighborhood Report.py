@@ -1169,52 +1169,23 @@ def FindNearestAirport(lat,lon):
     
     #Specify the file path to the airports shape file
     airport_map_location = os.path.join(data_location,'Airports','Airports.shp')
-
+    road_map_location = os.path.join(data_location,'North_American_Roads','North_American_Roads.shp')
+    
     #Open the shapefile
     airport_map = shapefile.Reader(airport_map_location)
-
-    shapeRecs = airport_map.shapeRecords()
-
-    print(shapeRecs[0].record(1))
+    road_map    = shapefile.Reader(road_map_location)
 
 
-    # for i in range(len(airport_map)):
-    #     rec = airport_map.record(i)
-        # print(rec['Fac_Name'])
+    #Loop through each feature/point in the shape file
+    for i in range(len(airport_map)):
+        airport = airport_map.shapeRecord(i)
+        print(airport.record['Fac_Name'])
     
-
-
-
-
-
-    # shapes = airport_map.shapes()
-    # for shape in shapes:
-    #     print(shape[0])
-
-
-    # for airport in airport_map:
-    #     print(airport['Fac_Use'])
-    #     #  p = Point(airport["geometry"]["coordinates"])     
-    #     # airport.shape
-    #     # print(shape)
-    #     # print(airport)
-
-    # print(list_of_points)
-
-
-    # list_of_points = [ Point(feat["geometry"]["coordinates"]) for feat in airport_map ]
-
-    # r.shape
-    # print(r)
-    
-    # # get the shapes
-    # list_of_points = MultiPoint(r.shapes())
-
-    # pt_a = Point(lat,lon)
-    # ls = LineString([Point(point.x, point.y) for point in list_of_points])
-    # nearest_pts = [pt for pt in nearest_points(pt_a, ls)]
-
-    # print(nearest_pts)
+    #Loop through each feature/point in the shape file
+    for i in range(len(road_map)):
+        road = road_map.shapeRecord(i)
+        print(road.record['ROADNAME'])
+        
 
 
 
@@ -1222,22 +1193,63 @@ def FindNearestAirport(lat,lon):
 
 
 
+    while 'Hide Old Code' == 'Hide Old Code':
+        break
+        # shapeRecs = airport_map.shapeRecords()
 
 
-    # now = datetime.now()
-    # directions_result = gmaps.directions((lat,lon),
-                                    #  "JFK Airport",
-                                    #  mode="driving",
-                                    #  departure_time=now)
-    # directions_result = directions_result[0]['legs'][0][0]
-    # pprint(directions_result)
-    
-    # pprint(directions_result.keys())
-    # pprint(len(directions_result))
 
-    # directions_result = directions_result[0]
-    # pprint(directions_result.keys())
-    # print(type(directions_result))
+        # shapes = airport_map.shapes()
+        # for shape in shapes:
+        #     print(shape[0])
+
+
+        # for airport in airport_map:
+        #     print(airport['Fac_Use'])
+        #     #  p = Point(airport["geometry"]["coordinates"])     
+        #     # airport.shape
+        #     # print(shape)
+        #     # print(airport)
+
+        # print(list_of_points)
+
+
+        # list_of_points = [ Point(feat["geometry"]["coordinates"]) for feat in airport_map ]
+
+        # r.shape
+        # print(r)
+        
+        # # get the shapes
+        # list_of_points = MultiPoint(r.shapes())
+
+        # pt_a = Point(lat,lon)
+        # ls = LineString([Point(point.x, point.y) for point in list_of_points])
+        # nearest_pts = [pt for pt in nearest_points(pt_a, ls)]
+
+        # print(nearest_pts)
+
+
+
+
+
+
+
+
+
+        # now = datetime.now()
+        # directions_result = gmaps.directions((lat,lon),
+                                        #  "JFK Airport",
+                                        #  mode="driving",
+                                        #  departure_time=now)
+        # directions_result = directions_result[0]['legs'][0][0]
+        # pprint(directions_result)
+        
+        # pprint(directions_result.keys())
+        # pprint(len(directions_result))
+
+        # directions_result = directions_result[0]
+        # pprint(directions_result.keys())
+        # print(type(directions_result))
     
 
 
