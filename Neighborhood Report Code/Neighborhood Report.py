@@ -50,6 +50,10 @@ from wikipedia.wikipedia import random
 from yelpapi import YelpAPI
 import googlemaps
 
+import shapefile
+from shapely.geometry import shape, Point,MultiPoint
+from shapely.geometry import Point, LineString
+from shapely.ops import nearest_points
 
 #Define file paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
@@ -118,10 +122,10 @@ def DeclareAPIKeys():
 
 #Lat and Lon
 def GetLatandLon():
-    latitude  = input('enter the latitude for the subject property') 
-    longitude = input('enter the longitude for the subject property')
-    # latitude    = 40.652490
-    # longitude   = -73.658980
+    # latitude  = input('enter the latitude for the subject property') 
+    # longitude = input('enter the longitude for the subject property')
+    latitude    = 40.652490
+    longitude   = -73.658980
     return([latitude,longitude]) 
     
 #Household Size
@@ -1159,6 +1163,67 @@ def GetGoogleAPIData(lat,lon):
     reverse_geocode_result = gmaps.reverse_geocode((lat,lon))
     pprint(reverse_geocode_result)
 
+
+
+def FindNearestAirport(lat,lon):
+    
+    #Specify the file path to the airports shape file
+    airport_map_location = os.path.join(data_location,'Airports','Airports.shp')
+
+    #Open the shapefile
+    airport_map = shapefile.Reader(airport_map_location)
+
+    shapeRecs = airport_map.shapeRecords()
+
+    print(shapeRecs[0].record(1))
+
+
+    # for i in range(len(airport_map)):
+    #     rec = airport_map.record(i)
+        # print(rec['Fac_Name'])
+    
+
+
+
+
+
+    # shapes = airport_map.shapes()
+    # for shape in shapes:
+    #     print(shape[0])
+
+
+    # for airport in airport_map:
+    #     print(airport['Fac_Use'])
+    #     #  p = Point(airport["geometry"]["coordinates"])     
+    #     # airport.shape
+    #     # print(shape)
+    #     # print(airport)
+
+    # print(list_of_points)
+
+
+    # list_of_points = [ Point(feat["geometry"]["coordinates"]) for feat in airport_map ]
+
+    # r.shape
+    # print(r)
+    
+    # # get the shapes
+    # list_of_points = MultiPoint(r.shapes())
+
+    # pt_a = Point(lat,lon)
+    # ls = LineString([Point(point.x, point.y) for point in list_of_points])
+    # nearest_pts = [pt for pt in nearest_points(pt_a, ls)]
+
+    # print(nearest_pts)
+
+
+
+
+
+
+
+
+
     # now = datetime.now()
     # directions_result = gmaps.directions((lat,lon),
                                     #  "JFK Airport",
@@ -1173,7 +1238,11 @@ def GetGoogleAPIData(lat,lon):
     # directions_result = directions_result[0]
     # pprint(directions_result.keys())
     # print(type(directions_result))
+    
 
+
+    return(neighborhood + ' is not served by any airport.')
+    
 
 #Main data function
 def GetData():
@@ -2045,7 +2114,9 @@ def WikipediaTransitLanguage(category):
                 return(neighborhood + ' does not have public bus service.')
 
             elif category == 'air':
-                return(neighborhood + ' is not served by any airport.')
+                #If nothing on wikipedia, use this function to look for more information
+                return(FindNearestAirport(lat = latitude, lon = longitude))
+              
 
             elif category == 'train':
                 return(neighborhood + ' is not served by any commuter or light rail lines.')
@@ -2086,27 +2157,28 @@ def YelpLanguage(yelp_data):
 def CreateLanguage():
     print('Creating Langauge')
 
-    global bus_language,car_language,plane_language,train_language,transportation_language,summary_langauge,conclusion_langauge
-    global yelp_language
-    try:
-        transportation_language         =  page.section('Transportation')
-    except:
-        transportation_language         = ''
+    # global bus_language,car_language,plane_language,train_language,transportation_language,summary_langauge,conclusion_langauge
+    # global yelp_language
+    global airport_language
+
+    # try:
+    #     transportation_language         =  page.section('Transportation')
+    # except:
+    #     transportation_language         = ''
 
 
-    bus_language   = WikipediaTransitLanguage(category='bus')
-    car_language   = WikipediaTransitLanguage(category='car')
-    plane_language = WikipediaTransitLanguage(category='air')
-    train_language = WikipediaTransitLanguage(category='train')
+    # bus_language     = WikipediaTransitLanguage(category='bus')
+    # car_language     = WikipediaTransitLanguage(category='car')
+    # plane_language   = WikipediaTransitLanguage(category='air')
+    # train_language    = WikipediaTransitLanguage(category='train')
 
-    yelp_language  = YelpLanguage(yelp_data) 
-    # print(yelp_language)
+    # yelp_language  = YelpLanguage(yelp_data) 
 
-
-    summary_langauge    =  SummaryLangauge()
-    conclusion_langauge = OutlookLanguage()
+    # summary_langauge    =  SummaryLangauge()
+    # conclusion_langauge = OutlookLanguage()
     
-
+    airport_language = FindNearestAirport(lat = latitude, lon = longitude)
+    print(airport_language)
 
 
 #Report document related functions
@@ -2540,16 +2612,18 @@ def CreateDirectoryCSV():
     csv_name = 'Dropbox Neighborhoods.csv'
     service_api_csv_name = f'Dropbox Neighborhoods-{datetime.now().timestamp()}.csv'
     dropbox_df.to_csv(os.path.join(main_output_location, csv_name),index=False)
-    dropbox_df.to_csv(os.path.join(main_output_location, service_api_csv_name),index=False)
+
+    if main_output_location == os.path.join(dropbox_root,'Research','Market Analysis','Neighborhood'):
+        dropbox_df.to_csv(os.path.join(main_output_location, service_api_csv_name),index=False)
 
 def Main():
     SetGraphFormatVariables()
     CreateDirectory()
-    GetData()
-    CreateGraphs()
+    # GetData()
+    # CreateGraphs()
     CreateLanguage()
-    WriteReport()
-    CleanUpPNGs()
+    # WriteReport()
+    # CleanUpPNGs()
    
 
 DeclareAPIKeys()
@@ -2594,8 +2668,8 @@ if report_creation == 'y':
     #Get User input on neighborhood/subject area
     if neighborhood_level == 'p':
         neighborhood_level = 'place'
-        # fips = '36-22876'
-        fips = input('Enter the 7 digit Census Place FIPS Code')
+        fips = '36-22876'
+        # fips = input('Enter the 7 digit Census Place FIPS Code')
         fips = fips.replace('-','').strip()
         state_fips = fips[0:2]
         hood_place_fips = fips[2:]
@@ -2707,8 +2781,8 @@ if report_creation == 'y':
     #Get user input on comparison area
     if comparison_level == 'c':
         comparison_level = 'county'
-        comparison_county_fips = input('Enter the 5 digit FIPS code for the comparison county')
-        # comparison_county_fips = '36059'
+        # comparison_county_fips = input('Enter the 5 digit FIPS code for the comparison county')
+        comparison_county_fips = '36059'
         
         comparison_county_fips = comparison_county_fips.replace('-','').strip()
         assert len(comparison_county_fips) == 5
