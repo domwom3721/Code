@@ -1110,6 +1110,7 @@ def GetWalkScore(lat,lon):
     return(0)
 
 def GetYelpData(lat,lon,radius):
+    print('Getting Yelp Data')
     #Return a dictionary where each key is a business caategory and the values are a list of the 5 most recomended businesseses on Yelp.com
     business_categories = {'retail':[], 'banks, gyms':[], 'parks and recreation':[], 'education':[], 'transportation':[]}
 
@@ -2099,7 +2100,7 @@ def CreateLanguage():
     train_language = WikipediaTransitLanguage(category='train')
 
     yelp_language  = YelpLanguage(yelp_data) 
-    print(yelp_language)
+    # print(yelp_language)
 
 
     summary_langauge    =  SummaryLangauge()
@@ -2183,20 +2184,24 @@ def Citation(document,text):
 
 def AddMap(document):
     print('Adding Map')
+
     #Add image of map
     if os.path.exists(os.path.join(hood_folder_map,'map.png')):
         map = document.add_picture(os.path.join(hood_folder_map,'map.png'),width=Inches(6.5))
     else:    
         try:
-            #Search Google Maps for County
+            #Search Google Maps for hood
             options = webdriver.ChromeOptions()
             options.add_argument("--start-maximized")
             browser = webdriver.Chrome(executable_path=(os.path.join(os.environ['USERPROFILE'], 'Desktop','chromedriver.exe')),options=options)
             browser.get('https:google.com/maps')
+            
+            #Write hood name in box
             Place = browser.find_element_by_class_name("tactile-searchbox-input")
             Place.send_keys((neighborhood + ', ' + state))
             
-            Submit = browser.find_element_by_class_name('searchbox-searchbutton')
+            #Submit hood name for search
+            Submit = browser.find_element_by_class_name('nhb85d-BIqFsb')
             Submit.click()
 
             time.sleep(5)
@@ -2227,6 +2232,8 @@ def AddMap(document):
                 browser.quit()
             except:
                 pass
+
+
            
 def AddTable(document,data_for_table): #Function we use to insert our overview table into the report document
     #list of list where each list is a row for our table
@@ -2308,7 +2315,7 @@ def IntroSection(document):
     
     AddTable(document = document,data_for_table = overview_table_data )
 
-    yelp_paragraph                               = document.add_paragraph(yelp_langauge)
+    yelp_paragraph                               = document.add_paragraph(yelp_language)
     yelp_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
     yelp_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
 
