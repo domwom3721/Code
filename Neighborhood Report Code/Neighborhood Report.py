@@ -2633,6 +2633,7 @@ allowable_comparison_levels = ['p','c','sd','t',] #'z']
 
 # report_creation = input('Create new report? y/n')
 report_creation = 'y'
+# report_creation = 'n'
 
 if report_creation == 'y':
 
