@@ -71,8 +71,8 @@ primary_space_after_paragraph = 8
 
 #Decide if you want to export data in excel files in the county folder
 data_export                   = False
-# testing_mode                  = True
-testing_mode                  = False
+testing_mode                  = True
+# testing_mode                  = False
 
 #Directory Realted Functions
 def CreateDirectory():
@@ -125,8 +125,8 @@ def DeclareAPIKeys():
 #Lat and Lon
 def GetLatandLon():
     if testing_mode == False:
-        latitude  = input('enter the latitude for the subject property') 
-        longitude = input('enter the longitude for the subject property')
+        latitude  = float(input('enter the latitude for the subject property')) 
+        longitude = float(input('enter the longitude for the subject property'))
     elif testing_mode == True:
         latitude    = 40.652490
         longitude   = -73.658980
@@ -1171,16 +1171,11 @@ def FindNearestAirport(lat,lon):
     
     #Specify the file path to the airports shape file
     airport_map_location = os.path.join(data_location,'Airports','Airports.shp')
-    road_map_location = os.path.join(data_location,'North_American_Roads','North_American_Roads.shp')
+    
     
     #Open the shapefile
     airport_map = shapefile.Reader(airport_map_location)
-    road_map    = shapefile.Reader(road_map_location)
-
-
-
-    # print(airport_map.bbox)
-
+   
 
     #Loop through each feature/point in the shape file
     
@@ -1205,82 +1200,44 @@ def FindNearestAirport(lat,lon):
 
     closest_airport = airport_map.shapeRecord(cloest_airport_num)
     return('The closest airport to the subject property is ', closest_airport.record['Fac_Name'], ' which is a ',  closest_airport.record['Fac_Type'], ' in ',closest_airport.record['City'] , ' ',closest_airport.record['State_Name'] )
-
+  
+def FindNearestHighways(lat,lon):
     
-    # #Loop through each feature/point in the shape file
-    # for i in range(len(road_map)):
-    #     road = road_map.shapeRecord(i)
-    #     print(road.record['ROADNAME'])
+    #Specify the file path to the airports shape file
+    road_map_location = os.path.join(data_location,'North_American_Roads','North_American_Roads.shp')
+    
+    #Open the shapefile
+    road_map    = shapefile.Reader(road_map_location)
+    # print(road_map.bbox)
+
+    #Loop through each feature in the shape file
+    for i in range(len(road_map)):
+        road        =  road_map.shape(i)
+        road_record = road_map.shapeRecord(i)
         
 
+        road_coord = road.points
+        # print(road_coord)
+        # fish
+        try:
+            dist = mpu.haversine_distance( (road_coord[0][1], road_coord[0][0]), (lat, lon)) #measure distance between airport and subject property   
+        except:
+            dist = dist
+        # print(dist)
 
+        if i == 0:
+            min_dist           = dist
+            cloest_road_num = i
+        elif i > 0 and dist < min_dist:
+            min_dist           = dist
+            cloest_road_num = i
 
+    closest_road = road_map.shapeRecord(cloest_road_num)
+    return('The closest road to the subject property is ', closest_road.record['ROADNAME'], ' which is a ',  closest_road.record['LANES'], ' lane ',  closest_road.record['ADMIN'],' highway', ' with a speed limit of ',closest_road.record['SPEEDLIM'] )
 
-
-
-
-    while 'Hide Old Code' == 'Hide Old Code':
-        break
-        # shapeRecs = airport_map.shapeRecords()
-
-
-
-        # shapes = airport_map.shapes()
-        # for shape in shapes:
-        #     print(shape[0])
-
-
-        # for airport in airport_map:
-        #     print(airport['Fac_Use'])
-        #     #  p = Point(airport["geometry"]["coordinates"])     
-        #     # airport.shape
-        #     # print(shape)
-        #     # print(airport)
-
-        # print(list_of_points)
-
-
-        # list_of_points = [ Point(feat["geometry"]["coordinates"]) for feat in airport_map ]
-
-        # r.shape
-        # print(r)
-        
-        # # get the shapes
-        # list_of_points = MultiPoint(r.shapes())
-
-        # pt_a = Point(lat,lon)
-        # ls = LineString([Point(point.x, point.y) for point in list_of_points])
-        # nearest_pts = [pt for pt in nearest_points(pt_a, ls)]
-
-        # print(nearest_pts)
-
-
-
-
-
-
-
-
-
-        # now = datetime.now()
-        # directions_result = gmaps.directions((lat,lon),
-                                        #  "JFK Airport",
-                                        #  mode="driving",
-                                        #  departure_time=now)
-        # directions_result = directions_result[0]['legs'][0][0]
-        # pprint(directions_result)
-        
-        # pprint(directions_result.keys())
-        # pprint(len(directions_result))
-
-        # directions_result = directions_result[0]
-        # pprint(directions_result.keys())
-        # print(type(directions_result))
+    
     
 
-
-    return(neighborhood + ' is not served by any airport.')
-    
 
 #Main data function
 def GetData():
@@ -2206,8 +2163,11 @@ def CreateLanguage():
 
 
     bus_language     = WikipediaTransitLanguage(category='bus')
-    car_language     = WikipediaTransitLanguage(category='car')
     train_language    = WikipediaTransitLanguage(category='train')
+    
+    # car_language     = WikipediaTransitLanguage(category='car')
+    car_language     = FindNearestHighways(lat = latitude, lon = longitude)
+    
     
     # plane_language   = WikipediaTransitLanguage(category='air')
     plane_language = FindNearestAirport(lat = latitude, lon = longitude)
@@ -2542,7 +2502,7 @@ def DemographicsSection(document):
         #loop through all cells in the current row
         for current_column,cell in enumerate(row.cells):
             if current_column == 1 and current_row > 0:
-                cell.text = transit_language[current_row-1]
+                cell.text = str(transit_language[current_row-1])
 
             if current_column == 0:
                 cell.width = Inches(.2)
