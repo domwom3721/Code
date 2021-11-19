@@ -18,6 +18,7 @@ from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
 import json
+import mpu
 
 import docx
 import numpy as np
@@ -1165,6 +1166,7 @@ def GetGoogleAPIData(lat,lon):
 
 
 
+
 def FindNearestAirport(lat,lon):
     
     #Specify the file path to the airports shape file
@@ -1176,15 +1178,39 @@ def FindNearestAirport(lat,lon):
     road_map    = shapefile.Reader(road_map_location)
 
 
+
+    # print(airport_map.bbox)
+
+
     #Loop through each feature/point in the shape file
-    for i in range(len(airport_map)):
-        airport = airport_map.shapeRecord(i)
-        print(airport.record['Fac_Name'])
     
-    #Loop through each feature/point in the shape file
-    for i in range(len(road_map)):
-        road = road_map.shapeRecord(i)
-        print(road.record['ROADNAME'])
+    for i in range(len(airport_map)):
+        airport        =  airport_map.shape(i)
+        airport_record = airport_map.shapeRecord(i)
+        
+        if airport_record.record['Fac_Type'] != 'AIRPORT':
+            continue
+
+
+        airport_coord = airport.points
+        dist = mpu.haversine_distance( (airport_coord[0][1], airport_coord[0][0]), (lat, lon)) #measure distance between airport and subject property   
+        # print(dist)
+
+        if i == 0:
+            min_dist           = dist
+            cloest_airport_num = i
+        elif i > 0 and dist < min_dist:
+            min_dist           = dist
+            cloest_airport_num = i
+
+    closest_airport = airport_map.shapeRecord(cloest_airport_num)
+    return('The closest airport to the subject property is ', closest_airport.record['Fac_Name'], ' which is a ',  closest_airport.record['Fac_Type'], ' in ',closest_airport.record['City'] , closest_airport.record['State_Name'] )
+
+    
+    # #Loop through each feature/point in the shape file
+    # for i in range(len(road_map)):
+    #     road = road_map.shapeRecord(i)
+    #     print(road.record['ROADNAME'])
         
 
 
@@ -2169,29 +2195,30 @@ def YelpLanguage(yelp_data):
 def CreateLanguage():
     print('Creating Langauge')
 
-    # global bus_language,car_language,plane_language,train_language,transportation_language,summary_langauge,conclusion_langauge
-    # global yelp_language
+    global bus_language,car_language,plane_language,train_language,transportation_language,summary_langauge,conclusion_langauge
+    global yelp_language
     global airport_language
 
-    # try:
-    #     transportation_language         =  page.section('Transportation')
-    # except:
-    #     transportation_language         = ''
+    try:
+        transportation_language         =  page.section('Transportation')
+    except:
+        transportation_language         = ''
 
 
-    # bus_language     = WikipediaTransitLanguage(category='bus')
-    # car_language     = WikipediaTransitLanguage(category='car')
-    # plane_language   = WikipediaTransitLanguage(category='air')
-    # train_language    = WikipediaTransitLanguage(category='train')
-
-    # yelp_language  = YelpLanguage(yelp_data) 
-
-    # summary_langauge    =  SummaryLangauge()
-    # conclusion_langauge = OutlookLanguage()
+    bus_language     = WikipediaTransitLanguage(category='bus')
+    car_language     = WikipediaTransitLanguage(category='car')
+    train_language    = WikipediaTransitLanguage(category='train')
     
-    airport_language = FindNearestAirport(lat = latitude, lon = longitude)
-    print(airport_language)
+    # plane_language   = WikipediaTransitLanguage(category='air')
+    plane_language = FindNearestAirport(lat = latitude, lon = longitude)
 
+
+    yelp_language  = YelpLanguage(yelp_data) 
+
+    summary_langauge    =  SummaryLangauge()
+    conclusion_langauge = OutlookLanguage()
+    
+  
 
 #Report document related functions
 def SetPageMargins(document,margin_size):
@@ -2631,11 +2658,11 @@ def CreateDirectoryCSV():
 def Main():
     SetGraphFormatVariables()
     CreateDirectory()
-    # GetData()
-    # CreateGraphs()
+    GetData()
+    CreateGraphs()
     CreateLanguage()
-    # WriteReport()
-    # CleanUpPNGs()
+    WriteReport()
+    CleanUpPNGs()
    
 
 DeclareAPIKeys()
