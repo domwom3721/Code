@@ -2435,6 +2435,11 @@ def NeigborhoodSection(document):
     #Development subsection
     AddHeading(document = document, title = 'Development',                  heading_level = 2,heading_number='Heading 3',font_size=11)
 
+
+    
+    #Education subsection
+    AddHeading(document = document, title = 'Education',                  heading_level = 2,heading_number='Heading 3',font_size=11)
+
 def DemographicsSection(document):
     print('Writing Neighborhood Section')
     AddHeading(document = document, title = 'Demographics',                                   heading_level = 1,heading_number='Heading 2',font_size=14)
