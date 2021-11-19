@@ -1199,7 +1199,7 @@ def FindNearestAirport(lat,lon):
             cloest_airport_num = i
 
     closest_airport = airport_map.shapeRecord(cloest_airport_num)
-    return('The closest airport to the subject property is ', closest_airport.record['Fac_Name'], ' which is a ',  closest_airport.record['Fac_Type'], ' in ',closest_airport.record['City'] , ' ',closest_airport.record['State_Name'] )
+    return('The closest airport to the subject property is ' + closest_airport.record['Fac_Name'] + ' which is a ' +  closest_airport.record['Fac_Type'] + ' in ' + closest_airport.record['City'] + ' ' + closest_airport.record['State_Name'] )
   
 def FindNearestHighways(lat,lon):
     
@@ -1233,7 +1233,7 @@ def FindNearestHighways(lat,lon):
             cloest_road_num = i
 
     closest_road = road_map.shapeRecord(cloest_road_num)
-    return('The closest road to the subject property is ', closest_road.record['ROADNAME'], ' which is a ',  closest_road.record['LANES'], ' lane ',  closest_road.record['ADMIN'],' highway', ' with a speed limit of ',closest_road.record['SPEEDLIM'] )
+    return('The closest road to the subject property is ' + closest_road.record['ROADNAME'] + ' which is a ' +  str(closest_road.record['LANES']) + ' lane ' +  closest_road.record['ADMIN'],' highway' + ' with a speed limit of ' + str(closest_road.record['SPEEDLIM']) )
 
     
     
@@ -2631,9 +2631,11 @@ DeclareAPIKeys()
 allowable_hood_levels       = ['p','c','sd','t',] #'z']
 allowable_comparison_levels = ['p','c','sd','t',] #'z']
 
-# report_creation = input('Create new report? y/n')
-report_creation = 'y'
-# report_creation = 'n'
+if testing_mode == False:
+    report_creation = input('Create new report? y/n')
+else:
+    report_creation = 'y'
+    # report_creation = 'n'
 
 if report_creation == 'y':
 
