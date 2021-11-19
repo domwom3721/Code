@@ -72,7 +72,7 @@ primary_space_after_paragraph = 8
 #Decide if you want to export data in excel files in the county folder
 data_export                   = False
 testing_mode                  = True
-# testing_mode                  = False
+testing_mode                  = False
 
 #Directory Realted Functions
 def CreateDirectory():
