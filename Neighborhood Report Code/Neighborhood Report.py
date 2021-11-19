@@ -1199,8 +1199,10 @@ def FindNearestAirport(lat,lon):
             cloest_airport_num = i
 
     closest_airport = airport_map.shapeRecord(cloest_airport_num)
-    return('The closest airport to the subject property is ' + closest_airport.record['Fac_Name'] + ' which is a ' +  closest_airport.record['Fac_Type'] + ' in ' + closest_airport.record['City'] + ' ' + closest_airport.record['State_Name'] )
-  
+    airport_lang = ('The closest airport to the subject property is ' + closest_airport.record['Fac_Name'].title() + ' which is a ' +  closest_airport.record['Fac_Type'].lower() + ' in ' + closest_airport.record['City'].title() + ' ' + closest_airport.record['State_Name'].title() )
+    airport_lang = airport_lang.replace('Intl','International')
+    return(airport_lang)
+
 def FindNearestHighways(lat,lon):
     
     #Specify the file path to the airports shape file
@@ -1233,7 +1235,7 @@ def FindNearestHighways(lat,lon):
             cloest_road_num = i
 
     closest_road = road_map.shapeRecord(cloest_road_num)
-    return('The closest road to the subject property is ' + closest_road.record['ROADNAME'] + ' which is a ' +  str(closest_road.record['LANES']) + ' lane ' +  closest_road.record['ADMIN'],' highway' + ' with a speed limit of ' + str(closest_road.record['SPEEDLIM']) )
+    return('The closest road to the subject property is ' + closest_road.record['ROADNAME'].title() + ' which is a ' +  str(closest_road.record['LANES']) + ' lane ' +  closest_road.record['ADMIN'].lower() + ' highway' + ' with a speed limit of ' + str(closest_road.record['SPEEDLIM']) )
 
     
     
