@@ -71,7 +71,8 @@ primary_space_after_paragraph = 8
 
 #Decide if you want to export data in excel files in the county folder
 data_export                   = False
-
+# testing_mode                  = True
+testing_mode                  = False
 
 #Directory Realted Functions
 def CreateDirectory():
@@ -123,10 +124,12 @@ def DeclareAPIKeys():
 
 #Lat and Lon
 def GetLatandLon():
-    # latitude  = input('enter the latitude for the subject property') 
-    # longitude = input('enter the longitude for the subject property')
-    latitude    = 40.652490
-    longitude   = -73.658980
+    if testing_mode == False:
+        latitude  = input('enter the latitude for the subject property') 
+        longitude = input('enter the longitude for the subject property')
+    elif testing_mode == True:
+        latitude    = 40.652490
+        longitude   = -73.658980
     return([latitude,longitude]) 
     
 #Household Size
@@ -2675,8 +2678,10 @@ if report_creation == 'y':
 
     #Ask user for info on subject area
     while True:
-        # neighborhood_level = input('What is the geographic level of the neighborhood? (p = place,sd = subdivision, c = county,t = tract)')
-        neighborhood_level   =  'p'
+        if testing_mode == False:
+            neighborhood_level = input('What is the geographic level of the neighborhood? (p = place,sd = subdivision, c = county,t = tract)')
+        else:
+            neighborhood_level   =  'p'
         
         if neighborhood_level not in allowable_hood_levels:
             print('Not a supported geographic level for neighborhood area')
@@ -2686,8 +2691,10 @@ if report_creation == 'y':
     
     #Ask user for info on comparison area
     while True:
-        # comparison_level   = input('What is the geographic level of the comparison area? (p = place,sd = subdivision, c = county,t = tract)')
-        comparison_level     = 'c'
+        if testing_mode == False:
+            comparison_level   = input('What is the geographic level of the comparison area? (p = place,sd = subdivision, c = county,t = tract)')
+        else:
+            comparison_level     = 'c'
         
         if comparison_level not in allowable_comparison_levels:
             print('Not a supported geographic level for comparsion area')
@@ -2704,8 +2711,10 @@ if report_creation == 'y':
     #Get User input on neighborhood/subject area
     if neighborhood_level == 'p':
         neighborhood_level = 'place'
-        fips = '36-22876'
-        # fips = input('Enter the 7 digit Census Place FIPS Code')
+        if testing_mode == False:
+            fips = input('Enter the 7 digit Census Place FIPS Code')
+        else:
+            fips = '36-22876'
         fips = fips.replace('-','').strip()
         state_fips = fips[0:2]
         hood_place_fips = fips[2:]
@@ -2817,8 +2826,10 @@ if report_creation == 'y':
     #Get user input on comparison area
     if comparison_level == 'c':
         comparison_level = 'county'
-        # comparison_county_fips = input('Enter the 5 digit FIPS code for the comparison county')
-        comparison_county_fips = '36059'
+        if testing_mode == False:
+            comparison_county_fips = input('Enter the 5 digit FIPS code for the comparison county')
+        else:
+            comparison_county_fips = '36059'
         
         comparison_county_fips = comparison_county_fips.replace('-','').strip()
         assert len(comparison_county_fips) == 5
