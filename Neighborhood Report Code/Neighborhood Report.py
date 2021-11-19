@@ -1164,9 +1164,6 @@ def GetGoogleAPIData(lat,lon):
     reverse_geocode_result = gmaps.reverse_geocode((lat,lon))
     pprint(reverse_geocode_result)
 
-
-
-
 def FindNearestAirport(lat,lon):
     
     #Specify the file path to the airports shape file
@@ -1204,7 +1201,7 @@ def FindNearestAirport(lat,lon):
             cloest_airport_num = i
 
     closest_airport = airport_map.shapeRecord(cloest_airport_num)
-    return('The closest airport to the subject property is ', closest_airport.record['Fac_Name'], ' which is a ',  closest_airport.record['Fac_Type'], ' in ',closest_airport.record['City'] , closest_airport.record['State_Name'] )
+    return('The closest airport to the subject property is ', closest_airport.record['Fac_Name'], ' which is a ',  closest_airport.record['Fac_Type'], ' in ',closest_airport.record['City'] , ' ',closest_airport.record['State_Name'] )
 
     
     # #Loop through each feature/point in the shape file
