@@ -72,7 +72,7 @@ primary_space_after_paragraph = 8
 #Decide if you want to export data in excel files in the county folder
 data_export                   = False
 testing_mode                  = True
-testing_mode                  = False
+# testing_mode                  = False
 
 #Directory Realted Functions
 def CreateDirectory():
@@ -2693,7 +2693,10 @@ if report_creation == 'y':
         #Get name of hood
         neighborhood = c.sf1.state_place(fields=['NAME'],state_fips=state_fips,place=hood_place_fips)[0]['NAME']
         state_full_name = neighborhood.split(',')[1].strip()
-        neighborhood = neighborhood.split(',')[0].strip().title()
+        neighborhood = neighborhood.split(',')[0].strip()
+        place_type   = neighborhood.split(' ')[len(neighborhood.split(' '))-1] #eg: village, city, etc
+        neighborhood = ' '.join(neighborhood.split(' ')[0:len(neighborhood.split(' '))-1]).title()
+        
 
         #Name of State
         state = us.states.lookup(state_full_name) #convert the full state name to the 2 letter abbreviation
