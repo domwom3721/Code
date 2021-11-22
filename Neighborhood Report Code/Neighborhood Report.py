@@ -72,7 +72,7 @@ primary_space_after_paragraph = 8
 #Decide if you want to export data in excel files in the county folder
 data_export                   = False
 testing_mode                  = True
-# testing_mode                  = False
+testing_mode                  = False
 
 #Directory Realted Functions
 def CreateDirectory():
@@ -125,11 +125,19 @@ def DeclareAPIKeys():
 #Lat and Lon
 def GetLatandLon():
     if testing_mode == False:
-        latitude  = float(input('enter the latitude for the subject property')) 
-        longitude = float(input('enter the longitude for the subject property'))
+        # latitude  = float(input('enter the latitude for the subject property')) 
+        # longitude = float(input('enter the longitude for the subject property'))
+
+        # Look up lat and lon of area with geocoding using google maps api
+        gmaps = googlemaps.Client(key=google_maps_api_key) 
+        geocode_result = gmaps.geocode(address=(neighborhood + ',' + state),)
+        latitude =geocode_result[0]['geometry']['location']['lat']
+        longitude =geocode_result[0]['geometry']['location']['lng']
+    
     elif testing_mode == True:
         latitude    = 40.652490
         longitude   = -73.658980
+
     return([latitude,longitude]) 
     
 #Household Size
@@ -1199,7 +1207,7 @@ def FindNearestAirport(lat,lon):
             cloest_airport_num = i
 
     closest_airport = airport_map.shapeRecord(cloest_airport_num)
-    airport_lang = ('The closest airport to the subject property is ' + closest_airport.record['Fac_Name'].title() + ' which is a ' +  closest_airport.record['Fac_Type'].lower() + ' in ' + closest_airport.record['City'].title() + ' ' + closest_airport.record['State_Name'].title() + '.' )
+    airport_lang = ('The closest airport to the geographic center of ' + neighborhood + ' is ' + closest_airport.record['Fac_Name'].title() + ' which is an ' +  closest_airport.record['Fac_Type'].lower() + ' in ' + closest_airport.record['City'].title() + ' ' + closest_airport.record['State_Name'].title() + '.' )
     airport_lang = airport_lang.replace('Intl','International')
     return(airport_lang)
 
@@ -1235,7 +1243,7 @@ def FindNearestHighways(lat,lon):
             cloest_road_num = i
 
     closest_road = road_map.shapeRecord(cloest_road_num)
-    return('The closest road to the subject property is ' + closest_road.record['ROADNAME'].title() + ' which is a ' +  str(closest_road.record['LANES']) + ' lane ' +  closest_road.record['ADMIN'].lower() + ' highway' + ' with a speed limit of ' + str(closest_road.record['SPEEDLIM']) + '.'  )
+    return('The closest road to the geographic center of ' + neighborhood + ' is '+  closest_road.record['ROADNAME'].title() + ' which is a ' +  str(closest_road.record['LANES']) + ' lane ' +  closest_road.record['ADMIN'].lower() + ' highway' + ' with a speed limit of ' + str(closest_road.record['SPEEDLIM']) + '.'  )
 
     
     
@@ -2672,12 +2680,6 @@ if report_creation == 'y':
         else:
             break
 
-    #Pull Cordinates from function
-    coordinates = GetLatandLon()
-    latitude    = coordinates[0] 
-    longitude   = coordinates[1] 
-
-
     #Get User input on neighborhood/subject area
     if neighborhood_level == 'p':
         neighborhood_level = 'place'
@@ -2793,7 +2795,11 @@ if report_creation == 'y':
         assert len(state) == 2
 
 
-
+    #Pull Cordinates from function for neighborhood
+    coordinates = GetLatandLon()
+    latitude    = coordinates[0] 
+    longitude   = coordinates[1] 
+    
     
 
     #Get user input on comparison area
