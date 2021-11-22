@@ -1127,7 +1127,7 @@ def GetWalkScore(lat,lon):
     walk_score     = walkscore_response['walkscore']
     transit_score = walkscore_response['transit']['score']
     bike_score     =  walkscore_response['bike']['score']
-    walk_scores = [walk_score, transit_score, bike_score]
+    walk_scores = [('Walk Score: ' + str(walk_score)), ('Transit Score: ' + str(transit_score)), ('Bike Score: ' + str(bike_score))]
     return(walk_scores)
     # print('Walk Score: ', walk_score)
     # print('Transit Score: ',transit_score)
@@ -2595,6 +2595,10 @@ def DemographicsSection(document):
 
 
 
+
+    #Walk/Bike/Transit Score Table
+    table_paragraph = document.add_paragraph('Walk, Bike, and Transit Scores')
+    table_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
     #Add transit score table
     tab = document.add_table(rows=1, cols=2)
