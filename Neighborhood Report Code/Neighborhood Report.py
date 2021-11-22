@@ -1128,6 +1128,7 @@ def GetWalkScore(lat,lon):
     transit_score = walkscore_response['transit']['score']
     bike_score     =  walkscore_response['bike']['score']
     walk_scores = [walk_score, transit_score, bike_score]
+    return(walk_scores)
     # print('Walk Score: ', walk_score)
     # print('Transit Score: ',transit_score)
     # print('Bike Score: ',bike_score)
