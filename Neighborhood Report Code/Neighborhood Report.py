@@ -26,6 +26,8 @@ import pandas as pd
 import plotly.graph_objects as go
 import pyautogui
 import requests
+from bs4 import BeautifulSoup
+import walkscore
 import wikipedia
 from bls_datasets import oes, qcew
 from blsconnect import RequestBLS, bls_search
@@ -50,7 +52,7 @@ from wikipedia.wikipedia import random
 
 from yelpapi import YelpAPI
 import googlemaps
-
+from walkscore import WalkScoreAPI
 import shapefile
 from shapely.geometry import shape, Point,MultiPoint
 from shapely.geometry import Point, LineString
@@ -72,7 +74,7 @@ primary_space_after_paragraph = 8
 #Decide if you want to export data in excel files in the county folder
 data_export                   = False
 testing_mode                  = True
-testing_mode                  = False
+# testing_mode                  = False
 
 #Directory Realted Functions
 def CreateDirectory():
@@ -107,7 +109,7 @@ def ConvertListElementsToFractionOfTotal(raw_list):
 #Data Gathering Related Functions
 def DeclareAPIKeys():
     global cenus_api_key,walkscore_api_key,google_maps_api_key,yelp_api_key,yelp_api,yelp_client_id
-    global c,c_area
+    global c,c_area,walkscore_api
     
     #Declare API Keys
     cenus_api_key                 = '18335344cf4a0242ae9f7354489ef2f8860a9f61'
@@ -117,7 +119,7 @@ def DeclareAPIKeys():
     yelp_api_key                  = 'l1WjEgdgSMpU9PJtXEk0bLs4FJdsVLONqJLhbaA0gZlbFyEFUTTkxgRzBDc-_5234oLw1CLx-iWjr8w4nK_tZ_79qVIOv3yEMQ9aGcSS8xO1gkbfENCBKEl34COVYXYx'
 
     yelp_api = YelpAPI(yelp_api_key)
-    
+    walkscore_api = WalkScoreAPI(api_key = walkscore_api_key)
 
     c                             = Census(cenus_api_key) #Census API wrapper package
     c_area                        = CensusArea(cenus_api_key) #Census API package, sepearete extension of main package that allows for custom boundries
@@ -1119,11 +1121,16 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
 
 #Non Census Sources
 def GetWalkScore(lat,lon):
-    # lat = str(lat)
-    # lon = str(lon) 
-    # url = 'https://www.walkscore.com/score/loc/' + 'lat=' + lat + '/' + 'lng=' + lon
-    # r = requests.get('https://api.github.com/events')
-    return(0)
+    walkscore_response = requests.get('https://api.walkscore.com/score?format=json&lat=' + str(lat) + '&lon='  + str(lon) + '&transit=1&bike=1&wsapikey='+ walkscore_api_key).json()
+   
+
+    walk_score     = walkscore_response['walkscore']
+    transit_score = walkscore_response['transit']['score']
+    bike_score     =  walkscore_response['bike']['score']
+    walk_scores = [walk_score, transit_score, bike_score]
+    # print('Walk Score: ', walk_score)
+    # print('Transit Score: ',transit_score)
+    # print('Bike Score: ',bike_score)
 
 def GetYelpData(lat,lon,radius):
     print('Getting Yelp Data')
@@ -1245,6 +1252,61 @@ def FindNearestHighways(lat,lon):
     closest_road = road_map.shapeRecord(cloest_road_num)
     return('The closest road to the geographic center of ' + neighborhood + ' is '+  closest_road.record['ROADNAME'].title() + ' which is a ' +  str(closest_road.record['LANES']) + ' lane ' +  closest_road.record['ADMIN'].lower() + ' highway' + ' with a speed limit of ' + str(closest_road.record['SPEEDLIM']) + '.'  )
 
+def SearchGreatSchoolDotOrg():
+    print('Getting education data')
+    if os.path.exists(os.path.join(hood_folder_map,'education_map.png')): #If we already have a map for this area skip it 
+        return()
+   
+    try:
+        #Search https://www.greatschools.org/ for the area
+        options = webdriver.ChromeOptions()
+        options.add_argument("--start-maximized")
+        browser = webdriver.Chrome(executable_path=(os.path.join(os.environ['USERPROFILE'], 'Desktop','chromedriver.exe')),options=options)
+        browser.get('https://www.greatschools.org/')
+        
+        #Write hood name in box
+        Place = browser.find_element_by_class_name("search_form_field")
+        Place.send_keys((neighborhood + ', ' + state))
+        time.sleep(1.5)
+        
+        #Submit hood name for search
+        Submit = browser.find_element_by_class_name('search_form_button')
+        Submit.click()
+        time.sleep(3)
+        
+        #Zoom out map
+        pyautogui.moveTo(3261, y=1045)
+        time.sleep(1)
+        for i in range(2):
+           pyautogui.click()
+           time.sleep(1)
+
+
+        time.sleep(3)
+
+
+        if 'Leahy' in os.environ['USERPROFILE']: #differnet machines have different screen coordinates
+            print('Using Mikes coordinates for screenshot')
+            im2 = pyautogui.screenshot(region=(1167,872, 2049, 1316) ) #left, top, width, and height
+        
+        elif 'Dominic' in os.environ['USERPROFILE']:
+            print('Using Doms coordinates for screenshot')
+            im2 = pyautogui.screenshot(region=(3680,254,1968 ,1231) ) #left, top, width, and height
+        
+        else:
+            im2 = pyautogui.screenshot(region=(1167,872, 2049, 1316) ) #left, top, width, and height
+        
+        time.sleep(.25)
+        im2.save(os.path.join(hood_folder_map,'education_map.png'))
+        im2.close()
+        time.sleep(1)
+        browser.quit()
+    except Exception as e:
+        print(e)
+        try:
+            browser.quit()
+        except:
+            pass
     
     
 
@@ -1291,13 +1353,15 @@ def GetData():
     comparison_top_occupations_data              = GetTopOccupationsData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
     comparison_time_to_work_distribution         = GetTravelTimeData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
     
-    # #Walk score
-    # walk_score_data = GetWalkScore(latitude,longitude)
+    #Walk score
+    walk_score_data = GetWalkScore(lat = latitude, lon = longitude)
 
     #Yelp Data
     yelp_data   =             GetYelpData(lat = latitude, lon  = longitude,radius=30000) #radius in meters
     # google_data =             GetGoogleAPIData(lat = latitude, lon = longitude) #radius in meters
 
+    SearchGreatSchoolDotOrg()
+    
     #Overview Table Data
     overview_table_data = GetOverviewTable(hood_geographic_level = neighborhood_level ,comparison_geographic_level =comparison_level )
 
@@ -2314,8 +2378,6 @@ def AddMap(document):
             except:
                 pass
 
-
-           
 def AddTable(document,data_for_table): #Function we use to insert our overview table into the report document
     #list of list where each list is a row for our table
      
@@ -2443,10 +2505,14 @@ def NeigborhoodSection(document):
     #Development subsection
     AddHeading(document = document, title = 'Development',                  heading_level = 2,heading_number='Heading 3',font_size=11)
 
-
-    
     #Education subsection
     AddHeading(document = document, title = 'Education',                  heading_level = 2,heading_number='Heading 3',font_size=11)
+
+    if os.path.exists(os.path.join(hood_folder_map,'education_map.png')):
+        fig = document.add_picture(os.path.join(hood_folder_map,'education_map.png'),width=Inches(6.5))
+        last_paragraph = document.paragraphs[-1] 
+        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        Citation(document,'greatschools.org')
 
 def DemographicsSection(document):
     print('Writing Neighborhood Section')
@@ -2518,6 +2584,36 @@ def DemographicsSection(document):
         for current_column,cell in enumerate(row.cells):
             if current_column == 1 and current_row > 0:
                 cell.text = str(transit_language[current_row-1])
+
+            if current_column == 0:
+                cell.width = Inches(.2)
+            else:
+                cell.width = Inches(6)
+
+
+
+
+
+
+    #Add transit score table
+    tab = document.add_table(rows=1, cols=2)
+    for pic in ['car.png','train.png','bus.png',]:
+        row_cells = tab.add_row().cells
+        paragraph = row_cells[0].paragraphs[0]
+        run = paragraph.add_run()
+        if pic == 'car.png':
+            run.add_text(' ')
+        run.add_picture(os.path.join(graphics_location,pic))
+    
+
+
+  
+    #Loop through the rows in the table
+    for current_row ,row in enumerate(tab.rows): 
+        #loop through all cells in the current row
+        for current_column,cell in enumerate(row.cells):
+            if current_column == 1 and current_row > 0:
+                cell.text = str(walk_score_data[current_row-1])
 
             if current_column == 0:
                 cell.width = Inches(.2)
