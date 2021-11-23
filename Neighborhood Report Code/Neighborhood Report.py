@@ -2356,6 +2356,7 @@ def AddMap(document):
             #Submit hood name for search
             Submit = browser.find_element_by_class_name('nhb85d-BIqFsb')
             Submit.click()
+            time.sleep(3)
 
             # first photo, up close and personal. no zoom needed
             if 'Leahy' in os.environ['USERPROFILE']: #differnet machines have different screen coordinates
@@ -2368,14 +2369,16 @@ def AddMap(document):
             
             else:
                 im2 = pyautogui.screenshot(region=(1089,276, 2405, 1754) ) #left, top, width, and height
+            time.sleep(1)
             im2.save(os.path.join(hood_folder_map,'map.png'))
-            time.sleep(25)
+            time.sleep(3)
 
             # second photo, zoomed out
             zoomout = browser.find_element_by_xpath("""//*[@id="widget-zoom-out"]/div""")
-            zoomout.click()
-            zoomout.click()
-            zoomout.click()
+            for i in range(3):
+                zoomout.click() 
+            time.sleep(3)
+    
 
             if 'Leahy' in os.environ['USERPROFILE']: #differnet machines have different screen coordinates
                 print('Using Mikes coordinates for screenshot')
@@ -2387,7 +2390,7 @@ def AddMap(document):
             
             else:
                 im2 = pyautogui.screenshot(region=(1089,276, 2405, 1754) ) #left, top, width, and height
-            time.sleep(25)
+            time.sleep(5)
 
             im2.save(os.path.join(hood_folder_map,'map2.png'))
             im2.close()
