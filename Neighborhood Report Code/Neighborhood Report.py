@@ -1215,7 +1215,7 @@ def FindNearestAirport(lat,lon):
             cloest_airport_num = i
 
     closest_airport = airport_map.shapeRecord(cloest_airport_num)
-    airport_lang = ('The closest airport to the geographic center of ' + neighborhood + ' is ' + closest_airport.record['Fac_Name'].title() + ' which is an ' +  closest_airport.record['Fac_Type'].lower() + ' in ' + closest_airport.record['City'].title() + ' ' + closest_airport.record['State_Name'].title() + '.' )
+    airport_lang = ('The closest airport to the geographic center of ' + neighborhood + ' is ' + closest_airport.record['Fac_Name'].title() + ' which is an ' +  closest_airport.record['Fac_Type'].lower() + ' in ' + closest_airport.record['City'].title() + ', ' + closest_airport.record['State_Name'].title() + '.' )
     airport_lang = airport_lang.replace('Intl','International')
     return(airport_lang)
 
@@ -2624,6 +2624,8 @@ def DemographicsSection(document):
                 cell.width = Inches(.2)
             else:
                 cell.width = Inches(6)
+    Citation(document,'https://www.walkscore.com/')
+    
  
 def OutlookSection(document):
     print('Writing Outlook Section')
