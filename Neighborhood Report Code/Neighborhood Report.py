@@ -1138,15 +1138,22 @@ def GetYelpData(lat,lon,radius):
     #Return a dictionary where each key is a business caategory and the values are a list of the 5 most recomended businesseses on Yelp.com
     business_categories = {'retail':[], 'banks, gyms':[], 'parks and recreation':[], 'education':[], 'transportation':[]}
 
-    for category in business_categories.keys():
-        response              = yelp_api.search_query(categories=category, longitude = lon, latitude = lat, radius = radius,sort_by = 'best_match')
+    try:
+        for category in business_categories.keys():
+            response              = yelp_api.search_query(categories=category, longitude = lon, latitude = lat, radius = radius,sort_by = 'best_match')
+            
+            #Loop through the results of the yelp search and pull business names
+            for i in range(5):
+                business_name = response['businesses'][i]['name']
+                business_categories[category].append(business_name)
         
-        #Loop through the results of the yelp search and pull business names
-        for i in range(5):
-            business_name = response['businesses'][i]['name']
-            business_categories[category].append(business_name)
+            time.sleep(1)
+    except Exception as e:
+        print(e)
+        
+        
     
-        time.sleep(1)
+    
     return(business_categories)
     
 
@@ -2385,7 +2392,7 @@ def AddMap(document):
             im2.save(os.path.join(hood_folder_map,'map2.png'))
             im2.close()
             time.sleep(1)
-            map = document.add_picture(os.path.join(hood_folder_map,'map.png','map2.png'),width=Inches(6.5))
+            map = document.add_picture(os.path.join(hood_folder_map,'map2.png'),width=Inches(6.5))
             browser.quit()
         except Exception as e:
             print(e)
