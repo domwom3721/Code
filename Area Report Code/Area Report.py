@@ -3491,7 +3491,7 @@ def MSAEmploymentBreakdownLanguage(msa_industry_breakdown):
             cbsa_name +
             ' employed ' +
             "{:,.0f}".format(msa_industry_breakdown['month3_emplvl'].sum()) +
-            ' employees, with establishments in the ' + 
+            ' private employees, with establishments in the ' + 
            largest_industry +
            ', ' +
            second_largest_industry +
