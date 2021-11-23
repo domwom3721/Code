@@ -2350,10 +2350,25 @@ def AddMap(document):
             Submit = browser.find_element_by_class_name('nhb85d-BIqFsb')
             Submit.click()
 
-            time.sleep(5)
+            # first photo, up close and personal. no zoom needed
+            if 'Leahy' in os.environ['USERPROFILE']: #differnet machines have different screen coordinates
+                print('Using Mikes coordinates for screenshot')
+                im2 = pyautogui.screenshot(region=(1358,465, 2142, 1404) ) #left, top, width, and height
+            
+            elif 'Dominic' in os.environ['USERPROFILE']:
+                print('Using Doms coordinates for screenshot')
+                im2 = pyautogui.screenshot(region=(3680,254,1968 ,1231) ) #left, top, width, and height
+            
+            else:
+                im2 = pyautogui.screenshot(region=(1089,276, 2405, 1754) ) #left, top, width, and height
+            im2.save(os.path.join(hood_folder_map,'map.png'))
+            time.sleep(25)
+
+            # second photo, zoomed out
             zoomout = browser.find_element_by_xpath("""//*[@id="widget-zoom-out"]/div""")
             zoomout.click()
-            time.sleep(7)
+            zoomout.click()
+            zoomout.click()
 
             if 'Leahy' in os.environ['USERPROFILE']: #differnet machines have different screen coordinates
                 print('Using Mikes coordinates for screenshot')
@@ -2365,12 +2380,12 @@ def AddMap(document):
             
             else:
                 im2 = pyautogui.screenshot(region=(1089,276, 2405, 1754) ) #left, top, width, and height
+            time.sleep(25)
 
-            time.sleep(.25)
-            im2.save(os.path.join(hood_folder_map,'map.png'))
+            im2.save(os.path.join(hood_folder_map,'map2.png'))
             im2.close()
             time.sleep(1)
-            map = document.add_picture(os.path.join(hood_folder_map,'map.png'),width=Inches(6.5))
+            map = document.add_picture(os.path.join(hood_folder_map,'map.png','map2.png'),width=Inches(6.5))
             browser.quit()
         except Exception as e:
             print(e)
