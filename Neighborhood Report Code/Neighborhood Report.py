@@ -108,11 +108,11 @@ def ConvertListElementsToFractionOfTotal(raw_list):
 
 #Data Gathering Related Functions
 def DeclareAPIKeys():
-    global cenus_api_key,walkscore_api_key,google_maps_api_key,yelp_api_key,yelp_api,yelp_client_id
+    global census_api_key,walkscore_api_key,google_maps_api_key,yelp_api_key,yelp_api,yelp_client_id
     global c,c_area,walkscore_api
     
     #Declare API Keys
-    cenus_api_key                 = '18335344cf4a0242ae9f7354489ef2f8860a9f61'
+    census_api_key                 = '18335344cf4a0242ae9f7354489ef2f8860a9f61'
     walkscore_api_key             = '057f7c0a590efb7ec06da5a8735e536d'
     google_maps_api_key           = 'AIzaSyBMcoRFOW2rxAGxURCpA4gk10MROVVflLs'
     yelp_client_id                = 'NY9c0_9kvOU4wfzmkkruOQ'
@@ -121,8 +121,8 @@ def DeclareAPIKeys():
     yelp_api = YelpAPI(yelp_api_key)
     walkscore_api = WalkScoreAPI(api_key = walkscore_api_key)
 
-    c                             = Census(cenus_api_key) #Census API wrapper package
-    c_area                        = CensusArea(cenus_api_key) #Census API package, sepearete extension of main package that allows for custom boundries
+    c                             = Census(census_api_key) #Census API wrapper package
+    c_area                        = CensusArea(census_api_key) #Census API package, sepearete extension of main package that allows for custom boundries
 
 #Lat and Lon
 def GetLatandLon():
