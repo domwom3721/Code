@@ -1306,7 +1306,7 @@ def user_selects_market(market_list):
         
      
     app = Tk() 
-    app.geometry('400x300')
+    app.geometry('600x300')
     app.config(bg='#404858')
     app.title('Research Automation Project - Market Reports') 
 
