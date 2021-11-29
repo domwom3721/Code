@@ -1121,17 +1121,29 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
 
 #Non Census Sources
 def GetWalkScore(lat,lon):
+    print('Getting Walk Score')
     walkscore_response = requests.get('https://api.walkscore.com/score?format=json&lat=' + str(lat) + '&lon='  + str(lon) + '&transit=1&bike=1&wsapikey='+ walkscore_api_key).json()
-   
-
-    walk_score     = walkscore_response['walkscore']
-    transit_score = walkscore_response['transit']['score']
-    bike_score     =  walkscore_response['bike']['score']
+    print(walkscore_response)
+    try:
+        walk_score     = walkscore_response['walkscore']
+    except Exception as e:
+        print(e)
+        walk_score = None
+    try:
+        transit_score  = walkscore_response['transit']['score']
+    except Exception as e:
+        print(e)
+        transit_score  = None
+    try:
+         bike_score     =  walkscore_response['bike']['score']
+    except Exception as e:
+        print(e)
+        bike_score = None
+  
+    
+    #Return a list of the 3 scores
     walk_scores = [('Walk Score: ' + str(walk_score)), ('Transit Score: ' + str(transit_score)), ('Bike Score: ' + str(bike_score))]
     return(walk_scores)
-    # print('Walk Score: ', walk_score)
-    # print('Transit Score: ',transit_score)
-    # print('Bike Score: ',bike_score)
 
 def GetYelpData(lat,lon,radius):
     print('Getting Yelp Data')
@@ -1329,7 +1341,7 @@ def ApartmentsDotComSearch():
         
         descriptive_paragraphs = []
         for paragraph in (marketing_paragraphs):
-            descriptive_paragraphs.append(paragraph.text)
+            descriptive_paragraphs.append(str(paragraph.text))
     
     
     
