@@ -1341,7 +1341,9 @@ def ApartmentsDotComSearch():
         
         descriptive_paragraphs = []
         for paragraph in (marketing_paragraphs):
-            descriptive_paragraphs.append(str(paragraph.text))
+            descriptive_paragraphs.append(paragraph.text)
+        
+        return(descriptive_paragraphs)
     
     
     
