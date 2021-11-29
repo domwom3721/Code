@@ -1123,7 +1123,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
 def GetWalkScore(lat,lon):
     print('Getting Walk Score')
     walkscore_response = requests.get('https://api.walkscore.com/score?format=json&lat=' + str(lat) + '&lon='  + str(lon) + '&transit=1&bike=1&wsapikey='+ walkscore_api_key).json()
-    print(walkscore_response)
+    # print(walkscore_response)
     try:
         walk_score     = walkscore_response['walkscore']
     except Exception as e:
