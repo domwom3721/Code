@@ -2285,9 +2285,6 @@ def CreateLanguage():
 
 
     apartmentsdotcomlanguage = ApartmentsDotComSearch()
-    print(apartmentsdotcomlanguage)
-    fish
-
 
     try:
         transportation_language         =  page.section('Transportation')
@@ -2825,13 +2822,13 @@ def CreateDirectoryCSV():
         dropbox_df.to_csv(os.path.join(main_output_location, service_api_csv_name),index=False)
 
 def Main():
-    # SetGraphFormatVariables()
-    # CreateDirectory()
-    # GetData()
-    # CreateGraphs()
+    SetGraphFormatVariables()
+    CreateDirectory()
+    GetData()
+    CreateGraphs()
     CreateLanguage()
-    # WriteReport()
-    # CleanUpPNGs()
+    WriteReport()
+    CleanUpPNGs()
    
 
 DeclareAPIKeys()
