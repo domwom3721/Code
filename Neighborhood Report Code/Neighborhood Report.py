@@ -2534,7 +2534,7 @@ def IntroSection(document):
     for paragraph in apartmentsdotcomlanguage:
         if paragraph == '':
             continue
-        apt_paragraph                               = document.add_paragraph(apartmentsdotcomlanguage)
+        apt_paragraph                               = document.add_paragraph(paragraph)
         apt_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
         apt_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
 
