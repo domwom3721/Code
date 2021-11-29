@@ -74,7 +74,7 @@ primary_space_after_paragraph = 8
 #Decide if you want to export data in excel files in the county folder
 data_export                   = False
 testing_mode                  = True
-# testing_mode                  = False
+testing_mode                  = False
 
 #Directory Realted Functions
 def CreateDirectory():
@@ -1336,7 +1336,7 @@ def ApartmentDotComSearchTerm():
     return(search_term)
 
 def ApartmentsDotComSearch():
-    print('Seraching Apartments.com')
+    print('Seraching Apartments.com:',ApartmentDotComSearchTerm())
     try:
         search_term = ApartmentDotComSearchTerm() 
 
@@ -1344,11 +1344,12 @@ def ApartmentsDotComSearch():
                                    headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36"}
                                    )
         soup_data   = BeautifulSoup(response.text, 'html.parser')
+        
         marketing_blurb_section = soup_data.find(id='marketingBlurb')
         marketing_paragraphs    = marketing_blurb_section.find_all('p')
         
         descriptive_paragraphs = []
-        for paragraph,count in enumerate(marketing_paragraphs):
+        for count,paragraph in enumerate(marketing_paragraphs):
             if count > 3:
                 continue
             descriptive_paragraphs.append(paragraph.text)
@@ -2284,7 +2285,8 @@ def CreateLanguage():
 
 
     apartmentsdotcomlanguage = ApartmentsDotComSearch()
-
+    print(apartmentsdotcomlanguage)
+    fish
 
 
     try:
@@ -2823,13 +2825,13 @@ def CreateDirectoryCSV():
         dropbox_df.to_csv(os.path.join(main_output_location, service_api_csv_name),index=False)
 
 def Main():
-    SetGraphFormatVariables()
-    CreateDirectory()
-    GetData()
-    CreateGraphs()
+    # SetGraphFormatVariables()
+    # CreateDirectory()
+    # GetData()
+    # CreateGraphs()
     CreateLanguage()
-    WriteReport()
-    CleanUpPNGs()
+    # WriteReport()
+    # CleanUpPNGs()
    
 
 DeclareAPIKeys()
