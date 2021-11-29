@@ -1350,8 +1350,10 @@ def ApartmentsDotComSearch():
         
         descriptive_paragraphs = []
         for count,paragraph in enumerate(marketing_paragraphs):
-            if 'Learn More about' in paragraph:
-                continue
+            if ('Learn'  in paragraph.text) and ('More' in paragraph.text):
+                return(descriptive_paragraphs)
+            if count > 3 :
+                continue            
             descriptive_paragraphs.append(paragraph.text)
         
         return(descriptive_paragraphs)
