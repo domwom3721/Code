@@ -1328,10 +1328,18 @@ def SearchGreatSchoolDotOrg():
         except:
             pass
 
+def ApartmentDotComSearchTerm():
+    #Takes the name of the city or neighborhood and creates a url for apartments.com
+    if neighborhood_level == 'place':
+        search_term = 'https://www.apartments.com/' + '-'.join(neighborhood.lower().split(' ')) + '-' + state.lower() + '/'
+        
+    return(search_term)
+
 def ApartmentsDotComSearch():
     print('Seraching Apartments.com')
     try:
-        search_term = 'https://www.apartments.com/east-rockaway-ny/'
+        search_term = ApartmentDotComSearchTerm() 
+
         response    = requests.get(search_term,
                                    headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36"}
                                    )
@@ -1340,7 +1348,9 @@ def ApartmentsDotComSearch():
         marketing_paragraphs    = marketing_blurb_section.find_all('p')
         
         descriptive_paragraphs = []
-        for paragraph in (marketing_paragraphs):
+        for paragraph,count in enumerate(marketing_paragraphs):
+            if count > 3:
+                continue
             descriptive_paragraphs.append(paragraph.text)
         
         return(descriptive_paragraphs)
@@ -2524,19 +2534,18 @@ def IntroSection(document):
     summary_style = summary_paragraph.style
     summary_style.font.name = primary_font
 
-
-
-    #Add Overview Table
-    AddTable(document = document,data_for_table = overview_table_data )
-    
     #Add Text pulled from Apartments.com
-
     for paragraph in apartmentsdotcomlanguage:
         if paragraph == '':
             continue
         apt_paragraph                               = document.add_paragraph(paragraph)
         apt_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
         apt_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+
+
+    #Add Overview Table
+    AddTable(document = document,data_for_table = overview_table_data )
+    
 
     #Add Text pulled from Yelp.com
     yelp_paragraph                               = document.add_paragraph(yelp_language)
@@ -3066,6 +3075,8 @@ if report_creation == 'y':
 
     print('Preparing report for: ' + neighborhood)
     Main()
+
+
 
 
 
