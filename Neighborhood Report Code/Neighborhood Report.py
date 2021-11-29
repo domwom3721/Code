@@ -1318,19 +1318,25 @@ def SearchGreatSchoolDotOrg():
 
 def ApartmentsDotComSearch():
     print('Seraching Apartments.com')
-    search_term = 'https://www.apartments.com/east-rockaway-ny/'
-    # search_term = 'https://www.apartments.com/' + () + '/'
-
-    response = requests.get(search_term)
-    print(response)
-
-
-    # soup_data = BeautifulSoup(response.text, 'html.parser')
-    # print(soup_data.title)
-    # print("\n")
-    # print(soup_data.find_all('h4'))
-
-
+    try:
+        search_term = 'https://www.apartments.com/east-rockaway-ny/'
+        response    = requests.get(search_term,
+                                   headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36"}
+                                   )
+        soup_data   = BeautifulSoup(response.text, 'html.parser')
+        marketing_blurb_section = soup_data.find(id='marketingBlurb')
+        marketing_paragraphs    = marketing_blurb_section.find_all('p')
+        
+        descriptive_paragraphs = []
+        for paragraph in (marketing_paragraphs):
+            descriptive_paragraphs.append(paragraph.text)
+    
+    
+    
+    except Exception as e:
+        print(e)
+        return([''])
+  
 
 #Main data function
 def GetData():
@@ -2257,30 +2263,30 @@ def CreateLanguage():
 
 
 
-    # try:
-    #     transportation_language         =  page.section('Transportation')
-    # except:
-    #     transportation_language         = ''
+    try:
+        transportation_language         =  page.section('Transportation')
+    except:
+        transportation_language         = ''
 
 
     
 
 
-    # bus_language     = WikipediaTransitLanguage(category='bus')
-    # train_language    = WikipediaTransitLanguage(category='train')
+    bus_language     = WikipediaTransitLanguage(category='bus')
+    train_language    = WikipediaTransitLanguage(category='train')
     
-    # # car_language     = WikipediaTransitLanguage(category='car')
-    # car_language     = FindNearestHighways(lat = latitude, lon = longitude)
+    # car_language     = WikipediaTransitLanguage(category='car')
+    car_language     = FindNearestHighways(lat = latitude, lon = longitude)
     
     
-    # # plane_language   = WikipediaTransitLanguage(category='air')
-    # plane_language = FindNearestAirport(lat = latitude, lon = longitude)
+    # plane_language   = WikipediaTransitLanguage(category='air')
+    plane_language = FindNearestAirport(lat = latitude, lon = longitude)
 
 
-    # yelp_language  = YelpLanguage(yelp_data) 
+    yelp_language  = YelpLanguage(yelp_data) 
 
-    # summary_langauge    =  SummaryLangauge()
-    # conclusion_langauge = OutlookLanguage()
+    summary_langauge    =  SummaryLangauge()
+    conclusion_langauge = OutlookLanguage()
     
   
 
@@ -2503,9 +2509,22 @@ def IntroSection(document):
     summary_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
     summary_style = summary_paragraph.style
     summary_style.font.name = primary_font
-    
-    AddTable(document = document,data_for_table = overview_table_data )
 
+
+
+    #Add Overview Table
+    AddTable(document = document,data_for_table = overview_table_data )
+    
+    #Add Text pulled from Apartments.com
+
+    for paragraph in apartmentsdotcomlanguage:
+        if paragraph == '':
+            continue
+        apt_paragraph                               = document.add_paragraph(apartmentsdotcomlanguage)
+        apt_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
+        apt_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+
+    #Add Text pulled from Yelp.com
     yelp_paragraph                               = document.add_paragraph(yelp_language)
     yelp_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
     yelp_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
@@ -2781,13 +2800,13 @@ def CreateDirectoryCSV():
         dropbox_df.to_csv(os.path.join(main_output_location, service_api_csv_name),index=False)
 
 def Main():
-    # SetGraphFormatVariables()
-    # CreateDirectory()
-    # GetData()
-    # CreateGraphs()
+    SetGraphFormatVariables()
+    CreateDirectory()
+    GetData()
+    CreateGraphs()
     CreateLanguage()
-    # WriteReport()
-    # CleanUpPNGs()
+    WriteReport()
+    CleanUpPNGs()
    
 
 DeclareAPIKeys()
