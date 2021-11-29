@@ -1315,8 +1315,21 @@ def SearchGreatSchoolDotOrg():
             browser.quit()
         except:
             pass
-    
-    
+
+def ApartmentsDotComSearch():
+    print('Seraching Apartments.com')
+    search_term = 'https://www.apartments.com/east-rockaway-ny/'
+    # search_term = 'https://www.apartments.com/' + () + '/'
+
+    response = requests.get(search_term)
+    print(response)
+
+
+    # soup_data = BeautifulSoup(response.text, 'html.parser')
+    # print(soup_data.title)
+    # print("\n")
+    # print(soup_data.find_all('h4'))
+
 
 
 #Main data function
@@ -2237,28 +2250,37 @@ def CreateLanguage():
     global bus_language,car_language,plane_language,train_language,transportation_language,summary_langauge,conclusion_langauge
     global yelp_language
     global airport_language
-
-    try:
-        transportation_language         =  page.section('Transportation')
-    except:
-        transportation_language         = ''
+    global apartmentsdotcomlanguage
 
 
-    bus_language     = WikipediaTransitLanguage(category='bus')
-    train_language    = WikipediaTransitLanguage(category='train')
+    apartmentsdotcomlanguage = ApartmentsDotComSearch()
+
+
+
+    # try:
+    #     transportation_language         =  page.section('Transportation')
+    # except:
+    #     transportation_language         = ''
+
+
     
-    # car_language     = WikipediaTransitLanguage(category='car')
-    car_language     = FindNearestHighways(lat = latitude, lon = longitude)
+
+
+    # bus_language     = WikipediaTransitLanguage(category='bus')
+    # train_language    = WikipediaTransitLanguage(category='train')
+    
+    # # car_language     = WikipediaTransitLanguage(category='car')
+    # car_language     = FindNearestHighways(lat = latitude, lon = longitude)
     
     
-    # plane_language   = WikipediaTransitLanguage(category='air')
-    plane_language = FindNearestAirport(lat = latitude, lon = longitude)
+    # # plane_language   = WikipediaTransitLanguage(category='air')
+    # plane_language = FindNearestAirport(lat = latitude, lon = longitude)
 
 
-    yelp_language  = YelpLanguage(yelp_data) 
+    # yelp_language  = YelpLanguage(yelp_data) 
 
-    summary_langauge    =  SummaryLangauge()
-    conclusion_langauge = OutlookLanguage()
+    # summary_langauge    =  SummaryLangauge()
+    # conclusion_langauge = OutlookLanguage()
     
   
 
@@ -2759,13 +2781,13 @@ def CreateDirectoryCSV():
         dropbox_df.to_csv(os.path.join(main_output_location, service_api_csv_name),index=False)
 
 def Main():
-    SetGraphFormatVariables()
-    CreateDirectory()
-    GetData()
-    CreateGraphs()
+    # SetGraphFormatVariables()
+    # CreateDirectory()
+    # GetData()
+    # CreateGraphs()
     CreateLanguage()
-    WriteReport()
-    CleanUpPNGs()
+    # WriteReport()
+    # CleanUpPNGs()
    
 
 DeclareAPIKeys()
