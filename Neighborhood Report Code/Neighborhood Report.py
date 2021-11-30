@@ -85,13 +85,28 @@ def CreateDirectory():
     hood_folder_map          = os.path.join(map_location,state,neighborhood)
     
     state_folder             = os.path.join(main_output_location,state)
-    hood_folder              = os.path.join(main_output_location,state,neighborhood)
+
+    if neighborhood_level == 'custom':
+        city_folder =  os.path.join(main_output_location,state,comparison_area)
+        if os.path.exists(city_folder):
+            pass 
+        else:
+            os.mkdir(city_folder) 
+
+        hood_folder              = os.path.join(main_output_location,state,comparison_area,neighborhood)
+
+    else:
+        hood_folder              = os.path.join(main_output_location,state,neighborhood)
 
     for folder in [state_folder,hood_folder,state_folder_map,hood_folder_map]:
          if os.path.exists(folder):
             pass 
          else:
             os.mkdir(folder) 
+
+
+
+
 
     report_path = os.path.join(hood_folder,current_year + ' ' + state + ' - ' + neighborhood  + ' - hood' + '_draft.docx')
 
@@ -1332,7 +1347,10 @@ def ApartmentDotComSearchTerm():
     #Takes the name of the city or neighborhood and creates a url for apartments.com
     if neighborhood_level == 'place':
         search_term = 'https://www.apartments.com/' + '-'.join(neighborhood.lower().split(' ')) + '-' + state.lower() + '/'
-        
+    elif neighborhood_level == 'custom':
+        search_term = 'https://www.apartments.com/' + '-'.join(neighborhood.lower().split(' ')) + '-' + '-'.join(comparison_area.lower().split(' ')) +  '-' + state.lower() + '/'
+
+
     return(search_term)
 
 def ApartmentsDotComSearch():
@@ -2287,31 +2305,31 @@ def CreateLanguage():
 
 
     apartmentsdotcomlanguage = ApartmentsDotComSearch()
-
-    try:
-        transportation_language         =  page.section('Transportation')
-    except:
-        transportation_language         = ''
+    print(apartmentsdotcomlanguage)
+    # try:
+    #     transportation_language         =  page.section('Transportation')
+    # except:
+    #     transportation_language         = ''
 
 
     
 
 
-    bus_language     = WikipediaTransitLanguage(category='bus')
-    train_language    = WikipediaTransitLanguage(category='train')
+    # bus_language     = WikipediaTransitLanguage(category='bus')
+    # train_language    = WikipediaTransitLanguage(category='train')
     
-    # car_language     = WikipediaTransitLanguage(category='car')
-    car_language     = FindNearestHighways(lat = latitude, lon = longitude)
+    # # car_language     = WikipediaTransitLanguage(category='car')
+    # car_language     = FindNearestHighways(lat = latitude, lon = longitude)
     
     
-    # plane_language   = WikipediaTransitLanguage(category='air')
-    plane_language = FindNearestAirport(lat = latitude, lon = longitude)
+    # # plane_language   = WikipediaTransitLanguage(category='air')
+    # plane_language = FindNearestAirport(lat = latitude, lon = longitude)
 
 
-    yelp_language  = YelpLanguage(yelp_data) 
+    # yelp_language  = YelpLanguage(yelp_data) 
 
-    summary_langauge    =  SummaryLangauge()
-    conclusion_langauge = OutlookLanguage()
+    # summary_langauge    =  SummaryLangauge()
+    # conclusion_langauge = OutlookLanguage()
     
   
 
@@ -2826,18 +2844,18 @@ def CreateDirectoryCSV():
 def Main():
     SetGraphFormatVariables()
     CreateDirectory()
-    GetData()
-    CreateGraphs()
-    CreateLanguage()
-    WriteReport()
-    CleanUpPNGs()
+    # GetData()
+    # CreateGraphs()
+    # CreateLanguage()
+    # WriteReport()
+    # CleanUpPNGs()
    
 
 DeclareAPIKeys()
 
 # Get Input from User
-allowable_hood_levels       = ['p','c','sd','t',] #'z']
-allowable_comparison_levels = ['p','c','sd','t',] #'z']
+allowable_hood_levels       = ['p','c','sd','t','custom'] #'z']
+allowable_comparison_levels = ['p','c','sd','t','custom'] #'z']
 
 if testing_mode == False:
     report_creation = input('Create new report? y/n')
@@ -2850,7 +2868,7 @@ if report_creation == 'y':
     #Ask user for info on subject area
     while True:
         if testing_mode == False:
-            neighborhood_level = input('What is the geographic level of the neighborhood? (p = place,sd = subdivision, c = county,t = tract)')
+            neighborhood_level = input('What is the geographic level of the neighborhood? (p = place,sd = subdivision, c = county,t = tract,custom = custom)')
         else:
             neighborhood_level   =  'p'
         
@@ -2981,19 +2999,12 @@ if report_creation == 'y':
 
     elif neighborhood_level == 'custom':
         #Get name of hood
-        neighborhood =input('Enter the name of the custom neighborhood')
-    
-        #Name of State
-        state = input('Enter the 2 letter state code of the state the custom neighborhood is in')
-        assert len(state) == 2
+        neighborhood      = input('Enter the name of the custom neighborhood')
+        
 
-
-    #Pull Cordinates from function for neighborhood
-    coordinates = GetLatandLon()
-    latitude    = coordinates[0] 
-    longitude   = coordinates[1] 
-    
-    
+        # #Name of State
+        # state = input('Enter the 2 letter state code of the state the custom neighborhood is in')
+        # assert len(state) == 2
 
     #Get user input on comparison area
     if comparison_level == 'c':
@@ -3009,16 +3020,27 @@ if report_creation == 'y':
         comparison_area = comparison_area.split(',')[0].strip().title()
         comparison_county_fips = comparison_county_fips[2:]
 
-    elif comparison_level == 'p':
+    elif comparison_level == 'p': #When we are comparing a neighborhood to a city
         comparison_level = 'place'
         fips = input('Enter the 7 digit Census Place FIPS Code for the comparison area')
         fips = fips.replace('-','').strip()
         comparsion_place_fips = fips[2:]
-        assert len(fips) == 7
+        state_fips            = fips[0:2]
+
+        assert len(fips) == 7 and len(state_fips) == 2
+        
         
         #Get name of comparison area
         comparison_area = c.sf1.state_place(fields=['NAME'],state_fips=state_fips,place=comparsion_place_fips)[0]['NAME']
+        state_full_name = comparison_area.split(',')[1].strip()
         comparison_area = comparison_area.split(',')[0].strip().title()
+        comparison_area = ' '.join(comparison_area.split(' ')[0:len(comparison_area.split(' '))-1]).title()
+
+
+
+        state = us.states.lookup(state_full_name) #convert the full state name to the 2 letter abbreviation
+        state = state.abbr
+        assert len(state) == 2
 
     elif comparison_level == 'sd':
         comparison_level = 'county subdivision'
@@ -3063,6 +3085,11 @@ if report_creation == 'y':
         comparison_area = input('Enter the name of the custom comparison area')
 
 
+    #Pull Cordinates from function for neighborhood
+    coordinates = GetLatandLon()
+    latitude    = coordinates[0] 
+    longitude   = coordinates[1] 
+    
     todays_date = date.today()
     current_year = str(todays_date.year)
 
