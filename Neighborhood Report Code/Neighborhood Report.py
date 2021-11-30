@@ -1437,41 +1437,41 @@ def GetData():
 
     location_iq_data = LocationIQ(lat = latitude, lon = longitude, radius=5000)
 
-    # neighborhood_household_size_distribution     = GetHouseholdSizeData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')      #Neighborhood households by size
-    # neighborhood_tenure_distribution             = GetHousingTenureData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')      #Housing Tenure (owner occupied/renter)
-    # neighborhood_housing_value_data              = GetHousingValues(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')          #Owner Occupied housing units by value
-    # neighborhood_number_units_data               = GetNumberUnitsData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')        #Housing Units by units in building
-    # neighborhood_year_built_data                 = GetHouseYearBuiltData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')     #Housing Units by year structure built
-    # neighborhood_age_data                        = GetAgeData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')                #Population by age data
-    # neighborhood_household_income_data           = GetHouseholdIncomeValues(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')  #Households by household income data
-    # neighborhood_top_occupations_data            = GetTopOccupationsData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')     #Top Employment Occupations
-    # neighborhood_time_to_work_distribution       = GetTravelTimeData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')         #Travel Time to Work
-    # neighborhood_method_to_work_distribution     = GetTravelMethodData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')       #Travel Mode to Work
+    neighborhood_household_size_distribution     = GetHouseholdSizeData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')      #Neighborhood households by size
+    neighborhood_tenure_distribution             = GetHousingTenureData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')      #Housing Tenure (owner occupied/renter)
+    neighborhood_housing_value_data              = GetHousingValues(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')          #Owner Occupied housing units by value
+    neighborhood_number_units_data               = GetNumberUnitsData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')        #Housing Units by units in building
+    neighborhood_year_built_data                 = GetHouseYearBuiltData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')     #Housing Units by year structure built
+    neighborhood_age_data                        = GetAgeData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')                #Population by age data
+    neighborhood_household_income_data           = GetHouseholdIncomeValues(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')  #Households by household income data
+    neighborhood_top_occupations_data            = GetTopOccupationsData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')     #Top Employment Occupations
+    neighborhood_time_to_work_distribution       = GetTravelTimeData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')         #Travel Time to Work
+    neighborhood_method_to_work_distribution     = GetTravelMethodData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')       #Travel Mode to Work
 
-    # comparison_household_size_distribution       = GetHouseholdSizeData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
-    # comparison_tenure_distribution               = GetHousingTenureData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
-    # comparison_housing_value_data                = GetHousingValues(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')    
-    # comparison_number_units_data                 = GetNumberUnitsData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')    
-    # comparison_year_built_data                   = GetHouseYearBuiltData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
-    # comparison_age_data                          = GetAgeData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
-    # comparison_household_income_data             = GetHouseholdIncomeValues(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')   
-    # comparison_top_occupations_data              = GetTopOccupationsData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
-    # comparison_time_to_work_distribution         = GetTravelTimeData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
+    comparison_household_size_distribution       = GetHouseholdSizeData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
+    comparison_tenure_distribution               = GetHousingTenureData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
+    comparison_housing_value_data                = GetHousingValues(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')    
+    comparison_number_units_data                 = GetNumberUnitsData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')    
+    comparison_year_built_data                   = GetHouseYearBuiltData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
+    comparison_age_data                          = GetAgeData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
+    comparison_household_income_data             = GetHouseholdIncomeValues(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')   
+    comparison_top_occupations_data              = GetTopOccupationsData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
+    comparison_time_to_work_distribution         = GetTravelTimeData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
     
-    # #Walk score
-    # walk_score_data = GetWalkScore(lat = latitude, lon = longitude)
+    #Walk score
+    walk_score_data = GetWalkScore(lat = latitude, lon = longitude)
 
-    # #Yelp Data
-    # yelp_data   =             GetYelpData(lat = latitude, lon  = longitude,radius=30000) #radius in meters
-    # # google_data =             GetGoogleAPIData(lat = latitude, lon = longitude) #radius in meters
+    #Yelp Data
+    yelp_data   =             GetYelpData(lat = latitude, lon  = longitude,radius=30000) #radius in meters
+    # google_data =             GetGoogleAPIData(lat = latitude, lon = longitude) #radius in meters
 
-    # SearchGreatSchoolDotOrg()
+    SearchGreatSchoolDotOrg()
     
 
    
 
-    # #Overview Table Data
-    # overview_table_data = GetOverviewTable(hood_geographic_level = neighborhood_level ,comparison_geographic_level =comparison_level )
+    #Overview Table Data
+    overview_table_data = GetOverviewTable(hood_geographic_level = neighborhood_level ,comparison_geographic_level =comparison_level )
 
 
 #Graph Related Functions
@@ -2342,30 +2342,30 @@ def CreateLanguage():
 
     apartmentsdotcomlanguage = ApartmentsDotComSearch()
     print(apartmentsdotcomlanguage)
-    # try:
-    #     transportation_language         =  page.section('Transportation')
-    # except:
-    #     transportation_language         = ''
+    try:
+        transportation_language         =  page.section('Transportation')
+    except:
+        transportation_language         = ''
 
 
     
 
 
-    # bus_language     = WikipediaTransitLanguage(category='bus')
-    # train_language    = WikipediaTransitLanguage(category='train')
+    bus_language     = WikipediaTransitLanguage(category='bus')
+    train_language    = WikipediaTransitLanguage(category='train')
     
-    # # car_language     = WikipediaTransitLanguage(category='car')
-    # car_language     = FindNearestHighways(lat = latitude, lon = longitude)
+    # car_language     = WikipediaTransitLanguage(category='car')
+    car_language     = FindNearestHighways(lat = latitude, lon = longitude)
     
     
-    # # plane_language   = WikipediaTransitLanguage(category='air')
-    # plane_language = FindNearestAirport(lat = latitude, lon = longitude)
+    # plane_language   = WikipediaTransitLanguage(category='air')
+    plane_language = FindNearestAirport(lat = latitude, lon = longitude)
 
 
-    # yelp_language  = YelpLanguage(yelp_data) 
+    yelp_language  = YelpLanguage(yelp_data) 
 
-    # summary_langauge    =  SummaryLangauge()
-    # conclusion_langauge = OutlookLanguage()
+    summary_langauge    =  SummaryLangauge()
+    conclusion_langauge = OutlookLanguage()
     
   
 
@@ -2575,65 +2575,74 @@ def AddTable(document,data_for_table): #Function we use to insert our overview t
                         font.name = 'Avenir Next LT Pro Demi'
 
 def AddPointOfInterestsTable(document,data_for_table): #Function we use to insert our table with Location IQ points of interest into the report document
-   
+    
+    #Convert the data from location IQ from json to list of list where each list is a row for the table
+    converted_data_for_table = [[data_for_table[0].keys()],]
+    for i in data_for_table:
+        new_list = i.values()
+        converted_data_for_table.append(new_list)
+
+    
+    #make sure each list inside the list of lists has the same number of elements
+    for row in converted_data_for_table:
+        for row2 in converted_data_for_table:
+            assert len(row) == len(row2)
+
 
     #create table object
-    tab = document.add_table(rows=len(data_for_table), cols=len(data_for_table[0].keys()))
+    tab = document.add_table(rows=len(converted_data_for_table), cols=len(converted_data_for_table[0]))
     tab.alignment     = WD_TABLE_ALIGNMENT.CENTER
     tab.allow_autofit = True
-
-
-    
-
-    # #loop through the rows in the table
-    # for current_row ,(row,row_data_list) in enumerate(zip(tab.rows,data_for_table)): 
+    #loop through the rows in the table
+    for current_row ,(row,row_data_list) in enumerate(zip(tab.rows,converted_data_for_table)): 
 
     
-    #     row.height = Inches(0)
+        row.height = Inches(0)
 
-    #     #loop through all cells in the current row
-    #     for current_column,(cell,cell_data) in enumerate(zip(row.cells,row_data_list)):
-    #         cell.text = str(cell_data)
+        #loop through all cells in the current row
+        for current_column,(cell,cell_data) in enumerate(zip(row.cells,row_data_list)):
+            cell.text = str(cell_data)
 
-    #         if current_row == 0:
-    #             cell.vertical_alignment = WD_ALIGN_VERTICAL.BOTTOM
-
-
-    #         #set column widths
-    #         if current_column == 0:
-    #             cell.width = Inches(1.25)
-
-    #         elif current_column == 1:
-    #             cell.width = Inches(1.25)
+            if current_row == 0:
+                cell.vertical_alignment = WD_ALIGN_VERTICAL.BOTTOM
 
 
+            #set column widths
+            if current_column == 0:
+                cell.width = Inches(1.25)
+
+            elif current_column == 1:
+                cell.width = Inches(1.25)
 
 
-    #         #add border to top row
-    #         if current_row == 1:
-    #                 tcPr = cell._element.tcPr
-    #                 tcBorders = OxmlElement("w:tcBorders")
-    #                 top = OxmlElement('w:top')
-    #                 top.set(qn('w:val'), 'single')
-    #                 tcBorders.append(top)
-    #                 tcPr.append(tcBorders)
+
+
+            #add border to top row
+            if current_row == 1:
+                    tcPr = cell._element.tcPr
+                    tcBorders = OxmlElement("w:tcBorders")
+                    top = OxmlElement('w:top')
+                    top.set(qn('w:val'), 'single')
+                    tcBorders.append(top)
+                    tcPr.append(tcBorders)
             
-    #         #loop through the paragraphs in the cell and set font and style
-    #         for paragraph in cell.paragraphs:
-    #             if current_column > 0:
-    #                 paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-    #             else:
-    #                  paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+            #loop through the paragraphs in the cell and set font and style
+            for paragraph in cell.paragraphs:
+                if current_column > 0:
+                    paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+                else:
+                     paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
 
-    #             for run in paragraph.runs:
-    #                 font = run.font
-    #                 font.size= Pt(8)
-    #                 run.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+                for run in paragraph.runs:
+                    font = run.font
+                    font.size= Pt(8)
+                    run.alignment = WD_ALIGN_PARAGRAPH.RIGHT
                     
-    #                 #make first row bold
-    #                 if current_row == 0: 
-    #                     font.bold = True
-    #                     font.name = 'Avenir Next LT Pro Demi'
+                    #make first row bold
+                    if current_row == 0: 
+                        font.bold = True
+                        font.name = 'Avenir Next LT Pro Demi'
+
 
 def IntroSection(document):
     AddTitle(document = document)
@@ -2946,10 +2955,10 @@ def Main():
     SetGraphFormatVariables()
     CreateDirectory()
     GetData()
-    # CreateGraphs()
-    # CreateLanguage()
-    # WriteReport()
-    # CleanUpPNGs()
+    CreateGraphs()
+    CreateLanguage()
+    WriteReport()
+    CleanUpPNGs()
    
 
 DeclareAPIKeys()
