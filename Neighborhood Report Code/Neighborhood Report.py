@@ -2331,6 +2331,16 @@ def YelpLanguage(yelp_data):
 
     return(return_string)
 
+def HousingTenureLanguage():
+    return("""According to the most recent American Community Survey, """ +
+           """X%""" + 
+           """of the housing units in """ + 
+           neighborhood + 
+           """ were occupied by their owner. This percentage of owner-occupation is lower/higher than the ______ average of X%. This chart shows the ownership percentage in ______ compared to _______.""")
+
+def HousingSizeLanguage():
+    return('In ' + neighborhood + ', there is a wide variety of housing options including single family homes, some duplexes and smaller multifamily properties, along with larger garden style properties, and even some buildings with 50+ units. Single family homes account for a very large majority. As such, the majority of housing is owned, but there are plenty of renters taking advantage of the diverse housing options too. ')
+
 def CreateLanguage():
     print('Creating Langauge')
 
@@ -2338,7 +2348,7 @@ def CreateLanguage():
     global yelp_language
     global airport_language
     global apartmentsdotcomlanguage
-
+    global housing_tenure_breakdown_language, structure_size_breakdown_language
 
     apartmentsdotcomlanguage = ApartmentsDotComSearch()
     try:
@@ -2346,7 +2356,8 @@ def CreateLanguage():
     except:
         transportation_language         = ''
 
-
+    housing_tenure_breakdown_language = HousingTenureLanguage()
+    structure_size_breakdown_language = HousingSizeLanguage()
     
 
 
@@ -2397,18 +2408,10 @@ def AddTitle(document):
     rFonts = main_title_style.element.rPr.rFonts
     rFonts.set(qn("w:asciiTheme"), "Avenir Next LT Pro Light")
 
-    title = document.add_heading(neighborhood + ' at a Glance',level=1)
-    title.style = document.styles['Heading 2']
-    title.paragraph_format.space_after  = Pt(6)
-    title.paragraph_format.space_before = Pt(12)
-    title_style = title.style
-    title_style.font.name = "Avenir Next LT Pro Light"
-    title_style.font.size = Pt(14)
-    title_style.font.bold = False
-    title_style.font.color.rgb = RGBColor.from_string('3F65AB')
-    title_style.element.xml
-    rFonts = title_style.element.rPr.rFonts
-    rFonts.set(qn("w:asciiTheme"), "Avenir Next LT Pro Light")
+    glance_paragraph                               = document.add_paragraph(neighborhood + ' at a Glance')
+    glance_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
+    glance_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+
 
 def AddHeading(document,title,heading_level,heading_number,font_size): #Function we use to insert the headers other than the title header
             heading = document.add_heading(title,level=heading_level)
@@ -2654,16 +2657,16 @@ def IntroSection(document):
     AddTitle(document = document)
     AddMap(document = document)
     Citation(document,'Google Maps')
-    AddHeading(document = document, title = 'Overview',            heading_level = 2,heading_number='Heading 3',font_size=11)
+    AddHeading(document = document, title = 'Overview',            heading_level = 1,heading_number='Heading 3',font_size=11)
     
     #Get summary section from wikipedia and add it 
-    summary_paragraph           = document.add_paragraph(summary_langauge)
-    summary_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    summary_paragraph                               = document.add_paragraph(summary_langauge)
+    summary_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
     summary_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
-    summary_format = document.styles['Normal'].paragraph_format
-    summary_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
-    summary_style = summary_paragraph.style
-    summary_style.font.name = primary_font
+    summary_format                                  = document.styles['Normal'].paragraph_format
+    summary_format.line_spacing_rule                = WD_LINE_SPACING.SINGLE
+    summary_style                                   = summary_paragraph.style
+    summary_style.font.name                         = primary_font
 
     #Add Text pulled from Apartments.com
     for paragraph in apartmentsdotcomlanguage:
@@ -2677,21 +2680,36 @@ def IntroSection(document):
     #Add Overview Table
     AddTable(document = document,data_for_table = overview_table_data )
     
+    #Community Assets Section
+    AddHeading(document = document, title = 'Community Assets',            heading_level = 1,heading_number='Heading 3',font_size=11)
+
+    
     #Add POI Table
-    AddPointOfInterestsTable(document = document, data_for_table = location_iq_data)
+    # AddPointOfInterestsTable(document = document, data_for_table = location_iq_data)
 
     #Add Text pulled from Yelp.com
-    yelp_paragraph                               = document.add_paragraph(yelp_language)
-    yelp_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
-    yelp_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+    # yelp_paragraph                               = document.add_paragraph(yelp_language)
+    # yelp_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
+    # yelp_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
 
-
-
-def NeigborhoodSection(document):
+def HousingSection(document):
     print('Writing Neighborhood Section')
-    AddHeading(document = document, title = 'Neighborhood',            heading_level = 1,heading_number='Heading 2',font_size=14)
-    AddHeading(document = document, title = 'Housing',                  heading_level = 2,heading_number='Heading 3',font_size=11)
+    # AddHeading(document = document, title = 'Neighborhood',            heading_level = 1,heading_number='Heading 2',font_size=14)
+    AddHeading(document = document, title = 'Housing',                  heading_level = 1,heading_number='Heading 3',font_size=11)
     
+    structure_size_paragraph                               = document.add_paragraph(structure_size_breakdown_language)
+    structure_size_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
+    structure_size_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+
+    #Insert household units by units in_structure graph
+    if os.path.exists(os.path.join(hood_folder,'household_units_in_structure_graph.png')):
+        fig = document.add_picture(os.path.join(hood_folder,'household_units_in_structure_graph.png'),width=Inches(6.5))
+        last_paragraph = document.paragraphs[-1] 
+        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        Citation(document,'U.S. Census Bureau')
+
+
+
     #Insert Household size graph
     if os.path.exists(os.path.join(hood_folder,'household_size_graph.png')):
         fig = document.add_picture(os.path.join(hood_folder,'household_size_graph.png'),width=Inches(6.5))
@@ -2699,6 +2717,10 @@ def NeigborhoodSection(document):
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
     
+    tenure_paragraph                               = document.add_paragraph(housing_tenure_breakdown_language)
+    tenure_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
+    tenure_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+
     #Insert Household Tenure graph
     if os.path.exists(os.path.join(hood_folder,'household_tenure_graph.png')):
         fig = document.add_picture(os.path.join(hood_folder,'household_tenure_graph.png'),width=Inches(6.5))
@@ -2713,12 +2735,8 @@ def NeigborhoodSection(document):
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
 
-    #Insert household units by units in_structure graph
-    if os.path.exists(os.path.join(hood_folder,'household_units_in_structure_graph.png')):
-        fig = document.add_picture(os.path.join(hood_folder,'household_units_in_structure_graph.png'),width=Inches(6.5))
-        last_paragraph = document.paragraphs[-1] 
-        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        Citation(document,'U.S. Census Bureau')
+
+
         
     #Insert household units by year built graph
     if os.path.exists(os.path.join(hood_folder,'household_year_built_graph.png')):
@@ -2728,10 +2746,10 @@ def NeigborhoodSection(document):
         Citation(document,'U.S. Census Bureau')
 
     #Development subsection
-    AddHeading(document = document, title = 'Development',                  heading_level = 2,heading_number='Heading 3',font_size=11)
+    AddHeading(document = document, title = 'Development',                  heading_level = 1,heading_number='Heading 3',font_size=11)
 
     #Education subsection
-    AddHeading(document = document, title = 'Education',                  heading_level = 2,heading_number='Heading 3',font_size=11)
+    AddHeading(document = document, title = 'Education',                  heading_level = 1,heading_number='Heading 3',font_size=11)
 
     if os.path.exists(os.path.join(hood_folder_map,'education_map.png')):
         fig = document.add_picture(os.path.join(hood_folder_map,'education_map.png'),width=Inches(6.5))
@@ -2739,10 +2757,10 @@ def NeigborhoodSection(document):
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'greatschools.org')
 
-def DemographicsSection(document):
-    print('Writing Neighborhood Section')
-    AddHeading(document = document, title = 'Demographics',                                   heading_level = 1,heading_number='Heading 2',font_size=14)
-    AddHeading(document = document, title = 'Population',                                     heading_level = 2,heading_number='Heading 3',font_size=11)
+def PopulationSection(document):
+    print('Writing Population Section')
+    
+    AddHeading(document = document, title = 'Population',                                     heading_level = 1,heading_number='Heading 3',font_size=11)
     
     #Insert population by age graph
     if os.path.exists(os.path.join(hood_folder,'population_by_age_graph.png')):
@@ -2759,9 +2777,12 @@ def DemographicsSection(document):
         Citation(document,'U.S. Census Bureau')
 
 
+def EmploymentTransportationSection(document):
+    print('Writing Employment and Transportation Section')
 
-    #Employment and Transportation Subsection
-    AddHeading(document = document, title = 'Employment and Transportation',                  heading_level = 2,heading_number='Heading 3',font_size=11)
+
+    #Employment and Transportation Section
+    AddHeading(document = document, title = 'Employment and Transportation',                  heading_level = 1,heading_number='Heading 3',font_size=11)
 
     #Insert top occupations graph
     if os.path.exists(os.path.join(hood_folder,'top_occupations_graph.png')):
@@ -2785,9 +2806,9 @@ def DemographicsSection(document):
         Citation(document,'U.S. Census Bureau')
     
     #Transportation Methods table
-    table_paragraph = document.add_paragraph('Transportation Methods')
-    table_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    transportation_paragraph = document.add_paragraph(transportation_language)
+    table_paragraph             = document.add_paragraph('Transportation Methods')
+    table_paragraph.alignment   = WD_ALIGN_PARAGRAPH.CENTER
+    transportation_paragraph    = document.add_paragraph(transportation_language)
 
     #Insert the transit graphics(car, bus,plane, train)
     tab = document.add_table(rows=1, cols=2)
@@ -2849,16 +2870,17 @@ def DemographicsSection(document):
             else:
                 cell.width = Inches(6)
     Citation(document,'https://www.walkscore.com/')
-    
- 
+
+
+
 def OutlookSection(document):
     print('Writing Outlook Section')
-    AddHeading(document = document, title = 'Conclusion',            heading_level = 1,heading_number='Heading 2',font_size=14)
-    conclusion_paragraph           = document.add_paragraph(conclusion_langauge)
-    conclusion_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    AddHeading(document = document, title = 'Conclusion',            heading_level = 1,heading_number='Heading 3',font_size=11)
+    conclusion_paragraph                               = document.add_paragraph(conclusion_langauge)
+    conclusion_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
     conclusion_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
-    conclusion_style = conclusion_paragraph.style
-    conclusion_style.font.name = primary_font
+    conclusion_style                                   = conclusion_paragraph.style
+    conclusion_style.font.name                         = primary_font
     
 def WriteReport():
     print('Writing Report')
@@ -2867,8 +2889,9 @@ def WriteReport():
     SetPageMargins(document   = document, margin_size=1)
     SetDocumentStyle(document = document)
     IntroSection(document = document)
-    NeigborhoodSection(document     = document)
-    DemographicsSection(document = document)
+    HousingSection(document     = document)
+    PopulationSection(document = document)
+    EmploymentTransportationSection(document = document)
     OutlookSection(document = document)
 
 
