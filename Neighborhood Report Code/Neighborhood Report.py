@@ -74,7 +74,7 @@ primary_space_after_paragraph = 8
 #Decide if you want to export data in excel files in the county folder
 data_export                   = False
 testing_mode                  = True
-# testing_mode                  = False
+testing_mode                  = False
 
 #Directory Realted Functions
 def CreateDirectory():
@@ -2338,6 +2338,31 @@ def CommunityAssetsLanguage():
 
     return([yelp_language])
 
+def CarLanguage():
+    wikipedia_car_language     = WikipediaTransitLanguage(category='car')
+    
+    if wikipedia_car_language == '':
+        return(FindNearestHighways(lat = latitude, lon = longitude))
+    else:
+        return(wikipedia_car_language)
+
+def PlaneLanguage():
+    wikipedia_plane_language     = WikipediaTransitLanguage(category='air')
+    nearest_airport_language     = FindNearestAirport(lat = latitude, lon = longitude)
+
+    if wikipedia_plane_language == '':
+        return(nearest_airport_language)
+    else:
+        return(wikipedia_plane_language)
+
+def BusLanguage():
+    wikipedia_bus_language = WikipediaTransitLanguage(category='bus')
+    return(wikipedia_bus_language)
+
+def TrainLanguage():
+    wikipedia_train_language = WikipediaTransitLanguage(category='train')
+    return(wikipedia_train_language)
+
 def OutlookLanguage():
     return('Neighborhood analysis can best be summarized by referring to neighborhood life cycles. ' +
           'Neighborhoods are perceived to go through four cycles, the first being growth, the second being stability, the third decline, and the fourth revitalization. ' +
@@ -2387,33 +2412,19 @@ def CreateLanguage():
     global apartmentsdotcomlanguage
     global housing_tenure_breakdown_language, structure_size_breakdown_language
 
-    summary_langauge          =  SummaryLangauge()
-    community_assets_language =  CommunityAssetsLanguage()
-    transportation_language   =  TransportationOverviewLanguage()
+    summary_langauge                   =  SummaryLangauge()
+    community_assets_language          =  CommunityAssetsLanguage()
+    transportation_language            =  TransportationOverviewLanguage()
 
-
-
-
-
-    housing_tenure_breakdown_language = HousingTenureLanguage()
-    structure_size_breakdown_language = HousingSizeLanguage()
+    housing_tenure_breakdown_language  = HousingTenureLanguage()
+    structure_size_breakdown_language  = HousingSizeLanguage()
     
+    bus_language                       = BusLanguage() 
+    train_language                     = TrainLanguage()
+    car_language                       = CarLanguage()
+    plane_language                     = PlaneLanguage()
 
-
-    bus_language     = WikipediaTransitLanguage(category='bus')
-    train_language    = WikipediaTransitLanguage(category='train')
-    
-    # car_language     = WikipediaTransitLanguage(category='car')
-    car_language       = FindNearestHighways(lat = latitude, lon = longitude)
-    
-    
-    # plane_language   = WikipediaTransitLanguage(category='air')
-    plane_language     = FindNearestAirport(lat = latitude, lon = longitude)
-
-
-    
-
-    conclusion_langauge       = OutlookLanguage()
+    conclusion_langauge                = OutlookLanguage()
     
   
 
@@ -2865,14 +2876,14 @@ def TransportationSection(document):
     
 
 
-    transit_language = [car_language,train_language,bus_language,plane_language]
+    transit_table_language = [car_language, train_language, bus_language, plane_language]
 
     #Loop through the rows in the table
     for current_row ,row in enumerate(tab.rows): 
         #loop through all cells in the current row
         for current_column,cell in enumerate(row.cells):
             if current_column == 1 and current_row > 0:
-                cell.text = str(transit_language[current_row-1])
+                cell.text = str(transit_table_language[current_row-1])
 
             if current_column == 0:
                 cell.width = Inches(.2)
@@ -3029,7 +3040,7 @@ def Main():
     global latitude
     global longitude
     global current_year
-    
+
     coordinates = GetLatandLon()
     latitude    = coordinates[0] 
     longitude   = coordinates[1] 
