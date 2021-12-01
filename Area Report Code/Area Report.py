@@ -5561,7 +5561,7 @@ start_year              = end_year - growth_period              #For BLS
 observation_start       = '01/01/' + str(start_year -1)   #For FRED
 observation_start_less1 = '01/01/' + str(start_year -2)   #For FRED for series 1 year behind the rest
 qcew_year               = current_year                    #for quarterly census of employment and wages
-qcew_qtr                = '1'                             #for quarterly census of employment and wages
+qcew_qtr                = '2'                             #for quarterly census of employment and wages
 
 
 for i,fips in enumerate(GetFIPSList()):
