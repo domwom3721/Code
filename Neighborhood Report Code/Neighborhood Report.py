@@ -61,7 +61,7 @@ from shapely.ops import nearest_points
 #Define file paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
 project_location               =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Projects', 'Research Report Automation Project') 
-main_output_location           =  os.path.join(project_location,'Output','Neighborhood') #testing
+main_output_location           =  os.path.join(project_location,'Output','Neighborhood')                   #testing
 # main_output_location           =  os.path.join(dropbox_root,'Research','Market Analysis','Neighborhood') #production
 data_location                  =  os.path.join(project_location,'Data','Neighborhood Reports Data')
 graphics_location              =  os.path.join(project_location,'Data','Graphics')
@@ -1136,6 +1136,16 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
 
 
 #Non Census Sources
+
+def GetWikipediaPage():
+    global page
+    try:
+        wikipedia_page_search_term    = (neighborhood + ',' + state)
+        page                          =  wikipedia.page(wikipedia_page_search_term)
+            
+    except Exception as e:
+        print(e)
+
 def GetWalkScore(lat,lon):
     print('Getting Walk Score')
     walkscore_response = requests.get('https://api.walkscore.com/score?format=json&lat=' + str(lat) + '&lon='  + str(lon) + '&transit=1&bike=1&wsapikey='+ walkscore_api_key).json()
@@ -2306,9 +2316,27 @@ def WikipediaTransitLanguage(category):
 
 def SummaryLangauge():
     try:
-        return(wikipedia.summary((neighborhood + ',' + state)))
-    except:
-        return('')
+        wikipedia_summary = (wikipedia.summary((neighborhood + ',' + state)))
+    except Exception as e:
+        print(e)
+        wikipedia_summary = ('')
+
+    try:
+        apartmentsdotcomlanguage = ApartmentsDotComSearch() #neighborhood summary pulled from Apartments.com
+    except Exception as e:
+        print(e)
+        apartmentsdotcomlanguage = ('')
+        
+    return[wikipedia_summary,apartmentsdotcomlanguage]
+
+def CommunityAssetsLanguage():
+    try:
+        yelp_language = YelpLanguage(yelp_data)
+    except Exception as e:
+        print(e)
+        yelp_language =''
+
+    return([yelp_language])
 
 def OutlookLanguage():
     return('Neighborhood analysis can best be summarized by referring to neighborhood life cycles. ' +
@@ -2319,6 +2347,15 @@ def OutlookLanguage():
           ' The proximity of the ________ and ________ will ensure the neighborhood will continue ' +
           'to attract growth in the long-term.')
     pass
+
+def TransportationOverviewLanguage():
+    try:
+        transportation_language         =  page.section('Transportation')
+    except Exception as e:
+        print(e)
+        transportation_language         = ''
+    
+    return(transportation_language)
 
 def YelpLanguage(yelp_data):
     #Takes a dictionary as input and returns string
@@ -2334,7 +2371,7 @@ def YelpLanguage(yelp_data):
 def HousingTenureLanguage():
     return("""According to the most recent American Community Survey, """ +
            """X%""" + 
-           """of the housing units in """ + 
+           """ of the housing units in """ + 
            neighborhood + 
            """ were occupied by their owner. This percentage of owner-occupation is lower/higher than the ______ average of X%. This chart shows the ownership percentage in ______ compared to _______.""")
 
@@ -2344,17 +2381,19 @@ def HousingSizeLanguage():
 def CreateLanguage():
     print('Creating Langauge')
 
-    global bus_language,car_language,plane_language,train_language,transportation_language,summary_langauge,conclusion_langauge
+    global bus_language,car_language,plane_language,train_language,transportation_language,summary_langauge,conclusion_langauge,community_assets_language
     global yelp_language
     global airport_language
     global apartmentsdotcomlanguage
     global housing_tenure_breakdown_language, structure_size_breakdown_language
 
-    apartmentsdotcomlanguage = ApartmentsDotComSearch()
-    try:
-        transportation_language         =  page.section('Transportation')
-    except:
-        transportation_language         = ''
+    summary_langauge          =  SummaryLangauge()
+    community_assets_language =  CommunityAssetsLanguage()
+    transportation_language   =  TransportationOverviewLanguage()
+
+
+
+
 
     housing_tenure_breakdown_language = HousingTenureLanguage()
     structure_size_breakdown_language = HousingSizeLanguage()
@@ -2365,17 +2404,16 @@ def CreateLanguage():
     train_language    = WikipediaTransitLanguage(category='train')
     
     # car_language     = WikipediaTransitLanguage(category='car')
-    car_language     = FindNearestHighways(lat = latitude, lon = longitude)
+    car_language       = FindNearestHighways(lat = latitude, lon = longitude)
     
     
     # plane_language   = WikipediaTransitLanguage(category='air')
-    plane_language = FindNearestAirport(lat = latitude, lon = longitude)
+    plane_language     = FindNearestAirport(lat = latitude, lon = longitude)
 
 
-    yelp_language  = YelpLanguage(yelp_data) 
+    
 
-    summary_langauge    =  SummaryLangauge()
-    conclusion_langauge = OutlookLanguage()
+    conclusion_langauge       = OutlookLanguage()
     
   
 
@@ -2652,46 +2690,42 @@ def AddPointOfInterestsTable(document,data_for_table): #Function we use to inser
                         font.bold = True
                         font.name = 'Avenir Next LT Pro Demi'
 
-
 def IntroSection(document):
     AddTitle(document = document)
     AddMap(document = document)
     Citation(document,'Google Maps')
     AddHeading(document = document, title = 'Overview',            heading_level = 1,heading_number='Heading 3',font_size=11)
     
-    #Get summary section from wikipedia and add it 
-    summary_paragraph                               = document.add_paragraph(summary_langauge)
-    summary_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
-    summary_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
-    summary_format                                  = document.styles['Normal'].paragraph_format
-    summary_format.line_spacing_rule                = WD_LINE_SPACING.SINGLE
-    summary_style                                   = summary_paragraph.style
-    summary_style.font.name                         = primary_font
-
-    #Add Text pulled from Apartments.com
-    for paragraph in apartmentsdotcomlanguage:
+    #Add neighborhood overview language
+    for paragraph in summary_langauge:
         if paragraph == '':
             continue
-        apt_paragraph                               = document.add_paragraph(paragraph)
-        apt_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
-        apt_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+        summary_paragraph                               = document.add_paragraph(paragraph)
+        summary_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
+        summary_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+        summary_format                                  = document.styles['Normal'].paragraph_format
+        summary_format.line_spacing_rule                = WD_LINE_SPACING.SINGLE
+        summary_style                                   = summary_paragraph.style
+        summary_style.font.name                         = primary_font
 
     #Add Overview Table
     AddTable(document = document,data_for_table = overview_table_data )
 
 def CommunityAssetsSection(document):
-
-    
+    print('Writing Community Assets Section')
     #Community Assets Section
     AddHeading(document = document, title = 'Community Assets',            heading_level = 1,heading_number='Heading 3',font_size=11)
 
+    for paragraph in community_assets_language:
+        if paragraph == '':
+            continue
+        community_paragraph                               = document.add_paragraph(paragraph)
+        community_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
+        community_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+
+
     # Add POI Table
     AddPointOfInterestsTable(document = document, data_for_table = location_iq_data)
-
-    # Add Text pulled from Yelp.com
-    yelp_paragraph                               = document.add_paragraph(yelp_language)
-    yelp_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
-    yelp_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
 
 def HousingSection(document):
     print('Writing Neighborhood Section')
@@ -2736,9 +2770,6 @@ def HousingSection(document):
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
 
-
-
-        
     #Insert household units by year built graph
     if os.path.exists(os.path.join(hood_folder,'household_year_built_graph.png')):
         fig = document.add_picture(os.path.join(hood_folder,'household_year_built_graph.png'),width=Inches(6.5))
@@ -2746,10 +2777,15 @@ def HousingSection(document):
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
 
+def DevelopmentSection(document):
+    print('Writing Development Section')
+    
     #Development subsection
     AddHeading(document = document, title = 'Development',                  heading_level = 1,heading_number='Heading 3',font_size=11)
 
-    #Education subsection
+def EducationSection(document):
+    print('Writing Education Section')
+
     AddHeading(document = document, title = 'Education',                  heading_level = 1,heading_number='Heading 3',font_size=11)
 
     if os.path.exists(os.path.join(hood_folder_map,'education_map.png')):
@@ -2896,6 +2932,8 @@ def WriteReport():
     IntroSection(             document = document)
     CommunityAssetsSection(   document = document)
     HousingSection(           document = document)
+    DevelopmentSection(       document = document)
+    EducationSection(         document = document)
     PopulationSection(        document = document)
     EmploymentSection(        document = document)
     TransportationSection(    document = document)
@@ -2988,20 +3026,29 @@ def CreateDirectoryCSV():
         dropbox_df.to_csv(os.path.join(main_output_location, service_api_csv_name),index=False)
 
 def Main():
+    global latitude
+    global longitude
+    global current_year
+    
+    coordinates = GetLatandLon()
+    latitude    = coordinates[0] 
+    longitude   = coordinates[1] 
+    
+    todays_date = date.today()
+    current_year = str(todays_date.year)
     SetGraphFormatVariables()
     CreateDirectory()
+    GetWikipediaPage()
     GetData()
     CreateGraphs()
     CreateLanguage()
     WriteReport()
     CleanUpPNGs()
    
-
 DeclareAPIKeys()
 
 # Get Input from User
-allowable_hood_levels       = ['p','c','sd','t','custom'] #'z']
-allowable_comparison_levels = ['p','c','sd','t','custom'] #'z']
+allowable_area_levels       = ['p','c','sd','t','custom'] #'z']
 
 if testing_mode == False:
     report_creation = input('Create new report? y/n')
@@ -3018,7 +3065,7 @@ if report_creation == 'y':
         else:
             neighborhood_level   =  'p'
         
-        if neighborhood_level not in allowable_hood_levels:
+        if neighborhood_level not in allowable_area_levels:
             print('Not a supported geographic level for neighborhood area')
             continue
         else:
@@ -3031,7 +3078,7 @@ if report_creation == 'y':
         else:
             comparison_level     = 'c'
         
-        if comparison_level not in allowable_comparison_levels:
+        if comparison_level not in allowable_area_levels:
             print('Not a supported geographic level for comparsion area')
             continue
         else:
@@ -3231,21 +3278,9 @@ if report_creation == 'y':
         comparison_area = input('Enter the name of the custom comparison area')
 
 
-    #Pull Cordinates from function for neighborhood
-    coordinates = GetLatandLon()
-    latitude    = coordinates[0] 
-    longitude   = coordinates[1] 
-    
-    todays_date = date.today()
-    current_year = str(todays_date.year)
 
-    #Get Wikipedia page
-    try:
-        wikipedia_page_search_term    = (neighborhood + ',' + state)
-        page                          =  wikipedia.page(wikipedia_page_search_term)
-            
-    except Exception as e:
-        print(e)
+
+
 
     print('Preparing report for: ' + neighborhood)
     Main()
