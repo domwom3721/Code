@@ -1323,7 +1323,7 @@ def SearchGreatSchoolDotOrg():
         #Zoom out map
         pyautogui.moveTo(3261, y=1045)
         time.sleep(1)
-        for i in range(2):
+        for i in range(1):
            pyautogui.click()
            time.sleep(1)
 
@@ -2837,6 +2837,15 @@ def EmploymentSection(document):
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
     
+
+    
+def TransportationSection(document):
+    print('Writing Transportation Section')
+
+
+    #Employment and Transportation Section
+    AddHeading(document = document, title = 'Transportation',                  heading_level = 1,heading_number='Heading 3',font_size=11)
+
     #Insert Travel Time to Work graph
     if os.path.exists(os.path.join(hood_folder,'travel_time_graph.png')):
         fig = document.add_picture(os.path.join(hood_folder,'travel_time_graph.png'),width=Inches(6.5))
@@ -2850,14 +2859,6 @@ def EmploymentSection(document):
         last_paragraph = document.paragraphs[-1] 
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
-    
-def TransportationSection(document):
-    print('Writing Transportation Section')
-
-
-    #Employment and Transportation Section
-    AddHeading(document = document, title = 'Transportation',                  heading_level = 1,heading_number='Heading 3',font_size=11)
-
     
     #Transportation Methods table
     table_paragraph             = document.add_paragraph('Transportation Methods')
