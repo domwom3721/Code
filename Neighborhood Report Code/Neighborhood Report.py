@@ -2676,21 +2676,22 @@ def IntroSection(document):
         apt_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
         apt_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
 
-
     #Add Overview Table
     AddTable(document = document,data_for_table = overview_table_data )
+
+def CommunityAssetsSection(document):
+
     
     #Community Assets Section
     AddHeading(document = document, title = 'Community Assets',            heading_level = 1,heading_number='Heading 3',font_size=11)
 
-    
-    #Add POI Table
-    # AddPointOfInterestsTable(document = document, data_for_table = location_iq_data)
+    # Add POI Table
+    AddPointOfInterestsTable(document = document, data_for_table = location_iq_data)
 
-    #Add Text pulled from Yelp.com
-    # yelp_paragraph                               = document.add_paragraph(yelp_language)
-    # yelp_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
-    # yelp_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+    # Add Text pulled from Yelp.com
+    yelp_paragraph                               = document.add_paragraph(yelp_language)
+    yelp_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
+    yelp_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
 
 def HousingSection(document):
     print('Writing Neighborhood Section')
@@ -2776,13 +2777,11 @@ def PopulationSection(document):
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
 
-
-def EmploymentTransportationSection(document):
-    print('Writing Employment and Transportation Section')
-
+def EmploymentSection(document):
+    print('Writing Employment Section')
 
     #Employment and Transportation Section
-    AddHeading(document = document, title = 'Employment and Transportation',                  heading_level = 1,heading_number='Heading 3',font_size=11)
+    AddHeading(document = document, title = 'Employment',                  heading_level = 1,heading_number='Heading 3',font_size=11)
 
     #Insert top occupations graph
     if os.path.exists(os.path.join(hood_folder,'top_occupations_graph.png')):
@@ -2804,6 +2803,14 @@ def EmploymentTransportationSection(document):
         last_paragraph = document.paragraphs[-1] 
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
+    
+def TransportationSection(document):
+    print('Writing Transportation Section')
+
+
+    #Employment and Transportation Section
+    AddHeading(document = document, title = 'Transportation',                  heading_level = 1,heading_number='Heading 3',font_size=11)
+
     
     #Transportation Methods table
     table_paragraph             = document.add_paragraph('Transportation Methods')
@@ -2871,8 +2878,6 @@ def EmploymentTransportationSection(document):
                 cell.width = Inches(6)
     Citation(document,'https://www.walkscore.com/')
 
-
-
 def OutlookSection(document):
     print('Writing Outlook Section')
     AddHeading(document = document, title = 'Conclusion',            heading_level = 1,heading_number='Heading 3',font_size=11)
@@ -2886,13 +2891,15 @@ def WriteReport():
     print('Writing Report')
     #Create Document
     document = Document()
-    SetPageMargins(document   = document, margin_size=1)
-    SetDocumentStyle(document = document)
-    IntroSection(document = document)
-    HousingSection(document     = document)
-    PopulationSection(document = document)
-    EmploymentTransportationSection(document = document)
-    OutlookSection(document = document)
+    SetPageMargins(           document  = document, margin_size=1)
+    SetDocumentStyle(         document = document)
+    IntroSection(             document = document)
+    CommunityAssetsSection(   document = document)
+    HousingSection(           document = document)
+    PopulationSection(        document = document)
+    EmploymentSection(        document = document)
+    TransportationSection(    document = document)
+    OutlookSection(           document = document)
 
 
     #Save report
