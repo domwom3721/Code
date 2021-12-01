@@ -2341,7 +2341,6 @@ def CreateLanguage():
 
 
     apartmentsdotcomlanguage = ApartmentsDotComSearch()
-    print(apartmentsdotcomlanguage)
     try:
         transportation_language         =  page.section('Transportation')
     except:
@@ -2575,14 +2574,21 @@ def AddTable(document,data_for_table): #Function we use to insert our overview t
                         font.name = 'Avenir Next LT Pro Demi'
 
 def AddPointOfInterestsTable(document,data_for_table): #Function we use to insert our table with Location IQ points of interest into the report document
-    
+    print(data_for_table)
+    print(type(data_for_table))
+    print(type(data_for_table[0]))
+
     #Convert the data from location IQ from json to list of list where each list is a row for the table
-    converted_data_for_table = [[data_for_table[0].keys()],]
+    converted_data_for_table = [ list(data_for_table[0].keys())  ]
+    
+    
     for i in data_for_table:
-        new_list = i.values()
+        new_list = list(i.values())
         converted_data_for_table.append(new_list)
 
-    
+    print(converted_data_for_table)
+    assert type(converted_data_for_table) == list
+
     #make sure each list inside the list of lists has the same number of elements
     for row in converted_data_for_table:
         for row2 in converted_data_for_table:
