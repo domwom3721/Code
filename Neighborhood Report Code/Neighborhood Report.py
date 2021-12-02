@@ -460,11 +460,10 @@ def GetHousingValues(geographic_level,hood_or_comparison_area):
         if hood_or_comparison_area == 'hood':
             zcta =  hood_zip
 
-
         elif hood_or_comparison_area == 'comparison area':
             zcta =  comparison_zip
         
-        household_value_raw_data = c.acs5.zipcode(fields=fields_list,zcta=zcta,)[0]
+        household_value_raw_data = c.acs5.zipcode(fields=fields_list,state_fips=state_fips,zcta=zcta,)[0]
 
     elif geographic_level == 'tract':
         
@@ -2461,7 +2460,6 @@ def AddTitle(document):
     glance_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
     glance_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
 
-
 def AddHeading(document,title,heading_level,heading_number,font_size): #Function we use to insert the headers other than the title header
             heading = document.add_heading(title,level=heading_level)
             heading.style = document.styles[heading_number]
@@ -2836,9 +2834,7 @@ def EmploymentSection(document):
         last_paragraph = document.paragraphs[-1] 
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
-    
-
-    
+        
 def TransportationSection(document):
     print('Writing Transportation Section')
 
@@ -3060,7 +3056,7 @@ def Main():
 DeclareAPIKeys()
 
 # Get Input from User
-allowable_area_levels       = ['p','c','sd','t','custom'] #'z']
+allowable_area_levels       = ['p','c','sd','t','custom','z']
 
 if testing_mode == False:
     report_creation = input('Create new report? y/n')
@@ -3296,8 +3292,6 @@ if report_creation == 'y':
 
     print('Preparing report for: ' + neighborhood)
     Main()
-
-
 
 
 
