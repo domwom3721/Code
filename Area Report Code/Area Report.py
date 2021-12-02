@@ -4645,15 +4645,19 @@ def GetDataAndLanguageForOverviewTable():
     #Get most recent County values and get county values from 5 years ago
     try:
         current_county_employment = county_employment['Employment'].iloc[-1]
-        lagged_county_employment = county_employment['Employment'].iloc[-1 - (growth_period * 12)] #the employment data is monthly
+        lagged_county_employment  = county_employment['Employment'].iloc[-1 - (growth_period * 12)] #the employment data is monthly
+        print('successfully got county employment for overview')
+    
     except Exception as e:
-        print(e,' problem getting county employment for overview table')
+        print(e,' problem getting county employment for overview table data')
         current_county_employment = 1
         lagged_county_employment  = 1
     
     try:
         current_county_gdp        = county_gdp['GDP'].iloc[-1]
         lagged_county_gdp        = county_gdp['GDP'].iloc[-1 - growth_period]
+        print('successfully got county gdp for overview table data')
+
     except Exception as e:
         print(e,' problem getting county gdp for overview table')
         current_county_gdp        = 1
@@ -4661,7 +4665,9 @@ def GetDataAndLanguageForOverviewTable():
     
     try:
         current_county_pop        = county_resident_pop['Resident Population'].iloc[-1]
-        lagged_county_pop        = county_resident_pop['Resident Population'].iloc[-1- growth_period]
+        lagged_county_pop         = county_resident_pop['Resident Population'].iloc[-1- growth_period]
+        print('successfully got county pop for overview table data')
+
     except Exception as e:
         print(e,'problem getting county population for overview table')
         current_county_pop        = 1
@@ -4671,7 +4677,7 @@ def GetDataAndLanguageForOverviewTable():
     try:
         current_county_pci        = county_pci['Per Capita Personal Income'].iloc[-1]
         lagged_county_pci        = county_pci['Per Capita Personal Income'].iloc[-1- growth_period]
-
+        print('successfully got county pci for overview table data')
     except Exception as e:
         print(e,'problem getting county pci for overview table')
         current_county_pci        = 1
@@ -4684,6 +4690,8 @@ def GetDataAndLanguageForOverviewTable():
         county_gdp_growth        = ((current_county_gdp/lagged_county_gdp) - 1) * 100
         county_pop_growth        = ((current_county_pop/lagged_county_pop) - 1) * 100
         county_pci_growth        = ((current_county_pci/lagged_county_pci) - 1) * 100
+        print('successfully got county 5 year growth rates for overview table data')
+
     except Exception as e:
         print(e,'problem calculating growth rates for county in overview table')
         county_employment_growth = 0
@@ -4705,7 +4713,9 @@ def GetDataAndLanguageForOverviewTable():
         current_state_gdp        = state_gdp_extra_month_cut_off['GDP'].iloc[-1]
         current_state_pop        = state_resident_pop_extra_month_cut_off['Resident Population'].iloc[-1]
         current_state_pci        = state_pci_extra_month_cut_off['Per Capita Personal Income'].iloc[-1]
-    
+
+        print('successfully got state values overview table data')
+
     except Exception as e:
         print(e,'problem getting state values for overview table data with cut off observations')
         try:
@@ -4727,6 +4737,8 @@ def GetDataAndLanguageForOverviewTable():
         lagged_state_gdp        = state_gdp_extra_month_cut_off['GDP'].iloc[-1 - growth_period]
         lagged_state_pop        = state_resident_pop_extra_month_cut_off['Resident Population'].iloc[-1- growth_period]
         lagged_state_pci        = state_pci_extra_month_cut_off['Per Capita Personal Income'].iloc[-1- growth_period]
+        print('successfully got lagged state values overview table data')
+
     
     except Exception as e:
         print(e,'problem getting laggeed state values for overview table')
@@ -4736,17 +4748,24 @@ def GetDataAndLanguageForOverviewTable():
             lagged_state_pop        = state_resident_pop['Resident Population'].iloc[-1- growth_period]
             lagged_state_pci        = state_pci['Per Capita Personal Income'].iloc[-1- growth_period]
         except Exception as e:
-            print(e,'proble, getting lagged state values with data without dropped observations')
+            print(e,'problem getting lagged state values with data without dropped observations')
             lagged_state_employment = 1
             lagged_state_gdp        = 1
             lagged_state_pop        = 1
             lagged_state_pci        = 1
 
     #Calculate 5-year growth for state
-    state_employment_growth = ((current_state_employment/lagged_state_employment) - 1 ) * 100
-    state_gdp_growth        = ((current_state_gdp/lagged_state_gdp) - 1) * 100
-    state_pop_growth        = ((current_state_pop/lagged_state_pop) - 1) * 100
-    state_pci_growth        = ((current_state_pci/lagged_state_pci) - 1) * 100
+    try:
+        state_employment_growth = ((current_state_employment/lagged_state_employment) - 1 ) * 100
+        state_gdp_growth        = ((current_state_gdp/lagged_state_gdp) - 1) * 100
+        state_pop_growth        = ((current_state_pop/lagged_state_pop) - 1) * 100
+        state_pci_growth        = ((current_state_pci/lagged_state_pci) - 1) * 100
+        print('successfully got  state growth rates for overview table data')
+
+    except Exception as e:
+        print(e,'problem getting state growth rates for overivew table')
+        
+
 
     #Get most recent values for MSA if applicable
     if cbsa != '':
@@ -4768,6 +4787,10 @@ def GetDataAndLanguageForOverviewTable():
             lagged_msa_gdp                      = msa_gdp_extra_month_cut_off['GDP'].iloc[-1 - growth_period]
             lagged_msa_pop                      = msa_resident_pop_extra_month_cut_off['Resident Population'].iloc[-1- growth_period]
             lagged_msa_pci                      = msa_pci_extra_month_cut_off['Per Capita Personal Income'].iloc[-1- growth_period]
+        
+            print('successfully got msa values and lagged values for overview table data')
+
+        
         except Exception as e:
             print(e,'problem getting msa values with observations cut off')
             try:
@@ -4797,100 +4820,133 @@ def GetDataAndLanguageForOverviewTable():
                 lagged_msa_pop                      = 1
                 lagged_msa_pci                      = 1
 
+        try:
+            #Calculate 5-year growth for msa
+            msa_employment_growth               = ((current_msa_employment/lagged_msa_employment) - 1 ) * 100
+            msa_gdp_growth                      = ((current_msa_gdp/lagged_msa_gdp) - 1) * 100
+            msa_pop_growth                      = ((current_msa_pop/lagged_msa_pop) - 1) * 100
+            msa_pci_growth                      = ((current_msa_pci/lagged_msa_pci) - 1) * 100
+            print('successfully got msa growth rates for overview table data')
 
-        #Calculate 5-year growth for msa
-        msa_employment_growth               = ((current_msa_employment/lagged_msa_employment) - 1 ) * 100
-        msa_gdp_growth                      = ((current_msa_gdp/lagged_msa_gdp) - 1) * 100
-        msa_pop_growth                      = ((current_msa_pop/lagged_msa_pop) - 1) * 100
-        msa_pci_growth                      = ((current_msa_pci/lagged_msa_pci) - 1) * 100
+        except Exception as e:
+            print(e,'problem getting msa growth rates for overview table data')
 
 
     #Use MSA growth rates for comparison
-    if cbsa != '':
-        comparison_emp_growth = msa_employment_growth
-        comparison_gdp_growth = msa_gdp_growth
-        comparison_pop_growth = msa_pop_growth
-        comparison_pci_growth = msa_pci_growth
+    try:
+        if cbsa != '':
+            comparison_emp_growth = msa_employment_growth
+            comparison_gdp_growth = msa_gdp_growth
+            comparison_pop_growth = msa_pop_growth
+            comparison_pci_growth = msa_pci_growth
 
-    #Use State growth rates for comparison
-    else:
-        comparison_emp_growth = state_employment_growth
-        comparison_gdp_growth = state_gdp_growth
-        comparison_pop_growth = state_pop_growth
-        comparison_pci_growth = state_pci_growth
-
-    #Determine if county grew faster or slower than state or MSA
-    if comparison_emp_growth > county_employment_growth:
-        employment_faster_or_slower = 'Slower than'
-    elif comparison_emp_growth < county_employment_growth:
-        employment_faster_or_slower = 'Faster than'
-    elif comparison_emp_growth == comparison_emp_growth:
-        employment_faster_or_slower = 'Equal to'
+        #Use State growth rates for comparison
+        else:
+            comparison_emp_growth = state_employment_growth
+            comparison_gdp_growth = state_gdp_growth
+            comparison_pop_growth = state_pop_growth
+            comparison_pci_growth = state_pci_growth
         
+        print('successfully got comparison growth rates for overview table data')
 
-    if comparison_gdp_growth > county_gdp_growth:
-        gdp_faster_or_slower = 'Slower than'
-    elif comparison_gdp_growth < county_gdp_growth:
-        gdp_faster_or_slower = 'Faster than' 
-    else:
-        gdp_faster_or_slower = 'Equal to' 
+    except Exception as e:
+        print(e,'problem getting comparison growth rates')
 
-    if comparison_pop_growth > county_pop_growth:
-        pop_faster_or_slower = 'Slower than'
-    elif comparison_pop_growth < county_pop_growth:
-        pop_faster_or_slower = 'Faster than'
-    else:
-        pop_faster_or_slower = 'Equal to'
+    try:
+        #Determine if county grew faster or slower than state or MSA
+        if comparison_emp_growth > county_employment_growth:
+            employment_faster_or_slower = 'Slower than'
+        elif comparison_emp_growth < county_employment_growth:
+            employment_faster_or_slower = 'Faster than'
+        elif comparison_emp_growth == comparison_emp_growth:
+            employment_faster_or_slower = 'Equal to'
+            
 
-    if comparison_pci_growth > county_pci_growth:
-        pci_faster_or_slower = 'Slower than'
-    elif comparison_pci_growth < county_pci_growth:
-        pci_faster_or_slower = 'Faster than' 
-    else:
-        pci_faster_or_slower = 'Equal to'
+        if comparison_gdp_growth > county_gdp_growth:
+            gdp_faster_or_slower = 'Slower than'
+        elif comparison_gdp_growth < county_gdp_growth:
+            gdp_faster_or_slower = 'Faster than' 
+        else:
+            gdp_faster_or_slower = 'Equal to' 
+
+        if comparison_pop_growth > county_pop_growth:
+            pop_faster_or_slower = 'Slower than'
+        elif comparison_pop_growth < county_pop_growth:
+            pop_faster_or_slower = 'Faster than'
+        else:
+            pop_faster_or_slower = 'Equal to'
+
+        if comparison_pci_growth > county_pci_growth:
+            pci_faster_or_slower = 'Slower than'
+        elif comparison_pci_growth < county_pci_growth:
+            pci_faster_or_slower = 'Faster than' 
+        else:
+            pci_faster_or_slower = 'Equal to'
+        
+        print('successfully got comparison growth description for overview table data')
+
+    except Exception as e:
+        print(e,'problem getting growth comparison descriptions')
+        
 
 
     #Format Variables
-    current_county_employment = "{:,.0f}".format(current_county_employment)
-    current_county_gdp        = '$' + millify(current_county_gdp) 
-    current_county_pop        = "{:,.0f}".format(current_county_pop)
-    current_county_pci        = "${:,.0f}".format(current_county_pci)
+    try:
+        current_county_employment = "{:,.0f}".format(current_county_employment)
+        current_county_gdp        = '$' + millify(current_county_gdp) 
+        current_county_pop        = "{:,.0f}".format(current_county_pop)
+        current_county_pci        = "${:,.0f}".format(current_county_pci)
 
-    county_employment_growth  = "{:,.1f}%".format(county_employment_growth)
-    county_gdp_growth         = "{:,.1f}%".format(county_gdp_growth)
-    county_pop_growth         = "{:,.1f}%".format(county_pop_growth)
-    county_pci_growth         = "{:,.1f}%".format(county_pci_growth)
+        county_employment_growth  = "{:,.1f}%".format(county_employment_growth)
+        county_gdp_growth         = "{:,.1f}%".format(county_gdp_growth)
+        county_pop_growth         = "{:,.1f}%".format(county_pop_growth)
+        county_pci_growth         = "{:,.1f}%".format(county_pci_growth)
+        print('successfully formatted variabels for overview table data')
 
+    except Exception as e:
+        print(e, 'problem formatting variables for overview table data')
+    
     try:
         if cbsa != '':
-            overview_table =([ ['Attribute','County Level Value',str(growth_period) + ' Year Growth Rate','Relative to Baseline ('+ 'MSA' + ')' ], 
-                    ['Employment',current_county_employment,county_employment_growth,employment_faster_or_slower + ' MSA' ], 
-                    ['GDP',current_county_gdp,county_gdp_growth,gdp_faster_or_slower + ' MSA'],
-                    ['Population',current_county_pop,county_pop_growth,pop_faster_or_slower + ' MSA'], 
-                    ['Per Capita Personal Income',current_county_pci,county_pci_growth,pci_faster_or_slower + ' MSA'] ])
-        
+            overview_table =[ 
+                            ['Attribute','County Level Value',str(growth_period) + ' Year Growth Rate','Relative to Baseline ('+ 'MSA' + ')' ], 
+                            ['Employment',current_county_employment,county_employment_growth,employment_faster_or_slower + ' MSA' ], 
+                            ['GDP',current_county_gdp,county_gdp_growth,gdp_faster_or_slower + ' MSA'],
+                            ['Population',current_county_pop,county_pop_growth,pop_faster_or_slower + ' MSA'], 
+                            ['Per Capita Personal Income',current_county_pci,county_pci_growth,pci_faster_or_slower + ' MSA'] 
+                            ]
         else:
-            overview_table =([ ['Attribute','County Level Value',str(growth_period) + ' Year Growth Rate','Relative to Baseline ('+ state + ')' ], 
-                    ['Employment',current_county_employment,county_employment_growth,employment_faster_or_slower + ' State' ], 
-                    ['GDP',current_county_gdp,county_gdp_growth,gdp_faster_or_slower + ' State'],
-                    ['Population',current_county_pop,county_pop_growth,pop_faster_or_slower + ' State'], 
-                    ['Per Capita Personal Income',current_county_pci,county_pci_growth,pci_faster_or_slower + ' State'] ])
+            overview_table =[ 
+                            ['Attribute','County Level Value',str(growth_period) + ' Year Growth Rate','Relative to Baseline ('+ state + ')' ], 
+                            ['Employment',current_county_employment,county_employment_growth,employment_faster_or_slower + ' State' ], 
+                            ['GDP',current_county_gdp,county_gdp_growth,gdp_faster_or_slower + ' State'],
+                            ['Population',current_county_pop,county_pop_growth,pop_faster_or_slower + ' State'], 
+                            ['Per Capita Personal Income',current_county_pci,county_pci_growth,pci_faster_or_slower + ' State'] 
+                            ]
             
         for list in overview_table:
             if list[1] == '$0':
                 list[1] = 'NA'
                 list[2] = 'NA'
                 list[3] = 'NA'
-        return(overview_table)
+    
+        print('successfully created list of lists for overview table data')
+    
     except Exception as e:
-        print(e)
-        return([
+        print(e,'problem creating list of lists for overview table data')
+        overview_table = [
                 ['Attribute','County Level Value','5 Year Growth Rate','Relative to Baseline (State Code or MSA)'],
                 ['Employment','','','[Faster than/Slower than/Equal to] [State/MSA]'],
                 ['GDP','','','[Faster than/Slower than/Equal to] [State/MSA]'],
                 ['Population','','','[Faster than/Slower than/Equal to] [State/MSA]'],
                 ['Per Capita Personal Income','','','[Faster than/Slower than/Equal to] [State/MSA]']
-                ])
+                ]
+    
+    try:
+        print('successfully returned overview table data')
+        return(overview_table)
+    except Exception as e:
+        print(e,'failed to return list')
 
 def AddTable(document,data_for_table): #Function we use to insert our overview table into the report document
     #list of list where each list is a row for our table
@@ -5116,14 +5172,13 @@ def OverviewSection(document):
     #Creating Overview Table
     try:
         data_for_table = GetDataAndLanguageForOverviewTable()
-        AddTable(document = document,data_for_table = data_for_table)
     except Exception as e:
         print(e,'problem getting data for overview table')
     
     try:
-        AddTable(document = document,data_for_table = [[],[],[],[]])
+        AddTable(document = document,data_for_table = data_for_table )
     except Exception as e:
-        print(e,'problem adding overview table')
+        print(e,'problem adding table')
            
 def EmploymentSection(document):
     print('Writing Employment Section')
