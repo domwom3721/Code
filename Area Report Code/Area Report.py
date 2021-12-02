@@ -4638,8 +4638,6 @@ def CreateLanguage():
         print(e, '--- problem with education language')
         education_language = ''
         
-
-
 #Table Realted functions 
 def GetDataAndLanguageForOverviewTable():
     print('Getting Data for overview table')
@@ -4649,13 +4647,15 @@ def GetDataAndLanguageForOverviewTable():
         current_county_employment = county_employment['Employment'].iloc[-1]
         lagged_county_employment = county_employment['Employment'].iloc[-1 - (growth_period * 12)] #the employment data is monthly
     except Exception as e:
-        print(e)
+        print(e,' problem getting county employment for overview table')
+        current_county_employment = 1
+        lagged_county_employment  = 1
     
     try:
         current_county_gdp        = county_gdp['GDP'].iloc[-1]
         lagged_county_gdp        = county_gdp['GDP'].iloc[-1 - growth_period]
     except Exception as e:
-        print(e)
+        print(e,' problem getting county gdp for overview table')
         current_county_gdp        = 1
         lagged_county_gdp         = 1
     
@@ -4663,7 +4663,9 @@ def GetDataAndLanguageForOverviewTable():
         current_county_pop        = county_resident_pop['Resident Population'].iloc[-1]
         lagged_county_pop        = county_resident_pop['Resident Population'].iloc[-1- growth_period]
     except Exception as e:
-        print(e)
+        print(e,'problem getting county population for overview table')
+        current_county_pop        = 1
+        lagged_county_pop         = 1
     
     
     try:
@@ -4671,38 +4673,74 @@ def GetDataAndLanguageForOverviewTable():
         lagged_county_pci        = county_pci['Per Capita Personal Income'].iloc[-1- growth_period]
 
     except Exception as e:
-        print(e)
+        print(e,'problem getting county pci for overview table')
         current_county_pci        = 1
         lagged_county_pci         = 1
 
 
-    
-
     #Calculate county 5-year growth
-    county_employment_growth = ((current_county_employment/lagged_county_employment) - 1 ) * 100
-    county_gdp_growth        = ((current_county_gdp/lagged_county_gdp) - 1) * 100
-    county_pop_growth        = ((current_county_pop/lagged_county_pop) - 1) * 100
-    county_pci_growth        = ((current_county_pci/lagged_county_pci) - 1) * 100
-    
+    try:
+        county_employment_growth = ((current_county_employment/lagged_county_employment) - 1 ) * 100
+        county_gdp_growth        = ((current_county_gdp/lagged_county_gdp) - 1) * 100
+        county_pop_growth        = ((current_county_pop/lagged_county_pop) - 1) * 100
+        county_pci_growth        = ((current_county_pci/lagged_county_pci) - 1) * 100
+    except Exception as e:
+        print(e,'problem calculating growth rates for county in overview table')
+        county_employment_growth = 0
+        county_gdp_growth        = 0
+        county_pop_growth        = 0
+        county_pci_growth        = 0
+
+
     
 
     #Make sure we are comparing the same month to month change in values between state and county data
-    state_employment_extra_month_cut_off    = state_employment.loc[state_employment['period']     <= (county_employment['period'].max())]
-    state_gdp_extra_month_cut_off           = state_gdp.loc[state_gdp['Period']                   <= (county_gdp['Period'].max())]
-    state_resident_pop_extra_month_cut_off  = state_resident_pop.loc[state_resident_pop['Period'] <= (county_resident_pop['Period'].max())]
-    state_pci_extra_month_cut_off           = state_pci.loc[state_pci['Period']                   <= (county_pci['Period'].max())]
+    try:
+        state_employment_extra_month_cut_off    = state_employment.loc[state_employment['period']     <= (county_employment['period'].max())]
+        state_gdp_extra_month_cut_off           = state_gdp.loc[state_gdp['Period']                   <= (county_gdp['Period'].max())]
+        state_resident_pop_extra_month_cut_off  = state_resident_pop.loc[state_resident_pop['Period'] <= (county_resident_pop['Period'].max())]
+        state_pci_extra_month_cut_off           = state_pci.loc[state_pci['Period']                   <= (county_pci['Period'].max())]
 
-    #Now get most recent state level values
-    current_state_employment = state_employment_extra_month_cut_off['Employment'].iloc[-1]
-    current_state_gdp        = state_gdp_extra_month_cut_off['GDP'].iloc[-1]
-    current_state_pop        = state_resident_pop_extra_month_cut_off['Resident Population'].iloc[-1]
-    current_state_pci        = state_pci_extra_month_cut_off['Per Capita Personal Income'].iloc[-1]
+        current_state_employment = state_employment_extra_month_cut_off['Employment'].iloc[-1]
+        current_state_gdp        = state_gdp_extra_month_cut_off['GDP'].iloc[-1]
+        current_state_pop        = state_resident_pop_extra_month_cut_off['Resident Population'].iloc[-1]
+        current_state_pci        = state_pci_extra_month_cut_off['Per Capita Personal Income'].iloc[-1]
     
+    except Exception as e:
+        print(e,'problem getting state values for overview table data with cut off observations')
+        try:
+            current_state_employment = state_employment['Employment'].iloc[-1]
+            current_state_gdp        = state_gdp['GDP'].iloc[-1]
+            current_state_pop        = state_resident_pop['Resident Population'].iloc[-1]
+            current_state_pci        = state_pci['Per Capita Personal Income'].iloc[-1]
+        except Exception as e:
+            print(e,'problem getting state values with most recent data')
+            current_state_employment = 1
+            current_state_gdp        = 1
+            current_state_pop        = 1
+            current_state_pci        = 1
+
+
     #Get lagged state values from 5 years ago
-    lagged_state_employment = state_employment_extra_month_cut_off['Employment'].iloc[-1 - (growth_period * 12)] #the employment data is monthly
-    lagged_state_gdp        = state_gdp_extra_month_cut_off['GDP'].iloc[-1 - growth_period]
-    lagged_state_pop        = state_resident_pop_extra_month_cut_off['Resident Population'].iloc[-1- growth_period]
-    lagged_state_pci        = state_pci_extra_month_cut_off['Per Capita Personal Income'].iloc[-1- growth_period]
+    try:
+        lagged_state_employment = state_employment_extra_month_cut_off['Employment'].iloc[-1 - (growth_period * 12)] #the employment data is monthly
+        lagged_state_gdp        = state_gdp_extra_month_cut_off['GDP'].iloc[-1 - growth_period]
+        lagged_state_pop        = state_resident_pop_extra_month_cut_off['Resident Population'].iloc[-1- growth_period]
+        lagged_state_pci        = state_pci_extra_month_cut_off['Per Capita Personal Income'].iloc[-1- growth_period]
+    
+    except Exception as e:
+        print(e,'problem getting laggeed state values for overview table')
+        try:
+            lagged_state_employment = state_employment['Employment'].iloc[-1 - (growth_period * 12)] #the employment data is monthly
+            lagged_state_gdp        = state_gdp['GDP'].iloc[-1 - growth_period]
+            lagged_state_pop        = state_resident_pop['Resident Population'].iloc[-1- growth_period]
+            lagged_state_pci        = state_pci['Per Capita Personal Income'].iloc[-1- growth_period]
+        except Exception as e:
+            print(e,'proble, getting lagged state values with data without dropped observations')
+            lagged_state_employment = 1
+            lagged_state_gdp        = 1
+            lagged_state_pop        = 1
+            lagged_state_pci        = 1
 
     #Calculate 5-year growth for state
     state_employment_growth = ((current_state_employment/lagged_state_employment) - 1 ) * 100
@@ -4712,23 +4750,53 @@ def GetDataAndLanguageForOverviewTable():
 
     #Get most recent values for MSA if applicable
     if cbsa != '':
-        #Make sure we are comparing the same month to month change in values between msa and county data
-        msa_employment_extra_month_cut_off    = msa_employment.loc[msa_employment['period']     <= (county_employment['period'].max())]
-        msa_gdp_extra_month_cut_off           = msa_gdp.loc[msa_gdp['Period']                   <= (county_gdp['Period'].max())]
-        msa_resident_pop_extra_month_cut_off  = msa_resident_pop.loc[msa_resident_pop['Period'] <= (county_resident_pop['Period'].max())]
-        msa_pci_extra_month_cut_off           = msa_pci.loc[msa_pci['Period']                   <= (county_pci['Period'].max())]
+        try:
+            #Make sure we are comparing the same month to month change in values between msa and county data
+            msa_employment_extra_month_cut_off    = msa_employment.loc[msa_employment['period']     <= (county_employment['period'].max())]
+            msa_gdp_extra_month_cut_off           = msa_gdp.loc[msa_gdp['Period']                   <= (county_gdp['Period'].max())]
+            msa_resident_pop_extra_month_cut_off  = msa_resident_pop.loc[msa_resident_pop['Period'] <= (county_resident_pop['Period'].max())]
+            msa_pci_extra_month_cut_off           = msa_pci.loc[msa_pci['Period']                   <= (county_pci['Period'].max())]
 
-        #Now get most recent msa level values
-        current_msa_employment                = msa_employment_extra_month_cut_off['Employment'].iloc[-1]
-        current_msa_gdp                       = msa_gdp_extra_month_cut_off['GDP'].iloc[-1]
-        current_msa_pop                       = msa_resident_pop_extra_month_cut_off['Resident Population'].iloc[-1]
-        current_msa_pci                       = msa_pci_extra_month_cut_off['Per Capita Personal Income'].iloc[-1]
+            #Now get most recent msa level values
+            current_msa_employment                = msa_employment_extra_month_cut_off['Employment'].iloc[-1]
+            current_msa_gdp                       = msa_gdp_extra_month_cut_off['GDP'].iloc[-1]
+            current_msa_pop                       = msa_resident_pop_extra_month_cut_off['Resident Population'].iloc[-1]
+            current_msa_pci                       = msa_pci_extra_month_cut_off['Per Capita Personal Income'].iloc[-1]
         
-        #Get lagged msa values from 5 years ago
-        lagged_msa_employment               = msa_employment_extra_month_cut_off['Employment'].iloc[-1 - (growth_period * 12)] #the employment data is monthly
-        lagged_msa_gdp                      = msa_gdp_extra_month_cut_off['GDP'].iloc[-1 - growth_period]
-        lagged_msa_pop                      = msa_resident_pop_extra_month_cut_off['Resident Population'].iloc[-1- growth_period]
-        lagged_msa_pci                      = msa_pci_extra_month_cut_off['Per Capita Personal Income'].iloc[-1- growth_period]
+            #Get lagged msa values from 5 years ago
+            lagged_msa_employment               = msa_employment_extra_month_cut_off['Employment'].iloc[-1 - (growth_period * 12)] #the employment data is monthly
+            lagged_msa_gdp                      = msa_gdp_extra_month_cut_off['GDP'].iloc[-1 - growth_period]
+            lagged_msa_pop                      = msa_resident_pop_extra_month_cut_off['Resident Population'].iloc[-1- growth_period]
+            lagged_msa_pci                      = msa_pci_extra_month_cut_off['Per Capita Personal Income'].iloc[-1- growth_period]
+        except Exception as e:
+            print(e,'problem getting msa values with observations cut off')
+            try:
+                #Now get most recent msa level values
+                current_msa_employment                = msa_employment['Employment'].iloc[-1]
+                current_msa_gdp                       = msa_gdp['GDP'].iloc[-1]
+                current_msa_pop                       = msa_resident_pop['Resident Population'].iloc[-1]
+                current_msa_pci                       = msa_pci['Per Capita Personal Income'].iloc[-1]
+        
+                #Get lagged msa values from 5 years ago
+                lagged_msa_employment               = msa_employment['Employment'].iloc[-1 - (growth_period * 12)] #the employment data is monthly
+                lagged_msa_gdp                      = msa_gdp['GDP'].iloc[-1 - growth_period]
+                lagged_msa_pop                      = msa_resident_pop['Resident Population'].iloc[-1- growth_period]
+                lagged_msa_pci                      = msa_pci['Per Capita Personal Income'].iloc[-1- growth_period]
+            except Exception as e:
+                print(e,'problem getting msa values with most recent data')
+
+                #Now get most recent msa level values
+                current_msa_employment                = 1
+                current_msa_gdp                       = 1
+                current_msa_pop                       = 1
+                current_msa_pci                       = 1
+        
+                #Get lagged msa values from 5 years ago
+                lagged_msa_employment               = 1 
+                lagged_msa_gdp                      = 1
+                lagged_msa_pop                      = 1
+                lagged_msa_pci                      = 1
+
 
         #Calculate 5-year growth for msa
         msa_employment_growth               = ((current_msa_employment/lagged_msa_employment) - 1 ) * 100
@@ -5047,7 +5115,13 @@ def OverviewSection(document):
 
     #Creating Overview Table
     try:
-        AddTable(document = document,data_for_table = GetDataAndLanguageForOverviewTable())
+        data_for_table = GetDataAndLanguageForOverviewTable()
+        AddTable(document = document,data_for_table = data_for_table)
+    except Exception as e:
+        print(e,'problem getting data for overview table')
+    
+    try:
+        AddTable(document = document,data_for_table = [[],[],[],[]])
     except Exception as e:
         print(e,'problem adding overview table')
            
