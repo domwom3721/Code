@@ -4644,17 +4644,39 @@ def CreateLanguage():
 def GetDataAndLanguageForOverviewTable():
     print('Getting Data for overview table')
     
-    #Get most recent County values
-    current_county_employment = county_employment['Employment'].iloc[-1]
-    current_county_gdp        = county_gdp['GDP'].iloc[-1]
-    current_county_pop        = county_resident_pop['Resident Population'].iloc[-1]
-    current_county_pci        = county_pci['Per Capita Personal Income'].iloc[-1]
+    #Get most recent County values and get county values from 5 years ago
+    try:
+        current_county_employment = county_employment['Employment'].iloc[-1]
+        lagged_county_employment = county_employment['Employment'].iloc[-1 - (growth_period * 12)] #the employment data is monthly
+    except Exception as e:
+        print(e)
+    
+    try:
+        current_county_gdp        = county_gdp['GDP'].iloc[-1]
+        lagged_county_gdp        = county_gdp['GDP'].iloc[-1 - growth_period]
+    except Exception as e:
+        print(e)
+        current_county_gdp        = 1
+        lagged_county_gdp         = 1
+    
+    try:
+        current_county_pop        = county_resident_pop['Resident Population'].iloc[-1]
+        lagged_county_pop        = county_resident_pop['Resident Population'].iloc[-1- growth_period]
+    except Exception as e:
+        print(e)
+    
+    
+    try:
+        current_county_pci        = county_pci['Per Capita Personal Income'].iloc[-1]
+        lagged_county_pci        = county_pci['Per Capita Personal Income'].iloc[-1- growth_period]
 
-    #Get county values from 5 years ago
-    lagged_county_employment = county_employment['Employment'].iloc[-1 - (growth_period * 12)] #the employment data is monthly
-    lagged_county_gdp        = county_gdp['GDP'].iloc[-1 - growth_period]
-    lagged_county_pop        = county_resident_pop['Resident Population'].iloc[-1- growth_period]
-    lagged_county_pci        = county_pci['Per Capita Personal Income'].iloc[-1- growth_period]
+    except Exception as e:
+        print(e)
+        current_county_pci        = 1
+        lagged_county_pci         = 1
+
+
+    
 
     #Calculate county 5-year growth
     county_employment_growth = ((current_county_employment/lagged_county_employment) - 1 ) * 100
@@ -4802,7 +4824,6 @@ def GetDataAndLanguageForOverviewTable():
                 ['Per Capita Personal Income','','','[Faster than/Slower than/Equal to] [State/MSA]']
                 ])
 
-
 def AddTable(document,data_for_table): #Function we use to insert our overview table into the report document
     #list of list where each list is a row for our table
      
@@ -4867,7 +4888,6 @@ def AddTable(document,data_for_table): #Function we use to insert our overview t
                     else:
                         font.name  = primary_font
              
-
 #Report document related functions
 def SetPageMargins(document,margin_size):
     sections = document.sections
@@ -5028,12 +5048,9 @@ def OverviewSection(document):
     #Creating Overview Table
     try:
         AddTable(document = document,data_for_table = GetDataAndLanguageForOverviewTable())
-    except:
-        pass
-    # page_break_paragraph = document.add_paragraph('')
-    # run = page_break_paragraph.add_run()
-    # run.add_break(WD_BREAK.PAGE)
-    
+    except Exception as e:
+        print(e,'problem adding overview table')
+           
 def EmploymentSection(document):
     print('Writing Employment Section')
     AddHeading(document = document, title = 'Labor Market Conditions',            heading_level = 2)
@@ -5294,8 +5311,6 @@ def OutlookSection(document):
         outlook_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
         outlook_paragraph.paragraph_format.space_before = Pt(6)
         outlook_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-
-
 
 def WriteReport():
     print('Writing Report')
