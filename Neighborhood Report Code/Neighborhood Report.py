@@ -3033,38 +3033,17 @@ def CreateDirectoryCSV():
     if main_output_location == os.path.join(dropbox_root,'Research','Market Analysis','Neighborhood'):
         dropbox_df.to_csv(os.path.join(main_output_location, service_api_csv_name),index=False)
 
-def Main():
-    global latitude
-    global longitude
-    global current_year
+def DecideIfWritingReport():
+    global report_creation
+    if testing_mode == False:
+        report_creation = input('Create new report? y/n')
+    else:
+        report_creation = 'y'
 
-    coordinates = GetLatandLon()
-    latitude    = coordinates[0] 
-    longitude   = coordinates[1] 
+def GetUserInputs():
     
-    todays_date = date.today()
-    current_year = str(todays_date.year)
-    SetGraphFormatVariables()
-    CreateDirectory()
-    GetWikipediaPage()
-    GetData()
-    CreateGraphs()
-    CreateLanguage()
-    WriteReport()
-    CleanUpPNGs()
-   
-DeclareAPIKeys()
-
-# Get Input from User
-allowable_area_levels       = ['p','c','sd','t','custom','z']
-
-if testing_mode == False:
-    report_creation = input('Create new report? y/n')
-else:
-    report_creation = 'y'
-    # report_creation = 'n'
-
-if report_creation == 'y':
+    # Get Input from User
+    allowable_area_levels       = ['p','c','sd','t','custom','z']
 
     #Ask user for info on subject area
     while True:
@@ -3285,20 +3264,6 @@ if report_creation == 'y':
         #Get name of comparison area
         comparison_area = input('Enter the name of the custom comparison area')
 
-
-
-
-
-
-    print('Preparing report for: ' + neighborhood)
-    Main()
-
-
-
-
-#Crawl through directory and create CSV with all current neighborhood report documents
-CreateDirectoryCSV()
-
 def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
     if type == None:
         return
@@ -3333,9 +3298,44 @@ def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
         print(f'Deleting temporary CSV: ', csv_path)
         os.remove(csv_path)           
 
-# Post an update request to the Market Research Docs Service to update the database
-if main_output_location == os.path.join(dropbox_root,'Research','Market Analysis','Neighborhood'): 
-    UpdateServiceDb(report_type='neighborhoods', 
-                csv_name=service_api_csv_name, 
-                csv_path=os.path.join(main_output_location, service_api_csv_name),
-                dropbox_dir='https://www.dropbox.com/home/Research/Market Analysis/Neighborhood/')
+def Main():
+    DeclareAPIKeys()
+    DecideIfWritingReport()
+   
+
+    if report_creation == 'y':
+        GetUserInputs() #user selects if they want to run report and gives input for report subject
+        print('Preparing report for: ' + neighborhood)
+        global latitude
+        global longitude
+        global current_year
+
+        coordinates = GetLatandLon()
+        latitude    = coordinates[0] 
+        longitude   = coordinates[1] 
+        
+        todays_date = date.today()
+        current_year = str(todays_date.year)
+        SetGraphFormatVariables()
+        CreateDirectory()
+        GetWikipediaPage()
+        GetData()
+        CreateGraphs()
+        CreateLanguage()
+        WriteReport()
+        CleanUpPNGs()
+    
+    #Crawl through directory and create CSV with all current neighborhood report documents
+    CreateDirectoryCSV()
+
+        # Post an update request to the Market Research Docs Service to update the database
+    if main_output_location == os.path.join(dropbox_root,'Research','Market Analysis','Neighborhood'): 
+        UpdateServiceDb(report_type='neighborhoods', 
+                    csv_name=service_api_csv_name, 
+                    csv_path=os.path.join(main_output_location, service_api_csv_name),
+                    dropbox_dir='https://www.dropbox.com/home/Research/Market Analysis/Neighborhood/')
+
+
+#This is our main function that calls all other functions we will use
+Main()
+
