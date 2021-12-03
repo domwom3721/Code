@@ -74,7 +74,7 @@ primary_space_after_paragraph = 8
 #Decide if you want to export data in excel files in the county folder
 data_export                   = False
 testing_mode                  = True
-# testing_mode                  = False
+testing_mode                  = False
 
 #Directory Realted Functions
 def CreateDirectory():
@@ -147,10 +147,10 @@ def GetLatandLon():
         # longitude = float(input('enter the longitude for the subject property'))
 
         # Look up lat and lon of area with geocoding using google maps api
-        gmaps = googlemaps.Client(key=google_maps_api_key) 
+        gmaps          = googlemaps.Client(key=google_maps_api_key) 
         geocode_result = gmaps.geocode(address=(neighborhood + ',' + state),)
-        latitude =geocode_result[0]['geometry']['location']['lat']
-        longitude =geocode_result[0]['geometry']['location']['lng']
+        latitude       = geocode_result[0]['geometry']['location']['lat']
+        longitude      = geocode_result[0]['geometry']['location']['lng']
     
     elif testing_mode == True:
         latitude    = 40.652490
@@ -1445,32 +1445,32 @@ def GetData():
 
     location_iq_data = LocationIQ(lat = latitude, lon = longitude, radius=5000)
 
-    neighborhood_household_size_distribution     = GetHouseholdSizeData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')      #Neighborhood households by size
-    neighborhood_tenure_distribution             = GetHousingTenureData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')      #Housing Tenure (owner occupied/renter)
-    neighborhood_housing_value_data              = GetHousingValues(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')          #Owner Occupied housing units by value
-    neighborhood_number_units_data               = GetNumberUnitsData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')        #Housing Units by units in building
-    neighborhood_year_built_data                 = GetHouseYearBuiltData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')     #Housing Units by year structure built
-    neighborhood_age_data                        = GetAgeData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')                #Population by age data
-    neighborhood_household_income_data           = GetHouseholdIncomeValues(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')  #Households by household income data
-    neighborhood_top_occupations_data            = GetTopOccupationsData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')     #Top Employment Occupations
-    neighborhood_time_to_work_distribution       = GetTravelTimeData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')         #Travel Time to Work
-    neighborhood_method_to_work_distribution     = GetTravelMethodData(geographic_level=neighborhood_level, hood_or_comparison_area = 'hood')       #Travel Mode to Work
+    neighborhood_household_size_distribution     = GetHouseholdSizeData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Neighborhood households by size
+    neighborhood_tenure_distribution             = GetHousingTenureData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Tenure (owner occupied/renter)
+    neighborhood_housing_value_data              = GetHousingValues(         geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Owner Occupied housing units by value
+    neighborhood_number_units_data               = GetNumberUnitsData(       geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by units in building
+    neighborhood_year_built_data                 = GetHouseYearBuiltData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by year structure built
+    neighborhood_age_data                        = GetAgeData(               geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Population by age data
+    neighborhood_household_income_data           = GetHouseholdIncomeValues( geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Households by household income data
+    neighborhood_top_occupations_data            = GetTopOccupationsData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Top Employment Occupations
+    neighborhood_time_to_work_distribution       = GetTravelTimeData(        geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Time to Work
+    neighborhood_method_to_work_distribution     = GetTravelMethodData(      geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Mode to Work
 
-    comparison_household_size_distribution       = GetHouseholdSizeData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
-    comparison_tenure_distribution               = GetHousingTenureData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
-    comparison_housing_value_data                = GetHousingValues(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')    
-    comparison_number_units_data                 = GetNumberUnitsData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')    
-    comparison_year_built_data                   = GetHouseYearBuiltData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
-    comparison_age_data                          = GetAgeData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
-    comparison_household_income_data             = GetHouseholdIncomeValues(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')   
-    comparison_top_occupations_data              = GetTopOccupationsData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
-    comparison_time_to_work_distribution         = GetTravelTimeData(geographic_level=comparison_level, hood_or_comparison_area = 'comparison area')
+    comparison_household_size_distribution       = GetHouseholdSizeData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    comparison_tenure_distribution               = GetHousingTenureData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    comparison_housing_value_data                = GetHousingValues(        geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
+    comparison_number_units_data                 = GetNumberUnitsData(      geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
+    comparison_year_built_data                   = GetHouseYearBuiltData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    comparison_age_data                          = GetAgeData(              geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    comparison_household_income_data             = GetHouseholdIncomeValues(geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')   
+    comparison_top_occupations_data              = GetTopOccupationsData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    comparison_time_to_work_distribution         = GetTravelTimeData(       geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
     
     #Walk score
-    walk_score_data = GetWalkScore(lat = latitude, lon = longitude)
+    walk_score_data                              = GetWalkScore(            lat = latitude, lon = longitude)
 
     #Yelp Data
-    yelp_data   =             GetYelpData(lat = latitude, lon  = longitude,radius=30000) #radius in meters
+    # yelp_data   =             GetYelpData(lat = latitude, lon  = longitude,radius=30000) #radius in meters
     # google_data =             GetGoogleAPIData(lat = latitude, lon = longitude) #radius in meters
 
     SearchGreatSchoolDotOrg()
@@ -2425,7 +2425,6 @@ def CreateLanguage():
     conclusion_langauge                = OutlookLanguage()
     
   
-
 #Report document related functions
 def SetPageMargins(document,margin_size):
     sections = document.sections
@@ -2733,7 +2732,7 @@ def CommunityAssetsSection(document):
 
 
     # Add POI Table
-    AddPointOfInterestsTable(document = document, data_for_table = location_iq_data)
+    #AddPointOfInterestsTable(document = document, data_for_table = location_iq_data)
 
 def HousingSection(document):
     print('Writing Neighborhood Section')
@@ -3074,14 +3073,14 @@ def UserSelectsNeighborhoodLevel():
 
 def GetUserInputs():
     
-    global neighborhood_level
+    global neighborhood_level,comparison_level
     hood_comparison_levels = UserSelectsNeighborhoodLevel()
     neighborhood_level     = hood_comparison_levels[0] 
     comparison_level       = hood_comparison_levels[1] 
     
     global neighborhood, hood_tract, hood_zip, hood_place_fips, place_type, hood_suvdiv_fips, hood_county_fips
     global state, state_fips, state_full_name
-    global comparison_area, comparison_zip, comparsion_place_fips, comparison_suvdiv_fips, comparison_county_fips    
+    global comparison_area, comparison_tract ,comparison_zip, comparsion_place_fips, comparison_suvdiv_fips, comparison_county_fips    
 
 
     
@@ -3142,7 +3141,7 @@ def GetUserInputs():
     elif neighborhood_level == 't':      #when our neighborhood is a census tract eg: Tract 106.01 in Manhattan
 
         neighborhood_level = 'tract' 
-        fips = input('Enter the 5 digit County FIPS Code for hood')
+        fips = input('Enter the 5 digit County FIPS Code for the county the hood tract is in')
         fips = fips.replace('-','').strip()
         assert len(fips) == 5
         state_fips = fips[0:2]
@@ -3248,10 +3247,10 @@ def GetUserInputs():
         comparison_level = 'place'
         
         #Get place FIPS code from user
-        fips = input('Enter the 7 digit Census Place FIPS Code for the comparison area')
+        fips                  = input('Enter the 7 digit Census Place FIPS Code for the comparison area')
         
         #Process FIPS code provided by user``
-        fips = fips.replace('-','').strip()
+        fips                  = fips.replace('-','').strip()
         comparsion_place_fips = fips[2:]
         state_fips            = fips[0:2]
 
@@ -3264,26 +3263,29 @@ def GetUserInputs():
         comparison_area = comparison_area.split(',')[0].strip().title()
         comparison_area = ' '.join(comparison_area.split(' ')[0:len(comparison_area.split(' '))-1]).title()
 
-
+        print(comparison_area)
+        fish
 
         state = us.states.lookup(state_full_name) #convert the full state name to the 2 letter abbreviation
         state = state.abbr
         assert len(state) == 2
 
     elif comparison_level == 'sd':       #when our comparison area is county subdivison eg: Town of Hempstead, New York (A large town in Nassau County with several villages within it)
-        
+        comparison_level        = 'county subdivision'
 
+        #Get commaprison area FIPS code from user
+        fips                    = input('Enter the 10 digit county subdivision FIPS Code for the comparison area')
 
-        comparison_level = 'county subdivision'
-        fips = input('Enter the 10 digit county subdivision FIPS Code for the comparison area')
-        fips = fips.replace('-','').strip()
+        #Process the input from the user
+        fips                    = fips.replace('-','').strip()
         assert len(fips) == 10
-        comparison_county_fips = fips[2:5]
-        comparison_suvdiv_fips = fips[5:]
+        comparison_county_fips  = fips[2:5]
+        comparison_suvdiv_fips  = fips[5:]
 
-        # Get name of hood
-        comparison_area = c.sf1.state_county_subdivision(fields=['NAME'],state_fips=state_fips, county_fips=comparison_county_fips, subdiv_fips=comparison_suvdiv_fips)[0]['NAME']
-        comparison_area = comparison_area.split(',')[0].strip().title()
+        #Get name of hood
+        comparison_area         = c.sf1.state_county_subdivision(fields=['NAME'],state_fips=state_fips, county_fips=comparison_county_fips, subdiv_fips=comparison_suvdiv_fips)[0]['NAME']
+        comparison_area         = comparison_area.split(',')[0].strip() 
+        comparison_area         = comparison_area.split(' ')[0].title()
 
     elif comparison_level == 'z':        #When our comparison area is a zip code eg: 11563
         
