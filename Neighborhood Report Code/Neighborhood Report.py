@@ -74,7 +74,7 @@ primary_space_after_paragraph = 8
 #Decide if you want to export data in excel files in the county folder
 data_export                   = False
 testing_mode                  = True
-testing_mode                  = False
+# testing_mode                  = False
 
 #Directory Realted Functions
 def CreateDirectory():
@@ -1135,7 +1135,6 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
 
 
 #Non Census Sources
-
 def GetWikipediaPage():
     global page
     try:
@@ -3040,7 +3039,7 @@ def DecideIfWritingReport():
     else:
         report_creation = 'y'
 
-def GetUserInputs():
+def UserSelectsNeighborhoodLevel():
     
     # Get Input from User
     allowable_area_levels       = ['p','c','sd','t','custom','z']
@@ -3048,7 +3047,7 @@ def GetUserInputs():
     #Ask user for info on subject area
     while True:
         if testing_mode == False:
-            neighborhood_level = input('What is the geographic level of the neighborhood? (p = place,sd = subdivision, c = county,t = tract,custom = custom)')
+            neighborhood_level = input('What is the geographic level of the neighborhood? (p = place,sd = subdivision, c = county,t = tract,custom = custom, z = zip code)')
         else:
             neighborhood_level   =  'p'
         
@@ -3061,7 +3060,7 @@ def GetUserInputs():
     #Ask user for info on comparison area
     while True:
         if testing_mode == False:
-            comparison_level   = input('What is the geographic level of the comparison area? (p = place,sd = subdivision, c = county,t = tract)')
+            comparison_level   = input('What is the geographic level of the comparison area? (p = place,sd = subdivision, c = county,t = tract,custom = custom, z = zip code)')
         else:
             comparison_level     = 'c'
         
@@ -3070,20 +3069,39 @@ def GetUserInputs():
             continue
         else:
             break
+    
+    return([neighborhood_level,comparison_level])
 
+def GetUserInputs():
+    
+    global neighborhood_level
+    hood_comparison_levels = UserSelectsNeighborhoodLevel()
+    neighborhood_level     = hood_comparison_levels[0] 
+    comparison_level       = hood_comparison_levels[1] 
+    
+    global neighborhood, hood_tract, hood_zip, hood_place_fips, place_type, hood_suvdiv_fips, hood_county_fips
+    global state, state_fips, state_full_name
+    global comparison_area, comparison_zip, comparsion_place_fips, comparison_suvdiv_fips, comparison_county_fips    
+
+
+    
     #Get User input on neighborhood/subject area
-    if neighborhood_level == 'p':
+    if neighborhood_level == 'p':        #when our neighborhood is a town or city eg: East Rockaway Village, New York
+        
+
         neighborhood_level = 'place'
         if testing_mode == False:
             fips = input('Enter the 7 digit Census Place FIPS Code')
         else:
             fips = '36-22876'
-        fips = fips.replace('-','').strip()
-        state_fips = fips[0:2]
+
+        #Process the FIPS code provided    
+        fips            = fips.replace('-','').strip()
+        state_fips      = fips[0:2]
         hood_place_fips = fips[2:]
         assert len(fips) == 7
 
-        #Get name of hood
+        #Get name of the hood using the FIPS code provided
         neighborhood = c.sf1.state_place(fields=['NAME'],state_fips=state_fips,place=hood_place_fips)[0]['NAME']
         state_full_name = neighborhood.split(',')[1].strip()
         neighborhood = neighborhood.split(',')[0].strip()
@@ -3096,19 +3114,23 @@ def GetUserInputs():
         state = state.abbr
         assert len(state) == 2
 
-    elif neighborhood_level == 'sd':
+    elif neighborhood_level == 'sd':     #when our neighborhood is county subdivison eg: Town of Hempstead, New York (A large town in Nassau County with several villages within it)
+        
+        #Assign the nei
         neighborhood_level = 'county subdivision'
+        
+        #Get FIPS from User
         fips = input('Enter the 10 digit county subdivision FIPS Code for the hood')
+        
+        #Proccess FIPS code provided
         fips = fips.replace('-','').strip()
         assert len(fips) == 10
         state_fips       = fips[0:2]
         hood_county_fips = fips[2:5]
         hood_suvdiv_fips = fips[5:]
 
-        # Get name of hood
+        #Get name of hood using the FIPS code provided
         neighborhood = c.sf1.state_county_subdivision(fields=['NAME'],state_fips=state_fips,county_fips=hood_county_fips,subdiv_fips=hood_suvdiv_fips)[0]['NAME']
-        
-        
         state_full_name = neighborhood.split(',')[2].strip()
         neighborhood = neighborhood.split(',')[0].strip().title()
 
@@ -3117,7 +3139,8 @@ def GetUserInputs():
         state = state.abbr
         assert len(state) == 2
 
-    elif neighborhood_level == 't':
+    elif neighborhood_level == 't':      #when our neighborhood is a census tract eg: Tract 106.01 in Manhattan
+
         neighborhood_level = 'tract' 
         fips = input('Enter the 5 digit County FIPS Code for hood')
         fips = fips.replace('-','').strip()
@@ -3140,44 +3163,57 @@ def GetUserInputs():
         state = state.abbr
         assert len(state) == 2
 
-    elif neighborhood_level == 'z':
+    elif neighborhood_level == 'z':      #When our neighborhood is a zip code eg: 11563
         neighborhood_level = 'zip'
+        
+        #Get input from user
         hood_zip = input('Enter the 5 digit zip code for hood')
+        
+        #Process the zip code provided
         hood_zip = hood_zip.replace('-','').strip()
         assert len(hood_zip) == 5
+        
+        #Get the state FIPS code (eg New York: 36)
         state_fips = input('Enter the 2 digit FIPS code for state hood zip code is in: ')
         assert len(state_fips) == 2
 
         #Get name of hood
-        neighborhood = c.sf1.state_zipcode(fields=['NAME'],state_fips=state_fips, zcta=hood_zip)[0]['NAME']
-        state_full_name = neighborhood.split(',')[1].strip()
-        neighborhood = neighborhood.split(',')[0].replace('ZCTA5','').strip().title() + ' (Zip Code)'
+        neighborhood     = c.sf1.state_zipcode(fields=['NAME'],state_fips=state_fips, zcta=hood_zip)[0]['NAME']
+        state_full_name  = neighborhood.split(',')[1].strip()
+        neighborhood     = neighborhood.split(',')[0].replace('ZCTA5','').strip().title() + ' (Zip Code)'
     
-
         #Name of State
-        state = us.states.lookup(state_full_name) #convert the full state name to the 2 letter abbreviation
-        state = state.abbr
+        state            = us.states.lookup(state_full_name) #convert the full state name to the 2 letter abbreviation
+        state            = state.abbr
         assert len(state) == 2
 
-    elif neighborhood_level == 'c':
+    elif neighborhood_level == 'c':      #When our neighborhood is a county eg Nassau County, New York
+
         neighborhood_level = 'county'
+        
+        #Get FIPS code input from user
         fips = input('Enter the 5 digit county FIPS Code for the hood')
-        assert len(fips) == 5
+        
+        #Process the FIPS code provided by user
         fips = fips.replace('-','').strip()
-        state_fips = fips[0:2]
+        assert len(fips) == 5
+        state_fips       = fips[0:2]
         hood_county_fips = fips[2:]
 
         #Get name of hood
-        neighborhood = c.sf1.state_county(fields=['NAME'],state_fips=state_fips,county_fips=hood_county_fips)[0]['NAME']
-        state_full_name = neighborhood.split(',')[1].strip()
-        neighborhood = neighborhood.split(',')[0].strip().title()
+        neighborhood     = c.sf1.state_county(fields=['NAME'],state_fips=state_fips,county_fips=hood_county_fips)[0]['NAME']
+        state_full_name  = neighborhood.split(',')[1].strip()
+        neighborhood     = neighborhood.split(',')[0].strip().title()
 
         #Name of State
-        state = us.states.lookup(state_full_name) #convert the full state name to the 2 letter abbreviation
-        state = state.abbr
+        state            = us.states.lookup(state_full_name) #convert the full state name to the 2 letter abbreviation
+        state            = state.abbr
+
         assert len(state) == 2
 
-    elif neighborhood_level == 'custom':
+    elif neighborhood_level == 'custom': #When our neighborhood is a neighboorhood within a city (eg: Financial District, New York City)
+
+
         #Get name of hood
         neighborhood      = input('Enter the name of the custom neighborhood')
         
@@ -3185,24 +3221,36 @@ def GetUserInputs():
         # #Name of State
         # state = input('Enter the 2 letter state code of the state the custom neighborhood is in')
         # assert len(state) == 2
-
+    
     #Get user input on comparison area
-    if comparison_level == 'c':
+    if comparison_level == 'c':          #When our comparison area is a county eg Nassau County, New York
+        
         comparison_level = 'county'
+
+        #Get comparison county FIPS code from user
         if testing_mode == False:
             comparison_county_fips = input('Enter the 5 digit FIPS code for the comparison county')
         else:
             comparison_county_fips = '36059'
         
+        #Process FIPS code provided by user
         comparison_county_fips = comparison_county_fips.replace('-','').strip()
         assert len(comparison_county_fips) == 5
+
+        #Get name of comparison county using the FIPS code provdided
         comparison_area = c.sf1.state_county(fields=['NAME'],state_fips=comparison_county_fips[0:2],county_fips=comparison_county_fips[2:])[0]['NAME']
         comparison_area = comparison_area.split(',')[0].strip().title()
         comparison_county_fips = comparison_county_fips[2:]
 
-    elif comparison_level == 'p': #When we are comparing a neighborhood to a city
+    elif comparison_level == 'p':        #when our comparison area is a town or city eg: East Rockaway Village, New York
+        
+
         comparison_level = 'place'
+        
+        #Get place FIPS code from user
         fips = input('Enter the 7 digit Census Place FIPS Code for the comparison area')
+        
+        #Process FIPS code provided by user``
         fips = fips.replace('-','').strip()
         comparsion_place_fips = fips[2:]
         state_fips            = fips[0:2]
@@ -3222,7 +3270,10 @@ def GetUserInputs():
         state = state.abbr
         assert len(state) == 2
 
-    elif comparison_level == 'sd':
+    elif comparison_level == 'sd':       #when our comparison area is county subdivison eg: Town of Hempstead, New York (A large town in Nassau County with several villages within it)
+        
+
+
         comparison_level = 'county subdivision'
         fips = input('Enter the 10 digit county subdivision FIPS Code for the comparison area')
         fips = fips.replace('-','').strip()
@@ -3234,33 +3285,44 @@ def GetUserInputs():
         comparison_area = c.sf1.state_county_subdivision(fields=['NAME'],state_fips=state_fips, county_fips=comparison_county_fips, subdiv_fips=comparison_suvdiv_fips)[0]['NAME']
         comparison_area = comparison_area.split(',')[0].strip().title()
 
-    elif comparison_level == 'z':
+    elif comparison_level == 'z':        #When our comparison area is a zip code eg: 11563
+        
         comparison_level = 'zip'
+
+        #Get comparison area zip code from user
         comparison_zip = input('Enter the 5 digit zip code for the comparison area')
+
+        #Process user provided zip code
         comparison_zip = comparison_zip.replace('-','').strip()
         assert len(comparison_zip) == 5
 
-
-        #Get name of hood
+        #Get name of comapison area 
         comparison_area = c.sf1.state_zipcode(fields=['NAME'],state_fips=state_fips, zcta=comparison_zip)[0]['NAME']
         comparison_area = comparison_area.split(',')[0].replace('ZCTA5','').strip().title() + ' (Zip Code)'
     
-    elif comparison_level == 't':
+    elif comparison_level == 't':        #when our comparison area is a census tract eg: Tract 106.01 in Manhattan
+        
         comparison_level = 'tract'
+        
+        #Get the FIPS code for the county the comparison tract is in
         fips = input('Enter the 5 digit County FIPS Code for comparison area')
+        
+        #Process the user provided county FIPS code
         fips = fips.replace('-','').strip()
         assert len(fips) == 5
         comparison_county_fips = fips[2:]
         
-        comparison_tract = input('Enter the 6 digit tract FIPS Code for comparison area')
+        #Get the comaprison tract code from the user
+        comparison_tract       = input('Enter the 6 digit tract FIPS Code for comparison area')
         assert len(comparison_tract) == 6
 
-        #Get name of hood
+        #Get name of comparison area
         comparison_area = c.sf1.state_county_tract(fields=['NAME'],state_fips=state_fips, county_fips=comparison_county_fips,tract=comparison_tract)[0]['NAME']
         comparison_area = comparison_area.split(',')[0] + ',' +  comparison_area.split(',')[1]
         comparison_area = comparison_area.strip().title()
 
-    elif comparison_level == 'custom':
+    elif comparison_level == 'custom':   #When our comparison area is a neighboorhood within a city (eg: Financial District, New York City)
+        
         #Get name of comparison area
         comparison_area = input('Enter the name of the custom comparison area')
 
@@ -3328,7 +3390,7 @@ def Main():
     #Crawl through directory and create CSV with all current neighborhood report documents
     CreateDirectoryCSV()
 
-        # Post an update request to the Market Research Docs Service to update the database
+    #Post an update request to the Market Research Docs Service to update the database
     if main_output_location == os.path.join(dropbox_root,'Research','Market Analysis','Neighborhood'): 
         UpdateServiceDb(report_type='neighborhoods', 
                     csv_name=service_api_csv_name, 
