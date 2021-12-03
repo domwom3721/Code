@@ -3823,7 +3823,7 @@ def CountyEmploymentGrowthLanguage(county_industry_breakdown):
     county_industry_breakdown                 = county_industry_breakdown.sort_values(by=['1 Year Employment Growth'])
     slowest_growing_industry_1y               = county_industry_breakdown['industry_code'].iloc[0]
     slowest_growth_industry_1y                = county_industry_breakdown['1 Year Employment Growth'].iloc[0]
-    slowest_growth_industry_1y                = "{:,.1f}%".format(abs(slowest_growth_industry_1y))
+    slowest_growth_industry_1y                = "{:,.1f}%".format(slowest_growth_industry_1y)
 
 
     county_emplopyment_growth_language = ('According to the Q' +
@@ -3862,17 +3862,18 @@ def CountyEmploymentGrowthLanguage(county_industry_breakdown):
             ' over the previous five years.'
              ' Over the past year, ' +
              employment_loss_1year_all_most_some + 
-             ' industries have lost employees.' +
-             ' The ' +
-             slowest_growing_industry_1y +
-              ' sector saw the largest decline in employees and remains '+
-              slowest_growth_industry_1y +
-              ' ' + 
-            'below Q' +
-              qcew_qtr +
-              ' ' +
-              str(int(qcew_year) - 1) +
-              ' levels.')
+             ' industries have lost employees.' 
+            #  ' The ' +
+            #  slowest_growing_industry_1y +
+            #   ' sector saw the largest decline in employees and remains '+
+            #   slowest_growth_industry_1y +
+            #   ' ' + 
+            # 'below Q' +
+            #   qcew_qtr +
+            #   ' ' +
+            #   str(int(qcew_year) - 1) +
+            #   ' levels.'
+              )
 
 
     return(county_emplopyment_growth_language)
@@ -3971,7 +3972,7 @@ def MSAEmploymentGrowthLanguage(msa_industry_breakdown):
         msa_industry_breakdown                    = msa_industry_breakdown.sort_values(by=['1 Year Employment Growth'])
         slowest_growing_industry_1y               = msa_industry_breakdown['industry_code'].iloc[0]
         slowest_growth_industry_1y                = msa_industry_breakdown['1 Year Employment Growth'].iloc[0]
-        slowest_growth_industry_1y                = "{:,.1f}%".format(abs(slowest_growth_industry_1y))
+        slowest_growth_industry_1y                = "{:,.1f}%".format(slowest_growth_industry_1y)
 
 
 
@@ -4011,17 +4012,18 @@ def MSAEmploymentGrowthLanguage(msa_industry_breakdown):
                 ' over the previous five years.'
                 ' Over the past year, ' +
                 employment_loss_1year_all_most_some + 
-                ' industries have lost employees.' +
-                ' The ' +
-                slowest_growing_industry_1y +
-                ' sector saw the largest decline in employees and remains '+
-                slowest_growth_industry_1y +
-                ' ' + 
-                'below Q' +
-                qcew_qtr +
-                ' ' +
-                str(int(qcew_year) - 1) +
-                ' levels.')
+                ' industries have lost employees.' 
+                # ' The ' +
+                # slowest_growing_industry_1y +
+                # ' sector saw the largest decline in employees and remains '+
+                # slowest_growth_industry_1y +
+                # ' ' + 
+                # 'below Q' +
+                # qcew_qtr +
+                # ' ' +
+                # str(int(qcew_year) - 1) +
+                # ' levels.'
+                )
     else:
         msa_emplopyment_growth_language = ''
 
