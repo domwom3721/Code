@@ -133,6 +133,7 @@ def DeclareAPIKeys():
     yelp_client_id                = 'NY9c0_9kvOU4wfzmkkruOQ'
     yelp_api_key                  = 'l1WjEgdgSMpU9PJtXEk0bLs4FJdsVLONqJLhbaA0gZlbFyEFUTTkxgRzBDc-_5234oLw1CLx-iWjr8w4nK_tZ_79qVIOv3yEMQ9aGcSS8xO1gkbfENCBKEl34COVYXYx'
     location_iq_api_key           = 'pk.8937271b8b15004065ca62552e7d06f7'
+    zoneomics_api_key             = 'd69b3eee92f8d3cec8c71893b340faa8cb52e1b8'
 
     yelp_api = YelpAPI(yelp_api_key)
     walkscore_api = WalkScoreAPI(api_key = walkscore_api_key)
