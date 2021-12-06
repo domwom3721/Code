@@ -574,7 +574,7 @@ def GetHousingValues(geographic_level,hood_or_comparison_area):
         return(household_value_data)
     except Exception as e:
         print(e, 'Problem getting housing value data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-        
+
 #Number of Housing Units based on number of units in building
 def GetNumberUnitsData(geographic_level,hood_or_comparison_area):
     print('Getting housing units by number of units data')
@@ -3447,27 +3447,29 @@ def GetUserInputs():
         hood_zip                        = input('Enter the 5 digit zip code for hood')
         
         #Process the zip code provided
-        hood_zip                        = str(hood_zip).replace('-','').strip()
+        hood_zip                            = str(hood_zip).replace('-','').strip()
         assert len(hood_zip) == 5
         
         #Get the state FIPS code (eg New York: 36)
-        zip_county_crosswalk_df         = pd.read_excel(os.path.join(data_location,'Census Area Codes','ZIP_COUNTY_092021.xlsx')) #read in crosswalk file
-        zip_county_crosswalk_df['ZIP']  = zip_county_crosswalk_df['ZIP'].astype(str)
-        zip_county_crosswalk_df['ZIP']  = zip_county_crosswalk_df['ZIP'].str.zfill(5)
-        zip_county_crosswalk_df         = zip_county_crosswalk_df.loc[zip_county_crosswalk_df['ZIP'] == hood_zip]                 #restrict to rows for zip code
-        
-        state_fips                      = str(zip_county_crosswalk_df['COUNTY'].iloc[-1])[0:2] #Get state fips from the county fips code (the county the zip code is in)
-        assert len(state_fips) == 2
+        zip_county_crosswalk_df            = pd.read_excel(os.path.join(data_location,'Census Area Codes','ZIP_COUNTY_092021.xlsx')) #read in crosswalk file
+        zip_county_crosswalk_df['ZIP']     = zip_county_crosswalk_df['ZIP'].astype(str)
+        zip_county_crosswalk_df['ZIP']     = zip_county_crosswalk_df['ZIP'].str.zfill(5)
+        zip_county_crosswalk_df['COUNTY']  = zip_county_crosswalk_df['COUNTY'].astype(str)
+        zip_county_crosswalk_df['COUNTY']  = zip_county_crosswalk_df['COUNTY'].str.zfill(5)
 
+        zip_county_crosswalk_df            = zip_county_crosswalk_df.loc[zip_county_crosswalk_df['ZIP'] == hood_zip]                 #restrict to rows for zip code
+        state_fips                         = str(zip_county_crosswalk_df['COUNTY'].iloc[-1])[0:2] #Get state fips from the county fips code (the county the zip code is in)
+        assert len(state_fips) == 2
+  
         #Get name of hood
-        neighborhood                    = c.sf1.state_zipcode(fields=['NAME'],state_fips=state_fips, zcta=hood_zip)[0]['NAME']
-        state_full_name                 = neighborhood.split(',')[1].strip()
-        neighborhood                    = neighborhood.split(',')[0].replace('ZCTA5','').strip().title() + ' (Zip Code)'
+        neighborhood                      = c.sf1.state_zipcode(fields=['NAME'],state_fips=state_fips, zcta=hood_zip)[0]['NAME']
+        state_full_name                   = neighborhood.split(',')[1].strip()
+        neighborhood                      = neighborhood.split(',')[0].replace('ZCTA5','').strip().title() + ' (Zip Code)'
     
         #Name of State
-        state                           = us.states.lookup(state_full_name) #convert the full state name to the 2 letter abbreviation
-        state                           = state.abbr
-        assert                          len(state) == 2
+        state                             = us.states.lookup(state_full_name) #convert the full state name to the 2 letter abbreviation
+        state                             = state.abbr
+        assert                            len(state) == 2
 
     elif neighborhood_level == 'c':      #When our neighborhood is a county eg Nassau County, New York
 
