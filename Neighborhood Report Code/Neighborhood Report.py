@@ -1607,6 +1607,25 @@ def LocationIQ(lat,lon,radius):
 
     return(response)
 
+#def Zoneomics(address,)
+    #Searches the Zoneomics API for screenshot of Local Zoning
+#    print('Getting Zoneomics Zoning Map')
+
+#    url = 'https://www.zoneomics.com/api/get_zone_screen_shot?address=address&api_key=api_key&map_zoom_level=17'
+
+#    data = {
+#    'key': zoneomics_api_key,
+#    'address': address
+#        }
+
+#try:
+#        response = requests.get(url, params=data).json()
+#    except Exception as e:
+#        print(e)
+#        response = [{}]
+
+
+
 #Main data function
 def GetData():
     #List of 5 Year American Community Survey Variables here: https://api.census.gov/data/2019/acs/acs5/variables.html
