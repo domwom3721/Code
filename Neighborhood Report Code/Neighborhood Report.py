@@ -158,7 +158,18 @@ def GetLatandLon():
         longitude   = -73.658980
 
     return([latitude,longitude]) 
+
+def FindZipCodeDictionary(zip_code_data_dictionary_list,zcta,state_fips):
+    #This function takes a list of dictionaries, where each zip code gets its own dictionary. Takes a zip code and state fips code and finds and returns just that dictionary.
+    #We need to use this, because the census api is causing an error that requires us to retrive data for all zip codes in the country
+    for zcta_dictionary in  zip_code_data_dictionary_list:
     
+        if zcta_dictionary['zip code tabulation area'] == zcta and zcta_dictionary['state'] == state_fips:
+            return(zcta_dictionary)
+        
+
+    print('Could not find dictionary for given zip code: ', zcta )
+            
 #Household Size
 def GetHouseholdSizeData(geographic_level,hood_or_comparison_area):
     print('Getting household size data')
@@ -399,8 +410,12 @@ def GetAgeData(geographic_level,hood_or_comparison_area):
                 elif hood_or_comparison_area == 'comparison area':
                     zcta = comparison_zip
             
-                male_age_data   = c.acs5.zipcode(fields=male_fields_list,zcta = zcta )[0]
-                female_age_data = c.acs5.zipcode(fields=female_fields_list,zcta = zcta  )[0]
+                male_age_data       = c.acs5.zipcode(fields = male_fields_list, zcta = '*')
+                male_age_data       = FindZipCodeDictionary(zip_code_data_dictionary_list =   male_age_data  , zcta = zcta, state_fips = state_fips )
+
+                female_age_data       = c.acs5.zipcode(fields = female_fields_list, zcta = '*')
+                female_age_data       = FindZipCodeDictionary(zip_code_data_dictionary_list =   female_age_data  , zcta = zcta, state_fips = state_fips )
+
             except Exception as e:
                 print(e, 'Problem getting age data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
                 return()
@@ -478,7 +493,7 @@ def GetHousingValues(geographic_level,hood_or_comparison_area):
             elif hood_or_comparison_area == 'comparison area':
                 place_fips = comparsion_place_fips
 
-            household_value_raw_data = c.acs5.state_place(fields=fields_list,state_fips=state_fips,place=place_fips)[0]
+            household_value_raw_data = c.acs5.state_place(fields = fields_list, state_fips = state_fips, place = place_fips)[0]
         except Exception as e:
             print(e, 'Problem getting housing value data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
             return()
@@ -521,7 +536,9 @@ def GetHousingValues(geographic_level,hood_or_comparison_area):
             elif hood_or_comparison_area == 'comparison area':
                 zcta =  comparison_zip
             
-            household_value_raw_data = c.acs5.zipcode(fields=fields_list,state_fips=state_fips,zcta=zcta,)[0]
+            household_value_raw_data       = c.acs5.zipcode(fields = fields_list, zcta = '*')
+            household_value_raw_data       = FindZipCodeDictionary(zip_code_data_dictionary_list =   household_value_raw_data  , zcta = zcta, state_fips = state_fips )
+            
         except Exception as e:
             print(e, 'Problem getting housing value data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
             return()
@@ -616,9 +633,13 @@ def GetNumberUnitsData(geographic_level,hood_or_comparison_area):
             elif hood_or_comparison_area == 'comparison area':
                 zcta = comparison_zip
         
-            owner_occupied_units_raw_data  = c.acs5.zipcode(fields = owner_occupied_fields_list,  zcta=zcta )[0]
-            renter_occupied_units_raw_data = c.acs5.zipcode(fields = renter_occupied_fields_list, zcta=zcta)[0]
-        
+            owner_occupied_units_raw_data       = c.acs5.zipcode(fields = owner_occupied_fields_list,  zcta = '*' )
+            owner_occupied_units_raw_data       = FindZipCodeDictionary(zip_code_data_dictionary_list =   owner_occupied_units_raw_data  , zcta = zcta, state_fips = state_fips )
+
+            renter_occupied_units_raw_data      = c.acs5.zipcode(fields = renter_occupied_fields_list, zcta = '*' )
+            renter_occupied_units_raw_data      = FindZipCodeDictionary(zip_code_data_dictionary_list =   renter_occupied_units_raw_data  , zcta = zcta, state_fips = state_fips )
+
+
         except Exception as e:
             print(e, 'Problem getting number units data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
             return()
@@ -727,7 +748,10 @@ def GetHouseholdIncomeValues(geographic_level,hood_or_comparison_area):
             elif hood_or_comparison_area == 'comparison area':
                 zcta = comparison_zip
                 
-            household_income_data = c.acs5.zipcode(fields=fields_list, zcta = zcta)[0]
+
+            household_income_data       = c.acs5.zipcode(fields = fields_list, zcta = '*')
+            household_income_data       = FindZipCodeDictionary(zip_code_data_dictionary_list =   household_income_data  , zcta = zcta, state_fips = state_fips )
+
         except Exception as e:
             print(e, 'Problem getting household income data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
             return()
@@ -828,11 +852,12 @@ def GetTopOccupationsData(geographic_level,hood_or_comparison_area):
             elif hood_or_comparison_area == 'comparison area':
                 zcta = comparison_zip
         
-            data = c.acs5.zipcode(fields=list(cateogries_dict.keys()),zcta= zcta)[0]
-            print(data)
+
+            data       = c.acs5.zipcode(fields = list(cateogries_dict.keys()), zcta = '*')
+            data       = FindZipCodeDictionary(zip_code_data_dictionary_list =   data  , zcta = zcta, state_fips = state_fips )
+            
             del data['state']
-            del data['county']
-            # del data['county subdivision']
+            del data['zip code tabulation area']
         
         except Exception as e:
             print(e, 'Problem getting top occupations data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
@@ -929,9 +954,10 @@ def GetHouseYearBuiltData(geographic_level,hood_or_comparison_area):
 
             elif hood_or_comparison_area == 'comparison area':
                 zcta = comparison_zip
-            
-            year_built_raw_data = c.acs5.zipcode(fields = fields_list, zcta = zcta)[0]
-        
+             
+            year_built_raw_data       = c.acs5.zipcode(fields = fields_list, zcta = '*')
+            year_built_raw_data       = FindZipCodeDictionary(zip_code_data_dictionary_list =   year_built_raw_data  , zcta = zcta, state_fips = state_fips )
+
         except Exception as e:
             print(e, 'Problem getting year built data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
             return()
@@ -1024,8 +1050,9 @@ def GetTravelTimeData(geographic_level,hood_or_comparison_area):
             elif hood_or_comparison_area == 'comparison area':
                 zcta = comparison_zip
             
-            travel_time_raw_data = c.acs5.zipcode(fields=fields_list,zcta=zcta)[0]
-        
+            travel_time_raw_data       = c.acs5.zipcode(fields = fields_list, zcta = '*')
+            travel_time_raw_data       = FindZipCodeDictionary(zip_code_data_dictionary_list =   travel_time_raw_data  , zcta = zcta, state_fips = state_fips )
+
         except Exception as e:
             print(e, 'Problem getting year built data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
             return()
@@ -1115,7 +1142,9 @@ def GetTravelMethodData(geographic_level,hood_or_comparison_area):
             elif hood_or_comparison_area == 'comparison area':
                 zcta = comparison_zip
             
-            neighborhood_method_to_work_distribution_raw   = c.acs5.zipcode(fields=fields_list, zcta=zcta)[0]
+            
+            neighborhood_method_to_work_distribution_raw       = c.acs5.zipcode(fields = fields_list, zcta = '*')
+            neighborhood_method_to_work_distribution_raw       = FindZipCodeDictionary(zip_code_data_dictionary_list =   neighborhood_method_to_work_distribution_raw  , zcta = zcta, state_fips = state_fips )
         
         except Exception as e:
             print(e, 'Problem getting travel method data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
@@ -1323,12 +1352,13 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
 #Non Census Sources
 def GetWikipediaPage():
     global page
-    try:
-        wikipedia_page_search_term    = (neighborhood + ',' + state)
-        page                          =  wikipedia.page(wikipedia_page_search_term)
-            
-    except Exception as e:
-        print(e)
+    if (neighborhood_level == 'place') or (neighborhood_level == 'county subdivision') or (neighborhood_level == 'county') or (neighborhood_level == 'custom'): #Don't bother looking for wikipedia page if zip code
+        try:
+            wikipedia_page_search_term    = (neighborhood + ',' + state)
+            page                          =  wikipedia.page(wikipedia_page_search_term)
+                
+        except Exception as e:
+            print(e)
 
 def GetWalkScore(lat,lon):
     print('Getting Walk Score')
@@ -1607,22 +1637,21 @@ def LocationIQ(lat,lon,radius):
 
     return(response)
 
-#def Zoneomics(address,)
+def Zoneomics(address):
     #Searches the Zoneomics API for screenshot of Local Zoning
-#    print('Getting Zoneomics Zoning Map')
+    print('Getting Zoneomics Zoning Map')
+    url = 'https://www.zoneomics.com/api/get_zone_screen_shot?address=address&api_key=api_key&map_zoom_level=17'
 
-#    url = 'https://www.zoneomics.com/api/get_zone_screen_shot?address=address&api_key=api_key&map_zoom_level=17'
+    #    data = {
+    #    'key': zoneomics_api_key,
+    #    'address': address
+    #        }
 
-#    data = {
-#    'key': zoneomics_api_key,
-#    'address': address
-#        }
-
-#try:
-#        response = requests.get(url, params=data).json()
-#    except Exception as e:
-#        print(e)
-#        response = [{}]
+    #     try:
+    #         response = requests.get(url, params=data).json()
+    #     except Exception as e:
+    #         print(e)
+    #         response = [{}]
 
 
 
@@ -1648,46 +1677,43 @@ def GetData():
     global google_data
     global location_iq_data
 
-    # location_iq_data = LocationIQ(lat = latitude, lon = longitude, radius=5000)
 
-    # neighborhood_household_size_distribution     = GetHouseholdSizeData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Neighborhood households by size
-    # neighborhood_tenure_distribution             = GetHousingTenureData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Tenure (owner occupied/renter)
-    # neighborhood_housing_value_data              = GetHousingValues(         geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Owner Occupied housing units by value
-    # neighborhood_number_units_data               = GetNumberUnitsData(       geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by units in building
-    # neighborhood_year_built_data                 = GetHouseYearBuiltData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by year structure built
-    # neighborhood_age_data                        = GetAgeData(               geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Population by age data
-    # neighborhood_household_income_data           = GetHouseholdIncomeValues( geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Households by household income data
-    # neighborhood_top_occupations_data            = GetTopOccupationsData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Top Employment Occupations
-    # neighborhood_time_to_work_distribution       = GetTravelTimeData(        geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Time to Work
-    # neighborhood_method_to_work_distribution     = GetTravelMethodData(      geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Mode to Work
+    neighborhood_household_size_distribution     = GetHouseholdSizeData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Neighborhood households by size
+    neighborhood_tenure_distribution             = GetHousingTenureData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Tenure (owner occupied/renter)
+    neighborhood_housing_value_data              = GetHousingValues(         geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Owner Occupied housing units by value
+    neighborhood_number_units_data               = GetNumberUnitsData(       geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by units in building
+    neighborhood_year_built_data                 = GetHouseYearBuiltData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by year structure built
+    neighborhood_method_to_work_distribution     = GetTravelMethodData(      geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Mode to Work
+    neighborhood_household_income_data           = GetHouseholdIncomeValues( geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Households by household income data
+    neighborhood_age_data                        = GetAgeData(               geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Population by age data
+    neighborhood_time_to_work_distribution       = GetTravelTimeData(        geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Time to Work
+    neighborhood_top_occupations_data            = GetTopOccupationsData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Top Employment Occupations
 
-    # comparison_household_size_distribution       = GetHouseholdSizeData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    # comparison_tenure_distribution               = GetHousingTenureData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    # comparison_housing_value_data                = GetHousingValues(        geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
-    # comparison_number_units_data                 = GetNumberUnitsData(      geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
-    # comparison_year_built_data                   = GetHouseYearBuiltData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    # comparison_age_data                          = GetAgeData(              geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    # comparison_household_income_data             = GetHouseholdIncomeValues(geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')   
-    # comparison_top_occupations_data              = GetTopOccupationsData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    # comparison_time_to_work_distribution         = GetTravelTimeData(       geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    comparison_household_size_distribution       = GetHouseholdSizeData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    comparison_tenure_distribution               = GetHousingTenureData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    comparison_housing_value_data                = GetHousingValues(        geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
+    comparison_number_units_data                 = GetNumberUnitsData(      geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
+    comparison_year_built_data                   = GetHouseYearBuiltData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    comparison_age_data                          = GetAgeData(              geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    comparison_household_income_data             = GetHouseholdIncomeValues(geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')   
+    comparison_top_occupations_data              = GetTopOccupationsData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    comparison_time_to_work_distribution         = GetTravelTimeData(       geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
     
-    # #Walk score
-    # walk_score_data                              = GetWalkScore(            lat = latitude, lon = longitude)
+    #Walk score
+    walk_score_data                              = GetWalkScore(            lat = latitude, lon = longitude                                                    )
+    location_iq_data                             = LocationIQ(              lat = latitude, lon = longitude, radius = 5000                                     )
+    # yelp_data                                  = GetYelpData(             lat = latitude, lon = longitude, radius = 30000                                    ) #radius in meters
+    #google_data                                 = GetGoogleAPIData(        lat = latitude, lon = longitude                                                    )
 
-    # #Yelp Data
-    # # yelp_data   =             GetYelpData(lat = latitude, lon  = longitude,radius=30000) #radius in meters
-    # # google_data =             GetGoogleAPIData(lat = latitude, lon = longitude) #radius in meters
-
-    # SearchGreatSchoolDotOrg()
+    SearchGreatSchoolDotOrg()
     
 
-   
 
-    # #Overview Table Data
-    # try:
-    #     overview_table_data = GetOverviewTable(hood_geographic_level = neighborhood_level ,comparison_geographic_level =comparison_level )
-    # except:
-    #     overview_table_data = [['problem with overview table'],['problem with overview table']]
+    #Overview Table Data
+    try:
+        overview_table_data = GetOverviewTable(hood_geographic_level = neighborhood_level ,comparison_geographic_level =comparison_level )
+    except:
+        overview_table_data = [['problem with overview table'],['problem with overview table']]
 
 #Graph Related Functions
 def SetGraphFormatVariables():
@@ -3414,7 +3440,8 @@ def GetUserInputs():
         neighborhood_level = 'zip'
         
         #Get input from user
-        hood_zip          = input('Enter the 5 digit zip code for hood')
+        # hood_zip          = input('Enter the 5 digit zip code for hood')
+        hood_zip          = str(11518)
         
         #Process the zip code provided
         hood_zip          = str(hood_zip).replace('-','').strip()
@@ -3500,8 +3527,9 @@ def GetUserInputs():
         comparison_level = 'place'
         
         #Get place FIPS code from user
-        fips                  = input('Enter the 7 digit Census Place FIPS Code for the comparison area')
-        
+        # fips                  = input('Enter the 7 digit Census Place FIPS Code for the comparison area')
+        fips                 = '36-22876'
+
         #Process FIPS code provided by user``
         fips                  = fips.replace('-','').strip()
         comparsion_place_fips = fips[2:]
@@ -3628,7 +3656,6 @@ def Main():
         coordinates = GetLatandLon()
         latitude    = coordinates[0] 
         longitude   = coordinates[1] 
-        
         todays_date = date.today()
         current_year = str(todays_date.year)
         SetGraphFormatVariables()
