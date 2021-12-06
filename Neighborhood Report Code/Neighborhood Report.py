@@ -11,6 +11,7 @@ from datetime import date
 from pprint import pprint
 from random import randrange
 from datetime import datetime
+from tkinter.constants import E
 
 import requests
 from requests.exceptions import HTTPError 
@@ -561,16 +562,19 @@ def GetHousingValues(geographic_level,hood_or_comparison_area):
 
     elif geographic_level == 'custom':
         pass
-
-    #Create an empty list and place the values from the dictionary inside of it
-    household_value_data = []
-    for field in fields_list:
-        household_value_data.append(household_value_raw_data[field])
-
-    household_value_data =ConvertListElementsToFractionOfTotal(household_value_data)
     
-    return(household_value_data)
+    try:
+        #Create an empty list and place the values from the dictionary inside of it
+        household_value_data = []
+        for field in fields_list:
+            household_value_data.append(household_value_raw_data[field])
 
+        household_value_data = ConvertListElementsToFractionOfTotal(household_value_data)
+        
+        return(household_value_data)
+    except Exception as e:
+        print(e, 'Problem getting housing value data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+        
 #Number of Housing Units based on number of units in building
 def GetNumberUnitsData(geographic_level,hood_or_comparison_area):
     print('Getting housing units by number of units data')
