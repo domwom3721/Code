@@ -1648,46 +1648,46 @@ def GetData():
     global google_data
     global location_iq_data
 
-    location_iq_data = LocationIQ(lat = latitude, lon = longitude, radius=5000)
+    # location_iq_data = LocationIQ(lat = latitude, lon = longitude, radius=5000)
 
-    neighborhood_household_size_distribution     = GetHouseholdSizeData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Neighborhood households by size
-    neighborhood_tenure_distribution             = GetHousingTenureData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Tenure (owner occupied/renter)
-    neighborhood_housing_value_data              = GetHousingValues(         geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Owner Occupied housing units by value
-    neighborhood_number_units_data               = GetNumberUnitsData(       geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by units in building
-    neighborhood_year_built_data                 = GetHouseYearBuiltData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by year structure built
-    neighborhood_age_data                        = GetAgeData(               geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Population by age data
-    neighborhood_household_income_data           = GetHouseholdIncomeValues( geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Households by household income data
-    neighborhood_top_occupations_data            = GetTopOccupationsData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Top Employment Occupations
-    neighborhood_time_to_work_distribution       = GetTravelTimeData(        geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Time to Work
-    neighborhood_method_to_work_distribution     = GetTravelMethodData(      geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Mode to Work
+    # neighborhood_household_size_distribution     = GetHouseholdSizeData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Neighborhood households by size
+    # neighborhood_tenure_distribution             = GetHousingTenureData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Tenure (owner occupied/renter)
+    # neighborhood_housing_value_data              = GetHousingValues(         geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Owner Occupied housing units by value
+    # neighborhood_number_units_data               = GetNumberUnitsData(       geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by units in building
+    # neighborhood_year_built_data                 = GetHouseYearBuiltData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by year structure built
+    # neighborhood_age_data                        = GetAgeData(               geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Population by age data
+    # neighborhood_household_income_data           = GetHouseholdIncomeValues( geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Households by household income data
+    # neighborhood_top_occupations_data            = GetTopOccupationsData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Top Employment Occupations
+    # neighborhood_time_to_work_distribution       = GetTravelTimeData(        geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Time to Work
+    # neighborhood_method_to_work_distribution     = GetTravelMethodData(      geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Mode to Work
 
-    comparison_household_size_distribution       = GetHouseholdSizeData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    comparison_tenure_distribution               = GetHousingTenureData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    comparison_housing_value_data                = GetHousingValues(        geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
-    comparison_number_units_data                 = GetNumberUnitsData(      geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
-    comparison_year_built_data                   = GetHouseYearBuiltData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    comparison_age_data                          = GetAgeData(              geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    comparison_household_income_data             = GetHouseholdIncomeValues(geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')   
-    comparison_top_occupations_data              = GetTopOccupationsData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    comparison_time_to_work_distribution         = GetTravelTimeData(       geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    # comparison_household_size_distribution       = GetHouseholdSizeData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    # comparison_tenure_distribution               = GetHousingTenureData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    # comparison_housing_value_data                = GetHousingValues(        geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
+    # comparison_number_units_data                 = GetNumberUnitsData(      geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
+    # comparison_year_built_data                   = GetHouseYearBuiltData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    # comparison_age_data                          = GetAgeData(              geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    # comparison_household_income_data             = GetHouseholdIncomeValues(geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')   
+    # comparison_top_occupations_data              = GetTopOccupationsData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    # comparison_time_to_work_distribution         = GetTravelTimeData(       geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
     
-    #Walk score
-    walk_score_data                              = GetWalkScore(            lat = latitude, lon = longitude)
+    # #Walk score
+    # walk_score_data                              = GetWalkScore(            lat = latitude, lon = longitude)
 
-    #Yelp Data
-    # yelp_data   =             GetYelpData(lat = latitude, lon  = longitude,radius=30000) #radius in meters
-    # google_data =             GetGoogleAPIData(lat = latitude, lon = longitude) #radius in meters
+    # #Yelp Data
+    # # yelp_data   =             GetYelpData(lat = latitude, lon  = longitude,radius=30000) #radius in meters
+    # # google_data =             GetGoogleAPIData(lat = latitude, lon = longitude) #radius in meters
 
-    SearchGreatSchoolDotOrg()
+    # SearchGreatSchoolDotOrg()
     
 
    
 
-    #Overview Table Data
-    try:
-        overview_table_data = GetOverviewTable(hood_geographic_level = neighborhood_level ,comparison_geographic_level =comparison_level )
-    except:
-        overview_table_data = [['problem with overview table'],['problem with overview table']]
+    # #Overview Table Data
+    # try:
+    #     overview_table_data = GetOverviewTable(hood_geographic_level = neighborhood_level ,comparison_geographic_level =comparison_level )
+    # except:
+    #     overview_table_data = [['problem with overview table'],['problem with overview table']]
 
 #Graph Related Functions
 def SetGraphFormatVariables():
@@ -3417,11 +3417,16 @@ def GetUserInputs():
         hood_zip          = input('Enter the 5 digit zip code for hood')
         
         #Process the zip code provided
-        hood_zip         = hood_zip.replace('-','').strip()
+        hood_zip          = str(hood_zip).replace('-','').strip()
         assert len(hood_zip) == 5
         
         #Get the state FIPS code (eg New York: 36)
-        state_fips       = input('Enter the 2 digit FIPS code for state hood zip code is in: ')
+        zip_county_crosswalk_df         = pd.read_excel(os.path.join(data_location,'Census Area Codes','ZIP_COUNTY_092021.xlsx')) #read in crosswalk file
+        zip_county_crosswalk_df['ZIP']  = zip_county_crosswalk_df['ZIP'].astype(str)
+        zip_county_crosswalk_df['ZIP']  = zip_county_crosswalk_df['ZIP'].str.zfill(5)
+        zip_county_crosswalk_df         = zip_county_crosswalk_df.loc[zip_county_crosswalk_df['ZIP'] == hood_zip]                 #restrict to rows for zip code
+        
+        state_fips                       = str(zip_county_crosswalk_df['COUNTY'].iloc[-1])[0:2] #Get state fips from the county fips code (the county the zip code is in)
         assert len(state_fips) == 2
 
         #Get name of hood
@@ -3630,10 +3635,10 @@ def Main():
         CreateDirectory()
         GetWikipediaPage()
         GetData()
-        CreateGraphs()
-        CreateLanguage()
-        WriteReport()
-        CleanUpPNGs()
+        # CreateGraphs()
+        # CreateLanguage()
+        # WriteReport()
+        # CleanUpPNGs()
     
     #Crawl through directory and create CSV with all current neighborhood report documents
     CreateDirectoryCSV()
