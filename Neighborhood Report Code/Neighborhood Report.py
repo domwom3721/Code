@@ -150,7 +150,12 @@ def GetLatandLon():
 
         # Look up lat and lon of area with geocoding using google maps api
         gmaps          = googlemaps.Client(key=google_maps_api_key) 
-        geocode_result = gmaps.geocode(address=(neighborhood + ',' + state),)
+        
+        if neighborhood_level == 'custom:':
+            geocode_result = gmaps.geocode(address=(neighborhood + ', ' + comparison_area + ',' + state),)
+        else:
+            geocode_result = gmaps.geocode(address=(neighborhood + ',' + state),)
+        
         latitude       = geocode_result[0]['geometry']['location']['lat']
         longitude      = geocode_result[0]['geometry']['location']['lng']
     
@@ -1356,13 +1361,20 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
 #Non Census Sources
 def GetWikipediaPage():
     global page
-    if (neighborhood_level == 'place') or (neighborhood_level == 'county subdivision') or (neighborhood_level == 'county') or (neighborhood_level == 'custom'): #Don't bother looking for wikipedia page if zip code
+    if (neighborhood_level == 'place') or (neighborhood_level == 'county subdivision') or (neighborhood_level == 'county'): #Don't bother looking for wikipedia page if zip code
         try:
-            wikipedia_page_search_term    = (neighborhood + ',' + state)
+            wikipedia_page_search_term    = (neighborhood + ', ' + state)
             page                          =  wikipedia.page(wikipedia_page_search_term)
                 
         except Exception as e:
-            print(e)
+            print(e,': problem getting wikipedia page')
+            
+    elif (neighborhood_level == 'custom'):
+        try:
+            wikipedia_page_search_term    = (neighborhood + ', ' + comparison_area +', ' + state)
+            page                          =  wikipedia.page(wikipedia_page_search_term)        
+        except Exception as e:
+            print(e,': problem getting wikipedia page')
 
 def GetWalkScore(lat,lon):
     print('Getting Walk Score')
@@ -3497,15 +3509,9 @@ def GetUserInputs():
 
     elif neighborhood_level == 'custom': #When our neighborhood is a neighboorhood within a city (eg: Financial District, New York City)
 
-
         #Get name of hood
         neighborhood      = input('Enter the name of the custom neighborhood')
         
-
-        # #Name of State
-        # state = input('Enter the 2 letter state code of the state the custom neighborhood is in')
-        # assert len(state) == 2
-    
     #Get user input on comparison area
     if comparison_level == 'c':          #When our comparison area is a county eg Nassau County, New York
         
@@ -3662,10 +3668,10 @@ def Main():
         CreateDirectory()
         GetWikipediaPage()
         GetData()
-        CreateGraphs()
-        CreateLanguage()
-        WriteReport()
-        CleanUpPNGs()
+        # CreateGraphs()
+        # CreateLanguage()
+        # WriteReport()
+        # CleanUpPNGs()
     
     #Crawl through directory and create CSV with all current neighborhood report documents
     CreateDirectoryCSV()
