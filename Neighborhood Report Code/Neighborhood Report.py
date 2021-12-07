@@ -12,6 +12,7 @@ from pprint import pprint
 from random import randrange
 from datetime import datetime
 from tkinter.constants import E
+import census_area
 
 import requests
 from requests.exceptions import HTTPError 
@@ -122,6 +123,21 @@ def ConvertListElementsToFractionOfTotal(raw_list):
     
     return(converted_list)
 
+def AggregateAcrossDictionaries(neighborhood_tracts_data, fields_list):
+    aggregate_dict = {} 
+    for field in fields_list:
+        total_value = 0
+
+        #Add up all the values from each dictionary
+        for d in neighborhood_tracts_data:
+            value = d[field]
+            total_value = total_value + value
+        
+        #Add the current field to the new aggregate_dict
+        aggregate_dict[field] = total_value
+    
+    return(aggregate_dict)
+
 #Data Gathering Related Functions
 def DeclareAPIKeys():
     global census_api_key,walkscore_api_key,google_maps_api_key,yelp_api_key,yelp_api,yelp_client_id,location_iq_api_key
@@ -164,6 +180,31 @@ def GetLatandLon():
         longitude   = -73.658980
 
     return([latitude,longitude]) 
+
+def GetNeighborhoodShape():
+   
+    # Method 1: Pull geojson from file
+    # Open file that contains a geojson file with different neighborhood boundries
+    with open(os.path.join(data_location,'Neighborhood Shapes','SF Find Neighborhoods.geojson')) as infile:
+        my_shape_geojson = json.load(infile)
+
+        #Select the custom shape
+        neighborhood_shape = my_shape_geojson['features'][2]['geometry']
+
+
+
+    # #Method 2: Get bounds from google maps API
+    # gmaps          = googlemaps.Client(key=google_maps_api_key) 
+    
+    # if neighborhood_level == 'custom:':
+    #     geocode_result = gmaps.geocode(address=(neighborhood + ', ' + comparison_area + ',' + state),)
+    # else:
+    #     geocode_result = gmaps.geocode(address=(neighborhood + ',' + state),)
+    # neighborhood_shape       = geocode_result[0]['geometry']['bounds']
+    
+    
+    
+    return(neighborhood_shape) 
 
 def FindZipCodeDictionary(zip_code_data_dictionary_list,zcta,state_fips):
     #This function takes a list of dictionaries, where each zip code gets its own dictionary. Takes a zip code and state fips code and finds and returns just that dictionary.
@@ -262,7 +303,22 @@ def GetHouseholdSizeData(geographic_level,hood_or_comparison_area):
             return()
 
     elif geographic_level == 'custom':
-        pass
+
+        #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
+        neighborhood_tracts_data = []
+
+        #Fetch census data for all relevant census tracts within the neighborhood
+        raw_census_data = c_area.sf1.geo_tract(fields_list, neighborhood_shape)
+        
+        for tract_geojson, tract_data, tract_proportion in raw_census_data:
+            neighborhood_tracts_data.append((tract_data))
+
+        #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
+        neighborhood_household_size_distribution_raw = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = fields_list )
+    
+
+
+
 
 
     #General data manipulation (same for all geographic levels)
@@ -343,7 +399,18 @@ def GetHousingTenureData(geographic_level,hood_or_comparison_area):
         neighborhood_tenure_distribution_raw    = c.sf1.state_county_tract(fields=fields_list,state_fips=state_fips, county_fips=county_fips, tract=tract)[0]
 
     elif geographic_level == 'custom':
-        pass
+        
+        #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
+        neighborhood_tracts_data = []
+
+        #Fetch census data for all relevant census tracts within the neighborhood
+        raw_census_data = c_area.sf1.geo_tract(fields_list, neighborhood_shape)
+        
+        for tract_geojson, tract_data, tract_proportion in raw_census_data:
+            neighborhood_tracts_data.append((tract_data))
+
+        #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
+        neighborhood_tenure_distribution_raw = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = fields_list )
 
 
     neighborhood_tenure_distribution = []
@@ -444,9 +511,27 @@ def GetAgeData(geographic_level,hood_or_comparison_area):
             return()
         
     elif geographic_level == 'custom':
-        pass
+        
+        #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
+        neighborhood_male_tracts_data   = []
+        neighborhood_female_tracts_data = []
 
-    
+        #Fetch census data for all relevant census tracts within the neighborhood
+        raw_male_census_data   = c_area.acs5.geo_tract(male_fields_list, neighborhood_shape)
+        raw_female_census_data = c_area.acs5.geo_tract(female_fields_list, neighborhood_shape)
+        
+
+        for tract_geojson, tract_data, tract_proportion in raw_male_census_data:
+            neighborhood_male_tracts_data.append((tract_data))
+        
+        for tract_geojson, tract_data, tract_proportion in raw_female_census_data:
+            neighborhood_female_tracts_data.append((tract_data))
+
+        #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
+        male_age_data   = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_male_tracts_data, fields_list   = male_fields_list )
+        female_age_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_female_tracts_data, fields_list = female_fields_list )
+
+
 
     #Create an empty list and place the age values from the dictionary inside of it
     male_age_breakdown = []
@@ -566,7 +651,17 @@ def GetHousingValues(geographic_level,hood_or_comparison_area):
             return()
 
     elif geographic_level == 'custom':
-        pass
+        #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
+        neighborhood_tracts_data = []
+
+        #Fetch census data for all relevant census tracts within the neighborhood
+        raw_census_data = c_area.acs5.geo_tract(fields_list, neighborhood_shape)
+        
+        for tract_geojson, tract_data, tract_proportion in raw_census_data:
+            neighborhood_tracts_data.append((tract_data))
+
+        #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
+        household_value_raw_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = fields_list )
     
     try:
         #Create an empty list and place the values from the dictionary inside of it
@@ -671,7 +766,24 @@ def GetNumberUnitsData(geographic_level,hood_or_comparison_area):
             return()
 
     elif geographic_level == 'custom':
-        pass
+        #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
+        neighborhood_oo_tracts_data   = []
+        neighborhood_ro_tracts_data = []
+
+        #Fetch census data for all relevant census tracts within the neighborhood
+        raw_oo_census_data   = c_area.acs5.geo_tract(owner_occupied_fields_list, neighborhood_shape)
+        raw_ro_census_data = c_area.acs5.geo_tract(renter_occupied_fields_list, neighborhood_shape)
+        
+
+        for tract_geojson, tract_data, tract_proportion in raw_oo_census_data:
+            neighborhood_oo_tracts_data.append((tract_data))
+        
+        for tract_geojson, tract_data, tract_proportion in raw_ro_census_data:
+            neighborhood_ro_tracts_data.append((tract_data))
+
+        #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
+        owner_occupied_units_raw_data   = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_oo_tracts_data, fields_list   = owner_occupied_fields_list )
+        renter_occupied_units_raw_data  = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_ro_tracts_data, fields_list = renter_occupied_fields_list )
 
     
     
@@ -782,7 +894,20 @@ def GetHouseholdIncomeValues(geographic_level,hood_or_comparison_area):
             return()
 
     elif geographic_level == 'custom':
-        pass
+        #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
+        neighborhood_tracts_data = []
+
+        #Fetch census data for all relevant census tracts within the neighborhood
+        raw_census_data = c_area.acs5.geo_tract(fields_list, neighborhood_shape)
+        
+        for tract_geojson, tract_data, tract_proportion in raw_census_data:
+            neighborhood_tracts_data.append((tract_data))
+
+        #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
+        household_income_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = fields_list )
+
+
+
 
     #Create an empty list and place the values from the dictionary inside of it
     household_income_breakdown = []
@@ -893,8 +1018,23 @@ def GetTopOccupationsData(geographic_level,hood_or_comparison_area):
             return()
 
     elif geographic_level == 'custom':
-        pass
+        
+        #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
+        neighborhood_tracts_data = []
 
+        #Fetch census data for all relevant census tracts within the neighborhood
+        raw_census_data = c_area.acs5.geo_tract(list(cateogries_dict.keys()), neighborhood_shape)
+        
+        for tract_geojson, tract_data, tract_proportion in raw_census_data:
+            neighborhood_tracts_data.append((tract_data))
+
+        #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
+        data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = cateogries_dict.keys() )
+        print(data)
+
+
+
+    
     data = dict((cateogries_dict[key], value) for (key, value) in data.items())
     data = {k: v for k, v in sorted(data.items(), key=lambda item: item[1])}
 
@@ -988,7 +1128,17 @@ def GetHouseYearBuiltData(geographic_level,hood_or_comparison_area):
             return()
 
     elif geographic_level == 'custom':
-        pass
+        #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
+        neighborhood_tracts_data = []
+
+        #Fetch census data for all relevant census tracts within the neighborhood
+        raw_census_data = c_area.acs5.geo_tract(fields_list, neighborhood_shape)
+        
+        for tract_geojson, tract_data, tract_proportion in raw_census_data:
+            neighborhood_tracts_data.append((tract_data))
+
+        #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
+        year_built_raw_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = fields_list )
 
 
     #Create an empty list and place the values from the dictionary inside of it
@@ -1082,7 +1232,21 @@ def GetTravelTimeData(geographic_level,hood_or_comparison_area):
             return()
 
     elif geographic_level == 'custom':
-        pass
+        #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
+        neighborhood_tracts_data = []
+
+        #Fetch census data for all relevant census tracts within the neighborhood
+        raw_census_data = c_area.acs5.geo_tract(fields_list, neighborhood_shape)
+        
+        for tract_geojson, tract_data, tract_proportion in raw_census_data:
+            neighborhood_tracts_data.append((tract_data))
+
+        #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
+        travel_time_raw_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = fields_list )
+
+
+
+
 
     #Create an empty list and place the values from the dictionary inside of it
     travel_time_data = []
@@ -1176,7 +1340,17 @@ def GetTravelMethodData(geographic_level,hood_or_comparison_area):
             return()
 
     elif geographic_level == 'custom':
-        pass
+        #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
+        neighborhood_tracts_data = []
+
+        #Fetch census data for all relevant census tracts within the neighborhood
+        raw_census_data = c_area.acs5.geo_tract(fields_list, neighborhood_shape)
+        
+        for tract_geojson, tract_data, tract_proportion in raw_census_data:
+            neighborhood_tracts_data.append((tract_data))
+
+        #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
+        neighborhood_method_to_work_distribution_raw = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = fields_list )
 
     neighborhood_method_to_work_distribution = []
     for field in fields_list:
@@ -1357,7 +1531,6 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
               ])
     
 
-
 #Non Census Sources
 def GetWikipediaPage():
     global page
@@ -1533,7 +1706,15 @@ def SearchGreatSchoolDotOrg():
     if os.path.exists(os.path.join(hood_folder_map,'education_map.png')): #If we already have a map for this area skip it 
         return()
    
+    
+
     try:
+
+        if neighborhood_level == 'custom':
+            search_term = (neighborhood + ', ' + comparison_area)
+        else:
+            search_term = (neighborhood + ', ' + state)
+
         #Search https://www.greatschools.org/ for the area
         options = webdriver.ChromeOptions()
         options.add_argument("--start-maximized")
@@ -1542,7 +1723,7 @@ def SearchGreatSchoolDotOrg():
         
         #Write hood name in box
         Place = browser.find_element_by_class_name("search_form_field")
-        Place.send_keys((neighborhood + ', ' + state))
+        Place.send_keys(search_term)
         time.sleep(1.5)
         
         #Submit hood name for search
@@ -1670,7 +1851,6 @@ def Zoneomics(address):
     #         response = [{}]
 
 
-
 #Main data function
 def GetData():
     #List of 5 Year American Community Survey Variables here: https://api.census.gov/data/2019/acs/acs5/variables.html
@@ -1718,8 +1898,9 @@ def GetData():
     #Walk score
     walk_score_data                              = GetWalkScore(            lat = latitude, lon = longitude                                                    )
     location_iq_data                             = LocationIQ(              lat = latitude, lon = longitude, radius = 5000                                     )
-    # yelp_data                                  = GetYelpData(             lat = latitude, lon = longitude, radius = 30000                                    ) #radius in meters
-    #google_data                                 = GetGoogleAPIData(        lat = latitude, lon = longitude                                                    )
+    
+    yelp_data                                  = GetYelpData(             lat = latitude, lon = longitude, radius = 30000                                    ) #radius in meters
+    google_data                                 = GetGoogleAPIData(        lat = latitude, lon = longitude                                                    )
 
     SearchGreatSchoolDotOrg()
     
@@ -1727,7 +1908,7 @@ def GetData():
 
     #Overview Table Data
     try:
-        overview_table_data = GetOverviewTable(hood_geographic_level = neighborhood_level ,comparison_geographic_level =comparison_level )
+        overview_table_data = GetOverviewTable(hood_geographic_level = neighborhood_level ,comparison_geographic_level = comparison_level )
     except:
         overview_table_data = [['problem with overview table'],['problem with overview table']]
 
@@ -3324,42 +3505,45 @@ def CreateDirectoryCSV():
 def DecideIfWritingReport():
     global report_creation
     if testing_mode == False:
-        report_creation = input('Create new report? y/n')
+        # report_creation = input('Create new report? y/n')
+        report_creation = 'y'
+
     else:
         report_creation = 'y'
 
 def UserSelectsNeighborhoodLevel():
     
-    # Get Input from User
-    allowable_area_levels       = ['p','c','sd','t','custom','z']
+    # # Get Input from User
+    # allowable_area_levels       = ['p','c','sd','t','custom','z']
 
-    #Ask user for info on subject area
-    while True:
-        if testing_mode == False:
-            neighborhood_level = input('What is the geographic level of the neighborhood? (p = place,sd = subdivision, c = county,t = tract,custom = custom, z = zip code)')
-        else:
-            neighborhood_level   =  'p'
+    # #Ask user for info on subject area
+    # while True:
+    #     if testing_mode == False:
+    #         neighborhood_level = input('What is the geographic level of the neighborhood? (p = place,sd = subdivision, c = county,t = tract,custom = custom, z = zip code)')
+    #     else:
+    #         neighborhood_level   =  'p'
         
-        if neighborhood_level not in allowable_area_levels:
-            print('Not a supported geographic level for neighborhood area')
-            continue
-        else:
-            break
+    #     if neighborhood_level not in allowable_area_levels:
+    #         print('Not a supported geographic level for neighborhood area')
+    #         continue
+    #     else:
+    #         break
     
-    #Ask user for info on comparison area
-    while True:
-        if testing_mode == False:
-            comparison_level   = input('What is the geographic level of the comparison area? (p = place,sd = subdivision, c = county,t = tract,custom = custom, z = zip code)')
-        else:
-            comparison_level     = 'c'
+    # #Ask user for info on comparison area
+    # while True:
+    #     if testing_mode == False:
+    #         comparison_level   = input('What is the geographic level of the comparison area? (p = place,sd = subdivision, c = county,t = tract,custom = custom, z = zip code)')
+    #     else:
+    #         comparison_level     = 'c'
         
-        if comparison_level not in allowable_area_levels:
-            print('Not a supported geographic level for comparsion area')
-            continue
-        else:
-            break
+    #     if comparison_level not in allowable_area_levels:
+    #         print('Not a supported geographic level for comparsion area')
+    #         continue
+    #     else:
+    #         break
     
-    return([neighborhood_level,comparison_level])
+    # return([neighborhood_level,comparison_level])
+    return(['custom','p'])
 
 def GetUserInputs():
     
@@ -3510,7 +3694,8 @@ def GetUserInputs():
     elif neighborhood_level == 'custom': #When our neighborhood is a neighboorhood within a city (eg: Financial District, New York City)
 
         #Get name of hood
-        neighborhood      = input('Enter the name of the custom neighborhood')
+        # neighborhood      = input('Enter the name of the custom neighborhood')
+        neighborhood      = 'SoMa'
         
     #Get user input on comparison area
     if comparison_level == 'c':          #When our comparison area is a county eg Nassau County, New York
@@ -3536,7 +3721,8 @@ def GetUserInputs():
         
         #Get place FIPS code from user
         comparison_level      = 'place'
-        fips                  = input('Enter the 7 digit Census Place FIPS Code for the comparison area')
+        # fips                  = input('Enter the 7 digit Census Place FIPS Code for the comparison area')
+        fips                  = '06-67000'
 
         #Process FIPS code provided by user``
         fips                  = fips.replace('-','').strip()
@@ -3658,20 +3844,24 @@ def Main():
         global latitude
         global longitude
         global current_year
-
+        global neighborhood_shape
         coordinates = GetLatandLon()
         latitude    = coordinates[0] 
-        longitude   = coordinates[1] 
+        longitude   = coordinates[1]
+
+        if neighborhood_level == 'custom':
+            neighborhood_shape = GetNeighborhoodShape()
+
         todays_date = date.today()
         current_year = str(todays_date.year)
         SetGraphFormatVariables()
         CreateDirectory()
         GetWikipediaPage()
         GetData()
-        # CreateGraphs()
-        # CreateLanguage()
-        # WriteReport()
-        # CleanUpPNGs()
+        CreateGraphs()
+        CreateLanguage()
+        WriteReport()
+        CleanUpPNGs()
     
     #Crawl through directory and create CSV with all current neighborhood report documents
     CreateDirectoryCSV()
