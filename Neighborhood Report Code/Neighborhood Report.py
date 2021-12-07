@@ -90,9 +90,9 @@ def CreateDirectory():
 
     if neighborhood_level == 'custom':
         city_folder =  os.path.join(main_output_location,state,comparison_area)
-        if os.path.exists(city_folder):
-            pass 
-        else:
+        if os.path.exists(state_folder) == True:
+               os.mkdir(state_folder)  
+        if os.path.exists(city_folder) == False:
             os.mkdir(city_folder) 
 
         hood_folder              = os.path.join(main_output_location,state,comparison_area,neighborhood)
