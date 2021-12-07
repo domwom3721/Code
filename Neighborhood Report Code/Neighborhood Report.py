@@ -89,9 +89,10 @@ def CreateDirectory():
     state_folder             = os.path.join(main_output_location,state)
 
     if neighborhood_level == 'custom':
-        city_folder =  os.path.join(main_output_location,state,comparison_area)
-        if os.path.exists(state_folder) == True:
+        if os.path.exists(state_folder) == False:
                os.mkdir(state_folder)  
+
+        city_folder =  os.path.join(main_output_location,state,comparison_area)
         if os.path.exists(city_folder) == False:
             os.mkdir(city_folder) 
 
@@ -202,7 +203,10 @@ def GetNeighborhoodShape():
     #     geocode_result = gmaps.geocode(address=(neighborhood + ',' + state),)
     # neighborhood_shape       = geocode_result[0]['geometry']['bounds']
     
-    
+
+    # Look up an address with reverse geocoding
+    # reverse_geocode_result = gmaps.reverse_geocode((lat,lon))
+    # pprint(reverse_geocode_result)
     
     return(neighborhood_shape) 
 
@@ -1408,13 +1412,25 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         pass
 
     elif hood_geographic_level == 'custom':
-        # _2010_hood_pop = 
-        # _2010_hood_hh = 
-
-        # _2020_hood_pop = 
-        # _2020_hood_hh = 
         pass
+        # _2010_hood_pop = c.sf1.state_county_tract(fields=total_pop_field, state_fips = state_fips,county_fips=hood_county_fips,tract=hood_tract)[0][total_pop_field]
+        # _2010_hood_hh  = c.sf1.state_county_tract(fields=total_households_field, state_fips = state_fips,county_fips=hood_county_fips,tract=hood_tract)[0][total_households_field]
 
+        # _2020_hood_pop = c.sf1.state_county_tract(fields=total_pop_field, state_fips = state_fips,county_fips=hood_county_fips,tract=hood_tract)[0][total_pop_field]
+        # _2020_hood_hh  = c.sf1.state_county_tract(fields=total_households_field, state_fips = state_fips,county_fips=hood_county_fips,tract=hood_tract)[0][total_households_field]
+        
+
+        # #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
+        # neighborhood_tracts_data = []
+
+        # #Fetch census data for all relevant census tracts within the neighborhood
+        # raw_census_data = c_area.acs5.geo_tract(fields_list, neighborhood_shape)
+        
+        # for tract_geojson, tract_data, tract_proportion in raw_census_data:
+        #     neighborhood_tracts_data.append((tract_data))
+
+        # #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
+        # travel_time_raw_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = fields_list )
 
 
     
@@ -1426,18 +1442,12 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         _2020_comparison_pop = c.sf1.state_place(fields=total_pop_field,state_fips=state_fips,place=comparsion_place_fips)[0][total_pop_field]
         _2020_comparison_hh = c.sf1.state_place(fields=total_households_field,state_fips=state_fips,place=comparsion_place_fips)[0][total_households_field]
 
-
-        
-    
     elif comparison_geographic_level == 'county':
         _2010_comparison_pop = c.sf1.state_county(fields=total_pop_field,state_fips=state_fips,county_fips=comparison_county_fips)[0][total_pop_field]
         _2010_comparison_hh  = c.sf1.state_county(fields=total_households_field,state_fips=state_fips,county_fips=comparison_county_fips)[0][total_households_field]
 
         _2020_comparison_pop = c.sf1.state_county(fields=total_pop_field,state_fips=state_fips,county_fips=comparison_county_fips)[0][total_pop_field]
         _2020_comparison_hh  = c.sf1.state_county(fields=total_households_field,state_fips=state_fips,county_fips=comparison_county_fips)[0][total_households_field]
-
-
-        
 
     elif comparison_geographic_level == 'county subdivision':
         _2010_comparison_pop = c.sf1.state_county_subdivision(fields=total_pop_field,state_fips=state_fips,county_fips=comparison_county_fips,subdiv_fips=comparison_suvdiv_fips)[0][total_pop_field]
@@ -1446,9 +1456,6 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         _2020_comparison_pop = c.sf1.state_county_subdivision(fields=total_pop_field,state_fips=state_fips,county_fips=comparison_county_fips,subdiv_fips=comparison_suvdiv_fips)[0][total_pop_field]
         _2020_comparison_hh  = c.sf1.state_county_subdivision(fields=total_households_field,state_fips=state_fips,county_fips=comparison_county_fips,subdiv_fips=comparison_suvdiv_fips)[0][total_households_field]
         
-        
-        
-
     elif comparison_geographic_level == 'zip':
         _2010_comparison_pop = c.sf1.state_zipcode(fields=total_pop_field,state_fips=state_fips,zcta = comparison_zip)[0][total_pop_field]
         _2010_comparison_hh  = c.sf1.state_zipcode(fields=total_households_field,state_fips=state_fips,zcta=comparison_zip)[0][total_households_field]
@@ -1463,8 +1470,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
 
          #FIX
         _2020_comparison_pop = c.sf1.state_county_tract(fields=total_pop_field, state_fips = state_fips,county_fips = comparison_county_fips,tract=comparison_tract)[0][total_pop_field]
-        _2020_comparison_hh = c.sf1.state_county_tract(fields=total_households_field, state_fips = state_fips,county_fips = comparison_county_fips,tract=comparison_tract)[0][total_households_field]
-        
+        _2020_comparison_hh = c.sf1.state_county_tract(fields=total_households_field, state_fips = state_fips,county_fips = comparison_county_fips,tract=comparison_tract)[0][total_households_field]        
 
     elif comparison_geographic_level == 'custom':
         pass
@@ -1624,13 +1630,6 @@ def GetYelpData(lat,lon,radius):
     # number_restaurant_search_results = restaurants_response['total']
     # print('There are ' + str(number_restaurant_search_results) + ' restaurants within ' + str(radius) + ' meters of the subjet property based on a search of Yelp.com')
     
-def GetGoogleAPIData(lat,lon):
-    gmaps = googlemaps.Client(key=google_maps_api_key) 
-
-    # Look up an address with reverse geocoding
-    reverse_geocode_result = gmaps.reverse_geocode((lat,lon))
-    pprint(reverse_geocode_result)
-
 def FindNearestAirport(lat,lon):
     
     #Specify the file path to the airports shape file
@@ -1898,9 +1897,7 @@ def GetData():
     #Walk score
     walk_score_data                              = GetWalkScore(            lat = latitude, lon = longitude                                                    )
     location_iq_data                             = LocationIQ(              lat = latitude, lon = longitude, radius = 5000                                     )
-    
-    yelp_data                                  = GetYelpData(             lat = latitude, lon = longitude, radius = 30000                                    ) #radius in meters
-    google_data                                 = GetGoogleAPIData(        lat = latitude, lon = longitude                                                    )
+    yelp_data                                    = GetYelpData(             lat = latitude, lon = longitude, radius = 30000                                    ) #radius in meters
 
     SearchGreatSchoolDotOrg()
     
@@ -2976,8 +2973,12 @@ def AddMap(document):
             
             #Write hood name in box
             Place = browser.find_element_by_class_name("tactile-searchbox-input")
-            Place.send_keys((neighborhood + ', ' + state))
-            
+
+            if neighborhood_level != 'custom':
+                Place.send_keys((neighborhood + ', ' + state))
+            elif neighborhood_level == 'custom':
+                Place.send_keys((neighborhood + ', ' + comparison_area))
+
             #Submit hood name for search
             Submit = browser.find_element_by_class_name('nhb85d-BIqFsb')
             Submit.click()
