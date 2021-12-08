@@ -3860,9 +3860,9 @@ def Main():
         global longitude
         global current_year
         global neighborhood_shape
-        # coordinates = GetLatandLon()
-        # latitude    = coordinates[0] 
-        # longitude   = coordinates[1]
+        coordinates = GetLatandLon()
+        latitude    = coordinates[0] 
+        longitude   = coordinates[1]
 
         if neighborhood_level == 'custom':
             neighborhood_shape = GetNeighborhoodShape()
