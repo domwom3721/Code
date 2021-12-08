@@ -2,6 +2,7 @@
 #Started 06/30/2021
 #Summary: This script creates reports on neighborhoods/cities for Bowery
 
+from ctypes import addressof
 from itertools import count
 import math
 import os
@@ -183,31 +184,39 @@ def GetLatandLon():
     return([latitude,longitude]) 
 
 def GetNeighborhoodShape():
-   
-    # Method 1: Pull geojson from file
-    # Open file that contains a geojson file with different neighborhood boundries
-    with open(os.path.join(data_location,'Neighborhood Shapes','SF Find Neighborhoods.geojson')) as infile:
-        my_shape_geojson = json.load(infile)
+    try:
+        #Method 1: Pull geojson from file with city name
+        with open(os.path.join(data_location,'Neighborhood Shapes',comparison_area + '.geojson')) as infile: #Open a geojson file with the city as the name the name of the file with the neighborhood boundries for that city
+            my_shape_geojson = json.load(infile)
+            
+            for name_var in ['name','Name']:
+            #Using different neighborhood name variables, iterate through the features in the file (each feature is a negihborhood)
+                try:
+                    for i in range(len(my_shape_geojson['features'])):
+                        feature_hood_name = my_shape_geojson['features'][i]['properties'][name_var]
+                        if feature_hood_name == neighborhood:
+                            neighborhood_shape = my_shape_geojson['features'][i]['geometry']
+                except Exception as e:
+                    print(e, 'wrong neighborhood name variable name when trying to pull shape from geojson file`')
+    except Exception as e:
+        print(e,'problem getting shape from city geojson file')
+        #Method 2: Get bounds from google maps API
+        # gmaps          = googlemaps.Client(key=google_maps_api_key) 
+        
 
-        #Select the custom shape
-        neighborhood_shape = my_shape_geojson['features'][2]['geometry']
-
-
-
-    # #Method 2: Get bounds from google maps API
-    # gmaps          = googlemaps.Client(key=google_maps_api_key) 
+        # if neighborhood_level == 'custom:':
+        #     search_term = (neighborhood + ', ' + comparison_area + ',' + state)
+        # else:
+        #     search_term = (neighborhood + ',' + state)
+        
+        # geocode_result = gmaps.geocode(address = search_term)
+        # geocode_result = gmaps.find_place(search_term,input_type = 'textquery')
+        
+        
+        # print(geocode_result)
+        # neighborhood_shape       = geocode_result[0]['geometry']['bounds']
     
-    # if neighborhood_level == 'custom:':
-    #     geocode_result = gmaps.geocode(address=(neighborhood + ', ' + comparison_area + ',' + state),)
-    # else:
-    #     geocode_result = gmaps.geocode(address=(neighborhood + ',' + state),)
-    # neighborhood_shape       = geocode_result[0]['geometry']['bounds']
-    
 
-    # Look up an address with reverse geocoding
-    # reverse_geocode_result = gmaps.reverse_geocode((lat,lon))
-    # pprint(reverse_geocode_result)
-    
     return(neighborhood_shape) 
 
 def FindZipCodeDictionary(zip_code_data_dictionary_list,zcta,state_fips):
@@ -3696,7 +3705,7 @@ def GetUserInputs():
 
         #Get name of hood
         # neighborhood      = input('Enter the name of the custom neighborhood')
-        neighborhood      = 'SoMa'
+        neighborhood      = 'Roslindale'
         
     #Get user input on comparison area
     if comparison_level == 'c':          #When our comparison area is a county eg Nassau County, New York
@@ -3723,7 +3732,7 @@ def GetUserInputs():
         #Get place FIPS code from user
         comparison_level      = 'place'
         # fips                  = input('Enter the 7 digit Census Place FIPS Code for the comparison area')
-        fips                  = '06-67000'
+        fips                  = '25-07000'
 
         #Process FIPS code provided by user``
         fips                  = fips.replace('-','').strip()
@@ -3857,12 +3866,12 @@ def Main():
         current_year = str(todays_date.year)
         SetGraphFormatVariables()
         CreateDirectory()
-        GetWikipediaPage()
-        GetData()
-        CreateGraphs()
-        CreateLanguage()
-        WriteReport()
-        CleanUpPNGs()
+        # GetWikipediaPage()
+        # GetData()
+        # CreateGraphs()
+        # CreateLanguage()
+        # WriteReport()
+        # CleanUpPNGs()
     
     #Crawl through directory and create CSV with all current neighborhood report documents
     CreateDirectoryCSV()
