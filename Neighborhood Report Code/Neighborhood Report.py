@@ -207,7 +207,7 @@ def GetNeighborhoodShape():
         #Define file locations
         kml_file_download_location         = os.path.join(os.environ['USERPROFILE'],'Downloads', 'Untitled layer.kml')
         kml_file_location                  = os.path.join(data_location,'Neighborhood Shapes',   'Untitled layer.kml')
-        new_geojson_file_location          = os.path.join(data_location,'Neighborhood Shapes',   'neighborhood_shape.geojson')
+        new_geojson_file_location          = os.path.join(data_location,'Neighborhood Shapes',   'custom_neighborhood_shape.geojson')
         
         #Step 1: Move the exported kml file from downloads to data folder 
         if os.path.exists(kml_file_download_location) == True:
@@ -2876,11 +2876,11 @@ def YelpLanguage(yelp_data):
     return(return_string)
 
 def HousingTenureLanguage():
-    return("""According to the most recent American Community Survey, """ +
-           """X%""" + 
-           """ of the housing units in """ + 
+    return('According to the most recent American Community Survey, ' +
+           '_X%' + 
+           ' of the housing units in ' + 
            neighborhood + 
-           """ were occupied by their owner. This percentage of owner-occupation is lower/higher than the ______ average of X%. This chart shows the ownership percentage in ______ compared to _______.""")
+           ' were occupied by their owner. This percentage of owner-occupation is lower/higher than the ______ average of X%. ' + ' This chart shows the ownership percentage in ' + neighborhood + ' compared to _______. ')
 
 def HousingSizeLanguage():
     return('In ' + neighborhood + ', there is a wide variety of housing options including single family homes, some duplexes and smaller multifamily properties, along with larger garden style properties, and even some buildings with 50+ units. Single family homes account for a very large majority. As such, the majority of housing is owned, but there are plenty of renters taking advantage of the diverse housing options too. ')
