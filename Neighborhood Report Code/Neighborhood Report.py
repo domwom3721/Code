@@ -2887,7 +2887,7 @@ def HousingSizeLanguage():
     ' Given the current makeup of housing, the majority of housing is owned/rented, but there are plenty of renters taking advantage of the diverse housing options too. ')
 
 def EmploymentLanguage():
-    return(['Employment langauge'])
+    return(['The majority of working age residents are employed in the ______, ______, and _______ industries. ' + 'Given its large share of employees in the production industry, '])
     
 def PopulationLanguage():
     return(['Population langauge'])
