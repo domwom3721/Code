@@ -2883,7 +2883,17 @@ def HousingTenureLanguage():
            ' were occupied by their owner. This percentage of owner-occupation is lower/higher than the ______ average of X%. ' + ' This chart shows the ownership percentage in ' + neighborhood + ' compared to _______. ')
 
 def HousingSizeLanguage():
-    return('In ' + neighborhood + ', there is a wide variety of housing options including single family homes, some duplexes and smaller multifamily properties, along with larger garden style properties, and even some buildings with 50+ units. Single family homes account for a very large majority. As such, the majority of housing is owned, but there are plenty of renters taking advantage of the diverse housing options too. ')
+    return( neighborhood + ' offers a wide variety of housing options including single family homes, some duplexes and smaller multifamily properties, along with larger garden style properties, and even some buildings with 50+ units. Single family homes account for a very large majority. ' + 
+    ' Given the current makeup of housing, the majority of housing is owned/rented, but there are plenty of renters taking advantage of the diverse housing options too. ')
+
+def EmploymentLanguage():
+    return(['Employment langauge'])
+    
+def PopulationLanguage():
+    return(['Population langauge'])
+
+def IncomeLanguage():
+    return(['The following chart displays the households in _______ distributed between a series of income buckets compared to the ________ average for each bucket. The largest share of households have an income in the $___k - $___k range. The median household income of _____ is at $____k compared to $____k for the ________. '])
 
 def CreateLanguage():
     print('Creating Langauge')
@@ -2893,6 +2903,7 @@ def CreateLanguage():
     global airport_language
     global apartmentsdotcomlanguage
     global housing_tenure_breakdown_language, structure_size_breakdown_language
+    global employment_language, population_language,income_language
 
     summary_langauge                   =  SummaryLangauge()
     community_assets_language          =  CommunityAssetsLanguage()
@@ -2901,6 +2912,11 @@ def CreateLanguage():
     housing_tenure_breakdown_language  = HousingTenureLanguage()
     structure_size_breakdown_language  = HousingSizeLanguage()
     
+    employment_language                = EmploymentLanguage()
+    population_language                = PopulationLanguage()
+    income_language                    = IncomeLanguage()
+
+
     bus_language                       = BusLanguage() 
     train_language                     = TrainLanguage()
     car_language                       = CarLanguage()
@@ -2908,7 +2924,6 @@ def CreateLanguage():
 
     conclusion_langauge                = OutlookLanguage()
     
-  
 #Report document related functions
 def SetPageMargins(document,margin_size):
     sections = document.sections
@@ -3293,7 +3308,13 @@ def PopulationSection(document):
     print('Writing Population Section')
     
     AddHeading(document = document, title = 'Population',                                     heading_level = 1,heading_number='Heading 3',font_size=11)
-    
+    for paragraph in population_language:
+        if paragraph == '':
+            continue
+        pop_paragraph                               = document.add_paragraph(paragraph)
+        pop_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
+        pop_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+
     #Insert population by age graph
     if os.path.exists(os.path.join(hood_folder,'population_by_age_graph.png')):
         fig = document.add_picture(os.path.join(hood_folder,'population_by_age_graph.png'),width=Inches(6.5))
@@ -3301,6 +3322,13 @@ def PopulationSection(document):
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
     
+    for paragraph in income_language:
+        if paragraph == '':
+            continue
+        inc_paragraph                               = document.add_paragraph(paragraph)
+        inc_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
+        inc_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+
     #Insert populatin by income graph
     if os.path.exists(os.path.join(hood_folder,'population_by_income_graph.png')):
         fig = document.add_picture(os.path.join(hood_folder,'population_by_income_graph.png'),width=Inches(6.5))
@@ -3313,6 +3341,13 @@ def EmploymentSection(document):
 
     #Employment and Transportation Section
     AddHeading(document = document, title = 'Employment',                  heading_level = 1,heading_number='Heading 3',font_size=11)
+
+    for paragraph in employment_language:
+        if paragraph == '':
+            continue
+        emp_paragraph                               = document.add_paragraph(paragraph)
+        emp_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
+        emp_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
 
     #Insert top occupations graph
     if os.path.exists(os.path.join(hood_folder,'top_occupations_graph.png')):
