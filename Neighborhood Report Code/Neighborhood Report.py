@@ -2104,7 +2104,8 @@ def CreateHouseholdNumberUnitsInBuildingHistogram():
     print('Creating Household by number of units in structure graph')
     fig = make_subplots(specs=[[{"secondary_y": False}]])
 
-    number_units_categories = ['1 Unit (Detached)','1 Unit (Attached)','2 Units','3-4 Units','5-9 Units','10-19 Units','20-49 Units','50 >= Units']
+    number_units_categories = ['Single Family Homes','Townhomes','Duplexes','3-4 Units','5-9 Units','10-19 Units','20-49 Units','50 >= Units']
+   
 
     #Add Bars with neighborhood distribution
     fig.add_trace(
@@ -2994,6 +2995,8 @@ def AddMap(document):
     #Add image of map
     if os.path.exists(os.path.join(hood_folder_map,'map.png')):
         map = document.add_picture(os.path.join(hood_folder_map,'map.png'),width=Inches(6.5))
+        map = document.add_picture(os.path.join(hood_folder_map,'map2.png'),width=Inches(6.5))
+
     else:    
         try:
             #Search Google Maps for hood
