@@ -2885,13 +2885,13 @@ def HousingTenureLanguage():
 
 def HousingSizeLanguage():
     return( neighborhood + ' offers a wide variety of housing options including single family homes, some duplexes and smaller multifamily properties, along with larger garden style properties, and even some buildings with 50+ units. Single family homes account for a very large majority. ' + 
-    ' Given the current makeup of housing, the majority of housing is owned/rented, but there are plenty of renters taking advantage of the diverse housing options too. ')
+    ' Given the current makeup of housing, the majority of housing is owned/rented.')
 
 def EmploymentLanguage():
     return(['The majority of working age residents are employed in the ______, ______, and _______ industries. ' + 'Given its large share of employees in the production industry, '])
     
 def PopulationLanguage():
-    return(['Population langauge'])
+    return(['The population in ' + neighborhood + 'has increased/compressed X% to ___ as of date. ' + 'Given a median age of _____, and a large distribution towards middle aged individuals, family households with school-aged children are most common.'])
 
 def IncomeLanguage():
     return(['The following chart displays the households in _______ distributed between a series of income buckets compared to the ________ average for each bucket. The largest share of households have an income in the $___k - $___k range. The median household income of _____ is at $____k compared to $____k for the ________. '])
