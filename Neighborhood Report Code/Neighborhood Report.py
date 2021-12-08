@@ -3016,7 +3016,7 @@ def AddMap(document):
             #Submit hood name for search
             Submit = browser.find_element_by_class_name('nhb85d-BIqFsb')
             Submit.click()
-            time.sleep(3)
+            time.sleep(7)
 
             # first photo, up close and personal. no zoom needed
             if 'Leahy' in os.environ['USERPROFILE']: #differnet machines have different screen coordinates
@@ -3055,7 +3055,9 @@ def AddMap(document):
             im2.save(os.path.join(hood_folder_map,'map2.png'))
             im2.close()
             time.sleep(1)
-            map = document.add_picture(os.path.join(hood_folder_map,'map2.png'),width=Inches(6.5))
+
+            map  = document.add_picture(os.path.join(hood_folder_map,'map.png'),width=Inches(6.5))
+            map2 = document.add_picture(os.path.join(hood_folder_map,'map2.png'),width=Inches(6.5))
             browser.quit()
         except Exception as e:
             print(e)
