@@ -22,6 +22,7 @@ from requests.packages.urllib3.util.retry import Retry
 
 import json
 import mpu
+from osgeo import gdal, ogr
 
 import docx
 import numpy as np
@@ -45,6 +46,7 @@ from docx.oxml.table import CT_Row, CT_Tc
 from docx.shared import Inches, Pt, RGBColor
 from fredapi import Fred
 from numpy import true_divide
+import shutil
 from plotly.subplots import make_subplots
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -189,35 +191,42 @@ def GetNeighborhoodShape():
         with open(os.path.join(data_location,'Neighborhood Shapes',comparison_area + '.geojson')) as infile: #Open a geojson file with the city as the name the name of the file with the neighborhood boundries for that city
             my_shape_geojson = json.load(infile)
             
-            for name_var in ['name','Name']:
-            #Using different neighborhood name variables, iterate through the features in the file (each feature is a negihborhood)
-                try:
-                    for i in range(len(my_shape_geojson['features'])):
-                        feature_hood_name = my_shape_geojson['features'][i]['properties'][name_var]
-                        if feature_hood_name == neighborhood:
-                            neighborhood_shape = my_shape_geojson['features'][i]['geometry']
-                except Exception as e:
-                    print(e, 'wrong neighborhood name variable name when trying to pull shape from geojson file`')
+        #Iterate through the features in the file (each feature is a negihborhood) and find the boundry of interest
+        for i in range(len(my_shape_geojson['features'])):
+            feature_hood_name = my_shape_geojson['features'][i]['properties']['name']
+            if feature_hood_name == neighborhood:
+                neighborhood_shape = my_shape_geojson['features'][i]['geometry']
+    
+        return(neighborhood_shape) 
+             
+    
     except Exception as e:
         print(e,'problem getting shape from city geojson file')
-        #Method 2: Get bounds from google maps API
-        # gmaps          = googlemaps.Client(key=google_maps_api_key) 
+        #Method 2: Get bounds from my google maps custom layer export
         
+        #Define file locations
+        kml_file_download_location         = os.path.join(os.environ['USERPROFILE'],'Downloads', 'Untitled layer.kml')
+        kml_file_location                  = os.path.join(data_location,'Neighborhood Shapes',   'Untitled layer.kml')
+        new_geojson_file_location          = os.path.join(data_location,'Neighborhood Shapes',   'neighborhood_shape.geojson')
+        
+        #Step 1: Move the exported kml file from downloads to data folder 
+        if os.path.exists(kml_file_download_location) == True:
+            print('Moving KML file from downloads folder into data folder')
+            shutil.move(kml_file_download_location,kml_file_location)
 
-        # if neighborhood_level == 'custom:':
-        #     search_term = (neighborhood + ', ' + comparison_area + ',' + state)
-        # else:
-        #     search_term = (neighborhood + ',' + state)
-        
-        # geocode_result = gmaps.geocode(address = search_term)
-        # geocode_result = gmaps.find_place(search_term,input_type = 'textquery')
-        
-        
-        # print(geocode_result)
-        # neighborhood_shape       = geocode_result[0]['geometry']['bounds']
-    
+        #Step 2: Convert the exported google maps kmz file to geojson
+        if os.path.exists(new_geojson_file_location) == False:
+            print('Converting custom kml file into a geojson file')
+            srcDS                              = gdal.OpenEx(kml_file_location)
+            ds                                 = gdal.VectorTranslate(new_geojson_file_location, srcDS, format='GeoJSON')
 
-    return(neighborhood_shape) 
+        
+        with open(new_geojson_file_location) as infile: 
+            print('Opened geojson file with custom boundraries')
+            my_shape_geojson = json.load(infile)
+        
+        neighborhood_shape = my_shape_geojson['features'][0]['geometry']
+        return(neighborhood_shape) 
 
 def FindZipCodeDictionary(zip_code_data_dictionary_list,zcta,state_fips):
     #This function takes a list of dictionaries, where each zip code gets its own dictionary. Takes a zip code and state fips code and finds and returns just that dictionary.
@@ -1545,7 +1554,6 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
 
               ])
     
-
 #Non Census Sources
 def GetWikipediaPage():
     global page
@@ -1857,7 +1865,6 @@ def Zoneomics(address):
     #     except Exception as e:
     #         print(e)
     #         response = [{}]
-
 
 #Main data function
 def GetData():
@@ -3523,37 +3530,36 @@ def DecideIfWritingReport():
 
 def UserSelectsNeighborhoodLevel():
     
-    # # Get Input from User
-    # allowable_area_levels       = ['p','c','sd','t','custom','z']
+    # Get Input from User
+    allowable_area_levels       = ['p','c','sd','t','custom','z']
 
-    # #Ask user for info on subject area
-    # while True:
-    #     if testing_mode == False:
-    #         neighborhood_level = input('What is the geographic level of the neighborhood? (p = place,sd = subdivision, c = county,t = tract,custom = custom, z = zip code)')
-    #     else:
-    #         neighborhood_level   =  'p'
+    #Ask user for info on subject area
+    while True:
+        if testing_mode == False:
+            neighborhood_level = input('What is the geographic level of the neighborhood? (p = place,sd = subdivision, c = county,t = tract,custom = custom, z = zip code)')
+        else:
+            neighborhood_level   =  'p'
         
-    #     if neighborhood_level not in allowable_area_levels:
-    #         print('Not a supported geographic level for neighborhood area')
-    #         continue
-    #     else:
-    #         break
+        if neighborhood_level not in allowable_area_levels:
+            print('Not a supported geographic level for neighborhood area')
+            continue
+        else:
+            break
     
-    # #Ask user for info on comparison area
-    # while True:
-    #     if testing_mode == False:
-    #         comparison_level   = input('What is the geographic level of the comparison area? (p = place,sd = subdivision, c = county,t = tract,custom = custom, z = zip code)')
-    #     else:
-    #         comparison_level     = 'c'
+    #Ask user for info on comparison area
+    while True:
+        if testing_mode == False:
+            comparison_level   = input('What is the geographic level of the comparison area? (p = place,sd = subdivision, c = county,t = tract,custom = custom, z = zip code)')
+        else:
+            comparison_level     = 'c'
         
-    #     if comparison_level not in allowable_area_levels:
-    #         print('Not a supported geographic level for comparsion area')
-    #         continue
-    #     else:
-    #         break
+        if comparison_level not in allowable_area_levels:
+            print('Not a supported geographic level for comparsion area')
+            continue
+        else:
+            break
     
-    # return([neighborhood_level,comparison_level])
-    return(['custom','p'])
+    return([neighborhood_level,comparison_level])
 
 def GetUserInputs():
     
@@ -3704,8 +3710,7 @@ def GetUserInputs():
     elif neighborhood_level == 'custom': #When our neighborhood is a neighboorhood within a city (eg: Financial District, New York City)
 
         #Get name of hood
-        # neighborhood      = input('Enter the name of the custom neighborhood')
-        neighborhood      = 'Roslindale'
+        neighborhood      = input('Enter the name of the custom neighborhood')
         
     #Get user input on comparison area
     if comparison_level == 'c':          #When our comparison area is a county eg Nassau County, New York
@@ -3731,8 +3736,8 @@ def GetUserInputs():
         
         #Get place FIPS code from user
         comparison_level      = 'place'
-        # fips                  = input('Enter the 7 digit Census Place FIPS Code for the comparison area')
-        fips                  = '25-07000'
+        fips                  = input('Enter the 7 digit Census Place FIPS Code for the comparison area')
+        # fips                  = '24-04000'
 
         #Process FIPS code provided by user``
         fips                  = fips.replace('-','').strip()
@@ -3855,9 +3860,9 @@ def Main():
         global longitude
         global current_year
         global neighborhood_shape
-        coordinates = GetLatandLon()
-        latitude    = coordinates[0] 
-        longitude   = coordinates[1]
+        # coordinates = GetLatandLon()
+        # latitude    = coordinates[0] 
+        # longitude   = coordinates[1]
 
         if neighborhood_level == 'custom':
             neighborhood_shape = GetNeighborhoodShape()
@@ -3866,12 +3871,12 @@ def Main():
         current_year = str(todays_date.year)
         SetGraphFormatVariables()
         CreateDirectory()
-        # GetWikipediaPage()
-        # GetData()
-        # CreateGraphs()
-        # CreateLanguage()
-        # WriteReport()
-        # CleanUpPNGs()
+        GetWikipediaPage()
+        GetData()
+        CreateGraphs()
+        CreateLanguage()
+        WriteReport()
+        CleanUpPNGs()
     
     #Crawl through directory and create CSV with all current neighborhood report documents
     CreateDirectoryCSV()
