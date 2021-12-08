@@ -2894,7 +2894,7 @@ def PopulationLanguage():
     return(['The population in ' + neighborhood + 'has increased/compressed X% to ___ as of date. ' + 'Given a median age of _____, and a large distribution towards middle aged individuals, family households with school-aged children are most common.'])
 
 def IncomeLanguage():
-    return(['The following chart displays the households in _______ distributed between a series of income buckets compared to the ________ average for each bucket. The largest share of households have an income in the $___k - $___k range. The median household income of _____ is at $____k compared to $____k for the ________. '])
+    return(['These households have a median household income of ______, displayed in the chart below. In ' + neighborhood + ' The largest share of households have an income between $___k - $___k, compared to $____k for ________. '])
 
 def CreateLanguage():
     print('Creating Langauge')
