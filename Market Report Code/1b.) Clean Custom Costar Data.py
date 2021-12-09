@@ -467,4 +467,5 @@ df_custom['Absorption Rate']            = round(df_custom['Absorption Rate'],2)
 print(df_custom)
 df_custom.to_excel(clean_custom_file)
 
-import 2)Market Report.py
+#Now run report creation script
+import Market_Report.py
