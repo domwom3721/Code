@@ -1524,11 +1524,11 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     _2010_2019_comparsion_hh_growth     = "{:,.1f}%".format(_2020_2026_comparsion_hh_growth)
 
     #each row represents a row of data for overview table
-    row1 = [''          , 'Area',             '2010 Census',            '2015-2019 Estimate',              'Change',                                      '2026 Projected',                 'Projected Change'        ]
-    row2 = ['Population', neighborhood,        _2010_hood_pop,          '' ,                        _2010_2019_hood_pop_growth,                     _2026_hood_pop,                  _2020_2026_hood_pop_growth       ]
-    row3 = [''          , comparison_area,     _2010_comparison_pop,    '',                         _2010_2019_comparsion_pop_growth,               _2026_comparison_pop,             _2020_2026_comparsion_pop_growth]
-    row4 = ['Households', neighborhood,        _2010_hood_hh,           '',                          _2010_2019_hood_hh_growth,                      _2026_hood_hh,                   _2020_2026_hood_hh_growth        ]
-    row5 = [''          , comparison_area,     _2010_comparison_hh,     '',                         _2010_2019_comparsion_hh_growth,                _2026_comparison_hh,             _2020_2026_comparsion_hh_growth  ]
+    row1 = [''          , 'Area',             '2010 Census',            '2015-2019 Estimate',              'Change',              '2026 Projected' ]
+    row2 = ['Population', neighborhood,        _2010_hood_pop,          '' ,                                 '' ,                     ''           ]
+    row3 = [''          , comparison_area,     _2010_comparison_pop,    '',                                  '' ,                     '' ,         ]
+    row4 = ['Households', neighborhood,        _2010_hood_hh,           '',                                  '' ,                     '' ,         ]
+    row5 = [''          , comparison_area,     _2010_comparison_hh,     '',                                  '' ,                     '' ,         ]
     
     return(    
             [ 
