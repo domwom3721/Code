@@ -3,6 +3,7 @@
 #Summary: This script creates reports on neighborhoods/cities for Bowery
 
 from ctypes import addressof
+from genericpath import exists
 from itertools import count
 import math
 import os
@@ -14,6 +15,7 @@ from random import randrange
 from datetime import datetime
 from tkinter.constants import E
 import census_area
+from PIL import Image
 
 import requests
 from requests.exceptions import HTTPError 
@@ -1383,8 +1385,6 @@ def GetTravelMethodData(geographic_level,hood_or_comparison_area):
         
     return(neighborhood_method_to_work_distribution) 
 
-
-
 def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     print('Getting Overview table data')
 
@@ -1539,9 +1539,6 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
              row5
                   ]
          )
-
-
-
 
 #Non Census Sources
 def GetWikipediaPage():
@@ -2976,82 +2973,114 @@ def Citation(document,text):
         blank_paragraph = document.add_paragraph('')
         blank_paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
 
+def GetMap():
+    try:
+        #Search Google Maps for hood
+        options = webdriver.ChromeOptions()
+        options.add_argument("--start-maximized")
+        browser = webdriver.Chrome(executable_path=(os.path.join(os.environ['USERPROFILE'], 'Desktop','chromedriver.exe')),options=options)
+        browser.get('https:google.com/maps')
+            
+        #Write hood name in box
+        Place = browser.find_element_by_class_name("tactile-searchbox-input")
+
+        if neighborhood_level != 'custom':
+            Place.send_keys((neighborhood + ', ' + state))
+        
+        elif neighborhood_level == 'custom':
+            Place.send_keys((neighborhood + ', ' + comparison_area))
+
+        #Submit hood name for search
+        Submit = browser.find_element_by_class_name('nhb85d-BIqFsb')
+        Submit.click()
+        time.sleep(10)
+
+        # first photo, up close and personal. no zoom needed
+        if 'Leahy' in os.environ['USERPROFILE']: #differnet machines have different screen coordinates
+            print('Using Mikes coordinates for screenshot')
+            im2 = pyautogui.screenshot(region=(1358,465, 2142, 1404) ) #left, top, width, and height
+        
+        elif 'Dominic' in os.environ['USERPROFILE']:
+            print('Using Doms coordinates for screenshot')
+            im2 = pyautogui.screenshot(region=(3680,254,1968 ,1231) ) #left, top, width, and height
+        
+        else:
+            im2 = pyautogui.screenshot(region=(1089,276, 2405, 1754) ) #left, top, width, and height
+        time.sleep(1)
+        im2.save(os.path.join(hood_folder_map,'map.png'))
+        time.sleep(3)
+
+        # second photo, zoomed out
+        zoomout = browser.find_element_by_xpath("""//*[@id="widget-zoom-out"]/div""")
+        for i in range(3):
+            zoomout.click() 
+        time.sleep(3)
+
+
+        if 'Leahy' in os.environ['USERPROFILE']: #differnet machines have different screen coordinates
+            print('Using Mikes coordinates for screenshot')
+            im2 = pyautogui.screenshot(region=(1358,465, 2142, 1404) ) #left, top, width, and height
+        
+        elif 'Dominic' in os.environ['USERPROFILE']:
+            print('Using Doms coordinates for screenshot')
+            im2 = pyautogui.screenshot(region=(3680,254,1968 ,1231) ) #left, top, width, and height
+        
+        else:
+            im2 = pyautogui.screenshot(region=(1089,276, 2405, 1754) ) #left, top, width, and height
+        time.sleep(5)
+
+        im2.save(os.path.join(hood_folder_map,'map2.png'))
+        im2.close()
+        time.sleep(1)
+
+    
+        browser.quit()
+    except Exception as e:
+         print(e)
+         try:
+            browser.quit()
+         except:
+            pass
+
+def OverlayMapImages():
+    
+    #Add image of map
+    map_path  =  os.path.join(hood_folder_map,'map.png')
+    map2_path = os.path.join(hood_folder_map,'map2.png')
+    map3_path = os.path.join(hood_folder_map,'map3.png')
+
+    #Open zommed out map
+    img1 = Image.open(map2_path)
+    
+    #Open zommed in map
+    img2 = Image.open(map_path)
+
+    #Reduce size of zommed in image by a constant factor
+    image_reduction_scale = 3
+    img2 = img2.resize((int(img2.size[0]/image_reduction_scale),int(img2.size[1]/image_reduction_scale)))
+    
+    #Add the zoomed in map on top of the zoomed out map and save as new png image
+    # No transparency mask specified,                                      
+    # simulating an raster overlay
+    img1.paste(img2, (img1.size[1] + 50,900))
+    
+    # img1.show()
+    img1.save(map3_path)
+    
 def AddMap(document):
     print('Adding Map')
-
-    #Add image of map
-    if os.path.exists(os.path.join(hood_folder_map,'map.png')):
-        map = document.add_picture(os.path.join(hood_folder_map,'map.png'),width=Inches(6.5))
-        map = document.add_picture(os.path.join(hood_folder_map,'map2.png'),width=Inches(6.5))
-
-    else:    
-        try:
-            #Search Google Maps for hood
-            options = webdriver.ChromeOptions()
-            options.add_argument("--start-maximized")
-            browser = webdriver.Chrome(executable_path=(os.path.join(os.environ['USERPROFILE'], 'Desktop','chromedriver.exe')),options=options)
-            browser.get('https:google.com/maps')
-            
-            #Write hood name in box
-            Place = browser.find_element_by_class_name("tactile-searchbox-input")
-
-            if neighborhood_level != 'custom':
-                Place.send_keys((neighborhood + ', ' + state))
-            elif neighborhood_level == 'custom':
-                Place.send_keys((neighborhood + ', ' + comparison_area))
-
-            #Submit hood name for search
-            Submit = browser.find_element_by_class_name('nhb85d-BIqFsb')
-            Submit.click()
-            time.sleep(10)
-
-            # first photo, up close and personal. no zoom needed
-            if 'Leahy' in os.environ['USERPROFILE']: #differnet machines have different screen coordinates
-                print('Using Mikes coordinates for screenshot')
-                im2 = pyautogui.screenshot(region=(1358,465, 2142, 1404) ) #left, top, width, and height
-            
-            elif 'Dominic' in os.environ['USERPROFILE']:
-                print('Using Doms coordinates for screenshot')
-                im2 = pyautogui.screenshot(region=(3680,254,1968 ,1231) ) #left, top, width, and height
-            
-            else:
-                im2 = pyautogui.screenshot(region=(1089,276, 2405, 1754) ) #left, top, width, and height
-            time.sleep(1)
-            im2.save(os.path.join(hood_folder_map,'map.png'))
-            time.sleep(3)
-
-            # second photo, zoomed out
-            zoomout = browser.find_element_by_xpath("""//*[@id="widget-zoom-out"]/div""")
-            for i in range(3):
-                zoomout.click() 
-            time.sleep(3)
+    map_path  = os.path.join(hood_folder_map,'map.png')
+    map2_path = os.path.join(hood_folder_map,'map2.png')
+    map3_path = os.path.join(hood_folder_map,'map3.png')
     
+    if os.path.exists(map_path) == False or os.path.exists(map2_path) == False: #If we don't have a zommed in map image or a zoomed out map, create one
+        GetMap()    
 
-            if 'Leahy' in os.environ['USERPROFILE']: #differnet machines have different screen coordinates
-                print('Using Mikes coordinates for screenshot')
-                im2 = pyautogui.screenshot(region=(1358,465, 2142, 1404) ) #left, top, width, and height
-            
-            elif 'Dominic' in os.environ['USERPROFILE']:
-                print('Using Doms coordinates for screenshot')
-                im2 = pyautogui.screenshot(region=(3680,254,1968 ,1231) ) #left, top, width, and height
-            
-            else:
-                im2 = pyautogui.screenshot(region=(1089,276, 2405, 1754) ) #left, top, width, and height
-            time.sleep(5)
-
-            im2.save(os.path.join(hood_folder_map,'map2.png'))
-            im2.close()
-            time.sleep(1)
-
-            map  = document.add_picture(os.path.join(hood_folder_map,'map.png'),width=Inches(6.5))
-            map2 = document.add_picture(os.path.join(hood_folder_map,'map2.png'),width=Inches(6.5))
-            browser.quit()
-        except Exception as e:
-            print(e)
-            try:
-                browser.quit()
-            except:
-                pass
+    if os.path.exists(map3_path) == False: #If we don't have an image with a zommed in map overlayed on zoomed out map, create one
+        OverlayMapImages()
+    
+    
+    map = document.add_picture(map3_path,width=Inches(6.5))
 
 def AddTable(document,data_for_table): #Function we use to insert our overview table into the report document
     #list of list where each list is a row for our table
@@ -3210,8 +3239,11 @@ def IntroSection(document):
         summary_style                                   = summary_paragraph.style
         summary_style.font.name                         = primary_font
 
-    #Add Overview Table
-    AddTable(document = document,data_for_table = overview_table_data )
+    try:
+        #Add Overview Table
+        AddTable(document = document,data_for_table = overview_table_data )
+    except Exception as e:
+        print(e,'Unable to add overview table')
 
 def CommunityAssetsSection(document):
     print('Writing Community Assets Section')
@@ -3427,7 +3459,11 @@ def TransportationSection(document):
         #loop through all cells in the current row
         for current_column,cell in enumerate(row.cells):
             if current_column == 1 and current_row > 0:
-                cell.text = str(walk_score_data[current_row-1])
+                try:
+                    cell.text = str(walk_score_data[current_row-1])
+                except:
+                    cell.text = 'NA'
+
 
             if current_column == 0:
                 cell.width = Inches(.2)
@@ -3906,7 +3942,7 @@ def Main():
         CreateGraphs()
         CreateLanguage()
         WriteReport()
-        CleanUpPNGs()
+        # CleanUpPNGs()
     
     #Crawl through directory and create CSV with all current neighborhood report documents
     CreateDirectoryCSV()
