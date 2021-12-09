@@ -79,7 +79,7 @@ primary_space_after_paragraph = 8
 #Decide if you want to export data in excel files in the county folder
 data_export                   = False
 testing_mode                  = True
-testing_mode                  = False
+# testing_mode                  = False
 
 #Directory Realted Functions
 def CreateDirectory():
@@ -1383,47 +1383,40 @@ def GetTravelMethodData(geographic_level,hood_or_comparison_area):
         
     return(neighborhood_method_to_work_distribution) 
 
+
+
 def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     print('Getting Overview table data')
 
-    total_pop_field         = 'P001001'
-    total_households_field  = 'H003002'  
+    total_pop_field             = 'P001001'
+    total_households_field      = 'H003002'
+
+    acs_total_pop_field         = 'DP02_0018E'
+    acs_total_households_field  = 'DP02_0001E'  
 
     #calcuate table variables for hood
     if hood_geographic_level == 'place':
-        _2010_hood_pop = c.sf1.state_place(fields=total_pop_field,state_fips=state_fips,place=hood_place_fips)[0][total_pop_field]
-        _2010_hood_hh  = c.sf1.state_place(fields=total_households_field,state_fips=state_fips,place=hood_place_fips)[0][total_households_field]
+        _2010_hood_pop = c.sf1.state_place(fields = total_pop_field,        state_fips = state_fips, place = hood_place_fips)[0][total_pop_field]
+        _2010_hood_hh  = c.sf1.state_place(fields = total_households_field, state_fips = state_fips, place = hood_place_fips)[0][total_households_field]
 
-        _2020_hood_pop = c.sf1.state_place(fields=total_pop_field,state_fips=state_fips,place=hood_place_fips)[0][total_pop_field]
-        _2020_hood_hh  = c.sf1.state_place(fields=total_households_field,state_fips=state_fips,place=hood_place_fips)[0][total_households_field]
+        # _2019_hood_pop = c.acs5.state_place(fields = acs_total_pop_field,        state_fips = state_fips, place = hood_place_fips)[0][acs_total_pop_field]
+        # _2019_hood_hh  = c.acs5.state_place(fields = acs_total_households_field, state_fips = state_fips, place = hood_place_fips)[0][acs_total_households_field]
 
     elif hood_geographic_level == 'county':
-        _2010_hood_pop = c.sf1.state_county(fields=total_pop_field,state_fips=state_fips,county_fips=hood_county_fips)[0][total_pop_field]
-        _2010_hood_hh  = c.sf1.state_county(fields=total_households_field,state_fips=state_fips,county_fips=hood_county_fips)[0][total_households_field]
-
-        _2020_hood_pop = c.sf1.state_county(fields=total_pop_field,state_fips=state_fips,county_fips=hood_county_fips)[0][total_pop_field]
-        _2020_hood_hh  = c.sf1.state_county(fields=total_households_field,state_fips=state_fips,county_fips=hood_county_fips)[0][total_households_field]
+        _2010_hood_pop = c.sf1.state_county(fields = total_pop_field,        state_fips = state_fips, county_fips = hood_county_fips)[0][total_pop_field]
+        _2010_hood_hh  = c.sf1.state_county(fields = total_households_field, state_fips = state_fips, county_fips = hood_county_fips)[0][total_households_field]
         
     elif hood_geographic_level == 'county subdivision':
-        _2010_hood_pop = c.sf1.state_county_subdivision(fields=total_pop_field,state_fips=state_fips,county_fips=hood_county_fips,subdiv_fips=hood_suvdiv_fips)[0][total_pop_field]
-        _2010_hood_hh  = c.sf1.state_county_subdivision(fields=total_households_field,state_fips=state_fips,county_fips=hood_county_fips,subdiv_fips=hood_suvdiv_fips)[0][total_households_field]
+        _2010_hood_pop = c.sf1.state_county_subdivision(fields = total_pop_field,        state_fips = state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips)[0][total_pop_field]
+        _2010_hood_hh  = c.sf1.state_county_subdivision(fields = total_households_field, state_fips = state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips)[0][total_households_field]
 
-        _2020_hood_pop = c.sf1.state_county_subdivision(fields=total_pop_field,state_fips=state_fips,county_fips=hood_county_fips,subdiv_fips=hood_suvdiv_fips)[0][total_pop_field]
-        _2020_hood_hh  = c.sf1.state_county_subdivision(fields=total_households_field,state_fips=state_fips,county_fips=hood_county_fips,subdiv_fips=hood_suvdiv_fips)[0][total_households_field]
-        
     elif hood_geographic_level == 'zip':
-        _2010_hood_pop = c.sf1.state_zipcode(fields=total_pop_field,state_fips=state_fips,zcta=hood_zip)[0][total_pop_field]
-        _2010_hood_hh  = c.sf1.state_zipcode(fields=total_households_field,state_fips=state_fips,zcta=hood_zip)[0][total_households_field]
+        _2010_hood_pop = c.sf1.state_zipcode(fields = total_pop_field,        state_fips = state_fips, zcta = hood_zip)[0][total_pop_field]
+        _2010_hood_hh  = c.sf1.state_zipcode(fields = total_households_field, state_fips = state_fips, zcta = hood_zip)[0][total_households_field]
 
-        _2020_hood_pop = c.sf1.state_zipcode(fields=total_pop_field,state_fips=state_fips,zcta=hood_zip)[0][total_pop_field]
-        _2020_hood_hh  = c.sf1.state_zipcode(fields=total_households_field,state_fips=state_fips,zcta=hood_zip)[0][total_households_field]
-        
     elif hood_geographic_level == 'tract':
         _2010_hood_pop = c.sf1.state_county_tract(fields=total_pop_field, state_fips = state_fips,county_fips=hood_county_fips,tract=hood_tract)[0][total_pop_field]
         _2010_hood_hh  = c.sf1.state_county_tract(fields=total_households_field, state_fips = state_fips,county_fips=hood_county_fips,tract=hood_tract)[0][total_households_field]
-
-        _2020_hood_pop = c.sf1.state_county_tract(fields=total_pop_field, state_fips = state_fips,county_fips=hood_county_fips,tract=hood_tract)[0][total_pop_field]
-        _2020_hood_hh  = c.sf1.state_county_tract(fields=total_households_field, state_fips = state_fips,county_fips=hood_county_fips,tract=hood_tract)[0][total_households_field]
 
     elif hood_geographic_level == 'custom':
         
@@ -1453,63 +1446,51 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         _2010_hood_hh_raw_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = [total_households_field])
         _2010_hood_hh          = _2010_hood_hh_raw_data[total_households_field]
         
-        _2020_hood_pop = _2010_hood_pop
-        _2020_hood_hh  = _2010_hood_hh
 
     #Table variables for comparison area
     if comparison_geographic_level == 'place':
-        _2010_comparison_pop = c.sf1.state_place(fields=total_pop_field,state_fips=state_fips,place=comparsion_place_fips)[0][total_pop_field]
-        _2010_comparison_hh = c.sf1.state_place(fields=total_households_field,state_fips=state_fips,place=comparsion_place_fips)[0][total_households_field]
-
-        _2020_comparison_pop = c.sf1.state_place(fields=total_pop_field,state_fips=state_fips,place=comparsion_place_fips)[0][total_pop_field]
-        _2020_comparison_hh = c.sf1.state_place(fields=total_households_field,state_fips=state_fips,place=comparsion_place_fips)[0][total_households_field]
+        _2010_comparison_pop = c.sf1.state_place(fields = total_pop_field,        state_fips = state_fips, place = comparsion_place_fips)[0][total_pop_field]
+        _2010_comparison_hh  = c.sf1.state_place(fields = total_households_field, state_fips = state_fips, place = comparsion_place_fips)[0][total_households_field]
 
     elif comparison_geographic_level == 'county':
-        _2010_comparison_pop = c.sf1.state_county(fields=total_pop_field,state_fips=state_fips,county_fips=comparison_county_fips)[0][total_pop_field]
-        _2010_comparison_hh  = c.sf1.state_county(fields=total_households_field,state_fips=state_fips,county_fips=comparison_county_fips)[0][total_households_field]
+        _2010_comparison_pop = c.sf1.state_county(fields = total_pop_field,        state_fips = state_fips, county_fips = comparison_county_fips)[0][total_pop_field]
+        _2010_comparison_hh  = c.sf1.state_county(fields = total_households_field, state_fips = state_fips, county_fips = comparison_county_fips)[0][total_households_field]
 
-        _2020_comparison_pop = c.sf1.state_county(fields=total_pop_field,state_fips=state_fips,county_fips=comparison_county_fips)[0][total_pop_field]
-        _2020_comparison_hh  = c.sf1.state_county(fields=total_households_field,state_fips=state_fips,county_fips=comparison_county_fips)[0][total_households_field]
+        # _2019_comparison_pop = c.acs5.state_county(fields = acs_total_pop_field,        state_fips = state_fips, county_fips = comparison_county_fips, year = 2019)[0][acs_total_pop_field]
+        # _2019_comparison_hh  = c.acs5.state_county(fields = acs_total_households_field, state_fips = state_fips, county_fips = comparison_county_fips, year = 2019)[0][acs_total_households_field]
 
     elif comparison_geographic_level == 'county subdivision':
-        _2010_comparison_pop = c.sf1.state_county_subdivision(fields=total_pop_field,state_fips=state_fips,county_fips=comparison_county_fips,subdiv_fips=comparison_suvdiv_fips)[0][total_pop_field]
-        _2010_comparison_hh  = c.sf1.state_county_subdivision(fields=total_households_field,state_fips=state_fips,county_fips=comparison_county_fips,subdiv_fips=comparison_suvdiv_fips)[0][total_households_field]
+        _2010_comparison_pop = c.sf1.state_county_subdivision(fields = total_pop_field,        state_fips = state_fips, county_fips = comparison_county_fips, subdiv_fips = comparison_suvdiv_fips)[0][total_pop_field]
+        _2010_comparison_hh  = c.sf1.state_county_subdivision(fields = total_households_field, state_fips = state_fips, county_fips = comparison_county_fips, subdiv_fips = comparison_suvdiv_fips)[0][total_households_field]
 
-        _2020_comparison_pop = c.sf1.state_county_subdivision(fields=total_pop_field,state_fips=state_fips,county_fips=comparison_county_fips,subdiv_fips=comparison_suvdiv_fips)[0][total_pop_field]
-        _2020_comparison_hh  = c.sf1.state_county_subdivision(fields=total_households_field,state_fips=state_fips,county_fips=comparison_county_fips,subdiv_fips=comparison_suvdiv_fips)[0][total_households_field]
-        
     elif comparison_geographic_level == 'zip':
-        _2010_comparison_pop = c.sf1.state_zipcode(fields=total_pop_field,state_fips=state_fips,zcta = comparison_zip)[0][total_pop_field]
-        _2010_comparison_hh  = c.sf1.state_zipcode(fields=total_households_field,state_fips=state_fips,zcta=comparison_zip)[0][total_households_field]
+        _2010_comparison_pop = c.sf1.state_zipcode(fields = total_pop_field,state_fips=state_fips,zcta = comparison_zip)[0][total_pop_field]
+        _2010_comparison_hh  = c.sf1.state_zipcode(fields = total_households_field,state_fips=state_fips,zcta=comparison_zip)[0][total_households_field]
         
-        _2020_comparison_pop = c.sf1.state_zipcode(fields=total_pop_field,state_fips=state_fips,zcta=comparison_zip)[0]
-        _2020_comparison_hh  = c.sf1.state_zipcode(fields=total_households_field,state_fips=state_fips,zcta=comparison_zip)[0][total_households_field]
-        pass
-
     elif comparison_geographic_level == 'tract':
-        _2010_comparison_pop = c.sf1.state_county_tract(fields=total_pop_field, state_fips = state_fips,county_fips=comparison_county_fips,tract=comparison_tract)[0][total_pop_field]
-        _2010_comparison_hh = c.sf1.state_county_tract(fields=total_households_field, state_fips = state_fips,county_fips=comparison_county_fips,tract=comparison_tract)[0][total_households_field]
-
-         #FIX
-        _2020_comparison_pop = c.sf1.state_county_tract(fields=total_pop_field, state_fips = state_fips,county_fips = comparison_county_fips,tract=comparison_tract)[0][total_pop_field]
-        _2020_comparison_hh = c.sf1.state_county_tract(fields=total_households_field, state_fips = state_fips,county_fips = comparison_county_fips,tract=comparison_tract)[0][total_households_field]        
+        _2010_comparison_pop = c.sf1.state_county_tract(fields = total_pop_field,        state_fips = state_fips, county_fips = comparison_county_fips, tract = comparison_tract)[0][total_pop_field]
+        _2010_comparison_hh  = c.sf1.state_county_tract(fields = total_households_field, state_fips = state_fips, county_fips = comparison_county_fips, tract = comparison_tract)[0][total_households_field]
 
     elif comparison_geographic_level == 'custom':
         pass
-        # _2010_comparison_pop =
-        # _2010_comparison_pop =
-
-        # _2020_comparison_pop =
-        # _2010_comparison_pop =
 
 
+
+    
+     #Stand in for current pop estiamtes
+    _2019_hood_pop       = _2010_hood_pop
+    _2019_hood_hh        = _2010_hood_hh
+    _2019_comparison_pop = _2010_comparison_pop
+    _2019_comparison_hh  = _2010_comparison_hh
+
+
+    
 
     #Calculate growth rates
-    _2010_2020_hood_pop_growth       = ((int(_2020_hood_pop)/int(_2010_hood_pop)) - 1) * 100
-    _2010_2020_hood_hh_growth        = ((int(_2020_hood_hh)/int(_2010_hood_hh))   - 1) * 100
-
-    _2010_2020_comparsion_pop_growth =  (int(_2020_comparison_pop)/int(_2010_comparison_pop) - 1) * 100
-    _2010_2020_comparsion_hh_growth  =  (int(_2020_comparison_hh)/int(_2010_comparison_hh)   - 1) * 100
+    _2010_2019_hood_pop_growth       = ((int(_2019_hood_pop)/int(_2010_hood_pop)) - 1) * 100
+    _2010_2019_hood_hh_growth        = ((int(_2019_hood_hh)/int(_2010_hood_hh))   - 1) * 100
+    _2010_2019_comparsion_pop_growth =  (int(_2019_comparison_pop)/int(_2010_comparison_pop) - 1) * 100
+    _2010_2019_comparsion_hh_growth  =  (int(_2019_comparison_hh)/int(_2010_comparison_hh)   - 1) * 100
 
 
     #Projected growth rates
@@ -1520,11 +1501,11 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     _2026_hood_hh                    = 0
          
     
-    _2020_2026_hood_pop_growth       = ((int(_2026_hood_pop)/int(_2020_hood_pop)) - 1) * 100
-    _2020_2026_hood_hh_growth        = ((int(_2026_hood_hh)/int(_2020_hood_hh))   - 1) * 100
+    _2020_2026_hood_pop_growth       = ((int(_2026_hood_pop)/int(_2019_hood_pop)) - 1) * 100
+    _2020_2026_hood_hh_growth        = ((int(_2026_hood_hh)/int(_2019_hood_hh))   - 1) * 100
 
-    _2020_2026_comparsion_pop_growth =  (int(_2026_comparison_pop)/int(_2020_comparison_pop) - 1) * 100
-    _2020_2026_comparsion_hh_growth  =  (int(_2026_comparison_hh)/int(_2020_comparison_hh)   - 1) * 100
+    _2020_2026_comparsion_pop_growth =  (int(_2026_comparison_pop)/int(_2019_comparison_pop) - 1) * 100
+    _2020_2026_comparsion_hh_growth  =  (int(_2026_comparison_hh)/int(_2019_comparison_hh)   - 1) * 100
 
 
     
@@ -1533,21 +1514,21 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     _2026_comparison_hh                 =  "{:,}".format(_2026_comparison_hh)
     _2026_hood_pop                      =  "{:,}".format(_2026_hood_pop)
     _2026_hood_hh                       =  "{:,}".format(_2026_hood_hh)
-    _2010_2020_hood_pop_growth          = "{:,.1f}%".format(_2010_2020_hood_pop_growth)
-    _2010_2020_hood_hh_growth           = "{:,.1f}%".format(_2010_2020_hood_hh_growth)
-    _2010_2020_comparsion_pop_growth    = "{:,.1f}%".format(_2010_2020_comparsion_pop_growth)
-    _2010_2020_comparsion_hh_growth     = "{:,.1f}%".format(_2010_2020_comparsion_hh_growth)
-    _2020_2026_hood_pop_growth          = "{:,.1f}%".format(_2020_2026_hood_pop_growth)
-    _2020_2026_hood_hh_growth           = "{:,.1f}%".format(_2020_2026_hood_hh_growth)
-    _2020_2026_comparsion_pop_growth    = "{:,.1f}%".format(_2020_2026_comparsion_pop_growth)
-    _2020_2026_comparsion_hh_growth     = "{:,.1f}%".format(_2020_2026_comparsion_hh_growth)
+    _2010_2019_hood_pop_growth          = "{:,.1f}%".format(_2010_2019_hood_pop_growth)
+    _2010_2019_hood_hh_growth           = "{:,.1f}%".format(_2010_2019_hood_hh_growth)
+    _2010_2019_comparsion_pop_growth    = "{:,.1f}%".format(_2010_2019_comparsion_pop_growth)
+    _2010_2019_comparsion_hh_growth     = "{:,.1f}%".format(_2010_2019_comparsion_hh_growth)
+    _2010_2019_hood_pop_growth          = "{:,.1f}%".format(_2020_2026_hood_pop_growth)
+    _2010_2019_hood_hh_growth           = "{:,.1f}%".format(_2020_2026_hood_hh_growth)
+    _2010_2019_comparsion_pop_growth    = "{:,.1f}%".format(_2020_2026_comparsion_pop_growth)
+    _2010_2019_comparsion_hh_growth     = "{:,.1f}%".format(_2020_2026_comparsion_hh_growth)
 
     #each row represents a row of data for overview table
-    row1 = [''          , 'Area',             '2010 Census',            '2020 Census',              'Change',                                      '2026 Projected',                 'Projected Change']
-    row2 = ['Population', neighborhood,        _2010_hood_pop,          _2020_hood_pop,             _2010_2020_hood_pop_growth,                     _2026_hood_pop,                  _2020_2026_hood_pop_growth]
-    row3 = [''          , comparison_area,     _2010_comparison_pop,    _2020_comparison_pop,       _2010_2020_comparsion_pop_growth,               _2026_comparison_pop,             _2020_2026_comparsion_pop_growth]
-    row4 = ['Households', neighborhood,        _2010_hood_hh,           _2020_hood_hh,              _2010_2020_hood_hh_growth,                      _2026_hood_hh,                   _2020_2026_hood_hh_growth]
-    row5 = [''          , comparison_area,     _2010_comparison_hh,     _2020_comparison_hh,        _2010_2020_comparsion_hh_growth,                _2026_comparison_hh,             _2020_2026_comparsion_hh_growth]
+    row1 = [''          , 'Area',             '2010 Census',            '2015-2019 Estimate',              'Change',                                      '2026 Projected',                 'Projected Change'        ]
+    row2 = ['Population', neighborhood,        _2010_hood_pop,          '' ,                        _2010_2019_hood_pop_growth,                     _2026_hood_pop,                  _2020_2026_hood_pop_growth       ]
+    row3 = [''          , comparison_area,     _2010_comparison_pop,    '',                         _2010_2019_comparsion_pop_growth,               _2026_comparison_pop,             _2020_2026_comparsion_pop_growth]
+    row4 = ['Households', neighborhood,        _2010_hood_hh,           '',                          _2010_2019_hood_hh_growth,                      _2026_hood_hh,                   _2020_2026_hood_hh_growth        ]
+    row5 = [''          , comparison_area,     _2010_comparison_hh,     '',                         _2010_2019_comparsion_hh_growth,                _2026_comparison_hh,             _2020_2026_comparsion_hh_growth  ]
     
     return(    
             [ 
@@ -1558,7 +1539,10 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
              row5
                   ]
          )
-    
+
+
+
+
 #Non Census Sources
 def GetWikipediaPage():
     global page
@@ -3019,7 +3003,7 @@ def AddMap(document):
             #Submit hood name for search
             Submit = browser.find_element_by_class_name('nhb85d-BIqFsb')
             Submit.click()
-            time.sleep(7)
+            time.sleep(10)
 
             # first photo, up close and personal. no zoom needed
             if 'Leahy' in os.environ['USERPROFILE']: #differnet machines have different screen coordinates
@@ -3604,7 +3588,7 @@ def UserSelectsNeighborhoodLevel():
     
     # return([neighborhood_level,comparison_level])
 
-    return(['custom','p'])
+    return(['p','c'])
 
 def GetUserInputs():
     
