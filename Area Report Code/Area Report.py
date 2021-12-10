@@ -69,7 +69,7 @@ def DeclareAPIKeys():
     global fred, c, bls,bea_api_key,walk_score_api_key
 
     #Declare API Key for FRED and Census
-    fred_keys = ['7ab383546af7583fae8a058915edc868','9875b149440961806f0df696105fe12c'] #Bowery key, #mjmleahy key
+    fred_keys = ['7ab383546af7583fae8a058915edc868','9875b149440961806f0df696105fe12c','21843961fd781317a7674a5d23d2c7e8'] #Bowery key, #mjmleahy key
     fred_key = choice(fred_keys) #select random key
     fred = Fred(api_key=fred_key)   
     
