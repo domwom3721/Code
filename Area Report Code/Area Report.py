@@ -5551,8 +5551,14 @@ def Main():
     GetMSAData()
     GetStateData()
     GetNationalData()
+    print('Finished Fetching Data')
+    
     CreateGraphs()
+    print('Finished Creating Graphs')
+    
     CreateLanguage()
+    print('Finished Creating Langauge')
+
     WriteReport()
     CleanUpPNGs()
 
