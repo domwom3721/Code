@@ -80,8 +80,10 @@ primary_space_after_paragraph = 8
 
 #Decide if you want to export data in excel files in the county folder
 data_export                   = False
-# testing_mode                  = True
+testing_mode                  = True
 testing_mode                  = False
+fig_width                     = 4.5 #width for the pngs (graph images) we insert into report document
+
 
 #Directory Realted Functions
 def CreateDirectory():
@@ -1926,7 +1928,7 @@ def GetData():
     location_iq_data                             = LocationIQ(              lat = latitude, lon = longitude, radius = 5000                                     )
     yelp_data                                    = GetYelpData(             lat = latitude, lon = longitude, radius = 30000                                    ) #radius in meters
 
-    SearchGreatSchoolDotOrg()
+    # SearchGreatSchoolDotOrg()
     
 
 
@@ -3297,7 +3299,7 @@ def HousingSection(document):
 
     #Insert household units by units in_structure graph
     if os.path.exists(os.path.join(hood_folder,'household_units_in_structure_graph.png')):
-        fig = document.add_picture(os.path.join(hood_folder,'household_units_in_structure_graph.png'),width=Inches(6.5))
+        fig = document.add_picture(os.path.join(hood_folder,'household_units_in_structure_graph.png'),width=Inches(fig_width))
         last_paragraph = document.paragraphs[-1] 
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
@@ -3306,7 +3308,7 @@ def HousingSection(document):
 
     #Insert Household size graph
     if os.path.exists(os.path.join(hood_folder,'household_size_graph.png')):
-        fig = document.add_picture(os.path.join(hood_folder,'household_size_graph.png'),width=Inches(6.5))
+        fig = document.add_picture(os.path.join(hood_folder,'household_size_graph.png'),width=Inches(fig_width))
         last_paragraph = document.paragraphs[-1] 
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
@@ -3317,21 +3319,21 @@ def HousingSection(document):
 
     #Insert Household Tenure graph
     if os.path.exists(os.path.join(hood_folder,'household_tenure_graph.png')):
-        fig = document.add_picture(os.path.join(hood_folder,'household_tenure_graph.png'),width=Inches(6.5))
+        fig = document.add_picture(os.path.join(hood_folder,'household_tenure_graph.png'),width=Inches(fig_width))
         last_paragraph = document.paragraphs[-1] 
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
     
     #Insert Household value graph
     if os.path.exists(os.path.join(hood_folder,'household_value_graph.png')):
-        fig = document.add_picture(os.path.join(hood_folder,'household_value_graph.png'),width=Inches(6.5))
+        fig = document.add_picture(os.path.join(hood_folder,'household_value_graph.png'),width=Inches(fig_width))
         last_paragraph = document.paragraphs[-1] 
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
 
     #Insert household units by year built graph
     if os.path.exists(os.path.join(hood_folder,'household_year_built_graph.png')):
-        fig = document.add_picture(os.path.join(hood_folder,'household_year_built_graph.png'),width=Inches(6.5))
+        fig = document.add_picture(os.path.join(hood_folder,'household_year_built_graph.png'),width=Inches(fig_width))
         last_paragraph = document.paragraphs[-1] 
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
@@ -3348,7 +3350,7 @@ def EducationSection(document):
     AddHeading(document = document, title = 'Education',                  heading_level = 1,heading_number='Heading 3',font_size=11)
 
     if os.path.exists(os.path.join(hood_folder_map,'education_map.png')):
-        fig = document.add_picture(os.path.join(hood_folder_map,'education_map.png'),width=Inches(6.5))
+        fig = document.add_picture(os.path.join(hood_folder_map,'education_map.png'),width=Inches(fig_width))
         last_paragraph = document.paragraphs[-1] 
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'greatschools.org')
@@ -3366,7 +3368,7 @@ def PopulationSection(document):
 
     #Insert population by age graph
     if os.path.exists(os.path.join(hood_folder,'population_by_age_graph.png')):
-        fig = document.add_picture(os.path.join(hood_folder,'population_by_age_graph.png'),width=Inches(6.5))
+        fig = document.add_picture(os.path.join(hood_folder,'population_by_age_graph.png'),width=Inches(fig_width))
         last_paragraph = document.paragraphs[-1] 
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
@@ -3380,7 +3382,7 @@ def PopulationSection(document):
 
     #Insert populatin by income graph
     if os.path.exists(os.path.join(hood_folder,'population_by_income_graph.png')):
-        fig = document.add_picture(os.path.join(hood_folder,'population_by_income_graph.png'),width=Inches(6.5))
+        fig = document.add_picture(os.path.join(hood_folder,'population_by_income_graph.png'),width=Inches(fig_width))
         last_paragraph = document.paragraphs[-1] 
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
@@ -3400,7 +3402,7 @@ def EmploymentSection(document):
 
     #Insert top occupations graph
     if os.path.exists(os.path.join(hood_folder,'top_occupations_graph.png')):
-        fig = document.add_picture(os.path.join(hood_folder,'top_occupations_graph.png'),width=Inches(6.5))
+        fig = document.add_picture(os.path.join(hood_folder,'top_occupations_graph.png'),width=Inches(fig_width))
         last_paragraph = document.paragraphs[-1] 
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
@@ -3414,14 +3416,14 @@ def TransportationSection(document):
 
     #Insert Travel Time to Work graph
     if os.path.exists(os.path.join(hood_folder,'travel_time_graph.png')):
-        fig = document.add_picture(os.path.join(hood_folder,'travel_time_graph.png'),width=Inches(6.5))
+        fig = document.add_picture(os.path.join(hood_folder,'travel_time_graph.png'),width=Inches(fig_width))
         last_paragraph = document.paragraphs[-1] 
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
     
     #Insert Transport Method to Work graph
     if os.path.exists(os.path.join(hood_folder,'travel_mode_graph.png')):
-        fig = document.add_picture(os.path.join(hood_folder,'travel_mode_graph.png'),width=Inches(6.5))
+        fig = document.add_picture(os.path.join(hood_folder,'travel_mode_graph.png'),width=Inches(fig_width))
         last_paragraph = document.paragraphs[-1] 
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
@@ -3514,8 +3516,8 @@ def WriteReport():
     IntroSection(             document = document)
     CommunityAssetsSection(   document = document)
     HousingSection(           document = document)
-    DevelopmentSection(       document = document)
-    EducationSection(         document = document)
+    # DevelopmentSection(       document = document)
+    # EducationSection(         document = document)
     PopulationSection(        document = document)
     EmploymentSection(        document = document)
     TransportationSection(    document = document)
