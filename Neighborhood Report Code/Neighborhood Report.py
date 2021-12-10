@@ -21,11 +21,11 @@ import requests
 from requests.exceptions import HTTPError 
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
-
+import msvcrt
 import json
 import mpu
 from osgeo import gdal, ogr
-
+import sys
 import docx
 import numpy as np
 import pandas as pd
@@ -117,6 +117,23 @@ def CreateDirectory():
 
 
     report_path = os.path.join(hood_folder,current_year + ' ' + state + ' - ' + neighborhood  + ' - hood' + '_draft.docx')
+
+class TimeoutExpired(Exception):
+    pass
+
+def input_with_timeout(prompt, timeout, timer=time.monotonic):
+    sys.stdout.write(prompt)
+    sys.stdout.flush()
+    endtime = timer() + timeout
+    result = []
+    while timer() < endtime:
+        if msvcrt.kbhit():
+            result.append(msvcrt.getwche()) #XXX can it block on multibyte characters?
+            if result[-1] == '\r':
+                return ''.join(result[:-1])
+        time.sleep(0.04) # just to yield to other processes/threads
+    raise TimeoutExpired
+
 
 #Data Manipulation functions
 def ConvertListElementsToFractionOfTotal(raw_list):
@@ -3585,8 +3602,13 @@ def CreateDirectoryCSV():
 def DecideIfWritingReport():
     global report_creation
     if testing_mode == False:
-        # report_creation = input('Create new report? y/n')
-        report_creation = 'y'
+        #Give the user 10 seconds to decide if writing reports for metro areas or individual county entries
+        try:
+            report_creation = input_with_timeout('Create new report? y/n', 10).strip()
+        except TimeoutExpired:
+            report_creation = ''
+
+        # report_creation = 'y'
 
     else:
         report_creation = 'y'
