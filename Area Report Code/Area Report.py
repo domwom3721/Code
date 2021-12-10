@@ -4,6 +4,7 @@
 import math
 import os
 import time
+from threading import Thread
 from datetime import date
 from pprint import pprint
 from random import randrange,choice
@@ -16,7 +17,8 @@ from requests.packages.urllib3.util.retry import Retry
 from datetime import datetime
 
 import json
-
+import msvcrt
+import sys
 import docx
 import numpy as np
 import pandas as pd
@@ -202,9 +204,21 @@ def GetCurrentQuarterAndYear():
             year = str(int(most_recent_year) -1 )
 
     return[year,quarter]
+class TimeoutExpired(Exception):
+    pass
 
-
-
+def input_with_timeout(prompt, timeout, timer=time.monotonic):
+    sys.stdout.write(prompt)
+    sys.stdout.flush()
+    endtime = timer() + timeout
+    result = []
+    while timer() < endtime:
+        if msvcrt.kbhit():
+            result.append(msvcrt.getwche()) #XXX can it block on multibyte characters?
+            if result[-1] == '\r':
+                return ''.join(result[:-1])
+        time.sleep(0.04) # just to yield to other processes/threads
+    raise TimeoutExpired
 
 
 #Data functions
@@ -5640,59 +5654,60 @@ def IdentifyNecta(cbsa):
 def GetFIPSList():
     #Returns a list of County FIPS codes to do reports for
     fips_list = []
-    fips_or_cbsa = ''
-    while True:
-        if fips_or_cbsa != 'c':
-            fips_or_cbsa =  str(input('Single county reports (c) or reports for all counties in metro (m)?')).strip()
+   
+    #Give the user 10 seconds to decide if writing reports for metro areas or individual county entries
+    try:
+        fips_or_cbsa = input_with_timeout('Single county report (c) or reports for all counties in metro (m)?', 10).strip()
+    except TimeoutExpired:
+        fips_or_cbsa = ''
+
+    #If user enters nothing, return empty list
+    if fips_or_cbsa == '':
+        return(fips_list)
+
+    #If user enters a metro area, return a list of FIPS for all the counties in that metro area
+    elif fips_or_cbsa == 'm': #if user selects whole metro break out of the main loop
+        cbsacode = str(input('Enter the MSA CBSA Code')).strip()
         
-        while fips_or_cbsa != 'm' and  fips_or_cbsa != 'c' :
-            print('invalid selection')
-            fips_or_cbsa =  str(input('Single county report (c) or reports for all counties in metro (m)?')).strip()
-            
-        if fips_or_cbsa == 'm': #if user selects whole metro break out of the main loop
-            cbsacode = str(input('Enter the MSA CBSA Code')).strip()
-            cbsa_fips_crosswalk = pd.read_csv(os.path.join(data_location,'cbsa2fipsxw.csv'),dtype={'cbsacode': object,
-                    'metrodivisioncode': object,
-                    'csacode': object,
-                    'cbsatitle': object,
-                    'metropolitanmicropolitanstatis': object,
-                    'metropolitandivisiontitle': object,
-                    'csatitle': object,
-                    'countycountyequivalent': object,
-                    'statename': object,
-                    'fipsstatecode': object,
-                    'fipscountycode': object,
-                    'centraloutlyingcounty': object
-                    })
-    
-
-            #Add missing 0s
-            cbsa_fips_crosswalk['fipsstatecode']  =  cbsa_fips_crosswalk['fipsstatecode'].str.zfill(2)
-            cbsa_fips_crosswalk['fipscountycode'] =  cbsa_fips_crosswalk['fipscountycode'].str.zfill(3)
-            cbsa_fips_crosswalk['FIPS Code'] = cbsa_fips_crosswalk['fipsstatecode'] + cbsa_fips_crosswalk['fipscountycode']
-
-            cbsa_fips_crosswalk = cbsa_fips_crosswalk.loc[cbsa_fips_crosswalk['metropolitanmicropolitanstatis'] == 'Metropolitan Statistical Area'] #restrict to msas
-            cbsa_fips_crosswalk = cbsa_fips_crosswalk.loc[cbsa_fips_crosswalk['cbsacode'] == cbsacode] #restrict data to only rows for counties within the MSA
-            fips_list = cbsa_fips_crosswalk['FIPS Code'].unique()
-            break
-        
+        cbsa_fips_crosswalk = pd.read_csv(os.path.join(data_location,'cbsa2fipsxw.csv'),dtype={'cbsacode': object,
+                'metrodivisioncode': object,
+                'csacode': object,
+                'cbsatitle': object,
+                'metropolitanmicropolitanstatis': object,
+                'metropolitandivisiontitle': object,
+                'csatitle': object,
+                'countycountyequivalent': object,
+                'statename': object,
+                'fipsstatecode': object,
+                'fipscountycode': object,
+                'centraloutlyingcounty': object
+                })
 
 
+        #Add missing 0s
+        cbsa_fips_crosswalk['fipsstatecode']  =  cbsa_fips_crosswalk['fipsstatecode'].str.zfill(2)
+        cbsa_fips_crosswalk['fipscountycode'] =  cbsa_fips_crosswalk['fipscountycode'].str.zfill(3)
+        cbsa_fips_crosswalk['FIPS Code'] = cbsa_fips_crosswalk['fipsstatecode'] + cbsa_fips_crosswalk['fipscountycode']
 
-        elif fips_or_cbsa == 'c':#if user selects individual fips, have them add them in manually
+        cbsa_fips_crosswalk = cbsa_fips_crosswalk.loc[cbsa_fips_crosswalk['metropolitanmicropolitanstatis'] == 'Metropolitan Statistical Area'] #restrict to msas
+        cbsa_fips_crosswalk = cbsa_fips_crosswalk.loc[cbsa_fips_crosswalk['cbsacode'] == cbsacode] #restrict data to only rows for counties within the MSA
+        fips_list = cbsa_fips_crosswalk['FIPS Code'].unique()
+
+    #If user enters county, return a list of FIPS that the user can enter
+    elif fips_or_cbsa == 'c':#if user selects individual fips, have them add them in manually
+        fips = None
+        while fips != '':
             fips  =         str(input('What is the 5 digit county FIPS code?')).strip()
-            if fips == '':
-                break
-            elif fips != '' :
-                try:
-                    assert len(fips) == 5
-                    fips_list.append(fips)
-                except:
-                    print('Invalid FIPS')
+            try:
+                assert len(fips) == 5
+                fips_list.append(fips)
+            except:
+                print('Invalid FIPS')
 
-        
+    
     if fips_list != []:
         print('Preparing Reports for the following fips: ',fips_list)
+
     return(fips_list)
 
 DeclareAPIKeys()
