@@ -89,7 +89,6 @@ def CreateDirectory():
     global report_path,hood_folder_map,hood_folder
     
     state_folder_map         = os.path.join(map_location,state)
-    hood_folder_map          = os.path.join(map_location,state,neighborhood)
     
     state_folder             = os.path.join(main_output_location,state)
 
@@ -98,13 +97,22 @@ def CreateDirectory():
                os.mkdir(state_folder)  
 
         city_folder =  os.path.join(main_output_location,state,comparison_area)
+        city_folder_map =  os.path.join(map_location,state,comparison_area)
+
         if os.path.exists(city_folder) == False:
             os.mkdir(city_folder) 
+        
+        if os.path.exists(city_folder_map) == False:
+            os.mkdir(city_folder_map) 
+
 
         hood_folder              = os.path.join(main_output_location,state,comparison_area,neighborhood)
+        hood_folder_map          = os.path.join(map_location,state,city_folder_map,neighborhood)
 
     else:
         hood_folder              = os.path.join(main_output_location,state,neighborhood)
+        hood_folder_map          = os.path.join(map_location,state,neighborhood)
+
 
     for folder in [state_folder,hood_folder,state_folder_map,hood_folder_map]:
          if os.path.exists(folder):
