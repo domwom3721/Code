@@ -83,7 +83,7 @@ primary_space_after_paragraph = 8
 #Decide if you want to export data in excel files in the county folder
 data_export                   = False
 testing_mode                  = True
-# testing_mode                  = False
+testing_mode                  = False
 fig_width                     = 4.5 #width for the pngs (graph images) we insert into report document
 
 
@@ -1423,45 +1423,44 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     acs_total_pop_field         = 'DP02_0018E'
     acs_total_households_field  = 'DP02_0001E'  
 
-    #calcuate table variables for hood
+    redistricting_total_pop_field = 'P1_001N'
+    redistricting_total_hh_field  = 'H1_002N'
+
+    #calculate table variables for hood
     if hood_geographic_level == 'place':
-        _2010_hood_pop         = c.sf1.state_place(fields = total_pop_field,        state_fips = state_fips, place = hood_place_fips)[0][total_pop_field]
-        _2010_hood_hh          = c.sf1.state_place(fields = total_households_field, state_fips = state_fips, place = hood_place_fips)[0][total_households_field]
-
-        current_hood_pop       = _2010_hood_pop
-        current_hood_hh        = _2010_hood_hh
+        _2010_hood_pop         = c.sf1.state_place(fields = total_pop_field,                                        state_fips = state_fips, place = hood_place_fips)[0][total_pop_field]
+        _2010_hood_hh          = c.sf1.state_place(fields = total_households_field,                                 state_fips = state_fips, place = hood_place_fips)[0][total_households_field]
         
-        # current_hood_pop       = c.pl.state_place(fields = ['NAME'],        state_fips = state_fips, place = hood_place_fips) #[0][total_pop_field]
-        # current_hood_hh        = c.pl.state_place(fields = ['NAME'],       state_fips = state_fips, place = hood_place_fips) #[0][total_households_field]
-        # print(current_hood_pop)
-
+        current_hood_pop       = c.pl.state_place(fields = [redistricting_total_pop_field],                          state_fips = state_fips, place = hood_place_fips)[0][redistricting_total_pop_field]
+        current_hood_hh        = c.pl.state_place(fields = [redistricting_total_hh_field],                           state_fips = state_fips, place = hood_place_fips)[0][redistricting_total_hh_field]
+        
     elif hood_geographic_level == 'county':
-        _2010_hood_pop = c.sf1.state_county(fields = total_pop_field,        state_fips = state_fips, county_fips = hood_county_fips)[0][total_pop_field]
-        _2010_hood_hh  = c.sf1.state_county(fields = total_households_field, state_fips = state_fips, county_fips = hood_county_fips)[0][total_households_field]
+        _2010_hood_pop   = c.sf1.state_county(fields = total_pop_field,                      state_fips = state_fips, county_fips = hood_county_fips)[0][total_pop_field]
+        _2010_hood_hh    = c.sf1.state_county(fields = total_households_field,               state_fips = state_fips, county_fips = hood_county_fips)[0][total_households_field]
     
-        current_hood_pop       = _2010_hood_pop
-        current_hood_hh        = _2010_hood_hh
+        current_hood_pop =  c.pl.state_county(fields = redistricting_total_pop_field,        state_fips = state_fips, county_fips = hood_county_fips)[0][redistricting_total_pop_field]
+        current_hood_hh  =  c.pl.state_county(fields = redistricting_total_hh_field,         state_fips = state_fips, county_fips = hood_county_fips)[0][redistricting_total_hh_field]
         
     elif hood_geographic_level == 'county subdivision':
-        _2010_hood_pop = c.sf1.state_county_subdivision(fields = total_pop_field,        state_fips = state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips)[0][total_pop_field]
-        _2010_hood_hh  = c.sf1.state_county_subdivision(fields = total_households_field, state_fips = state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips)[0][total_households_field]
+        _2010_hood_pop         = c.sf1.state_county_subdivision(fields = total_pop_field,                     state_fips = state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips)[0][total_pop_field]
+        _2010_hood_hh          = c.sf1.state_county_subdivision(fields = total_households_field,              state_fips = state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips)[0][total_households_field]
 
-        current_hood_pop       = _2010_hood_pop
-        current_hood_hh        = _2010_hood_hh
+        current_hood_pop       = c.pl.state_county_subdivision(fields = redistricting_total_pop_field,        state_fips = state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips)[0][redistricting_total_pop_field]
+        current_hood_hh        = c.pl.state_county_subdivision(fields = redistricting_total_hh_field,         state_fips = state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips)[0][redistricting_total_hh_field]
 
     elif hood_geographic_level == 'zip':
-        _2010_hood_pop = c.sf1.state_zipcode(fields = total_pop_field,        state_fips = state_fips, zcta = hood_zip)[0][total_pop_field]
-        _2010_hood_hh  = c.sf1.state_zipcode(fields = total_households_field, state_fips = state_fips, zcta = hood_zip)[0][total_households_field]
+        _2010_hood_pop         = c.sf1.state_zipcode(fields = total_pop_field,        state_fips = state_fips, zcta = hood_zip)[0][total_pop_field]
+        _2010_hood_hh          = c.sf1.state_zipcode(fields = total_households_field, state_fips = state_fips, zcta = hood_zip)[0][total_households_field]
 
         current_hood_pop       = _2010_hood_pop
         current_hood_hh        = _2010_hood_hh
 
     elif hood_geographic_level == 'tract':
-        _2010_hood_pop = c.sf1.state_county_tract(fields=total_pop_field, state_fips = state_fips,county_fips=hood_county_fips,tract=hood_tract)[0][total_pop_field]
-        _2010_hood_hh  = c.sf1.state_county_tract(fields=total_households_field, state_fips = state_fips,county_fips=hood_county_fips,tract=hood_tract)[0][total_households_field]
+        _2010_hood_pop         = c.sf1.state_county_tract(fields = total_pop_field,              state_fips = state_fips,county_fips=hood_county_fips,tract=hood_tract)[0][total_pop_field]
+        _2010_hood_hh          = c.sf1.state_county_tract(fields = total_households_field,       state_fips = state_fips,county_fips=hood_county_fips,tract=hood_tract)[0][total_households_field]
 
-        current_hood_pop       = _2010_hood_pop
-        current_hood_hh        = _2010_hood_hh
+        current_hood_pop       = c.pl.state_county_tract(fields = redistricting_total_pop_field, state_fips = state_fips,county_fips=hood_county_fips,tract=hood_tract)[0][redistricting_total_pop_field]
+        current_hood_hh        = c.pl.state_county_tract(fields = redistricting_total_hh_field,  state_fips = state_fips,county_fips=hood_county_fips,tract=hood_tract)[0][redistricting_total_hh_field]
 
     elif hood_geographic_level == 'custom':
         
@@ -1497,43 +1496,39 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
 
     #Table variables for comparison area
     if comparison_geographic_level == 'place':
-        _2010_comparison_pop = c.sf1.state_place(fields = total_pop_field,        state_fips = state_fips, place = comparsion_place_fips)[0][total_pop_field]
-        _2010_comparison_hh  = c.sf1.state_place(fields = total_households_field, state_fips = state_fips, place = comparsion_place_fips)[0][total_households_field]
+        _2010_comparison_pop = c.sf1.state_place(fields = total_pop_field,                       state_fips = state_fips, place = comparsion_place_fips)[0][total_pop_field]
+        _2010_comparison_hh  = c.sf1.state_place(fields = total_households_field,                state_fips = state_fips, place = comparsion_place_fips)[0][total_households_field]
 
-        current_comparison_pop = _2010_comparison_pop
-        current_comparison_hh  = _2010_comparison_hh
-
+        current_comparison_pop = c.pl.state_place(fields = redistricting_total_pop_field,        state_fips = state_fips, place = comparsion_place_fips)[0][redistricting_total_pop_field]
+        current_comparison_hh  = c.pl.state_place(fields = redistricting_total_hh_field,         state_fips = state_fips, place = comparsion_place_fips)[0][redistricting_total_hh_field]
 
     elif comparison_geographic_level == 'county':
-        _2010_comparison_pop = c.sf1.state_county(fields = total_pop_field,        state_fips = state_fips, county_fips = comparison_county_fips)[0][total_pop_field]
-        _2010_comparison_hh  = c.sf1.state_county(fields = total_households_field, state_fips = state_fips, county_fips = comparison_county_fips)[0][total_households_field]
+        _2010_comparison_pop   = c.sf1.state_county(fields = total_pop_field,                      state_fips = state_fips, county_fips = comparison_county_fips)[0][total_pop_field]
+        _2010_comparison_hh    = c.sf1.state_county(fields = total_households_field,               state_fips = state_fips, county_fips = comparison_county_fips)[0][total_households_field]
 
-        current_comparison_pop = _2010_comparison_pop
-        current_comparison_hh  = _2010_comparison_hh
-
+        current_comparison_pop =  c.pl.state_county(fields = redistricting_total_pop_field,        state_fips = state_fips, county_fips = comparison_county_fips)[0][redistricting_total_pop_field]
+        current_comparison_hh  =  c.pl.state_county(fields = redistricting_total_hh_field,         state_fips = state_fips, county_fips = comparison_county_fips)[0][redistricting_total_hh_field]
 
     elif comparison_geographic_level == 'county subdivision':
-        _2010_comparison_pop = c.sf1.state_county_subdivision(fields = total_pop_field,        state_fips = state_fips, county_fips = comparison_county_fips, subdiv_fips = comparison_suvdiv_fips)[0][total_pop_field]
-        _2010_comparison_hh  = c.sf1.state_county_subdivision(fields = total_households_field, state_fips = state_fips, county_fips = comparison_county_fips, subdiv_fips = comparison_suvdiv_fips)[0][total_households_field]
+        _2010_comparison_pop    = c.sf1.state_county_subdivision(fields = total_pop_field,                     state_fips = state_fips, county_fips = comparison_county_fips, subdiv_fips = comparison_suvdiv_fips)[0][total_pop_field]
+        _2010_comparison_hh     = c.sf1.state_county_subdivision(fields = total_households_field,              state_fips = state_fips, county_fips = comparison_county_fips, subdiv_fips = comparison_suvdiv_fips)[0][total_households_field]
 
-        current_comparison_pop = _2010_comparison_pop
-        current_comparison_hh  = _2010_comparison_hh
-
+        current_comparison_pop  = c.pl.state_county_subdivision(fields = redistricting_total_pop_field,        state_fips = state_fips, county_fips = comparison_county_fips, subdiv_fips = comparison_suvdiv_fips)[0][redistricting_total_pop_field]
+        current_comparison_hh   = c.pl.state_county_subdivision(fields = redistricting_total_hh_field,         state_fips = state_fips, county_fips = comparison_county_fips, subdiv_fips = comparison_suvdiv_fips)[0][redistricting_total_hh_field]
 
     elif comparison_geographic_level == 'zip':
-        _2010_comparison_pop = c.sf1.state_zipcode(fields = total_pop_field,state_fips=state_fips,zcta = comparison_zip)[0][total_pop_field]
-        _2010_comparison_hh  = c.sf1.state_zipcode(fields = total_households_field,state_fips=state_fips,zcta=comparison_zip)[0][total_households_field]
+        _2010_comparison_pop   = c.sf1.state_zipcode(fields = total_pop_field,state_fips=state_fips,zcta = comparison_zip)[0][total_pop_field]
+        _2010_comparison_hh    = c.sf1.state_zipcode(fields = total_households_field,state_fips=state_fips,zcta=comparison_zip)[0][total_households_field]
 
         current_comparison_pop = _2010_comparison_pop
         current_comparison_hh  = _2010_comparison_hh
 
-        
     elif comparison_geographic_level == 'tract':
-        _2010_comparison_pop = c.sf1.state_county_tract(fields = total_pop_field,        state_fips = state_fips, county_fips = comparison_county_fips, tract = comparison_tract)[0][total_pop_field]
-        _2010_comparison_hh  = c.sf1.state_county_tract(fields = total_households_field, state_fips = state_fips, county_fips = comparison_county_fips, tract = comparison_tract)[0][total_households_field]
+        _2010_comparison_pop   = c.sf1.state_county_tract(fields = total_pop_field,                     state_fips = state_fips, county_fips = comparison_county_fips, tract = comparison_tract)[0][total_pop_field]
+        _2010_comparison_hh    = c.sf1.state_county_tract(fields = total_households_field,              state_fips = state_fips, county_fips = comparison_county_fips, tract = comparison_tract)[0][total_households_field]
 
-        current_comparison_pop = _2010_comparison_pop
-        current_comparison_hh  = _2010_comparison_hh
+        current_comparison_pop =  c.pl.state_county_tract(fields = redistricting_total_pop_field,        state_fips = state_fips, county_fips = comparison_county_fips, tract = comparison_tract)[0][redistricting_total_pop_field]
+        current_comparison_hh  =  c.pl.state_county_tract(fields = redistricting_total_hh_field,         state_fips = state_fips, county_fips = comparison_county_fips, tract = comparison_tract)[0][redistricting_total_hh_field]
 
     elif comparison_geographic_level == 'custom':
         pass
@@ -1543,10 +1538,6 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     
      #Stand in for current pop estiamtes
     
-
-
-
-
 
 
 
@@ -1577,8 +1568,8 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     #each row represents a row of data for overview table
     row1 = [''          , 'Area',             '2010 Census',            'Current Estimate',                                      '% Change']
     row2 = ['Population', neighborhood,        _2010_hood_pop,          current_hood_pop ,                                 hood_pop_growth ]
-    row3 = [''          , comparison_area,     _2010_comparison_pop,    current_comparison_pop,                             hood_hh_growth ]
-    row4 = ['Households', neighborhood,        _2010_hood_hh,           current_hood_hh,                              comparsion_pop_growth]
+    row3 = [''          , comparison_area,     _2010_comparison_pop,    current_comparison_pop,                       comparsion_pop_growth]
+    row4 = ['Households', neighborhood,        _2010_hood_hh,           current_hood_hh,                                     hood_hh_growth]
     row5 = [''          , comparison_area,     _2010_comparison_hh,     current_comparison_hh,                        comparsion_hh_growth ]
     
     return(    
@@ -1906,7 +1897,8 @@ def Zoneomics(address):
 #Main data function
 def GetData():
     #List of 5 Year American Community Survey Variables here: https://api.census.gov/data/2019/acs/acs5/variables.html
-    #List of 2010 Census Variables here:                      https://api.census.gov/data/2010/dec/sf1/variables.html
+    #List of 2010 Census variables here:                      https://api.census.gov/data/2010/dec/sf1/variables.html
+    #List of 2020 Redistricting variables here:               https://api.census.gov/data/2020/dec/pl/variables.html
     print('Getting Data')
     global overview_table_data
     global neighborhood_household_size_distribution,comparison_household_size_distribution
@@ -1924,7 +1916,6 @@ def GetData():
     global yelp_data
     global google_data
     global location_iq_data
-
 
     neighborhood_household_size_distribution     = GetHouseholdSizeData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Neighborhood households by size
     neighborhood_tenure_distribution             = GetHousingTenureData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Tenure (owner occupied/renter)
@@ -1952,13 +1943,12 @@ def GetData():
     location_iq_data                             = LocationIQ(              lat = latitude, lon = longitude, radius = 5000                                     )
     yelp_data                                    = GetYelpData(             lat = latitude, lon = longitude, radius = 30000                                    ) #radius in meters
 
-    # SearchGreatSchoolDotOrg()
     
-
-
     #Overview Table Data
     overview_table_data = GetOverviewTable(hood_geographic_level = neighborhood_level ,comparison_geographic_level = comparison_level )
-    print(overview_table_data)
+    
+    #Unused functions
+    # # SearchGreatSchoolDotOrg()
 
 #Graph Related Functions
 def SetGraphFormatVariables():
