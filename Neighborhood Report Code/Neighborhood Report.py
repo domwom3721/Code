@@ -81,7 +81,7 @@ primary_space_after_paragraph = 8
 #Decide if you want to export data in excel files in the county folder
 data_export                   = False
 testing_mode                  = True
-testing_mode                  = False
+# testing_mode                  = False
 fig_width                     = 4.5 #width for the pngs (graph images) we insert into report document
 
 
@@ -1423,27 +1423,43 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
 
     #calcuate table variables for hood
     if hood_geographic_level == 'place':
-        _2010_hood_pop = c.sf1.state_place(fields = total_pop_field,        state_fips = state_fips, place = hood_place_fips)[0][total_pop_field]
-        _2010_hood_hh  = c.sf1.state_place(fields = total_households_field, state_fips = state_fips, place = hood_place_fips)[0][total_households_field]
+        _2010_hood_pop         = c.sf1.state_place(fields = total_pop_field,        state_fips = state_fips, place = hood_place_fips)[0][total_pop_field]
+        _2010_hood_hh          = c.sf1.state_place(fields = total_households_field, state_fips = state_fips, place = hood_place_fips)[0][total_households_field]
 
-        # _2019_hood_pop = c.acs5.state_place(fields = acs_total_pop_field,        state_fips = state_fips, place = hood_place_fips)[0][acs_total_pop_field]
-        # _2019_hood_hh  = c.acs5.state_place(fields = acs_total_households_field, state_fips = state_fips, place = hood_place_fips)[0][acs_total_households_field]
+        current_hood_pop       = _2010_hood_pop
+        current_hood_hh        = _2010_hood_hh
+        
+        # current_hood_pop       = c.pl.state_place(fields = ['NAME'],        state_fips = state_fips, place = hood_place_fips) #[0][total_pop_field]
+        # current_hood_hh        = c.pl.state_place(fields = ['NAME'],       state_fips = state_fips, place = hood_place_fips) #[0][total_households_field]
+        # print(current_hood_pop)
 
     elif hood_geographic_level == 'county':
         _2010_hood_pop = c.sf1.state_county(fields = total_pop_field,        state_fips = state_fips, county_fips = hood_county_fips)[0][total_pop_field]
         _2010_hood_hh  = c.sf1.state_county(fields = total_households_field, state_fips = state_fips, county_fips = hood_county_fips)[0][total_households_field]
+    
+        current_hood_pop       = _2010_hood_pop
+        current_hood_hh        = _2010_hood_hh
         
     elif hood_geographic_level == 'county subdivision':
         _2010_hood_pop = c.sf1.state_county_subdivision(fields = total_pop_field,        state_fips = state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips)[0][total_pop_field]
         _2010_hood_hh  = c.sf1.state_county_subdivision(fields = total_households_field, state_fips = state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips)[0][total_households_field]
 
+        current_hood_pop       = _2010_hood_pop
+        current_hood_hh        = _2010_hood_hh
+
     elif hood_geographic_level == 'zip':
         _2010_hood_pop = c.sf1.state_zipcode(fields = total_pop_field,        state_fips = state_fips, zcta = hood_zip)[0][total_pop_field]
         _2010_hood_hh  = c.sf1.state_zipcode(fields = total_households_field, state_fips = state_fips, zcta = hood_zip)[0][total_households_field]
 
+        current_hood_pop       = _2010_hood_pop
+        current_hood_hh        = _2010_hood_hh
+
     elif hood_geographic_level == 'tract':
         _2010_hood_pop = c.sf1.state_county_tract(fields=total_pop_field, state_fips = state_fips,county_fips=hood_county_fips,tract=hood_tract)[0][total_pop_field]
         _2010_hood_hh  = c.sf1.state_county_tract(fields=total_households_field, state_fips = state_fips,county_fips=hood_county_fips,tract=hood_tract)[0][total_households_field]
+
+        current_hood_pop       = _2010_hood_pop
+        current_hood_hh        = _2010_hood_hh
 
     elif hood_geographic_level == 'custom':
         
@@ -1472,6 +1488,9 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
         _2010_hood_hh_raw_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = [total_households_field])
         _2010_hood_hh          = _2010_hood_hh_raw_data[total_households_field]
+
+        current_hood_pop       = _2010_hood_pop
+        current_hood_hh        = _2010_hood_hh
         
 
     #Table variables for comparison area
@@ -1479,24 +1498,40 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         _2010_comparison_pop = c.sf1.state_place(fields = total_pop_field,        state_fips = state_fips, place = comparsion_place_fips)[0][total_pop_field]
         _2010_comparison_hh  = c.sf1.state_place(fields = total_households_field, state_fips = state_fips, place = comparsion_place_fips)[0][total_households_field]
 
+        current_comparison_pop = _2010_comparison_pop
+        current_comparison_hh  = _2010_comparison_hh
+
+
     elif comparison_geographic_level == 'county':
         _2010_comparison_pop = c.sf1.state_county(fields = total_pop_field,        state_fips = state_fips, county_fips = comparison_county_fips)[0][total_pop_field]
         _2010_comparison_hh  = c.sf1.state_county(fields = total_households_field, state_fips = state_fips, county_fips = comparison_county_fips)[0][total_households_field]
 
-        # _2019_comparison_pop = c.acs5.state_county(fields = acs_total_pop_field,        state_fips = state_fips, county_fips = comparison_county_fips, year = 2019)[0][acs_total_pop_field]
-        # _2019_comparison_hh  = c.acs5.state_county(fields = acs_total_households_field, state_fips = state_fips, county_fips = comparison_county_fips, year = 2019)[0][acs_total_households_field]
+        current_comparison_pop = _2010_comparison_pop
+        current_comparison_hh  = _2010_comparison_hh
+
 
     elif comparison_geographic_level == 'county subdivision':
         _2010_comparison_pop = c.sf1.state_county_subdivision(fields = total_pop_field,        state_fips = state_fips, county_fips = comparison_county_fips, subdiv_fips = comparison_suvdiv_fips)[0][total_pop_field]
         _2010_comparison_hh  = c.sf1.state_county_subdivision(fields = total_households_field, state_fips = state_fips, county_fips = comparison_county_fips, subdiv_fips = comparison_suvdiv_fips)[0][total_households_field]
 
+        current_comparison_pop = _2010_comparison_pop
+        current_comparison_hh  = _2010_comparison_hh
+
+
     elif comparison_geographic_level == 'zip':
         _2010_comparison_pop = c.sf1.state_zipcode(fields = total_pop_field,state_fips=state_fips,zcta = comparison_zip)[0][total_pop_field]
         _2010_comparison_hh  = c.sf1.state_zipcode(fields = total_households_field,state_fips=state_fips,zcta=comparison_zip)[0][total_households_field]
+
+        current_comparison_pop = _2010_comparison_pop
+        current_comparison_hh  = _2010_comparison_hh
+
         
     elif comparison_geographic_level == 'tract':
         _2010_comparison_pop = c.sf1.state_county_tract(fields = total_pop_field,        state_fips = state_fips, county_fips = comparison_county_fips, tract = comparison_tract)[0][total_pop_field]
         _2010_comparison_hh  = c.sf1.state_county_tract(fields = total_households_field, state_fips = state_fips, county_fips = comparison_county_fips, tract = comparison_tract)[0][total_households_field]
+
+        current_comparison_pop = _2010_comparison_pop
+        current_comparison_hh  = _2010_comparison_hh
 
     elif comparison_geographic_level == 'custom':
         pass
@@ -1505,57 +1540,44 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
 
     
      #Stand in for current pop estiamtes
-    _2019_hood_pop       = _2010_hood_pop
-    _2019_hood_hh        = _2010_hood_hh
-    _2019_comparison_pop = _2010_comparison_pop
-    _2019_comparison_hh  = _2010_comparison_hh
-
-
     
+
+
+
+
+
+
 
     #Calculate growth rates
-    _2010_2019_hood_pop_growth       = ((int(_2019_hood_pop)/int(_2010_hood_pop)) - 1) * 100
-    _2010_2019_hood_hh_growth        = ((int(_2019_hood_hh)/int(_2010_hood_hh))   - 1) * 100
-    _2010_2019_comparsion_pop_growth =  (int(_2019_comparison_pop)/int(_2010_comparison_pop) - 1) * 100
-    _2010_2019_comparsion_hh_growth  =  (int(_2019_comparison_hh)/int(_2010_comparison_hh)   - 1) * 100
+    hood_pop_growth        = ((int(current_hood_pop)/int(_2010_hood_pop)) - 1) * 100
+    hood_hh_growth         = ((int(current_hood_hh)/int(_2010_hood_hh))   - 1) * 100
+    comparsion_pop_growth  =  (int(current_comparison_pop)/int(_2010_comparison_pop) - 1) * 100
+    comparsion_hh_growth   =  (int(current_comparison_hh)/int(_2010_comparison_hh)   - 1) * 100
+
+    #Format pop and hh variables
+    _2010_hood_pop         = "{:,.0f}".format(int(_2010_hood_pop))
+    _2010_hood_hh          = "{:,.0f}".format(int(_2010_hood_hh))
+    _2010_comparison_pop   = "{:,.0f}".format(int(_2010_comparison_pop))
+    _2010_comparison_hh    = "{:,.0f}".format(int(_2010_comparison_hh))
+    current_hood_pop       = "{:,.0f}".format(int(current_hood_pop))
+    current_hood_hh        = "{:,.0f}".format(int(current_hood_hh))
+    current_comparison_pop = "{:,.0f}".format(int(current_comparison_pop))
+    current_comparison_hh  = "{:,.0f}".format(int(current_comparison_hh))
+
+    #Format growth variables
+    hood_pop_growth         = "{:,.1f}%".format(hood_pop_growth)
+    hood_hh_growth          = "{:,.1f}%".format(hood_hh_growth)
+    comparsion_pop_growth   = "{:,.1f}%".format(comparsion_pop_growth)
+    comparsion_hh_growth    = "{:,.1f}%".format(comparsion_hh_growth)
 
 
-    #Projected growth rates
-    _2026_comparison_pop             = 0
-    _2026_comparison_hh              = 0
-
-    _2026_hood_pop                   = 0
-    _2026_hood_hh                    = 0
-         
-    
-    _2020_2026_hood_pop_growth       = ((int(_2026_hood_pop)/int(_2019_hood_pop)) - 1) * 100
-    _2020_2026_hood_hh_growth        = ((int(_2026_hood_hh)/int(_2019_hood_hh))   - 1) * 100
-
-    _2020_2026_comparsion_pop_growth =  (int(_2026_comparison_pop)/int(_2019_comparison_pop) - 1) * 100
-    _2020_2026_comparsion_hh_growth  =  (int(_2026_comparison_hh)/int(_2019_comparison_hh)   - 1) * 100
-
-
-    
-    #Format variables
-    _2026_comparison_pop                =  "{:,}".format(_2026_comparison_pop)
-    _2026_comparison_hh                 =  "{:,}".format(_2026_comparison_hh)
-    _2026_hood_pop                      =  "{:,}".format(_2026_hood_pop)
-    _2026_hood_hh                       =  "{:,}".format(_2026_hood_hh)
-    _2010_2019_hood_pop_growth          = "{:,.1f}%".format(_2010_2019_hood_pop_growth)
-    _2010_2019_hood_hh_growth           = "{:,.1f}%".format(_2010_2019_hood_hh_growth)
-    _2010_2019_comparsion_pop_growth    = "{:,.1f}%".format(_2010_2019_comparsion_pop_growth)
-    _2010_2019_comparsion_hh_growth     = "{:,.1f}%".format(_2010_2019_comparsion_hh_growth)
-    _2010_2019_hood_pop_growth          = "{:,.1f}%".format(_2020_2026_hood_pop_growth)
-    _2010_2019_hood_hh_growth           = "{:,.1f}%".format(_2020_2026_hood_hh_growth)
-    _2010_2019_comparsion_pop_growth    = "{:,.1f}%".format(_2020_2026_comparsion_pop_growth)
-    _2010_2019_comparsion_hh_growth     = "{:,.1f}%".format(_2020_2026_comparsion_hh_growth)
 
     #each row represents a row of data for overview table
-    row1 = [''          , 'Area',             '2010 Census',            '2015-2019 Estimate',              'Change',              '2026 Projected' ]
-    row2 = ['Population', neighborhood,        _2010_hood_pop,          '' ,                                 '' ,                     ''           ]
-    row3 = [''          , comparison_area,     _2010_comparison_pop,    '',                                  '' ,                     '' ,         ]
-    row4 = ['Households', neighborhood,        _2010_hood_hh,           '',                                  '' ,                     '' ,         ]
-    row5 = [''          , comparison_area,     _2010_comparison_hh,     '',                                  '' ,                     '' ,         ]
+    row1 = [''          , 'Area',             '2010 Census',            'Current Estimate',                                      '% Change']
+    row2 = ['Population', neighborhood,        _2010_hood_pop,          current_hood_pop ,                                 hood_pop_growth ]
+    row3 = [''          , comparison_area,     _2010_comparison_pop,    current_comparison_pop,                             hood_hh_growth ]
+    row4 = ['Households', neighborhood,        _2010_hood_hh,           current_hood_hh,                              comparsion_pop_growth]
+    row5 = [''          , comparison_area,     _2010_comparison_hh,     current_comparison_hh,                        comparsion_hh_growth ]
     
     return(    
             [ 
@@ -3089,7 +3111,7 @@ def OverlayMapImages():
     #Add the zoomed in map on top of the zoomed out map and save as new png image
     # No transparency mask specified,                                      
     # simulating an raster overlay
-    img1.paste(img2, (img1.size[1] + 50,900))
+    img1.paste(img2, (img1.size[1] - 25,900))
     
     # img1.show()
     img1.save(map3_path)
@@ -3989,4 +4011,5 @@ def Main():
 
 #This is our main function that calls all other functions we will use
 Main()
+
 
