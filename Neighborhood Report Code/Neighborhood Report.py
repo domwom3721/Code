@@ -16,6 +16,8 @@ from datetime import datetime
 from tkinter.constants import E
 import census_area
 from PIL import Image
+from PIL import ImageOps
+
 
 import requests
 from requests.exceptions import HTTPError 
@@ -3091,6 +3093,15 @@ def GetMap():
          except:
             pass
 
+def add_border(input_image, output_image, border):
+    #adds border around png images
+    img = Image.open(input_image)
+    if isinstance(border, int) or isinstance(border, tuple):
+        bimg = ImageOps.expand(img, border=border)
+    else:
+        raise RuntimeError('Border is not an image or tuple')
+    bimg.save(output_image)
+
 def OverlayMapImages():
     
     #Add image of map
@@ -3102,6 +3113,9 @@ def OverlayMapImages():
     img1 = Image.open(map2_path)
     
     #Open zommed in map
+
+    add_border(map_path, output_image = map_path, border=1)
+    time.sleep(.2)
     img2 = Image.open(map_path)
 
     #Reduce size of zommed in image by a constant factor
