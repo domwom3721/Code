@@ -3269,6 +3269,32 @@ def millify(n):
 def OverviewLanguage():
     print('Writing Overview Langauge')
 
+#Section 1A: Grab overview summary from Metro_language CSV
+#     print('The subject property is located in ' + county + ', ' + state + '. ')
+
+# #Use the CBSA Code from IdentifyMSA to pull Metro Language
+# metro_area_language = pd.read_csv(os.path.join(data_location,'Metro_Language.csv'),
+# 	dtype={'cbsa_code': object,
+# 		'metro_name': object,
+# 		'overview': object,
+# 		'economy': object,
+# 		'growth': object,
+# 		'unique_aspects': object,
+# 		'Infrastructure': object,
+# 		'Colleges and Education': object
+# 		})
+
+# #restrict data to only rows with the Subject County CBSA Code
+# #I thought the CBSA was defined in the IdentifyMSA section? but based on error below, it is not. 
+# Metro_Area_Language = metro_area_language.loc[metro_area_language['cbsa_code'] == cbsa]
+      	
+# CBSA_overview_language = metro_area_language['Overview'].iloc[-1]
+# CBSA_economy_language = metro_area_language['Economy'].iloc[-1]
+# CBSA_infrastructure_language = metro_area_language['Infrastructure'].iloc[-1]
+# return([cbsa,CBSA_overview_language,CBSA_economy_language,CBSA_infrastructure_language])
+
+# else:
+# 	return
 
     #Section 1: Grab summary text from Wikipedia
     try:
@@ -3349,7 +3375,7 @@ def OverviewLanguage():
             
                    )
     
-    #Section 3: Put together a pargraph on the extent to which the coutny faced job losses during the pandemic
+    #Section 3: Put together a paragraph on the extent to which the county faced job losses during the pandemic
     february_2020_employment_level = county_employment.loc[(county_employment['year'] == '2020') & (county_employment['periodName'] == 'February')]['Employment'].iloc[-1]
     april_2020_employment_level    = county_employment.loc[(county_employment['year'] == '2020') & (county_employment['periodName'] == 'April')]['Employment'].iloc[-1]    
 

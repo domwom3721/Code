@@ -77,7 +77,6 @@ primary_space_after_paragraph = 8
 data_export                   = False
 testing_mode                  = True
 testing_mode                  = False
-fig_width                     = 4.5 #width for the pngs (graph images) we insert into report document
 
 
 #Directory Realted Functions
@@ -267,7 +266,7 @@ def FindZipCodeDictionary(zip_code_data_dictionary_list,zcta,state_fips):
             
 #Household Size
 def GetHouseholdSizeData(geographic_level,hood_or_comparison_area):
-    print('Getting household size data')
+    print('Getting household size data for: ',hood_or_comparison_area)
 
     #Define variables we request from census api
     fields_list = ['H013002','H013003','H013004','H013005','H013006','H013007','H013008']
@@ -380,7 +379,7 @@ def GetHouseholdSizeData(geographic_level,hood_or_comparison_area):
 #Household Tenure
 def GetHousingTenureData(geographic_level,hood_or_comparison_area):
     #Occupied Housing Units by Tenure
-    print('Getting tenure data')
+    print('Getting tenure data for: ',hood_or_comparison_area)
 
     fields_list = ['H004004','H004003','H004002']
     if geographic_level == 'place':
@@ -475,7 +474,7 @@ def GetHousingTenureData(geographic_level,hood_or_comparison_area):
     
 #Age Related Data Functions
 def GetAgeData(geographic_level,hood_or_comparison_area):
-    print('Getting age breakdown')
+    print('Getting age breakdown for: ',hood_or_comparison_area)
     #Return a list with the fraction of the population in different age groups 
 
     #Define 2 lists of variables, 1 for male age groups and another for female
@@ -621,7 +620,7 @@ def GetAgeData(geographic_level,hood_or_comparison_area):
 
 #Housing related data functions
 def GetHousingValues(geographic_level,hood_or_comparison_area):
-    print('Getting housing value data')
+    print('Getting housing value data for: ',hood_or_comparison_area)
 
     #5 Year ACS household  value range:  B25075_002E -B25075_027E
     fields_list = ["B25075_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,28)]
@@ -729,7 +728,7 @@ def GetHousingValues(geographic_level,hood_or_comparison_area):
 
 #Number of Housing Units based on number of units in building
 def GetNumberUnitsData(geographic_level,hood_or_comparison_area):
-    print('Getting housing units by number of units data')
+    print('Getting housing units by number of units data for: ', hood_or_comparison_area)
     
     
     owner_occupied_fields_list  = ["B25032_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(3,11)]   #5 Year ACS owner occupied number of units variables range:  B25032_003E - B25032_010E
@@ -864,7 +863,7 @@ def GetNumberUnitsData(geographic_level,hood_or_comparison_area):
 
 #Household Income data functions
 def GetHouseholdIncomeValues(geographic_level,hood_or_comparison_area):
-    print('Getting household income data')
+    print('Getting household income data for: ',hood_or_comparison_area)
 
     #5 Year ACS household income range:  B19001_002E - B19001_017E
     fields_list = ["B19001_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,18)]
@@ -978,7 +977,7 @@ def GetHouseholdIncomeValues(geographic_level,hood_or_comparison_area):
 
 #Occupations Data
 def GetTopOccupationsData(geographic_level,hood_or_comparison_area):
-    print('Getting occupation data')
+    print('Getting occupation data for: ',hood_or_comparison_area)
 
     cateogries_dict = {'B24011_002E':'Management and Business','B24011_018E':'Service','B24011_026E':'Sales and Office','B24011_029E':'Natural Resources','B24011_036E':'Production'}
 
@@ -1101,7 +1100,7 @@ def GetTopOccupationsData(geographic_level,hood_or_comparison_area):
 
 #Year Housing Built Data
 def GetHouseYearBuiltData(geographic_level,hood_or_comparison_area):
-    print('Getting year built data')
+    print('Getting year built data for: ',hood_or_comparison_area)
 
     #5 Year ACS household year house built range:  B25034_002E -B25034_011E
     fields_list = ["B25034_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,12)]
@@ -1206,7 +1205,7 @@ def GetHouseYearBuiltData(geographic_level,hood_or_comparison_area):
 
 #Travel Time to Work
 def GetTravelTimeData(geographic_level,hood_or_comparison_area):
-    print('Getting travel time data')
+    print('Getting travel time data for: ', hood_or_comparison_area)
     #5 Year ACS travel time range:   B08012_003E - B08012_013E
     fields_list = ["B08012_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,14)]
 
@@ -1311,7 +1310,7 @@ def GetTravelTimeData(geographic_level,hood_or_comparison_area):
 
 #Travel Method to work
 def GetTravelMethodData(geographic_level,hood_or_comparison_area):
-    print('Getting travel method to work data')
+    print('Getting travel method to work data for: ')
     
     fields_list = ['B08006_001E','B08006_003E','B08006_004E','B08006_015E','B08006_008E','B08006_017E','B08006_016E','B08006_014E']
 
@@ -1427,6 +1426,8 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
 
     #calculate table variables for hood
     if hood_geographic_level == 'place':
+        current_estimate_period = '2020 Census'
+
         _2010_hood_pop         = c.sf1.state_place(fields = total_pop_field,                                        state_fips = state_fips, place = hood_place_fips)[0][total_pop_field]
         _2010_hood_hh          = c.sf1.state_place(fields = total_households_field,                                 state_fips = state_fips, place = hood_place_fips)[0][total_households_field]
         
@@ -1434,6 +1435,8 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         current_hood_hh        = c.pl.state_place(fields = [redistricting_total_hh_field],                           state_fips = state_fips, place = hood_place_fips)[0][redistricting_total_hh_field]
         
     elif hood_geographic_level == 'county':
+        current_estimate_period = '2020 Census'
+
         _2010_hood_pop   = c.sf1.state_county(fields = total_pop_field,                      state_fips = state_fips, county_fips = hood_county_fips)[0][total_pop_field]
         _2010_hood_hh    = c.sf1.state_county(fields = total_households_field,               state_fips = state_fips, county_fips = hood_county_fips)[0][total_households_field]
     
@@ -1441,6 +1444,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         current_hood_hh  =  c.pl.state_county(fields = redistricting_total_hh_field,         state_fips = state_fips, county_fips = hood_county_fips)[0][redistricting_total_hh_field]
         
     elif hood_geographic_level == 'county subdivision':
+        current_estimate_period = '2020 Census'
         _2010_hood_pop         = c.sf1.state_county_subdivision(fields = total_pop_field,                     state_fips = state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips)[0][total_pop_field]
         _2010_hood_hh          = c.sf1.state_county_subdivision(fields = total_households_field,              state_fips = state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips)[0][total_households_field]
 
@@ -1448,6 +1452,8 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         current_hood_hh        = c.pl.state_county_subdivision(fields = redistricting_total_hh_field,         state_fips = state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips)[0][redistricting_total_hh_field]
 
     elif hood_geographic_level == 'zip':
+        current_estimate_period = 'Current Estimate'
+
         _2010_hood_pop         = c.sf1.state_zipcode(fields = total_pop_field,        state_fips = state_fips, zcta = hood_zip)[0][total_pop_field]
         _2010_hood_hh          = c.sf1.state_zipcode(fields = total_households_field, state_fips = state_fips, zcta = hood_zip)[0][total_households_field]
 
@@ -1455,6 +1461,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         current_hood_hh        = _2010_hood_hh
 
     elif hood_geographic_level == 'tract':
+        current_estimate_period = '2020 Census'
         _2010_hood_pop         = c.sf1.state_county_tract(fields = total_pop_field,              state_fips = state_fips,county_fips=hood_county_fips,tract=hood_tract)[0][total_pop_field]
         _2010_hood_hh          = c.sf1.state_county_tract(fields = total_households_field,       state_fips = state_fips,county_fips=hood_county_fips,tract=hood_tract)[0][total_households_field]
 
@@ -1462,6 +1469,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         current_hood_hh        = c.pl.state_county_tract(fields = redistricting_total_hh_field,  state_fips = state_fips,county_fips=hood_county_fips,tract=hood_tract)[0][redistricting_total_hh_field]
 
     elif hood_geographic_level == 'custom':
+        current_estimate_period = 'Current Estimate'
         
         #2010 Population
         neighborhood_tracts_data = []
@@ -1567,8 +1575,6 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         #     current_hood_pop += tract_pop
         #     current_hood_hh  += tract_hh
 
-
-
     #Table variables for comparison area
     if comparison_geographic_level == 'place':
         _2010_comparison_pop = c.sf1.state_place(fields = total_pop_field,                       state_fips = state_fips, place = comparsion_place_fips)[0][total_pop_field]
@@ -1639,9 +1645,8 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     comparsion_hh_growth    = "{:,.1f}%".format(comparsion_hh_growth)
 
 
-
     #each row represents a row of data for overview table
-    row1 = [''          , 'Area',             '2010 Census',            'Current Estimate',                                      '% Change']
+    row1 = [''          , 'Area',             '2010 Census',            current_estimate_period,                                      '% Change']
     row2 = ['Population', neighborhood,        _2010_hood_pop,          current_hood_pop ,                                 hood_pop_growth ]
     row3 = [''          , comparison_area,     _2010_comparison_pop,    current_comparison_pop,                       comparsion_pop_growth]
     row4 = ['Households', neighborhood,        _2010_hood_hh,           current_hood_hh,                                     hood_hh_growth]
@@ -2013,6 +2018,7 @@ def GetData():
     global google_data
     global location_iq_data
 
+    print('Getting Data for ' + neighborhood)
     neighborhood_household_size_distribution     = GetHouseholdSizeData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Neighborhood households by size
     neighborhood_tenure_distribution             = GetHousingTenureData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Tenure (owner occupied/renter)
     neighborhood_housing_value_data              = GetHousingValues(         geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Owner Occupied housing units by value
@@ -2023,7 +2029,8 @@ def GetData():
     neighborhood_age_data                        = GetAgeData(               geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Population by age data
     neighborhood_time_to_work_distribution       = GetTravelTimeData(        geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Time to Work
     neighborhood_top_occupations_data            = GetTopOccupationsData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Top Employment Occupations
-
+    
+    print('Getting Data For ' + comparison_area)
     comparison_household_size_distribution       = GetHouseholdSizeData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
     comparison_tenure_distribution               = GetHousingTenureData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
     comparison_housing_value_data                = GetHousingValues(        geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
@@ -2048,12 +2055,15 @@ def GetData():
 #Graph Related Functions
 def SetGraphFormatVariables():
     global graph_width, graph_height, scale,tickfont_size,left_margin,right_margin,top_margin,bottom_margin,legend_position,paper_backgroundcolor,title_position
+    global fig_width
 
     #Set graph size and format variables
     marginInches = 1/18
     ppi = 96.85 
     width_inches = 6.5
     height_inches = 3.3
+    fig_width                     = 4.5 #width for the pngs (graph images) we insert into report document
+
 
     graph_width  = (width_inches - marginInches)   * ppi
     graph_height = (height_inches  - marginInches) * ppi
@@ -2080,19 +2090,20 @@ def SetGraphFormatVariables():
 def CreateHouseholdSizeHistogram():
     print('Creating Household size graph')
 
+    household_size_categories = ['1','2','3','4','5','6','7+']
     fig = make_subplots(specs=[[{"secondary_y": False}]])
-
+    
     #Add Bars with neighborhood household size distribution
     fig.add_trace(
     go.Bar(y=neighborhood_household_size_distribution,
-           x=['1','2','3','4','5','6','7+'],
+           x=household_size_categories,
            name=neighborhood,
            marker_color="#4160D3")
             ,secondary_y=False
             )
     fig.add_trace(
     go.Bar(y=comparison_household_size_distribution,
-           x=['1','2','3','4','5','6','7+'],
+           x=household_size_categories,
            name=comparison_area,
            marker_color="#B3C3FF")
             ,secondary_y=False
@@ -2692,18 +2703,19 @@ def CreateTravelTimeHistogram():
     print('Creating Travel Time to work Graph')
     fig = make_subplots(specs=[[{"secondary_y": False}]])
 
+    travel_time_categories = ['< 5 Minutes','5-9 Minutes','10-14 Minutes','15-19 Minutes','20-24 Minutes','25-29 Minutes','30-34 Minutes','35-39 Minutes','40-44 Minutes','45-59 Minutes','60-89 Minutes','> 90 Minutes']
     #Add Bars with neighborhood household size distribution
     fig.add_trace(
     go.Bar(y=neighborhood_time_to_work_distribution,
-           x=['< 5 Minutes','5-9 Minutes','10-14 Minutes','15-19 Minutes','20-24 Minutes','25-29 Minutes','30-34 Minutes','35-39 Minutes','40-44 Minutes','45-59 Minutes','60-89 Minutes','> 90 Minutes'],
+           x = travel_time_categories,
            name=neighborhood,
            marker_color="#4160D3")
             ,secondary_y=False
             )
     fig.add_trace(
     go.Bar(y=comparison_time_to_work_distribution,
-           x=['< 5 Minutes','5-9 Minutes','10-14 Minutes','15-19 Minutes','20-24 Minutes','25-29 Minutes','30-34 Minutes','35-39 Minutes','40-44 Minutes','45-59 Minutes','60-89 Minutes','> 90 Minutes'],
-           name=comparison_area,
+           x=travel_time_categories,
+           name = comparison_area,
            marker_color="#B3C3FF")
             ,secondary_y=False
             )
@@ -2764,10 +2776,11 @@ def CreateTravelModeHistogram():
     print('Creating Travel Mode to work Graph')
     fig = make_subplots(specs=[[{"secondary_y": False}]])
 
+    travel_method_categories = ['Drove Alone','Car Pooled','Public Transportation','Walked','Worked from Home','Biked','Other']
     
     fig.add_trace(
     go.Bar(y=neighborhood_method_to_work_distribution,
-           x=['Drove Alone','Car Pooled','Public Transportation','Walked','Worked from Home','Biked','Other'],
+           x=travel_method_categories,
            name=neighborhood,
            marker_color="#4160D3")
             ,secondary_y=False
@@ -3047,18 +3060,127 @@ def HousingSizeLanguage():
     return[housing_size_langauge]
 
 def HousingValueLanguage():
-    housing_value_language = ('In ' + neighborhood + ' HOUSING VALUE STAND IN')
-    return([housing_value_language])
+  
+    housing_value_categories = ['$10,000 <','$10,000-14,999','$15,000-19,999','$20,000-24,999','$25,000-29,999','$30,000-34,000','$35,000-39,999','$40,000-49,000','$50,000-59,9999','$60,000-69,999','$70,000-79,999','$80,000-89,999','$90,000-99,999','$100,000-124,999','$125,000-149,999','$150,000-174,999','$175,000-199,999','$200,000-249,999','$250,000-299,999','$300,000-399,999','$400,000-499,999','$500,000-749,999','$750,000-999,999','$1,000,000-1,499,999','$1,500,000-1,999,999','$2,000,000 >=']
+
+
+    #Estimate a median household income from a category freqeuncy distribution
+    total_value_fraction = 0
+    for i,value_category_fraction in enumerate(neighborhood_housing_value_data):
+        total_value_fraction += value_category_fraction
+        if total_value_fraction >= 50:
+            median_cat_index = i
+            break
+    
+    hood_median_value_range     = housing_value_categories[median_cat_index]
+    hood_median_value_range     = hood_median_value_range.replace('$','')
+    hood_median_value_range     = hood_median_value_range.replace(',','').split('-')
+    hood_median_value           = round((int(hood_median_value_range[0]) + int(hood_median_value_range[1]))/2,1)
+    
+    hood_largest_value_category = housing_value_categories[neighborhood_housing_value_data.index(max(neighborhood_housing_value_data))] #get the most common income category
+    comp_largest_value_category = housing_value_categories[comparison_housing_value_data.index(max(comparison_housing_value_data))]
+
+    value_language = (  'Homes in '                                        +
+                       neighborhood                                           + 
+                       ' have a median value of about '                      + 
+                        "${:,.0f}".format(hood_median_value)                   +
+                       ', displayed in the chart below. '                     +
+                       
+                       'In '                                                  + 
+                       neighborhood                                           + 
+                       ', the largest share of homes have a value between ' +
+                       hood_largest_value_category +
+                       ', compared to ' +
+                       comp_largest_value_category        +
+                       ' for '           +
+                        comparison_area +
+                        '.'
+                        )
+    
+    return([value_language])
 
 def HousingYearBuiltLanguage():
-    year_built_language = ('In ' + neighborhood + ' YEAR BUILT STAND IN')
-    return([year_built_language])
+    
+    year_built_categories = ['2014 >=','2010-2013','2000-2009','1990-1999','1980-1989','1970-1979','1960-1969','1950-1959','1940-1949','<= 1939']
+    year_built_categories.reverse()
+
+    #Estimate a median household income from a category freqeuncy distribution
+    total_yrblt_fraction = 0
+    for i,yrblt_category_fraction in enumerate(neighborhood_year_built_data):
+        total_yrblt_fraction += yrblt_category_fraction
+        if total_yrblt_fraction >= 50:
+            median_cat_index = i
+            break
+    
+    hood_median_yrblt_range     = year_built_categories[median_cat_index]
+    hood_median_yrblt_range     = hood_median_yrblt_range.replace('<= ', '')
+    if len(hood_median_yrblt_range) == 4:
+        hood_median_yrblt = int(hood_median_yrblt_range)
+    else:
+        hood_median_yrblt_range     = hood_median_yrblt_range.replace(' >=', '').split('-')
+        hood_median_yrblt           = round((int(hood_median_yrblt_range[0]) + int(hood_median_yrblt_range[1]))/2,1)
+    
+    hood_largest_yrblt_category = year_built_categories[neighborhood_year_built_data.index(max(neighborhood_year_built_data))] #get the most common income category
+    comp_largest_yrblt_category = year_built_categories[comparison_year_built_data.index(max(comparison_year_built_data))]
+
+    yrblt_language = (  'Homes in '                                         +
+                       neighborhood                                         + 
+                       ' have a median year built of about '                + 
+                        "{:.0f}".format(hood_median_yrblt)                 +
+                       ', displayed in the chart below. '                   +
+                       
+                       'In '                                                + 
+                       neighborhood                                         + 
+                       ', the largest share of homes were built between '   +
+                       hood_largest_yrblt_category                          +
+                       ', compared to '                                     +
+                       comp_largest_yrblt_category                          +
+                       ' for '                                              +
+                        comparison_area                                     +
+                        '.'
+                        )
+    
+    return([yrblt_language])
 
 def EmploymentLanguage():
     return(['The majority of working age residents are employed in the ______, ______, and _______ industries. ' + 'Given its large share of employees in the production industry, '])
 
 def HouseholdSizeLanguage():
-    household_size_language = ('In ' + neighborhood + ' HOUSEHOLD SIZE STANDIN')
+    
+    household_size_categories = ['1','2','3','4','5','6','7+']
+
+
+    #Estimate a median household size from a category freqeuncy distribution
+    total_size_fraction = 0
+    for i,size_category_fraction in enumerate(neighborhood_household_size_distribution):
+        total_size_fraction += size_category_fraction
+        if total_size_fraction >= 50:
+            median_cat_index = i
+            break
+    
+    hood_median_size   = int(household_size_categories[median_cat_index].replace('+',''))
+  
+
+    hood_largest_time_category = household_size_categories[neighborhood_household_size_distribution.index(max(neighborhood_household_size_distribution))] #get the most common household size category
+    comp_largest_time_category = household_size_categories[comparison_household_size_distribution.index(max(comparison_household_size_distribution))]
+
+    household_size_language = ('Households in '                                        +
+                               neighborhood                                           + 
+                              ' have a median size of '                      + 
+                        "{:,.0f} people".format(hood_median_size)                   +
+                       ', displayed in the chart below. '                     +
+                       
+                       'In '                                                  + 
+                       neighborhood                                           + 
+                       ', the largest share of households have ' +
+                       hood_largest_time_category +
+                       ' people, compared to ' +
+                       comp_largest_time_category        +
+                       ' for '           +
+                        comparison_area +
+                        '.'
+                        )
+    
     return([household_size_language])
 
 def PopulationAgeLanguage():
@@ -3156,12 +3278,51 @@ def IncomeLanguage():
     return([income_language])
 
 def TravelMethodLanguage():
-    travel_method_language = ('In ' + neighborhood + ' TRAVEL METHOD STAND IN')
+    travel_method_categories = ['driving alone','car pooling','public transportation','walking','working from home','biking','other']
+    hood_largest_travel_category      = travel_method_categories[neighborhood_method_to_work_distribution.index(max(neighborhood_method_to_work_distribution))] #get the most common income category
+    hood_largest_travel_category_frac = neighborhood_method_to_work_distribution[neighborhood_method_to_work_distribution.index(max(neighborhood_method_to_work_distribution))]
+    travel_method_language = ('In ' + neighborhood + ', the most common method for traveling to work is ' + hood_largest_travel_category.lower()  + ' with ' +  "{:,.1f}%".format(hood_largest_travel_category_frac) + ' of commuters using it.')
     return([travel_method_language])
-
+    
 def TravelTimeLanguage():
-    travel_time_language = ('In ' + neighborhood + ' TRAVEL TIME STAND IN')
-    return([travel_time_language])
+    
+    travel_time_categories = ['< 5 Minutes','5-9 Minutes','10-14 Minutes','15-19 Minutes','20-24 Minutes','25-29 Minutes','30-34 Minutes','35-39 Minutes','40-44 Minutes','45-59 Minutes','60-89 Minutes','> 90 Minutes']
+
+
+    #Estimate a median household income from a category freqeuncy distribution
+    total_time_fraction = 0
+    for i,time_category_fraction in enumerate(neighborhood_time_to_work_distribution):
+        total_time_fraction += time_category_fraction
+        if total_time_fraction >= 50:
+            median_cat_index = i
+            break
+    
+    hood_median_time_range   = travel_time_categories[median_cat_index]
+    hood_median_time_range   = hood_median_time_range.replace(' Minutes','')
+    hood_median_time_range   = hood_median_time_range.replace(',','').split('-')
+    hood_median_time         = round((int(hood_median_time_range[0]) + int(hood_median_time_range[1]))/2,1)
+    
+    hood_largest_time_category = travel_time_categories[neighborhood_time_to_work_distribution.index(max(neighborhood_time_to_work_distribution))] #get the most common income category
+    comp_largest_time_category = travel_time_categories[comparison_time_to_work_distribution.index(max(comparison_time_to_work_distribution))]
+
+    time_language = ('Commuters in '                                        +
+                       neighborhood                                           + 
+                       ' have a median commute time of about '                      + 
+                        "{:,.0f} minutes".format(hood_median_time)                   +
+                       ', displayed in the chart below. '                     +
+                       
+                       'In '                                                  + 
+                       neighborhood                                           + 
+                       ', the largest share of commuters have a commute between ' +
+                       hood_largest_time_category +
+                       ', compared to ' +
+                       comp_largest_time_category        +
+                       ' for '           +
+                        comparison_area +
+                        '.'
+                        )
+    
+    return([time_language])
 
 def CreateLanguage():
     print('Creating Langauge')
@@ -4007,16 +4168,14 @@ def GetUserInputs():
     global state, state_fips, state_full_name
     global comparison_area, comparison_tract ,comparison_zip, comparsion_place_fips, comparison_suvdiv_fips, comparison_county_fips    
 
-
-    
     #Get User input on neighborhood/subject area
     if neighborhood_level == 'p':        #when our neighborhood is a town or city eg: East Rockaway Village, New York
         
 
         neighborhood_level = 'place'
         if testing_mode == False:
-            fips = input('Enter the 7 digit Census Place FIPS Code')
-            # fips = '36-51000'
+            # fips = input('Enter the 7 digit Census Place FIPS Code')
+            fips = '44-49960'
         else:
             fips = '36-22876'
 
@@ -4158,8 +4317,8 @@ def GetUserInputs():
 
         #Get comparison county FIPS code from user
         if testing_mode == False:
-            comparison_county_fips = input('Enter the 5 digit FIPS code for the comparison county')
-            # comparison_county_fips = '36061'
+            # comparison_county_fips = input('Enter the 5 digit FIPS code for the comparison county')
+            comparison_county_fips = '44005'
 
         else:
             comparison_county_fips = '36061'
@@ -4328,7 +4487,6 @@ def Main():
                     csv_name=service_api_csv_name, 
                     csv_path=os.path.join(main_output_location, service_api_csv_name),
                     dropbox_dir='https://www.dropbox.com/home/Research/Market Analysis/Neighborhood/')
-
 
 #This is our main function that calls all other functions we will use
 Main()
