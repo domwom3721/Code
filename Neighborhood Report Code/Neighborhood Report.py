@@ -3046,9 +3046,21 @@ def HousingSizeLanguage():
                              )
     return[housing_size_langauge]
 
+def HousingValueLanguage():
+    housing_value_language = ('In ' + neighborhood + ' HOUSING VALUE STAND IN')
+    return([housing_value_language])
+
+def HousingYearBuiltLanguage():
+    year_built_language = ('In ' + neighborhood + ' YEAR BUILT STAND IN')
+    return([year_built_language])
+
 def EmploymentLanguage():
     return(['The majority of working age residents are employed in the ______, ______, and _______ industries. ' + 'Given its large share of employees in the production industry, '])
-    
+
+def HouseholdSizeLanguage():
+    household_size_language = ('In ' + neighborhood + ' HOUSEHOLD SIZE STANDIN')
+    return([household_size_language])
+
 def PopulationAgeLanguage():
     age_ranges = ['0-19','20-24','25-34','35-49','50-66','67+']
 
@@ -3143,6 +3155,14 @@ def IncomeLanguage():
     
     return([income_language])
 
+def TravelMethodLanguage():
+    travel_method_language = ('In ' + neighborhood + ' TRAVEL METHOD STAND IN')
+    return([travel_method_language])
+
+def TravelTimeLanguage():
+    travel_time_language = ('In ' + neighborhood + ' TRAVEL TIME STAND IN')
+    return([travel_time_language])
+
 def CreateLanguage():
     print('Creating Langauge')
 
@@ -3154,6 +3174,9 @@ def CreateLanguage():
     global employment_language
     global population_age_language
     global income_language
+    global travel_method_language, travel_time_language
+    global housing_value_language,year_built_language
+    global household_size_language
 
     summary_langauge                   =  SummaryLangauge()
     community_assets_language          =  CommunityAssetsLanguage()
@@ -3162,9 +3185,16 @@ def CreateLanguage():
     housing_tenure_breakdown_language  = HousingTenureLanguage()
     structure_size_breakdown_language  = HousingSizeLanguage()
     
+    housing_value_language             = HousingValueLanguage()
+    year_built_language                = HousingYearBuiltLanguage()
+    
     employment_language                = EmploymentLanguage()
     population_age_language            = PopulationAgeLanguage()
     income_language                    = IncomeLanguage()
+    household_size_language            = HouseholdSizeLanguage()
+
+    travel_method_language             = TravelMethodLanguage() 
+    travel_time_language               = TravelTimeLanguage()
 
 
     bus_language                       = BusLanguage() 
@@ -3557,13 +3587,6 @@ def HousingSection(document):
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
 
-    #Insert Household size graph
-    if os.path.exists(os.path.join(hood_folder,'household_size_graph.png')):
-        fig = document.add_picture(os.path.join(hood_folder,'household_size_graph.png'),width=Inches(fig_width))
-        last_paragraph = document.paragraphs[-1] 
-        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        Citation(document,'U.S. Census Bureau')
-    
     #Add tenure language
     for paragraph in housing_tenure_breakdown_language:
         if paragraph == '':
@@ -3579,12 +3602,30 @@ def HousingSection(document):
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
     
+    #Add housing value language
+    for paragraph in housing_value_language:
+        if paragraph == '':
+            continue
+        housing_value_paragraph                               = document.add_paragraph(paragraph)
+        housing_value_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
+        housing_value_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+
     #Insert Household value graph
     if os.path.exists(os.path.join(hood_folder,'household_value_graph.png')):
         fig = document.add_picture(os.path.join(hood_folder,'household_value_graph.png'),width=Inches(fig_width))
         last_paragraph = document.paragraphs[-1] 
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
+
+    #Add language
+    for paragraph in year_built_language :
+        if paragraph == '':
+            continue
+        year_built_paragraph                                   = document.add_paragraph(paragraph)
+        year_built_paragraph.alignment                         = WD_ALIGN_PARAGRAPH.JUSTIFY
+        year_built_paragraph.paragraph_format.space_after      = Pt(primary_space_after_paragraph)
+
+
 
     #Insert household units by year built graph
     if os.path.exists(os.path.join(hood_folder,'household_year_built_graph.png')):
@@ -3614,6 +3655,24 @@ def PopulationSection(document):
     print('Writing Population Section')
     
     AddHeading(document = document, title = 'Population',                                     heading_level = 1,heading_number='Heading 3',font_size=11)
+    
+    #household size langauge
+    for paragraph in household_size_language:
+        if paragraph == '':
+            continue
+        hh_size_paragraph                               = document.add_paragraph(paragraph)
+        hh_size_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
+        hh_size_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+
+
+    #Insert Household size graph
+    if os.path.exists(os.path.join(hood_folder,'household_size_graph.png')):
+        fig = document.add_picture(os.path.join(hood_folder,'household_size_graph.png'),width=Inches(fig_width))
+        last_paragraph = document.paragraphs[-1] 
+        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        Citation(document,'U.S. Census Bureau')
+
+    #Age langauge
     for paragraph in population_age_language:
         if paragraph == '':
             continue
@@ -3628,6 +3687,10 @@ def PopulationSection(document):
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
     
+
+
+
+    #Income langauge
     for paragraph in income_language:
         if paragraph == '':
             continue
@@ -3669,12 +3732,28 @@ def TransportationSection(document):
     #Employment and Transportation Section
     AddHeading(document = document, title = 'Transportation',                  heading_level = 1,heading_number='Heading 3',font_size=11)
 
+    #Travel time Lanaguage
+    for paragraph in travel_time_language:
+        if paragraph == '':
+            continue
+        travel_time_paragraph                               = document.add_paragraph(paragraph)
+        travel_time_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
+        travel_time_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+
     #Insert Travel Time to Work graph
     if os.path.exists(os.path.join(hood_folder,'travel_time_graph.png')):
         fig = document.add_picture(os.path.join(hood_folder,'travel_time_graph.png'),width=Inches(fig_width))
         last_paragraph = document.paragraphs[-1] 
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
+    
+    #Travel method Lanaguage
+    for paragraph in travel_method_language:
+        if paragraph == '':
+            continue
+        travel_time_paragraph                               = document.add_paragraph(paragraph)
+        travel_time_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
+        travel_time_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
     
     #Insert Transport Method to Work graph
     if os.path.exists(os.path.join(hood_folder,'travel_mode_graph.png')):
@@ -3719,13 +3798,14 @@ def TransportationSection(document):
 
 
 
+
     #Walk/Bike/Transit Score Table
     table_paragraph = document.add_paragraph('Walk, Bike, and Transit Scores')
     table_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
     #Add transit score table
     tab = document.add_table(rows=1, cols=2)
-    for pic in ['car.png','train.png','bus.png',]:
+    for pic in ['car.png','car.png','car.png',]:
         row_cells = tab.add_row().cells
         paragraph = row_cells[0].paragraphs[0]
         run = paragraph.add_run()
