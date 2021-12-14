@@ -2,43 +2,36 @@
 #Started 06/30/2021
 #Summary: This script creates reports on neighborhoods/cities for Bowery
 
-from ctypes import addressof
-from genericpath import exists
-from itertools import count
+import json
 import math
+import msvcrt
 import os
 import re
+import shutil
+import sys
 import time
-from datetime import date
+from ctypes import addressof
+from datetime import date, datetime
+from itertools import count
 from pprint import pprint
 from random import randrange
-from datetime import datetime
 from tkinter.constants import E
+
 import census_area
-from PIL import Image
-from PIL import ImageOps
-
-
-import requests
-from requests.exceptions import HTTPError 
-from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry
-import msvcrt
-import json
-import mpu
-from osgeo import gdal, ogr
-import sys
 import docx
+import googlemaps
+import mpu
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import pyautogui
 import requests
-from bs4 import BeautifulSoup
-import walkscore
+import shapefile
+import us
 import wikipedia
 from bls_datasets import oes, qcew
 from blsconnect import RequestBLS, bls_search
+from bs4 import BeautifulSoup
 from census import Census
 from census_area import Census as CensusArea
 from docx import Document
@@ -49,23 +42,23 @@ from docx.oxml.ns import qn
 from docx.oxml.table import CT_Row, CT_Tc
 from docx.shared import Inches, Pt, RGBColor
 from fredapi import Fred
+from genericpath import exists
 from numpy import true_divide
-import shutil
+from osgeo import gdal, ogr
+from PIL import Image, ImageOps
 from plotly.subplots import make_subplots
+from requests.adapters import HTTPAdapter
+from requests.exceptions import HTTPError
+from requests.packages.urllib3.util.retry import Retry
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from us import states
-import us
-from wikipedia.wikipedia import random
-
-from yelpapi import YelpAPI
-import googlemaps
-from walkscore import WalkScoreAPI
-import shapefile
-from shapely.geometry import shape, Point,MultiPoint
-from shapely.geometry import Point, LineString
+from shapely.geometry import LineString, MultiPoint, Point, shape
 from shapely.ops import nearest_points
+from us import states
+from walkscore import WalkScoreAPI
+from wikipedia.wikipedia import random
+from yelpapi import YelpAPI
 
 #Define file paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
@@ -183,7 +176,7 @@ def DeclareAPIKeys():
     global c,c_area,walkscore_api
     
     #Declare API Keys
-    census_api_key                 = '18335344cf4a0242ae9f7354489ef2f8860a9f61'
+    census_api_key                = '18335344cf4a0242ae9f7354489ef2f8860a9f61'
     walkscore_api_key             = '057f7c0a590efb7ec06da5a8735e536d'
     google_maps_api_key           = 'AIzaSyBMcoRFOW2rxAGxURCpA4gk10MROVVflLs'
     yelp_client_id                = 'NY9c0_9kvOU4wfzmkkruOQ'
@@ -191,9 +184,8 @@ def DeclareAPIKeys():
     location_iq_api_key           = 'pk.8937271b8b15004065ca62552e7d06f7'
     zoneomics_api_key             = 'd69b3eee92f8d3cec8c71893b340faa8cb52e1b8'
 
-    yelp_api = YelpAPI(yelp_api_key)
-    walkscore_api = WalkScoreAPI(api_key = walkscore_api_key)
-
+    yelp_api                      = YelpAPI(yelp_api_key)
+    walkscore_api                 = WalkScoreAPI(api_key = walkscore_api_key)
     c                             = Census(census_api_key) #Census API wrapper package
     c_area                        = CensusArea(census_api_key) #Census API package, sepearete extension of main package that allows for custom boundries
 
@@ -1681,28 +1673,49 @@ def GetWikipediaPage():
             print(e,': problem getting wikipedia page')
 
 def GetWalkScore(lat,lon):
-    print('Getting Walk Score')
-    walkscore_response = requests.get('https://api.walkscore.com/score?format=json&lat=' + str(lat) + '&lon='  + str(lon) + '&transit=1&bike=1&wsapikey='+ walkscore_api_key).json()
+
+    lat = str(lat)
+    lon = str(lon)
+    url = """https://api.walkscore.com/score?format=json&address=None&""" + """lat=""" + lat + """&lon=""" + lon + """&transit=1&bike=1&wsapikey=""" + walkscore_api_key
+   
+    
+    walkscore_response = requests.get(url).json()
     # print(walkscore_response)
+    
+    #Get Walk score from response
     try:
-        walk_score     = walkscore_response['walkscore']
+        walk_score           = walkscore_response['walkscore']
+        walk_description     = walkscore_response['description']
+        walk_table_entry     = ('Walk Score: ' + str(walk_score) + ' (' + walk_description + ')')
     except Exception as e:
-        print(e)
-        walk_score = None
+        print(e,'could not get walk score')
+        walk_table_entry     = 'NA'
+    
+    #Get Transit score from response
     try:
-        transit_score  = walkscore_response['transit']['score']
+        transit_score        = walkscore_response['transit']['score']
+        transit_description  = walkscore_response['transit']['description']
+        transit_table_entry  = ('Transit Score: ' + str(transit_score) + ' (' + transit_description + ')')
+
     except Exception as e:
-        print(e)
-        transit_score  = None
+        print(e,'could not get transit score')
+        transit_table_entry  = 'Transit Score: NA'
+
+
+    #Get Bike score from response
     try:
-         bike_score     =  walkscore_response['bike']['score']
+         bike_score           =  walkscore_response['bike']['score']
+         bike_description     =  walkscore_response['bike']['description']
+         bike_table_entry     = ('Bike Score: ' + str(bike_score)  + ' (' + bike_description + ')')
+
     except Exception as e:
-        print(e)
-        bike_score = None
-  
+        print(e,'could not get bike score')
+        bike_table_entry     = 'Bike Score: NA'
+
     
     #Return a list of the 3 scores
-    walk_scores = [('Walk Score: ' + str(walk_score)), ('Transit Score: ' + str(transit_score)), ('Bike Score: ' + str(bike_score))]
+    walk_scores = [walk_table_entry, transit_table_entry, bike_table_entry]
+    print(walk_scores)
     return(walk_scores)
 
 def GetYelpData(lat,lon,radius):
@@ -1997,35 +2010,35 @@ def GetData():
     global google_data
     global location_iq_data
 
-    neighborhood_household_size_distribution     = GetHouseholdSizeData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Neighborhood households by size
-    neighborhood_tenure_distribution             = GetHousingTenureData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Tenure (owner occupied/renter)
-    neighborhood_housing_value_data              = GetHousingValues(         geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Owner Occupied housing units by value
-    neighborhood_number_units_data               = GetNumberUnitsData(       geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by units in building
-    neighborhood_year_built_data                 = GetHouseYearBuiltData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by year structure built
-    neighborhood_method_to_work_distribution     = GetTravelMethodData(      geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Mode to Work
-    neighborhood_household_income_data           = GetHouseholdIncomeValues( geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Households by household income data
-    neighborhood_age_data                        = GetAgeData(               geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Population by age data
-    neighborhood_time_to_work_distribution       = GetTravelTimeData(        geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Time to Work
-    neighborhood_top_occupations_data            = GetTopOccupationsData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Top Employment Occupations
+    # neighborhood_household_size_distribution     = GetHouseholdSizeData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Neighborhood households by size
+    # neighborhood_tenure_distribution             = GetHousingTenureData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Tenure (owner occupied/renter)
+    # neighborhood_housing_value_data              = GetHousingValues(         geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Owner Occupied housing units by value
+    # neighborhood_number_units_data               = GetNumberUnitsData(       geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by units in building
+    # neighborhood_year_built_data                 = GetHouseYearBuiltData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by year structure built
+    # neighborhood_method_to_work_distribution     = GetTravelMethodData(      geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Mode to Work
+    # neighborhood_household_income_data           = GetHouseholdIncomeValues( geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Households by household income data
+    # neighborhood_age_data                        = GetAgeData(               geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Population by age data
+    # neighborhood_time_to_work_distribution       = GetTravelTimeData(        geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Time to Work
+    # neighborhood_top_occupations_data            = GetTopOccupationsData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Top Employment Occupations
 
-    comparison_household_size_distribution       = GetHouseholdSizeData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    comparison_tenure_distribution               = GetHousingTenureData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    comparison_housing_value_data                = GetHousingValues(        geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
-    comparison_number_units_data                 = GetNumberUnitsData(      geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
-    comparison_year_built_data                   = GetHouseYearBuiltData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    comparison_age_data                          = GetAgeData(              geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    comparison_household_income_data             = GetHouseholdIncomeValues(geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')   
-    comparison_top_occupations_data              = GetTopOccupationsData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    comparison_time_to_work_distribution         = GetTravelTimeData(       geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    # comparison_household_size_distribution       = GetHouseholdSizeData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    # comparison_tenure_distribution               = GetHousingTenureData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    # comparison_housing_value_data                = GetHousingValues(        geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
+    # comparison_number_units_data                 = GetNumberUnitsData(      geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
+    # comparison_year_built_data                   = GetHouseYearBuiltData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    # comparison_age_data                          = GetAgeData(              geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    # comparison_household_income_data             = GetHouseholdIncomeValues(geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')   
+    # comparison_top_occupations_data              = GetTopOccupationsData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    # comparison_time_to_work_distribution         = GetTravelTimeData(       geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
     
     #Walk score
     walk_score_data                              = GetWalkScore(            lat = latitude, lon = longitude                                                    )
-    location_iq_data                             = LocationIQ(              lat = latitude, lon = longitude, radius = 5000                                     )
-    yelp_data                                    = GetYelpData(             lat = latitude, lon = longitude, radius = 30000                                    ) #radius in meters
+    # location_iq_data                             = LocationIQ(              lat = latitude, lon = longitude, radius = 5000                                     )
+    # yelp_data                                    = GetYelpData(             lat = latitude, lon = longitude, radius = 30000                                    ) #radius in meters
 
     
     #Overview Table Data
-    overview_table_data = GetOverviewTable(hood_geographic_level = neighborhood_level ,comparison_geographic_level = comparison_level )
+    # overview_table_data = GetOverviewTable(hood_geographic_level = neighborhood_level ,comparison_geographic_level = comparison_level )
     
     #Unused functions
     # # SearchGreatSchoolDotOrg()
@@ -3660,11 +3673,11 @@ def CreateDirectoryCSV():
         else:
             for file in filenames:
                 
-                if file == 'Dropbox Neighborhoods.csv' or ('Archive' in dirpath):
+                full_path = dirpath + '/' + file
+
+                if file == 'Dropbox Neighborhoods.csv' or ('Archive' in dirpath) or ('~' in file):
                     continue
                 
-                full_path = dirpath + '/' + file
-                # print(full_path)
                 if (os.path.exists(full_path.replace('_draft','_FINAL'))) and ('_draft' in full_path) or ('docx' not in full_path):
                     continue
 
@@ -3764,7 +3777,8 @@ def UserSelectsNeighborhoodLevel():
     
     # return([neighborhood_level,comparison_level])
 
-    return(['custom','p'])
+    # return(['custom','p'])
+    return(['p','c'])
 
 def GetUserInputs():
     
@@ -3785,7 +3799,8 @@ def GetUserInputs():
 
         neighborhood_level = 'place'
         if testing_mode == False:
-            fips = input('Enter the 7 digit Census Place FIPS Code')
+            # fips = input('Enter the 7 digit Census Place FIPS Code')
+            fips = '12-35000'
         else:
             fips = '36-22876'
 
@@ -3927,7 +3942,9 @@ def GetUserInputs():
 
         #Get comparison county FIPS code from user
         if testing_mode == False:
-            comparison_county_fips = input('Enter the 5 digit FIPS code for the comparison county')
+            # comparison_county_fips = input('Enter the 5 digit FIPS code for the comparison county')
+            comparison_county_fips = '12031'
+
         else:
             comparison_county_fips = '36059'
         
@@ -4081,10 +4098,10 @@ def Main():
         CreateDirectory()
         GetWikipediaPage()
         GetData()
-        CreateGraphs()
-        CreateLanguage()
-        WriteReport()
-        CleanUpPNGs()
+        # CreateGraphs()
+        # CreateLanguage()
+        # WriteReport()
+        # CleanUpPNGs()
     
     #Crawl through directory and create CSV with all current neighborhood report documents
     CreateDirectoryCSV()
