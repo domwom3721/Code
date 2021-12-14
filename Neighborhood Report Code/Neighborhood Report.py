@@ -1575,8 +1575,6 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         #     current_hood_pop += tract_pop
         #     current_hood_hh  += tract_hh
 
-
-
     #Table variables for comparison area
     if comparison_geographic_level == 'place':
         _2010_comparison_pop = c.sf1.state_place(fields = total_pop_field,                       state_fips = state_fips, place = comparsion_place_fips)[0][total_pop_field]
