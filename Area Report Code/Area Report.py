@@ -3269,32 +3269,40 @@ def millify(n):
 def OverviewLanguage():
     print('Writing Overview Langauge')
 
-#Section 1A: Grab overview summary from Metro_language CSV
-#     print('The subject property is located in ' + county + ', ' + state + '. ')
+    # Section 1A: Grab overview summary from Metro_language CSV
+    print('The subject property is located in ' + county + ', ' + state + '. ')
 
-# #Use the CBSA Code from IdentifyMSA to pull Metro Language
-# metro_area_language = pd.read_csv(os.path.join(data_location,'Metro_Language.csv'),
-# 	dtype={'cbsa_code': object,
-# 		'metro_name': object,
-# 		'overview': object,
-# 		'economy': object,
-# 		'growth': object,
-# 		'unique_aspects': object,
-# 		'Infrastructure': object,
-# 		'Colleges and Education': object
-# 		})
+    #Use the CBSA Code from IdentifyMSA to pull Metro Language
+    metro_area_language_df = pd.read_csv(os.path.join(data_location,'Metro_Language.csv'),
+                                                dtype={
+                                                    'cbsa_code': object,
+                                                    'metro_name': object,
+                                                    'overview': object,
+                                                    'economy': object,
+                                                    'growth': object,
+                                                    'unique_aspects': object,
+                                                    'Infrastructure': object,
+                                                    'Colleges and Education': object
+                                                      }
+                                        )
 
-# #restrict data to only rows with the Subject County CBSA Code
-# #I thought the CBSA was defined in the IdentifyMSA section? but based on error below, it is not. 
-# Metro_Area_Language = metro_area_language.loc[metro_area_language['cbsa_code'] == cbsa]
-      	
-# CBSA_overview_language = metro_area_language['Overview'].iloc[-1]
-# CBSA_economy_language = metro_area_language['Economy'].iloc[-1]
-# CBSA_infrastructure_language = metro_area_language['Infrastructure'].iloc[-1]
-# return([cbsa,CBSA_overview_language,CBSA_economy_language,CBSA_infrastructure_language])
+    #restrict data to only rows with the Subject County CBSA Code
+    #I thought the CBSA was defined in the IdentifyMSA section? but based on error below, it is not. 
+    metro_area_language_df = metro_area_language_df.loc[metro_area_language_df['cbsa_code'] == cbsa] #restrict to only the row for the metro area in question
+    
+    #If we have a cbsa/msa for the county, then use the excel file text
+    if len(metro_area_language_df) == 1:   
+        CBSA_overview_language       = metro_area_language_df['Overview'].iloc[-1]
+        CBSA_economy_language        = metro_area_language_df['Economy'].iloc[-1]
+        CBSA_infrastructure_language = metro_area_language_df['Infrastructure'].iloc[-1]
+        return([cbsa,CBSA_overview_language,CBSA_economy_language,CBSA_infrastructure_language]) #"return" stops the function and you can disreguard everything below if this is executed
 
-# else:
-# 	return
+
+
+
+
+    
+    #If not, then use wikipedia and the data we have collected to construct a few paragraphs.....
 
     #Section 1: Grab summary text from Wikipedia
     try:
