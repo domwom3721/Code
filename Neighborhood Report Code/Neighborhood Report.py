@@ -93,12 +93,16 @@ def CreateDirectory():
     global report_path,hood_folder_map,hood_folder
     
     state_folder_map         = os.path.join(map_location,state)
-    
+
     state_folder             = os.path.join(main_output_location,state)
 
     if neighborhood_level == 'custom':
+
         if os.path.exists(state_folder) == False:
-               os.mkdir(state_folder)  
+            os.mkdir(state_folder)  
+        
+        if os.path.exists(state_folder_map) == False:
+            os.mkdir(state_folder_map)  
 
         city_folder =  os.path.join(main_output_location,state,comparison_area)
         city_folder_map =  os.path.join(map_location,state,comparison_area)
@@ -3913,8 +3917,8 @@ def GetUserInputs():
     elif neighborhood_level == 'custom': #When our neighborhood is a neighboorhood within a city (eg: Financial District, New York City)
 
         #Get name of hood
-        # neighborhood      = input('Enter the name of the custom neighborhood')
-        neighborhood        = 'Gaslamp Quarter'
+        neighborhood      = input('Enter the name of the custom neighborhood')
+        # neighborhood        = 'Gaslamp Quarter'
             
     #Get user input on comparison area
     if comparison_level == 'c':          #When our comparison area is a county eg Nassau County, New York
@@ -3940,8 +3944,8 @@ def GetUserInputs():
         
         #Get place FIPS code from user
         comparison_level      = 'place'
-        # fips                  = input('Enter the 7 digit Census Place FIPS Code for the comparison area')
-        fips                  = '06-66000'
+        fips                  = input('Enter the 7 digit Census Place FIPS Code for the comparison area')
+        # fips                  = '06-66000'
 
         #Process FIPS code provided by user``
         fips                  = fips.replace('-','').strip()
