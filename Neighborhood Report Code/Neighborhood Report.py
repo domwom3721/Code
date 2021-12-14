@@ -1417,11 +1417,11 @@ def GetTravelMethodData(geographic_level,hood_or_comparison_area):
 def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     print('Getting Overview table data')
 
-    total_pop_field             = 'P001001'
-    total_households_field      = 'H003002'
+    total_pop_field               = 'P001001'
+    total_households_field        = 'H003002'
 
-    acs_total_pop_field         = 'DP02_0018E'
-    acs_total_households_field  = 'DP02_0001E'  
+    acs_total_pop_field           = 'B01001_001E'
+    acs_total_households_field    = 'B09005_001E'  
 
     redistricting_total_pop_field = 'P1_001N'
     redistricting_total_hh_field  = 'H1_002N'
@@ -1469,6 +1469,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
 
         #Fetch census data for all relevant census tracts within the neighborhood
         raw_census_data = c_area.sf1.geo_tract(total_pop_field, neighborhood_shape)
+       
         
         for tract_geojson, tract_data, tract_proportion in raw_census_data:
             neighborhood_tracts_data.append((tract_data))
@@ -1476,6 +1477,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
         _2010_hood_pop_raw_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = [total_pop_field])
         _2010_hood_pop          = _2010_hood_pop_raw_data[total_pop_field]
+
 
         #2010 Households
         neighborhood_tracts_data = []
@@ -1490,9 +1492,83 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         _2010_hood_hh_raw_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = [total_households_field])
         _2010_hood_hh          = _2010_hood_hh_raw_data[total_households_field]
 
-        current_hood_pop       = _2010_hood_pop
-        current_hood_hh        = _2010_hood_hh
+
+        # current_hood_pop       = _2010_hood_pop
+        # current_hood_hh        = _2010_hood_hh
+
+
+
+        #2019 Population
+        neighborhood_tracts_data = []
+
+        #Fetch census data for all relevant census tracts within the neighborhood
+        raw_census_data = c_area.acs5.geo_tract(acs_total_pop_field, neighborhood_shape)
+       
         
+        for tract_geojson, tract_data, tract_proportion in raw_census_data:
+            neighborhood_tracts_data.append((tract_data))
+
+        #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
+        current_hood_pop_raw_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = [acs_total_pop_field])
+        current_hood_pop          = current_hood_pop_raw_data[acs_total_pop_field]
+
+
+        #2019 HH
+        neighborhood_tracts_data = []
+
+        #Fetch census data for all relevant census tracts within the neighborhood
+        raw_census_data = c_area.acs5.geo_tract(acs_total_households_field, neighborhood_shape)
+       
+        
+        for tract_geojson, tract_data, tract_proportion in raw_census_data:
+            neighborhood_tracts_data.append((tract_data))
+
+        #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
+        current_hood_hh_raw_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = [acs_total_households_field])
+        current_hood_hh          = current_hood_hh_raw_data[acs_total_households_field]
+
+
+
+
+
+
+
+
+
+
+
+
+
+        # #2020 Population and Households
+
+        # #Start by getting all of the tracts within the custom area
+        # neighborhood_tracts_list          = [] #list for each tract's number
+        # neighborhood_tracts_counties_list = [] #list for each tract's county fips
+
+
+        # raw_tracts_list = c_area.sf1.geo_tract('NAME', neighborhood_shape)
+       
+        # for tract_geojson, tract_data, tract_proportion in raw_tracts_list:
+        #     neighborhood_tracts_list.append((tract_data['tract']))
+        #     neighborhood_tracts_counties_list.append((tract_data['county']))
+
+            
+        # #Now loop through list of tracts and get 20220 redistricting data population for each tract, add that value to the totals
+        # current_hood_pop       = 0
+        # current_hood_hh        = 0
+
+        # for tract,hood_county_fips in zip(neighborhood_tracts_list, neighborhood_tracts_counties_list):
+        #     print(tract)
+        #     tract_pop        = c.pl.state_county_tract(fields = 'NAME',        state_fips = state_fips, county_fips = hood_county_fips, tract = tract) #[0][redistricting_total_pop_field]
+        #     tract_hh         = c.pl.state_county_tract(fields = 'NAME',         state_fips = state_fips, county_fips = hood_county_fips, tract = tract) #[0][redistricting_total_hh_field]
+            
+        #     print(tract_pop)
+        #     print(tract_hh)
+
+        #     current_hood_pop += tract_pop
+        #     current_hood_hh  += tract_hh
+
+
 
     #Table variables for comparison area
     if comparison_geographic_level == 'place':
@@ -3034,7 +3110,7 @@ def GetMap():
         #Submit hood name for search
         Submit = browser.find_element_by_class_name('nhb85d-BIqFsb')
         Submit.click()
-        time.sleep(10)
+        time.sleep(12)
 
         # first photo, up close and personal. no zoom needed
         if 'Leahy' in os.environ['USERPROFILE']: #differnet machines have different screen coordinates
@@ -3640,7 +3716,9 @@ def DecideIfWritingReport():
     if testing_mode == False:
         #Give the user 10 seconds to decide if writing reports for metro areas or individual county entries
         try:
-            report_creation = input_with_timeout('Create new report? y/n', 10).strip()
+            # report_creation = input_with_timeout('Create new report? y/n', 10).strip()
+            report_creation = 'y'
+
         except TimeoutExpired:
             report_creation = ''
 
@@ -3682,7 +3760,7 @@ def UserSelectsNeighborhoodLevel():
     
     # return([neighborhood_level,comparison_level])
 
-    return(['p','c'])
+    return(['custom','p'])
 
 def GetUserInputs():
     
@@ -3745,6 +3823,8 @@ def GetUserInputs():
         neighborhood = c.sf1.state_county_subdivision(fields=['NAME'],state_fips=state_fips,county_fips=hood_county_fips,subdiv_fips=hood_suvdiv_fips)[0]['NAME']
         state_full_name = neighborhood.split(',')[2].strip()
         neighborhood = neighborhood.split(',')[0].strip().title()
+        place_type   = neighborhood.split(' ')[len(neighborhood.split(' '))-1] #eg: village, city, etc
+        neighborhood = ' '.join(neighborhood.split(' ')[0:len(neighborhood.split(' '))-1]).title()
 
         #Name of State
         state = us.states.lookup(state_full_name) #convert the full state name to the 2 letter abbreviation
@@ -3835,7 +3915,7 @@ def GetUserInputs():
         #Get name of hood
         # neighborhood      = input('Enter the name of the custom neighborhood')
         neighborhood        = 'Gaslamp Quarter'
-        
+            
     #Get user input on comparison area
     if comparison_level == 'c':          #When our comparison area is a county eg Nassau County, New York
         
@@ -4000,7 +4080,7 @@ def Main():
         CreateGraphs()
         CreateLanguage()
         WriteReport()
-        # CleanUpPNGs()
+        CleanUpPNGs()
     
     #Crawl through directory and create CSV with all current neighborhood report documents
     CreateDirectoryCSV()
