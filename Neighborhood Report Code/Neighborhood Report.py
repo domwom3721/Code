@@ -3386,8 +3386,8 @@ def AddMap(document):
     if os.path.exists(map3_path) == False: #If we don't have an image with a zommed in map overlayed on zoomed out map, create one
         OverlayMapImages()
     
-    
-    map = document.add_picture(map3_path,width=Inches(6.5))
+    if os.path.exists(map3_path):
+        map = document.add_picture(map3_path,width=Inches(6.5))
 
 def AddTable(document,data_for_table): #Function we use to insert our overview table into the report document
     #list of list where each list is a row for our table
