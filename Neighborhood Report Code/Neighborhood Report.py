@@ -2899,7 +2899,7 @@ def WikipediaTransitLanguage(category):
                 return('')
 
     except Exception as e:
-        print(e)
+        print(e,'problem getting wikipedia language for ' + category)
         return('')
 
 def SummaryLangauge():
