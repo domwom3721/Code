@@ -143,7 +143,6 @@ def input_with_timeout(prompt, timeout, timer=time.monotonic):
         time.sleep(0.04) # just to yield to other processes/threads
     raise TimeoutExpired
 
-
 #Data Manipulation functions
 def ConvertListElementsToFractionOfTotal(raw_list):
     #Convert list with raw totals into a list where each element is a fraction of the total
@@ -467,6 +466,10 @@ def GetHousingTenureData(geographic_level,hood_or_comparison_area):
         neighborhood_tenure_distribution.append(neighborhood_tenure_distribution_raw[field])
 
     neighborhood_tenure_distribution = ConvertListElementsToFractionOfTotal(neighborhood_tenure_distribution)
+
+    #add together the owned free and clear percentage with the owned with a mortgage percentage to simply an owner-occupied fraction
+    neighborhood_tenure_distribution[1] = neighborhood_tenure_distribution[1] +  neighborhood_tenure_distribution[2]
+    del neighborhood_tenure_distribution[2]
 
     return(neighborhood_tenure_distribution)
     
@@ -863,7 +866,7 @@ def GetNumberUnitsData(geographic_level,hood_or_comparison_area):
 def GetHouseholdIncomeValues(geographic_level,hood_or_comparison_area):
     print('Getting household income data')
 
-    #5 Year ACS household income range:  B19001_002E -B19001_017E
+    #5 Year ACS household income range:  B19001_002E - B19001_017E
     fields_list = ["B19001_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,18)]
 
     if geographic_level == 'place':
@@ -1677,6 +1680,7 @@ def GetWalkScore(lat,lon):
     lat = str(lat)
     lon = str(lon)
     url = """https://api.walkscore.com/score?format=json&address=None&""" + """lat=""" + lat + """&lon=""" + lon + """&transit=1&bike=1&wsapikey=""" + walkscore_api_key
+    print('Getting Walk Score: ', url)
    
     
     walkscore_response = requests.get(url).json()
@@ -1715,7 +1719,6 @@ def GetWalkScore(lat,lon):
     
     #Return a list of the 3 scores
     walk_scores = [walk_table_entry, transit_table_entry, bike_table_entry]
-    print(walk_scores)
     return(walk_scores)
 
 def GetYelpData(lat,lon,radius):
@@ -2010,39 +2013,38 @@ def GetData():
     global google_data
     global location_iq_data
 
-    # neighborhood_household_size_distribution     = GetHouseholdSizeData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Neighborhood households by size
-    # neighborhood_tenure_distribution             = GetHousingTenureData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Tenure (owner occupied/renter)
-    # neighborhood_housing_value_data              = GetHousingValues(         geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Owner Occupied housing units by value
-    # neighborhood_number_units_data               = GetNumberUnitsData(       geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by units in building
-    # neighborhood_year_built_data                 = GetHouseYearBuiltData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by year structure built
-    # neighborhood_method_to_work_distribution     = GetTravelMethodData(      geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Mode to Work
-    # neighborhood_household_income_data           = GetHouseholdIncomeValues( geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Households by household income data
-    # neighborhood_age_data                        = GetAgeData(               geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Population by age data
-    # neighborhood_time_to_work_distribution       = GetTravelTimeData(        geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Time to Work
-    # neighborhood_top_occupations_data            = GetTopOccupationsData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Top Employment Occupations
+    neighborhood_household_size_distribution     = GetHouseholdSizeData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Neighborhood households by size
+    neighborhood_tenure_distribution             = GetHousingTenureData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Tenure (owner occupied/renter)
+    neighborhood_housing_value_data              = GetHousingValues(         geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Owner Occupied housing units by value
+    neighborhood_number_units_data               = GetNumberUnitsData(       geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by units in building
+    neighborhood_year_built_data                 = GetHouseYearBuiltData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by year structure built
+    neighborhood_method_to_work_distribution     = GetTravelMethodData(      geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Mode to Work
+    neighborhood_household_income_data           = GetHouseholdIncomeValues( geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Households by household income data
+    neighborhood_age_data                        = GetAgeData(               geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Population by age data
+    neighborhood_time_to_work_distribution       = GetTravelTimeData(        geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Time to Work
+    neighborhood_top_occupations_data            = GetTopOccupationsData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Top Employment Occupations
 
-    # comparison_household_size_distribution       = GetHouseholdSizeData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    # comparison_tenure_distribution               = GetHousingTenureData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    # comparison_housing_value_data                = GetHousingValues(        geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
-    # comparison_number_units_data                 = GetNumberUnitsData(      geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
-    # comparison_year_built_data                   = GetHouseYearBuiltData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    # comparison_age_data                          = GetAgeData(              geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    # comparison_household_income_data             = GetHouseholdIncomeValues(geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')   
-    # comparison_top_occupations_data              = GetTopOccupationsData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    # comparison_time_to_work_distribution         = GetTravelTimeData(       geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    comparison_household_size_distribution       = GetHouseholdSizeData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    comparison_tenure_distribution               = GetHousingTenureData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    comparison_housing_value_data                = GetHousingValues(        geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
+    comparison_number_units_data                 = GetNumberUnitsData(      geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
+    comparison_year_built_data                   = GetHouseYearBuiltData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    comparison_age_data                          = GetAgeData(              geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    comparison_household_income_data             = GetHouseholdIncomeValues(geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')   
+    comparison_top_occupations_data              = GetTopOccupationsData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    comparison_time_to_work_distribution         = GetTravelTimeData(       geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
     
     #Walk score
     walk_score_data                              = GetWalkScore(            lat = latitude, lon = longitude                                                    )
-    # location_iq_data                             = LocationIQ(              lat = latitude, lon = longitude, radius = 5000                                     )
-    # yelp_data                                    = GetYelpData(             lat = latitude, lon = longitude, radius = 30000                                    ) #radius in meters
+    location_iq_data                             = LocationIQ(              lat = latitude, lon = longitude, radius = 5000                                     )
+    yelp_data                                    = GetYelpData(             lat = latitude, lon = longitude, radius = 30000                                    ) #radius in meters
 
-    
     #Overview Table Data
-    # overview_table_data = GetOverviewTable(hood_geographic_level = neighborhood_level ,comparison_geographic_level = comparison_level )
+    overview_table_data = GetOverviewTable(hood_geographic_level = neighborhood_level ,comparison_geographic_level = comparison_level )
     
     #Unused functions
     # # SearchGreatSchoolDotOrg()
-
+    
 #Graph Related Functions
 def SetGraphFormatVariables():
     global graph_width, graph_height, scale,tickfont_size,left_margin,right_margin,top_margin,bottom_margin,legend_position,paper_backgroundcolor,title_position
@@ -2151,17 +2153,19 @@ def CreateHouseholdTenureHistogram():
     print('Creating Household tenure graph')
     fig = make_subplots(specs=[[{"secondary_y": False}]])
 
+    tenure_categories = ['Renter Occupied','Owner Occupied']
+    
     #Add Bars with neighborhood household size distribution
     fig.add_trace(
     go.Bar(y=neighborhood_tenure_distribution,
-           x=['Renter Occupied','Owner Occupied (Outright)','Owner Occupied (Mortgage)'],
+           x=tenure_categories,
            name=neighborhood,
            marker_color="#4160D3")
             ,secondary_y=False
             )
     fig.add_trace(
     go.Bar(y=comparison_tenure_distribution,
-           x=['Renter Occupied','Owner Occupied (Outright)','Owner Occupied (Mortgage)'],
+           x=tenure_categories,
            name=comparison_area,
            marker_color="#B3C3FF")
             ,secondary_y=False
@@ -2995,24 +2999,117 @@ def YelpLanguage(yelp_data):
     return(return_string)
 
 def HousingTenureLanguage():
-    return('According to the most recent American Community Survey, ' +
-           '_X%' + 
-           ' of the housing units in ' + 
-           neighborhood + 
-           ' were occupied by their owner. This percentage of owner-occupation is lower/higher than the ______ average of X%. ' + ' This chart shows the ownership percentage in ' + neighborhood + ' compared to _______. ')
+    hood_owner_occupied_fraction        =  neighborhood_tenure_distribution[1] 
+    comparsion_owner_occupied_fraction  =  comparison_tenure_distribution[1]
+
+    if hood_owner_occupied_fraction > comparsion_owner_occupied_fraction:
+        hood_owner_ouccupied_higher_lower   =  'higher than'
+    
+    elif hood_owner_occupied_fraction < comparsion_owner_occupied_fraction:
+        hood_owner_ouccupied_higher_lower   =  'lower than'
+
+    elif hood_owner_occupied_fraction > comparsion_owner_occupied_fraction:
+        hood_owner_ouccupied_higher_lower   =  'equal to'
+            
+    else:
+        hood_owner_ouccupied_higher_lower   =  '[lower than/higher than/equal to]'
+    
+    tenure_langugage = ('According to the most recent American Community Survey, ' +
+            "{:,.1f}%".format(hood_owner_occupied_fraction)                        +   
+           ' of the housing units in '                                             + 
+           neighborhood                                                            + 
+           ' were occupied by their owner. '                                       +
+           'This percentage of owner-occupation is '                                +
+           hood_owner_ouccupied_higher_lower                                        + 
+           ' the '                                                                  +
+           comparison_area                                                          +
+           ' level of '                                                             +
+           "{:,.1f}%".format(comparsion_owner_occupied_fraction)                    +
+           '.'
+           )
+        #    '. This chart shows the ownership percentage in ' + neighborhood + ' compared to _______. ')
+
+    return([tenure_langugage])
 
 def HousingSizeLanguage():
-    return( neighborhood + ' offers a wide variety of housing options including single family homes, some duplexes and smaller multifamily properties, along with larger garden style properties, and even some buildings with 50+ units. Single family homes account for a very large majority. ' + 
-    ' Given the current makeup of housing, the majority of housing is owned/rented.')
+    number_units_categories = ['Single Family Homes','Townhomes','Duplexes','3-4 Units','5-9 Units','10-19 Units','20-49 Units','50 >= Units']
+    
+    most_common_category           = number_units_categories[neighborhood_number_units_data.index(max(neighborhood_number_units_data))] #get the most common number units category
+
+
+    housing_size_langauge = ( neighborhood + 
+                              ' offers a wide variety of housing options including single family homes, some duplexes and smaller multifamily properties, along with larger garden style properties, and even some buildings with 50+ units. ' + 
+                              most_common_category +
+                              ' is the most common form of housing in ' +
+                              neighborhood 
+                            
+                             )
+    return[housing_size_langauge]
 
 def EmploymentLanguage():
     return(['The majority of working age residents are employed in the ______, ______, and _______ industries. ' + 'Given its large share of employees in the production industry, '])
     
-def PopulationLanguage():
-    return(['The population in ' + neighborhood + 'has increased/compressed X% to ___ as of date. ' + 'Given a median age of _____, and a large distribution towards middle aged individuals, family households with school-aged children are most common.'])
+def PopulationAgeLanguage():
+    age_ranges = ['0-19','20-24','25-34','35-49','50-66','67+']
+    neighborhood_age_data
+    comparison_age_data
+    age_language = ('The population in ' + neighborhood + ' has increased/compressed X% to ___ as of date. ' + 'Given a median age of _____, and a large distribution towards middle aged individuals, family households with school-aged children are most common.')
+    return([age_language])
 
 def IncomeLanguage():
-    return(['These households have a median household income of ______, displayed in the chart below. In ' + neighborhood + ' The largest share of households have an income between $___k - $___k, compared to $____k for ________. '])
+
+    income_categories = ['< $10,000',
+                         '$10,000-14,999',
+                         '$15,000-19,999',
+                         '$20,000-24,999',
+                         '$25,000-29,999',
+                         '$30,000-34,999',
+                         '$35,000-39,999',
+                         '$40,000-44,999',
+                         '$45,000-49,999',
+                         '$50,000-59,999',
+                         '$60,000-74,999',
+                         '$75,000-99,999',
+                         '$100,000-124,999',
+                         '$125,000-149,999',
+                         '$150,000-199,999',
+                         '> $200,000']
+
+    #Estimate a median household income from a category freqeuncy distribution
+    total_inc_fraction = 0
+    for i,income_category_fraction in enumerate(neighborhood_household_income_data):
+        total_inc_fraction += income_category_fraction
+        if total_inc_fraction >= 50:
+            median_cat_index = i
+            break
+
+    hood_median_income_range   = income_categories[median_cat_index]
+    hood_median_income_range   = hood_median_income_range.replace('$','')
+    hood_median_income_range   = hood_median_income_range.replace(',','').split('-')
+    
+    hood_median_income         = round((int(hood_median_income_range[0]) + int(hood_median_income_range[1]))/2,1)
+    
+    hood_largest_income_category = income_categories[neighborhood_household_income_data.index(max(neighborhood_household_income_data))] #get the most common income category
+    comp_largest_income_category = income_categories[comparison_household_income_data.index(max(comparison_household_income_data))]
+
+    income_language = ('Households in '                                      +
+                       neighborhood                                          + 
+                       ' have a median household income of around '          + 
+                        "${:,.0f}".format(hood_median_income)                 +
+                       ', displayed in the chart below. '                    +
+                       
+                       'In '                                                 + 
+                       neighborhood                                          + 
+                       ', the largest share of households have a household income between ' +
+                       hood_largest_income_category +
+                       ', compared to ' +
+                       comp_largest_income_category        +
+                       ' for '           +
+                        comparison_area +
+                        '.'
+                        )
+    
+    return([income_language])
 
 def CreateLanguage():
     print('Creating Langauge')
@@ -3022,7 +3119,9 @@ def CreateLanguage():
     global airport_language
     global apartmentsdotcomlanguage
     global housing_tenure_breakdown_language, structure_size_breakdown_language
-    global employment_language, population_language,income_language
+    global employment_language
+    global population_age_language
+    global income_language
 
     summary_langauge                   =  SummaryLangauge()
     community_assets_language          =  CommunityAssetsLanguage()
@@ -3032,7 +3131,7 @@ def CreateLanguage():
     structure_size_breakdown_language  = HousingSizeLanguage()
     
     employment_language                = EmploymentLanguage()
-    population_language                = PopulationLanguage()
+    population_age_language            = PopulationAgeLanguage()
     income_language                    = IncomeLanguage()
 
 
@@ -3409,12 +3508,15 @@ def CommunityAssetsSection(document):
 
 def HousingSection(document):
     print('Writing Neighborhood Section')
-    # AddHeading(document = document, title = 'Neighborhood',            heading_level = 1,heading_number='Heading 2',font_size=14)
     AddHeading(document = document, title = 'Housing',                  heading_level = 1,heading_number='Heading 3',font_size=11)
     
-    structure_size_paragraph                               = document.add_paragraph(structure_size_breakdown_language)
-    structure_size_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
-    structure_size_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+    #Add structure size language
+    for paragraph in structure_size_breakdown_language:
+        if paragraph == '':
+            continue
+        structure_size_paragraph                               = document.add_paragraph(paragraph)
+        structure_size_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
+        structure_size_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
 
     #Insert household units by units in_structure graph
     if os.path.exists(os.path.join(hood_folder,'household_units_in_structure_graph.png')):
@@ -3423,8 +3525,6 @@ def HousingSection(document):
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
 
-
-
     #Insert Household size graph
     if os.path.exists(os.path.join(hood_folder,'household_size_graph.png')):
         fig = document.add_picture(os.path.join(hood_folder,'household_size_graph.png'),width=Inches(fig_width))
@@ -3432,9 +3532,13 @@ def HousingSection(document):
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
     
-    tenure_paragraph                               = document.add_paragraph(housing_tenure_breakdown_language)
-    tenure_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
-    tenure_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+    #Add tenure language
+    for paragraph in housing_tenure_breakdown_language:
+        if paragraph == '':
+            continue
+        tenure_paragraph                               = document.add_paragraph(paragraph)
+        tenure_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
+        tenure_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
 
     #Insert Household Tenure graph
     if os.path.exists(os.path.join(hood_folder,'household_tenure_graph.png')):
@@ -3478,7 +3582,7 @@ def PopulationSection(document):
     print('Writing Population Section')
     
     AddHeading(document = document, title = 'Population',                                     heading_level = 1,heading_number='Heading 3',font_size=11)
-    for paragraph in population_language:
+    for paragraph in population_age_language:
         if paragraph == '':
             continue
         pop_paragraph                               = document.add_paragraph(paragraph)
@@ -3799,8 +3903,8 @@ def GetUserInputs():
 
         neighborhood_level = 'place'
         if testing_mode == False:
-            # fips = input('Enter the 7 digit Census Place FIPS Code')
-            fips = '12-35000'
+            fips = input('Enter the 7 digit Census Place FIPS Code')
+            # fips = '36-51000'
         else:
             fips = '36-22876'
 
@@ -3942,11 +4046,11 @@ def GetUserInputs():
 
         #Get comparison county FIPS code from user
         if testing_mode == False:
-            # comparison_county_fips = input('Enter the 5 digit FIPS code for the comparison county')
-            comparison_county_fips = '12031'
+            comparison_county_fips = input('Enter the 5 digit FIPS code for the comparison county')
+            # comparison_county_fips = '36061'
 
         else:
-            comparison_county_fips = '36059'
+            comparison_county_fips = '36061'
         
         #Process FIPS code provided by user
         comparison_county_fips = comparison_county_fips.replace('-','').strip()
@@ -4098,9 +4202,9 @@ def Main():
         CreateDirectory()
         GetWikipediaPage()
         GetData()
-        # CreateGraphs()
-        # CreateLanguage()
-        # WriteReport()
+        CreateGraphs()
+        CreateLanguage()
+        WriteReport()
         # CleanUpPNGs()
     
     #Crawl through directory and create CSV with all current neighborhood report documents
