@@ -1745,15 +1745,8 @@ def GetYelpData(lat,lon,radius):
         print(e)
         
         
-    
-    
     return(business_categories)
     
-
-
-
-
-
 
     # bar_response              = yelp_api.search_query(categories='bars', longitude=lon, latitude=lat, radius = radius,sort_by = 'distance') # , limit=5)
     # closest_bar               = bar_response['businesses'][0]['name']
@@ -1975,8 +1968,6 @@ def LocationIQ(lat,lon,radius):
     #     print('------------')
         
 
-    
-
     return(response)
 
 def Zoneomics(address):
@@ -2001,9 +1992,9 @@ def GetData():
     #List of 2010 Census variables here:                      https://api.census.gov/data/2010/dec/sf1/variables.html
     #List of 2020 Redistricting variables here:               https://api.census.gov/data/2020/dec/pl/variables.html
     print('Getting Data')
+    # global total_number_households, average_household_size
     global overview_table_data
     global neighborhood_household_size_distribution,comparison_household_size_distribution
-    global total_number_households, average_household_size
     global neighborhood_tenure_distribution, comparison_tenure_distribution
     global neighborhood_time_to_work_distribution, comparison_time_to_work_distribution
     global neighborhood_method_to_work_distribution
@@ -2014,9 +2005,6 @@ def GetData():
     global neighborhood_top_occupations_data,comparison_top_occupations_data
     global neighborhood_year_built_data, comparison_year_built_data   
     global walk_score_data
-    global yelp_data
-    global google_data
-    global location_iq_data
 
     print('Getting Data for ' + neighborhood)
     neighborhood_household_size_distribution     = GetHouseholdSizeData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Neighborhood households by size
@@ -2043,14 +2031,12 @@ def GetData():
     
     #Walk score
     walk_score_data                              = GetWalkScore(            lat = latitude, lon = longitude                                                    )
-    location_iq_data                             = LocationIQ(              lat = latitude, lon = longitude, radius = 5000                                     )
-    yelp_data                                    = GetYelpData(             lat = latitude, lon = longitude, radius = 30000                                    ) #radius in meters
 
     #Overview Table Data
     overview_table_data = GetOverviewTable(hood_geographic_level = neighborhood_level ,comparison_geographic_level = comparison_level )
     
     #Unused functions
-    # # SearchGreatSchoolDotOrg()
+    #SearchGreatSchoolDotOrg()
     
 #Graph Related Functions
 def SetGraphFormatVariables():
@@ -2948,13 +2934,47 @@ def SummaryLangauge():
     return[wikipedia_summary,apartmentsdotcomlanguage]
 
 def CommunityAssetsLanguage():
-    try:
-        yelp_language = YelpLanguage(yelp_data)
-    except Exception as e:
-        print(e)
-        yelp_language =''
 
-    return([yelp_language])
+    community_assets_language = (neighborhood + ' has a number of community assets. ')
+    
+    location_iq_data                             = LocationIQ(              lat = latitude, lon = longitude, radius = 5000                                     )
+    
+    for poi in location_iq_data:
+        poi_name      = poi['display_name']
+        poi_type      = poi['type']
+        poi_city      = poi['address']['city']
+        poi_sentence  = (' ' + poi_name + ' is a ' + poi_type + '.')
+        community_assets_language = community_assets_language + poi_sentence
+
+    # print(poi)
+    print(location_iq_data)
+    # print(type(location_iq_data))
+
+    return([community_assets_language])
+    
+    
+  
+
+
+    # try:
+    #     yelp_language = YelpLanguage(yelp_data)
+    # except Exception as e:
+    #     print(e)
+    #     yelp_language =''
+
+    #     #Takes a dictionary as input and returns string
+    # assert type(yelp_data) == dict
+
+    # return_string = ''
+    # for category in yelp_data.keys(): 
+    #     yelp_string = category.title() + ': ' + ', '.join(yelp_data[category]) + '. '
+    #     return_string = return_string + yelp_string
+
+    # return(return_string)
+
+    # global yelp_data,location_iq_data
+    
+    # yelp_data                                    = GetYelpData(             lat = latitude, lon = longitude, radius = 30000                                    ) #radius in meters
 
 def CarLanguage():
     wikipedia_car_language     = WikipediaTransitLanguage(category='car')
@@ -2999,17 +3019,6 @@ def TransportationOverviewLanguage():
         transportation_language         = ''
     
     return(transportation_language)
-
-def YelpLanguage(yelp_data):
-    #Takes a dictionary as input and returns string
-    assert type(yelp_data) == dict
-
-    return_string = ''
-    for category in yelp_data.keys(): 
-        yelp_string = category.title() + ': ' + ', '.join(yelp_data[category]) + '. '
-        return_string = return_string + yelp_string
-
-    return(return_string)
 
 def HousingTenureLanguage():
     hood_owner_occupied_fraction        =  neighborhood_tenure_distribution[1] 
@@ -3724,10 +3733,6 @@ def CommunityAssetsSection(document):
         community_paragraph                               = document.add_paragraph(paragraph)
         community_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
         community_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
-
-
-    # Add POI Table
-    #AddPointOfInterestsTable(document = document, data_for_table = location_iq_data)
 
 def HousingSection(document):
     print('Writing Neighborhood Section')
@@ -4473,7 +4478,7 @@ def Main():
         CreateDirectory()
         GetWikipediaPage()
         GetData()
-        CreateGraphs()
+        # CreateGraphs()
         CreateLanguage()
         WriteReport()
         # CleanUpPNGs()
