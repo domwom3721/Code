@@ -3316,7 +3316,7 @@ def TravelTimeLanguage():
     hood_median_time_range   = travel_time_categories[median_cat_index]
     hood_median_time_range   = hood_median_time_range.replace(' Minutes','')
     hood_median_time_range   = hood_median_time_range.replace(',','').split('-')
-    hood_median_time         = round((int(hood_median_time_range[0]) + int(hood_median_time_range[1]))/2,1)
+    hood_median_time         = (int(hood_median_time_range[0]) + int(hood_median_time_range[1]))/2
     
     hood_largest_time_category = travel_time_categories[neighborhood_time_to_work_distribution.index(max(neighborhood_time_to_work_distribution))] #get the most common income category
     comp_largest_time_category = travel_time_categories[comparison_time_to_work_distribution.index(max(comparison_time_to_work_distribution))]
