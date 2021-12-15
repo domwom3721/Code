@@ -18,7 +18,6 @@ from random import randrange
 from tkinter.constants import E
 
 import census_area
-import docx
 import googlemaps
 import mpu
 import numpy as np
@@ -34,6 +33,7 @@ from blsconnect import RequestBLS, bls_search
 from bs4 import BeautifulSoup
 from census import Census
 from census_area import Census as CensusArea
+import docx
 from docx import Document
 from docx.enum.table import WD_ALIGN_VERTICAL, WD_TABLE_ALIGNMENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
@@ -4485,7 +4485,7 @@ def Main():
         CreateDirectory()
         GetWikipediaPage()
         GetData()
-        # CreateGraphs()
+        CreateGraphs()
         CreateLanguage()
         WriteReport()
         # CleanUpPNGs()
