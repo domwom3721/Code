@@ -76,7 +76,7 @@ primary_space_after_paragraph = 8
 #Decide if you want to export data in excel files in the county folder
 data_export                   = False
 testing_mode                  = True
-testing_mode                  = False
+# testing_mode                  = False
 
 
 #Data Manipulation functions
@@ -105,7 +105,7 @@ def AggregateAcrossDictionaries(neighborhood_tracts_data, fields_list):
     
     return(aggregate_dict)
 
-def FindMedianCategory(frequency_list,category_list):
+def FindMedianCategory(frequency_list, category_list):
     #Takes a list with a fequency distribution (eg [10%,30%,60%]) and the corresponding cateorgories [Red,Blue,Green]
     #Returns the median category, in this case Green
     assert len(frequency_list) == len(category_list)
@@ -278,6 +278,7 @@ def input_with_timeout(prompt, timeout, timer=time.monotonic):
                 return ''.join(result[:-1])
         time.sleep(0.04) # just to yield to other processes/threads
     raise TimeoutExpired
+
 #####################################################Census Data Related Functions####################################
 #Household Size
 def GetHouseholdSizeData(geographic_level,hood_or_comparison_area):
@@ -3146,9 +3147,10 @@ def HousingValueLanguage():
 def HousingYearBuiltLanguage():
     print('Creating House by Year Built Langauge')
     
-    year_built_categories       = ['2014','2010-2013','2000-2009','1990-1999','1980-1989','1970-1979','1960-1969','1950-1959','1940-1949','1939'].reverse()
+    year_built_categories       = ['2014','2010-2013','2000-2009','1990-1999','1980-1989','1970-1979','1960-1969','1950-1959','1940-1949','1939']
+    year_built_categories.reverse()
 
-    #Median Year Built for hood
+    #Median Year Built for hoodS
     hood_median_yrblt_range     =  FindMedianCategory(frequency_list = neighborhood_year_built_data, category_list = year_built_categories)
     
     if len(hood_median_yrblt_range) == 4:
@@ -3157,6 +3159,7 @@ def HousingYearBuiltLanguage():
         hood_median_yrblt_range     = hood_median_yrblt_range.split('-')
         hood_median_yrblt           = round((int(hood_median_yrblt_range[0]) + int(hood_median_yrblt_range[1]))/2,1)
     
+
     #Median Year Built for comparison area
     comp_median_yrblt_range     =  FindMedianCategory(frequency_list = comparison_year_built_data, category_list = year_built_categories)
     
@@ -3426,8 +3429,8 @@ def CreateLanguage():
     plane_language                     = PlaneLanguage()
 
     conclusion_langauge                = OutlookLanguage()
-    
-#Report document related functions
+
+#####################################################Report document related functions####################################
 def SetPageMargins(document,margin_size):
     sections = document.sections
     for section in sections:
@@ -3501,6 +3504,7 @@ def Citation(document,text):
         blank_paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
 
 def GetMap():
+    print('Getting Map')
     try:
         #Search Google Maps for hood
         options = webdriver.ChromeOptions()
