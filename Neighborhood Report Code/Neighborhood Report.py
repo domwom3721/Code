@@ -17,7 +17,6 @@ from pprint import pprint
 from random import randrange
 from tkinter.constants import E
 
-import census_area
 import googlemaps
 import mpu
 import numpy as np
@@ -33,10 +32,11 @@ from blsconnect import RequestBLS, bls_search
 from bs4 import BeautifulSoup
 from census import Census
 from census_area import Census as CensusArea
+import census_area
 import docx
 from docx import Document
 from docx.enum.table import WD_ALIGN_VERTICAL, WD_TABLE_ALIGNMENT
-from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING, WD_BREAK
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.oxml.table import CT_Row, CT_Tc
@@ -3566,6 +3566,12 @@ def AddMap(document):
     if os.path.exists(map3_path):
         map = document.add_picture(map3_path,width=Inches(6.5))
 
+def PageBreak(document):
+    #Add page break
+    page_break_paragraph = document.add_paragraph('')
+    run = page_break_paragraph.add_run()
+    run.add_break(WD_BREAK.PAGE)
+
 def AddTable(document,data_for_table): #Function we use to insert our overview table into the report document
     #list of list where each list is a row for our table
      
@@ -3798,14 +3804,14 @@ def HousingSection(document):
         year_built_paragraph.alignment                         = WD_ALIGN_PARAGRAPH.JUSTIFY
         year_built_paragraph.paragraph_format.space_after      = Pt(primary_space_after_paragraph)
 
-
-
     #Insert household units by year built graph
     if os.path.exists(os.path.join(hood_folder,'household_year_built_graph.png')):
         fig = document.add_picture(os.path.join(hood_folder,'household_year_built_graph.png'),width=Inches(fig_width))
         last_paragraph = document.paragraphs[-1] 
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
+
+    PageBreak(document=document)
 
 def DevelopmentSection(document):
     print('Writing Development Section')
@@ -3877,6 +3883,8 @@ def PopulationSection(document):
         last_paragraph = document.paragraphs[-1] 
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
+
+    PageBreak(document=document)
 
 def EmploymentSection(document):
     print('Writing Employment Section')
