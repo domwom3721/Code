@@ -79,69 +79,6 @@ testing_mode                  = True
 testing_mode                  = False
 
 
-#Directory Realted Functions
-def CreateDirectory():
-
-    global report_path,hood_folder_map,hood_folder
-    
-    state_folder_map         = os.path.join(map_location,state)
-
-    state_folder             = os.path.join(main_output_location,state)
-
-    if neighborhood_level == 'custom':
-
-        if os.path.exists(state_folder) == False:
-            os.mkdir(state_folder)  
-        
-        if os.path.exists(state_folder_map) == False:
-            os.mkdir(state_folder_map)  
-
-        city_folder =  os.path.join(main_output_location,state,comparison_area)
-        city_folder_map =  os.path.join(map_location,state,comparison_area)
-
-        if os.path.exists(city_folder) == False:
-            os.mkdir(city_folder) 
-        
-        if os.path.exists(city_folder_map) == False:
-            os.mkdir(city_folder_map) 
-
-
-        hood_folder              = os.path.join(main_output_location,state,comparison_area,neighborhood)
-        hood_folder_map          = os.path.join(map_location,state,city_folder_map,neighborhood)
-
-    else:
-        hood_folder              = os.path.join(main_output_location,state,neighborhood)
-        hood_folder_map          = os.path.join(map_location,state,neighborhood)
-
-
-    for folder in [state_folder,hood_folder,state_folder_map,hood_folder_map]:
-         if os.path.exists(folder):
-            pass 
-         else:
-            os.mkdir(folder) 
-
-
-
-
-
-    report_path = os.path.join(hood_folder,current_year + ' ' + state + ' - ' + neighborhood  + ' - hood' + '_draft.docx')
-
-class TimeoutExpired(Exception):
-    pass
-
-def input_with_timeout(prompt, timeout, timer=time.monotonic):
-    sys.stdout.write(prompt)
-    sys.stdout.flush()
-    endtime = timer() + timeout
-    result = []
-    while timer() < endtime:
-        if msvcrt.kbhit():
-            result.append(msvcrt.getwche()) #XXX can it block on multibyte characters?
-            if result[-1] == '\r':
-                return ''.join(result[:-1])
-        time.sleep(0.04) # just to yield to other processes/threads
-    raise TimeoutExpired
-
 #Data Manipulation functions
 def ConvertListElementsToFractionOfTotal(raw_list):
     #Convert list with raw totals into a list where each element is a fraction of the total
@@ -168,26 +105,22 @@ def AggregateAcrossDictionaries(neighborhood_tracts_data, fields_list):
     
     return(aggregate_dict)
 
-#Data Gathering Related Functions
-def DeclareAPIKeys():
-    global census_api_key,walkscore_api_key,google_maps_api_key,yelp_api_key,yelp_api,yelp_client_id,location_iq_api_key
-    global c,c_area,walkscore_api
+def FindMedianCategory(frequency_list,category_list):
+    #Takes a list with a fequency distribution (eg [10%,30%,60%]) and the corresponding cateorgories [Red,Blue,Green]
+    #Returns the median category, in this case Green
+    assert len(frequency_list) == len(category_list)
+
+    total_value_fraction = 0
+    for i,value_category_fraction in enumerate(frequency_list):
+        total_value_fraction += value_category_fraction
+        if total_value_fraction >= 50:
+            median_cat_index = i
+            break
     
-    #Declare API Keys
-    census_api_key                = '18335344cf4a0242ae9f7354489ef2f8860a9f61'
-    walkscore_api_key             = '057f7c0a590efb7ec06da5a8735e536d'
-    google_maps_api_key           = 'AIzaSyBMcoRFOW2rxAGxURCpA4gk10MROVVflLs'
-    yelp_client_id                = 'NY9c0_9kvOU4wfzmkkruOQ'
-    yelp_api_key                  = 'l1WjEgdgSMpU9PJtXEk0bLs4FJdsVLONqJLhbaA0gZlbFyEFUTTkxgRzBDc-_5234oLw1CLx-iWjr8w4nK_tZ_79qVIOv3yEMQ9aGcSS8xO1gkbfENCBKEl34COVYXYx'
-    location_iq_api_key           = 'pk.8937271b8b15004065ca62552e7d06f7'
-    zoneomics_api_key             = 'd69b3eee92f8d3cec8c71893b340faa8cb52e1b8'
+    median_category     = category_list[median_cat_index]
+    return(median_category)
 
-    yelp_api                      = YelpAPI(yelp_api_key)
-    walkscore_api                 = WalkScoreAPI(api_key = walkscore_api_key)
-    c                             = Census(census_api_key) #Census API wrapper package
-    c_area                        = CensusArea(census_api_key) #Census API package, sepearete extension of main package that allows for custom boundries
-
-#Lat and Lon
+#####################################################Geographic Data Related Functions####################################
 def GetLatandLon():
     if testing_mode == False:
         # latitude  = float(input('enter the latitude for the subject property')) 
@@ -253,6 +186,54 @@ def GetNeighborhoodShape():
         neighborhood_shape = my_shape_geojson['features'][0]['geometry']
         return(neighborhood_shape) 
 
+#####################################################Misc Functions####################################
+#Directory Realted Functions
+def CreateDirectory():
+
+    global report_path,hood_folder_map,hood_folder
+    
+    state_folder_map         = os.path.join(map_location,state)
+
+    state_folder             = os.path.join(main_output_location,state)
+
+    if neighborhood_level == 'custom':
+
+        if os.path.exists(state_folder) == False:
+            os.mkdir(state_folder)  
+        
+        if os.path.exists(state_folder_map) == False:
+            os.mkdir(state_folder_map)  
+
+        city_folder =  os.path.join(main_output_location,state,comparison_area)
+        city_folder_map =  os.path.join(map_location,state,comparison_area)
+
+        if os.path.exists(city_folder) == False:
+            os.mkdir(city_folder) 
+        
+        if os.path.exists(city_folder_map) == False:
+            os.mkdir(city_folder_map) 
+
+
+        hood_folder              = os.path.join(main_output_location,state,comparison_area,neighborhood)
+        hood_folder_map          = os.path.join(map_location,state,city_folder_map,neighborhood)
+
+    else:
+        hood_folder              = os.path.join(main_output_location,state,neighborhood)
+        hood_folder_map          = os.path.join(map_location,state,neighborhood)
+
+
+    for folder in [state_folder,hood_folder,state_folder_map,hood_folder_map]:
+         if os.path.exists(folder):
+            pass 
+         else:
+            os.mkdir(folder) 
+
+
+
+
+
+    report_path = os.path.join(hood_folder,current_year + ' ' + state + ' - ' + neighborhood  + ' - hood' + '_draft.docx')
+
 def FindZipCodeDictionary(zip_code_data_dictionary_list,zcta,state_fips):
     #This function takes a list of dictionaries, where each zip code gets its own dictionary. Takes a zip code and state fips code and finds and returns just that dictionary.
     #We need to use this, because the census api is causing an error that requires us to retrive data for all zip codes in the country
@@ -263,7 +244,41 @@ def FindZipCodeDictionary(zip_code_data_dictionary_list,zcta,state_fips):
         
 
     print('Could not find dictionary for given zip code: ', zcta )
-            
+
+#Data Gathering Related Functions
+def DeclareAPIKeys():
+    global census_api_key,walkscore_api_key,google_maps_api_key,yelp_api_key,yelp_api,yelp_client_id,location_iq_api_key
+    global c,c_area,walkscore_api
+    
+    #Declare API Keys
+    census_api_key                = '18335344cf4a0242ae9f7354489ef2f8860a9f61'
+    walkscore_api_key             = '057f7c0a590efb7ec06da5a8735e536d'
+    google_maps_api_key           = 'AIzaSyBMcoRFOW2rxAGxURCpA4gk10MROVVflLs'
+    yelp_client_id                = 'NY9c0_9kvOU4wfzmkkruOQ'
+    yelp_api_key                  = 'l1WjEgdgSMpU9PJtXEk0bLs4FJdsVLONqJLhbaA0gZlbFyEFUTTkxgRzBDc-_5234oLw1CLx-iWjr8w4nK_tZ_79qVIOv3yEMQ9aGcSS8xO1gkbfENCBKEl34COVYXYx'
+    location_iq_api_key           = 'pk.8937271b8b15004065ca62552e7d06f7'
+    zoneomics_api_key             = 'd69b3eee92f8d3cec8c71893b340faa8cb52e1b8'
+
+    yelp_api                      = YelpAPI(yelp_api_key)
+    walkscore_api                 = WalkScoreAPI(api_key = walkscore_api_key)
+    c                             = Census(census_api_key) #Census API wrapper package
+    c_area                        = CensusArea(census_api_key) #Census API package, sepearete extension of main package that allows for custom boundries
+class TimeoutExpired(Exception):
+    pass
+
+def input_with_timeout(prompt, timeout, timer=time.monotonic):
+    sys.stdout.write(prompt)
+    sys.stdout.flush()
+    endtime = timer() + timeout
+    result = []
+    while timer() < endtime:
+        if msvcrt.kbhit():
+            result.append(msvcrt.getwche()) #XXX can it block on multibyte characters?
+            if result[-1] == '\r':
+                return ''.join(result[:-1])
+        time.sleep(0.04) # just to yield to other processes/threads
+    raise TimeoutExpired
+#####################################################Census Data Related Functions####################################
 #Household Size
 def GetHouseholdSizeData(geographic_level,hood_or_comparison_area):
     print('Getting household size data for: ',hood_or_comparison_area)
@@ -1662,7 +1677,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
                   ]
          )
 
-#Non Census Sources
+#####################################################Non Census Sources Data Functions####################################
 def GetWikipediaPage():
     global page
     if (neighborhood_level == 'place') or (neighborhood_level == 'county subdivision') or (neighborhood_level == 'county'): #Don't bother looking for wikipedia page if zip code
@@ -2038,7 +2053,7 @@ def GetData():
     #Unused functions
     #SearchGreatSchoolDotOrg()
     
-#Graph Related Functions
+#####################################################Graph Related Functions####################################
 def SetGraphFormatVariables():
     global graph_width, graph_height, scale,tickfont_size,left_margin,right_margin,top_margin,bottom_margin,legend_position,paper_backgroundcolor,title_position
     global fig_width
@@ -2876,6 +2891,7 @@ def CreateGraphs():
     except Exception as e:
         print(e,'unable to create travel mode graph')
 
+#####################################################Language Related Functions####################################
 def WikipediaTransitLanguage(category):
     #Searches through a wikipedia page for a number of section titles and returns the text from them (if any)
     try:
@@ -3023,8 +3039,7 @@ def OutlookLanguage():
           """ which has multiple office and retail projects completed within the past two years and more development in the subject’s immediate vicinity either under construction or preparing to break ground."""+
           ' The proximity of the ________ and ________ will ensure the neighborhood will continue ' +
           'to attract growth in the long-term.')
-    pass
-
+    
 def TransportationOverviewLanguage():
     print('Creating Transporation Overview Langauge')
 
@@ -3092,29 +3107,14 @@ def HousingValueLanguage():
 
     housing_value_categories = ['$10,000 <','$10,000-14,999','$15,000-19,999','$20,000-24,999','$25,000-29,999','$30,000-34,000','$35,000-39,999','$40,000-49,000','$50,000-59,9999','$60,000-69,999','$70,000-79,999','$80,000-89,999','$90,000-99,999','$100,000-124,999','$125,000-149,999','$150,000-174,999','$175,000-199,999','$200,000-249,999','$250,000-299,999','$300,000-399,999','$400,000-499,999','$500,000-749,999','$750,000-999,999','$1,000,000-1,499,999','$1,500,000-1,999,999','$2,000,000 >=']
 
-
     #Estimate a median household income from a category freqeuncy distribution
-    total_value_fraction = 0
-    for i,value_category_fraction in enumerate(neighborhood_housing_value_data):
-        total_value_fraction += value_category_fraction
-        if total_value_fraction >= 50:
-            median_cat_index = i
-            break
-    
-    hood_median_value_range     = housing_value_categories[median_cat_index]
+    hood_median_value_range     = FindMedianCategory(frequency_list = neighborhood_housing_value_data, category_list = housing_value_categories)
     hood_median_value_range     = hood_median_value_range.replace('$','')
     hood_median_value_range     = hood_median_value_range.replace(',','').split('-')
     hood_median_value           = round((int(hood_median_value_range[0]) + int(hood_median_value_range[1]))/2,1)
 
     #Estimate a median household income from a category freqeuncy distribution
-    total_value_fraction = 0
-    for i,value_category_fraction in enumerate(comparison_housing_value_data):
-        total_value_fraction += value_category_fraction
-        if total_value_fraction >= 50:
-            median_cat_index = i
-            break
-    
-    comp_median_value_range     = housing_value_categories[median_cat_index]
+    comp_median_value_range     = FindMedianCategory(frequency_list = comparison_housing_value_data, category_list = housing_value_categories)
     comp_median_value_range     = comp_median_value_range.replace('$','')
     comp_median_value_range     = comp_median_value_range.replace(',','').split('-')
     comp_median_value           = round((int(comp_median_value_range[0]) + int(comp_median_value_range[1]))/2,1)
@@ -3146,33 +3146,41 @@ def HousingValueLanguage():
 def HousingYearBuiltLanguage():
     print('Creating House by Year Built Langauge')
     
-    year_built_categories = ['2014 >=','2010-2013','2000-2009','1990-1999','1980-1989','1970-1979','1960-1969','1950-1959','1940-1949','<= 1939']
-    year_built_categories.reverse()
+    year_built_categories       = ['2014','2010-2013','2000-2009','1990-1999','1980-1989','1970-1979','1960-1969','1950-1959','1940-1949','1939'].reverse()
 
-    #Estimate a median household income from a category freqeuncy distribution
-    total_yrblt_fraction = 0
-    for i,yrblt_category_fraction in enumerate(neighborhood_year_built_data):
-        total_yrblt_fraction += yrblt_category_fraction
-        if total_yrblt_fraction >= 50:
-            median_cat_index = i
-            break
+    #Median Year Built for hood
+    hood_median_yrblt_range     =  FindMedianCategory(frequency_list = neighborhood_year_built_data, category_list = year_built_categories)
     
-    hood_median_yrblt_range     = year_built_categories[median_cat_index]
-    hood_median_yrblt_range     = hood_median_yrblt_range.replace('<= ', '')
     if len(hood_median_yrblt_range) == 4:
         hood_median_yrblt = int(hood_median_yrblt_range)
     else:
-        hood_median_yrblt_range     = hood_median_yrblt_range.replace(' >=', '').split('-')
+        hood_median_yrblt_range     = hood_median_yrblt_range.split('-')
         hood_median_yrblt           = round((int(hood_median_yrblt_range[0]) + int(hood_median_yrblt_range[1]))/2,1)
     
+    #Median Year Built for comparison area
+    comp_median_yrblt_range     =  FindMedianCategory(frequency_list = comparison_year_built_data, category_list = year_built_categories)
+    
+    if len(comp_median_yrblt_range) == 4:
+        comp_median_yrblt = int(comp_median_yrblt_range)
+    else:
+        comp_median_yrblt_range     = comp_median_yrblt_range.split('-')
+        comp_median_yrblt           = round((int(comp_median_yrblt_range[0]) + int(comp_median_yrblt_range[1]))/2,1)
+    
+
+    #Largest cateorgies for hood and comparison area
     hood_largest_yrblt_category = year_built_categories[neighborhood_year_built_data.index(max(neighborhood_year_built_data))] #get the most common income category
     comp_largest_yrblt_category = year_built_categories[comparison_year_built_data.index(max(comparison_year_built_data))]
+
 
     yrblt_language = (  'Homes in '                                         +
                        neighborhood                                         + 
                        ' have a median year built of about '                + 
-                        "{:.0f}".format(hood_median_yrblt)                 +
-                       '. '                   +
+                        "{:.0f}".format(hood_median_yrblt)                  +
+                       ', compared to '                                     +
+                        "{:.0f}".format(comp_median_yrblt)                  +
+                        ' for '                                             +
+                        comparison_area                                     +
+                       '. '                                                 +
                        
                        'In '                                                + 
                        neighborhood                                         + 
@@ -3197,36 +3205,30 @@ def HouseholdSizeLanguage():
     household_size_categories = ['1','2','3','4','5','6','7+']
 
 
-    #Estimate a median household size from a category freqeuncy distribution
-    total_size_fraction = 0
-    for i,size_category_fraction in enumerate(neighborhood_household_size_distribution):
-        total_size_fraction += size_category_fraction
-        if total_size_fraction >= 50:
-            median_cat_index = i
-            break
+    #Median Household size for hood
+    hood_median_size   = int(FindMedianCategory(frequency_list = neighborhood_household_size_distribution, category_list = household_size_categories).replace('+',''))
+    comp_median_size   = int(FindMedianCategory(frequency_list = comparison_household_size_distribution,   category_list = household_size_categories).replace('+',''))
     
-    hood_median_size   = int(household_size_categories[median_cat_index].replace('+',''))
-  
-
+    #Largest cateogy for hood and comparsion area
     hood_largest_time_category = household_size_categories[neighborhood_household_size_distribution.index(max(neighborhood_household_size_distribution))] #get the most common household size category
     comp_largest_time_category = household_size_categories[comparison_household_size_distribution.index(max(comparison_household_size_distribution))]
 
     household_size_language = ('Households in '                                        +
-                               neighborhood                                           + 
-                              ' have a median size of '                      + 
-                        "{:,.0f} people".format(hood_median_size)                   +
-                       '. '                     +
-                       
-                       'In '                                                  + 
-                       neighborhood                                           + 
-                       ', the largest share of households have ' +
-                       hood_largest_time_category +
-                       ' people, compared to ' +
-                       comp_largest_time_category        +
-                       ' for '           +
-                        comparison_area +
-                        '.'
-                        )
+                               neighborhood                                            + 
+                              ' have a median size of '                                + 
+                              "{:,.0f} people".format(hood_median_size)                +
+                              '. '                                                     +
+
+                              'In '                                                    + 
+                              neighborhood                                             + 
+                              ', the largest share of households have '                +
+                              hood_largest_time_category                               +
+                              ' people, compared to '                                  +
+                              comp_largest_time_category                               +
+                              ' for '                                                  +
+                              comparison_area                                          +
+                              '.'
+                            )
     
     return([household_size_language])
 
@@ -3234,20 +3236,12 @@ def PopulationAgeLanguage():
     print('Creating Population by Age Langauge')
     age_ranges = ['0-19','20-24','25-34','35-49','50-66','67+']
 
-    #Estimate a median age  from a category freqeuncy distribution
-    total_pop_fraction = 0
-    for i,age_category_fraction in enumerate(neighborhood_age_data):
-        total_pop_fraction += age_category_fraction
-        if total_pop_fraction >= 50:
-            median_cat_index = i
-            break
-
-    hood_median_age_range      = age_ranges[median_cat_index]
+    hood_median_age_range      = FindMedianCategory(frequency_list = neighborhood_age_data, category_list = age_ranges)
     hood_median_age_range      = hood_median_age_range.replace(',','').split('-')
     hood_median_age            = round((int(hood_median_age_range[0]) + int(hood_median_age_range[1]))/2,1)
     
-    hood_largest_age_category = age_ranges[neighborhood_age_data.index(max(neighborhood_age_data))] #get the most common income category
-    comp_largest_age_category = age_ranges[comparison_age_data.index(max(comparison_age_data))]
+    hood_largest_age_category  = age_ranges[neighborhood_age_data.index(max(neighborhood_age_data))] #get the most common income category
+    comp_largest_age_category  = age_ranges[comparison_age_data.index(max(comparison_age_data))]
 
     age_language = ('The median age in '                                                        +
                        neighborhood                                                         + 
@@ -3266,7 +3260,6 @@ def PopulationAgeLanguage():
                         '.'
                     )
 
-    # age_language = ('The population in ' + neighborhood + ' has increased/compressed X% to ___ as of date. ' + 'Given a median age of _____, and a large distribution towards middle aged individuals, family households with school-aged children are most common.')
     
     return([age_language])
 
@@ -3290,21 +3283,17 @@ def IncomeLanguage():
                          '> $200,000']
 
     #Estimate a median household income from a category freqeuncy distribution
-    total_inc_fraction = 0
-    for i,income_category_fraction in enumerate(neighborhood_household_income_data):
-        total_inc_fraction += income_category_fraction
-        if total_inc_fraction >= 50:
-            median_cat_index = i
-            break
-
-    hood_median_income_range   = income_categories[median_cat_index]
+    hood_median_income_range   = FindMedianCategory(frequency_list=neighborhood_household_income_data, category_list=income_categories)
     hood_median_income_range   = hood_median_income_range.replace('$','')
     hood_median_income_range   = hood_median_income_range.replace(',','').split('-')
-    
     hood_median_income         = round((int(hood_median_income_range[0]) + int(hood_median_income_range[1]))/2,1)
     
+
     hood_largest_income_category = income_categories[neighborhood_household_income_data.index(max(neighborhood_household_income_data))] #get the most common income category
     
+
+
+
     #If not the last or first category
     if (hood_largest_income_category != income_categories[len(income_categories)-1]) and (hood_largest_income_category != income_categories[0]) :
         hood_largest_income_category = 'between ' + hood_largest_income_category
@@ -3364,17 +3353,16 @@ def TravelTimeLanguage():
 
 
     #Estimate a median household income from a category freqeuncy distribution
-    total_time_fraction = 0
-    for i,time_category_fraction in enumerate(neighborhood_time_to_work_distribution):
-        total_time_fraction += time_category_fraction
-        if total_time_fraction >= 50:
-            median_cat_index = i
-            break
-    
-    hood_median_time_range   = travel_time_categories[median_cat_index]
+    hood_median_time_range   = FindMedianCategory(frequency_list=neighborhood_time_to_work_distribution, category_list = travel_time_categories) 
     hood_median_time_range   = hood_median_time_range.replace(' Minutes','')
     hood_median_time_range   = hood_median_time_range.replace(',','').split('-')
     hood_median_time         = (int(hood_median_time_range[0]) + int(hood_median_time_range[1]))/2
+
+    #Estimate a median household income from a category freqeuncy distribution
+    comp_median_time_range   = FindMedianCategory(frequency_list=comparison_time_to_work_distribution, category_list = travel_time_categories) 
+    comp_median_time_range   = comp_median_time_range.replace(' Minutes','')
+    comp_median_time_range   = comp_median_time_range.replace(',','').split('-')
+    comp_median_time         = (int(comp_median_time_range[0]) + int(comp_median_time_range[1]))/2
     
     hood_largest_time_category = travel_time_categories[neighborhood_time_to_work_distribution.index(max(neighborhood_time_to_work_distribution))] #get the most common income category
     comp_largest_time_category = travel_time_categories[comparison_time_to_work_distribution.index(max(comparison_time_to_work_distribution))]
