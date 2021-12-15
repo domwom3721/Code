@@ -3105,6 +3105,19 @@ def HousingValueLanguage():
     hood_median_value_range     = hood_median_value_range.replace('$','')
     hood_median_value_range     = hood_median_value_range.replace(',','').split('-')
     hood_median_value           = round((int(hood_median_value_range[0]) + int(hood_median_value_range[1]))/2,1)
+
+    #Estimate a median household income from a category freqeuncy distribution
+    total_value_fraction = 0
+    for i,value_category_fraction in enumerate(comparison_housing_value_data):
+        total_value_fraction += value_category_fraction
+        if total_value_fraction >= 50:
+            median_cat_index = i
+            break
+    
+    comp_median_value_range     = housing_value_categories[median_cat_index]
+    comp_median_value_range     = comp_median_value_range.replace('$','')
+    comp_median_value_range     = comp_median_value_range.replace(',','').split('-')
+    comp_median_value           = round((int(comp_median_value_range[0]) + int(comp_median_value_range[1]))/2,1)
     
     hood_largest_value_category = housing_value_categories[neighborhood_housing_value_data.index(max(neighborhood_housing_value_data))] #get the most common income category
     comp_largest_value_category = housing_value_categories[comparison_housing_value_data.index(max(comparison_housing_value_data))]
@@ -3451,6 +3464,15 @@ def AddHeading(document,title,heading_level,heading_number,font_size): #Function
             rFonts = heading_style.element.rPr.rFonts
             rFonts.set(qn("w:asciiTheme"), "Avenir Next LT Pro")
 
+def AddTableTitle(document,title):
+    table_title_paragraph = document.add_paragraph(title)
+    table_title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    table_title_paragraph.paragraph_format.space_after  = Pt(6)
+    table_title_paragraph.paragraph_format.space_before = Pt(12)
+    for run in table_title_paragraph.runs:
+                    font = run.font
+                    font.name = 'Avenir Next LT Pro Medium'
+
 def Citation(document,text):
     citation_paragraph = document.add_paragraph()
     citation_paragraph.paragraph_format.space_after  = Pt(0)
@@ -3751,9 +3773,7 @@ def IntroSection(document):
         summary_style.font.name                         = primary_font
 
     
-    intro_table_size_paragraph                               = document.add_paragraph('Population and Hosuehold Growth')
-    intro_table_size_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
-    intro_table_size_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+    AddTableTitle(document = document, title = 'Population and Household Growth')
     
     try:
         #Add Overview Table
@@ -3772,6 +3792,37 @@ def CommunityAssetsSection(document):
         community_paragraph                               = document.add_paragraph(paragraph)
         community_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
         community_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+
+    #Table Title
+    AddTableTitle(document = document, title = 'Community Assets')
+
+    #Add Community Assets Table
+    graphics_list            = ['plane.png','plane.png','plane.png','plane.png','plane.png','plane.png','plane.png'] #list of graphics for each row (col 1)
+    community_table_language = ['ROW 1', 'ROW 2', 'ROW 3', 'ROW 4', 'ROW 5', 'ROW 6', 'ROW 7']                       #list of text for each row (col 2)
+    assert len(graphics_list) == len(community_table_language)
+
+    #Create an empty table
+    tab                      = document.add_table(rows=1, cols=2)
+
+    #Insert the graphics by adding a row for each one
+    for pic in graphics_list:
+        row_cells = tab.add_row().cells
+        paragraph = row_cells[0].paragraphs[0]
+        run       = paragraph.add_run()
+        run.add_picture(os.path.join(graphics_location,pic))
+    
+
+    #Loop through the rows in the table write in the text
+    for current_row ,row in enumerate(tab.rows): 
+        #loop through all cells in the current row
+        for current_column,cell in enumerate(row.cells):
+            if current_column == 1 and current_row > 0:
+                cell.text = str(community_table_language[current_row-1])
+
+            if current_column == 0:
+                cell.width = Inches(.2)
+            else:
+                cell.width = Inches(6)
 
 def HousingSection(document):
     print('Writing Neighborhood Section')
@@ -3930,8 +3981,6 @@ def EmploymentSection(document):
         
 def TransportationSection(document):
     print('Writing Transportation Section')
-
-
     #Employment and Transportation Section
     AddHeading(document = document, title = 'Transportation',                  heading_level = 1,heading_number='Heading 3',font_size=11)
 
@@ -3966,13 +4015,11 @@ def TransportationSection(document):
         Citation(document,'U.S. Census Bureau')
     
     #Transportation Methods table
-    table_paragraph             = document.add_paragraph('Transportation Methods')
-    table_paragraph.alignment   = WD_ALIGN_PARAGRAPH.CENTER
-    transportation_paragraph    = document.add_paragraph(transportation_language)
+    AddTableTitle(document = document, title = 'Transportation Methods')
 
     #Insert the transit graphics(car, bus,plane, train)
     tab = document.add_table(rows=1, cols=2)
-    for pic in ['car.png','train.png','bus.png','plane.png']:
+    for pic in ['car.png','train.png','bus.png','plane.png','plane.png','plane.png']:
         row_cells = tab.add_row().cells
         paragraph = row_cells[0].paragraphs[0]
         run = paragraph.add_run()
@@ -3981,8 +4028,7 @@ def TransportationSection(document):
         run.add_picture(os.path.join(graphics_location,pic))
     
 
-
-    transit_table_language = [car_language, train_language, bus_language, plane_language]
+    transit_table_language = [car_language, train_language, bus_language, plane_language,walk_score_data[0],walk_score_data[2]]
 
     #Loop through the rows in the table
     for current_row ,row in enumerate(tab.rows): 
@@ -3997,44 +4043,7 @@ def TransportationSection(document):
                 cell.width = Inches(6)
 
 
-
-
-
-
-
-    #Walk/Bike/Transit Score Table
-    table_paragraph = document.add_paragraph('Walk, Bike, and Transit Scores')
-    table_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-
-    #Add transit score table
-    tab = document.add_table(rows=1, cols=2)
-    for pic in ['car.png','car.png','car.png',]:
-        row_cells = tab.add_row().cells
-        paragraph = row_cells[0].paragraphs[0]
-        run = paragraph.add_run()
-        if pic == 'car.png':
-            run.add_text(' ')
-        run.add_picture(os.path.join(graphics_location,pic))
-    
-
-
-  
-    #Loop through the rows in the table
-    for current_row ,row in enumerate(tab.rows): 
-        #loop through all cells in the current row
-        for current_column,cell in enumerate(row.cells):
-            if current_column == 1 and current_row > 0:
-                try:
-                    cell.text = str(walk_score_data[current_row-1])
-                except:
-                    cell.text = 'NA'
-
-
-            if current_column == 0:
-                cell.width = Inches(.2)
-            else:
-                cell.width = Inches(6)
-    Citation(document,'https://www.walkscore.com/')
+    # Citation(document,'https://www.walkscore.com/')
 
 def OutlookSection(document):
     print('Writing Outlook Section')
