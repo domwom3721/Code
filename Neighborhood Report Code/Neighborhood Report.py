@@ -296,7 +296,7 @@ def GetHouseholdSizeData(geographic_level,hood_or_comparison_area):
             elif hood_or_comparison_area == 'comparison area':
                 county_fips = comparison_county_fips
             
-            neighborhood_household_size_distribution_raw = c.sf1.state_county(fields=fields_list,state_fips=state_fips,county_fips=county_fips)[0]
+            neighborhood_household_size_distribution_raw = c.sf1.state_county(fields = fields_list, state_fips = state_fips,county_fips = county_fips)[0]
         
         except Exception as e:
             print(e, 'Problem getting household size data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
@@ -1322,7 +1322,7 @@ def GetTravelMethodData(geographic_level,hood_or_comparison_area):
             elif hood_or_comparison_area == 'comparison area':
                 place_fips = comparsion_place_fips
 
-            neighborhood_method_to_work_distribution_raw   = c.acs5.state_place(fields=fields_list,state_fips=state_fips,place=place_fips)[0]
+            neighborhood_method_to_work_distribution_raw   = c.acs5.state_place(fields = fields_list, state_fips = state_fips, place = place_fips)[0]
         
         except Exception as e:
             print(e, 'Problem getting travel method data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
@@ -2919,6 +2919,7 @@ def WikipediaTransitLanguage(category):
         return('')
 
 def SummaryLangauge():
+    print('Creating Summary Langauge')
     try:
         wikipedia_summary = (wikipedia.summary((neighborhood + ',' + state)))
     except Exception as e:
@@ -2934,7 +2935,7 @@ def SummaryLangauge():
     return[wikipedia_summary,apartmentsdotcomlanguage]
 
 def CommunityAssetsLanguage():
-
+    print('Creating Community Assets Langauge')
     community_assets_language = (neighborhood + ' has a number of community assets. ')
     
     location_iq_data                             = LocationIQ(              lat = latitude, lon = longitude, radius = 5000                                     )
@@ -2984,6 +2985,7 @@ def CommunityAssetsLanguage():
     # yelp_data                                    = GetYelpData(             lat = latitude, lon = longitude, radius = 30000                                    ) #radius in meters
 
 def CarLanguage():
+    print('Creating auto Langauge')
     wikipedia_car_language     = WikipediaTransitLanguage(category='car')
     
     if wikipedia_car_language == '':
@@ -2992,6 +2994,8 @@ def CarLanguage():
         return(wikipedia_car_language)
 
 def PlaneLanguage():
+    print('Creating plane Langauge')
+
     wikipedia_plane_language     = WikipediaTransitLanguage(category='air')
     nearest_airport_language     = FindNearestAirport(lat = latitude, lon = longitude)
 
@@ -3001,14 +3005,18 @@ def PlaneLanguage():
         return(wikipedia_plane_language)
 
 def BusLanguage():
+    print('Creating bus Langauge')
+
     wikipedia_bus_language = WikipediaTransitLanguage(category='bus')
     return(wikipedia_bus_language)
 
 def TrainLanguage():
+    print('Creating train Langauge')
     wikipedia_train_language = WikipediaTransitLanguage(category='train')
     return(wikipedia_train_language)
 
 def OutlookLanguage():
+    print('Creating Outlook Langauge')
     return('Neighborhood analysis can best be summarized by referring to neighborhood life cycles. ' +
           'Neighborhoods are perceived to go through four cycles, the first being growth, the second being stability, the third decline, and the fourth revitalization. ' +
           'It is our observation that the subject’s neighborhood is exhibiting several stages of the economic life, with an overall predominance of stability and both limited decline and limited revitalization in some sectors. ' +
@@ -3019,6 +3027,8 @@ def OutlookLanguage():
     pass
 
 def TransportationOverviewLanguage():
+    print('Creating Transporation Overview Langauge')
+
     try:
         transportation_language         =  page.section('Transportation')
     except Exception as e:
@@ -3028,6 +3038,7 @@ def TransportationOverviewLanguage():
     return(transportation_language)
 
 def HousingTenureLanguage():
+    print('Creating housing units by tenure Langauge')
     hood_owner_occupied_fraction        =  neighborhood_tenure_distribution[1] 
     comparsion_owner_occupied_fraction  =  comparison_tenure_distribution[1]
 
@@ -3061,6 +3072,8 @@ def HousingTenureLanguage():
     return([tenure_langugage])
 
 def HousingSizeLanguage():
+    print('Creating housing units by Size Langauge')
+
     number_units_categories = ['Single Family Homes','Townhomes','Duplexes','3-4 Units','5-9 Units','10-19 Units','20-49 Units','50 >= Units']
     
     most_common_category           = number_units_categories[neighborhood_number_units_data.index(max(neighborhood_number_units_data))] #get the most common number units category
@@ -3076,7 +3089,8 @@ def HousingSizeLanguage():
     return[housing_size_langauge]
 
 def HousingValueLanguage():
-  
+    print('Creating Household by value Langauge')
+
     housing_value_categories = ['$10,000 <','$10,000-14,999','$15,000-19,999','$20,000-24,999','$25,000-29,999','$30,000-34,000','$35,000-39,999','$40,000-49,000','$50,000-59,9999','$60,000-69,999','$70,000-79,999','$80,000-89,999','$90,000-99,999','$100,000-124,999','$125,000-149,999','$150,000-174,999','$175,000-199,999','$200,000-249,999','$250,000-299,999','$300,000-399,999','$400,000-499,999','$500,000-749,999','$750,000-999,999','$1,000,000-1,499,999','$1,500,000-1,999,999','$2,000,000 >=']
 
 
@@ -3096,13 +3110,15 @@ def HousingValueLanguage():
     hood_largest_value_category = housing_value_categories[neighborhood_housing_value_data.index(max(neighborhood_housing_value_data))] #get the most common income category
     comp_largest_value_category = housing_value_categories[comparison_housing_value_data.index(max(comparison_housing_value_data))]
 
-    value_language = (  'Homes in '                                        +
+    value_language = (  'Homes in '                                           +
                        neighborhood                                           + 
-                       ' have a median value of about '                      + 
-                        "${:,.0f}".format(hood_median_value)                   +
-                       ', displayed in the chart below. '                     +
-                       
-                       'In '                                                  + 
+                       ' have a median value of about '                       + 
+                        "${:,.0f}".format(hood_median_value)                  +
+                       ', compared to '                                       +
+                       "${:,.0f}".format(comp_median_value)                   +
+                       ' for the '                                            +  
+                       comparison_area                                        +
+                       '. In '                                                + 
                        neighborhood                                           + 
                        ', the largest share of homes have a value between ' +
                        hood_largest_value_category +
@@ -3116,6 +3132,7 @@ def HousingValueLanguage():
     return([value_language])
 
 def HousingYearBuiltLanguage():
+    print('Creating House by Year Built Langauge')
     
     year_built_categories = ['2014 >=','2010-2013','2000-2009','1990-1999','1980-1989','1970-1979','1960-1969','1950-1959','1940-1949','<= 1939']
     year_built_categories.reverse()
@@ -3159,10 +3176,12 @@ def HousingYearBuiltLanguage():
     return([yrblt_language])
 
 def EmploymentLanguage():
+    print('Creating Employment by Industry angauge')
     return(['The majority of working age residents are employed in the ______, ______, and _______ industries. ' + 'Given its large share of employees in the production industry, '])
 
 def HouseholdSizeLanguage():
-    
+    print('Creating Household by Size Langauge')
+
     household_size_categories = ['1','2','3','4','5','6','7+']
 
 
@@ -3200,6 +3219,7 @@ def HouseholdSizeLanguage():
     return([household_size_language])
 
 def PopulationAgeLanguage():
+    print('Creating Population by Age Langauge')
     age_ranges = ['0-19','20-24','25-34','35-49','50-66','67+']
 
     #Estimate a median age  from a category freqeuncy distribution
@@ -3239,7 +3259,7 @@ def PopulationAgeLanguage():
     return([age_language])
 
 def IncomeLanguage():
-
+    print('Creating HH Income Langauge')
     income_categories = ['< $10,000',
                          '$10,000-14,999',
                          '$15,000-19,999',
@@ -3294,14 +3314,16 @@ def IncomeLanguage():
     return([income_language])
 
 def TravelMethodLanguage():
+    print('Creating Travel Method Langauge')
     travel_method_categories = ['driving alone','car pooling','public transportation','walking','working from home','biking','other']
     hood_largest_travel_category      = travel_method_categories[neighborhood_method_to_work_distribution.index(max(neighborhood_method_to_work_distribution))] #get the most common income category
     hood_largest_travel_category_frac = neighborhood_method_to_work_distribution[neighborhood_method_to_work_distribution.index(max(neighborhood_method_to_work_distribution))]
+
     travel_method_language = ('In ' + neighborhood + ', the most common method for traveling to work is ' + hood_largest_travel_category.lower()  + ' with ' +  "{:,.1f}%".format(hood_largest_travel_category_frac) + ' of commuters using it.')
     return([travel_method_language])
     
 def TravelTimeLanguage():
-    
+    print('Creating Travel Time Langauge')
     travel_time_categories = ['< 5 Minutes','5-9 Minutes','10-14 Minutes','15-19 Minutes','20-24 Minutes','25-29 Minutes','30-34 Minutes','35-39 Minutes','40-44 Minutes','45-59 Minutes','60-89 Minutes','> 90 Minutes']
 
 
@@ -3410,9 +3432,9 @@ def AddTitle(document):
     rFonts = main_title_style.element.rPr.rFonts
     rFonts.set(qn("w:asciiTheme"), "Avenir Next LT Pro Light")
 
-    glance_paragraph                               = document.add_paragraph(neighborhood + ' at a Glance')
-    glance_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
-    glance_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+    # glance_paragraph                               = document.add_paragraph(neighborhood + ' at a Glance')
+    # glance_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
+    # glance_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
 
 def AddHeading(document,title,heading_level,heading_number,font_size): #Function we use to insert the headers other than the title header
             heading = document.add_heading(title,level=heading_level)
@@ -3432,8 +3454,8 @@ def AddHeading(document,title,heading_level,heading_number,font_size): #Function
 
 def Citation(document,text):
     citation_paragraph = document.add_paragraph()
-    citation_paragraph.paragraph_format.space_after  = Pt(6)
-    citation_paragraph.paragraph_format.space_before = Pt(6)
+    citation_paragraph.paragraph_format.space_after  = Pt(0)
+    citation_paragraph.paragraph_format.space_before = Pt(0)
     run = citation_paragraph.add_run('Source: ' + text)
     font = run.font
     font.name = primary_font
@@ -3715,8 +3737,8 @@ def IntroSection(document):
     AddTitle(document = document)
     AddMap(document = document)
     Citation(document,'Google Maps')
-    AddHeading(document = document, title = 'Overview',            heading_level = 1,heading_number='Heading 3',font_size=11)
-    
+    AddHeading(document = document, title =  (neighborhood + ' at a Glance'),            heading_level = 1,heading_number='Heading 3',font_size=11)
+   
     #Add neighborhood overview language
     for paragraph in summary_langauge:
         if paragraph == '':
@@ -3811,8 +3833,6 @@ def HousingSection(document):
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
 
-    PageBreak(document=document)
-
 def DevelopmentSection(document):
     print('Writing Development Section')
     
@@ -3883,8 +3903,6 @@ def PopulationSection(document):
         last_paragraph = document.paragraphs[-1] 
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
-
-    PageBreak(document=document)
 
 def EmploymentSection(document):
     print('Writing Employment Section')
@@ -4186,7 +4204,7 @@ def GetUserInputs():
     
     global neighborhood, hood_tract, hood_zip, hood_place_fips, place_type, hood_suvdiv_fips, hood_county_fips
     global state, state_fips, state_full_name
-    global comparison_area, comparison_tract ,comparison_zip, comparsion_place_fips, comparison_suvdiv_fips, comparison_county_fips    
+    global comparison_area, comparison_tract ,comparison_zip, comparsion_place_fips, comparison_suvdiv_fips, comparison_county_fips,comparison_state_fips
 
     #Get User input on neighborhood/subject area
     if neighborhood_level == 'p':        #when our neighborhood is a town or city eg: East Rockaway Village, New York
@@ -4344,8 +4362,9 @@ def GetUserInputs():
             comparison_county_fips = '36061'
         
         #Process FIPS code provided by user
-        comparison_county_fips = comparison_county_fips.replace('-','').strip()
+        comparison_county_fips     = comparison_county_fips.replace('-','').strip()
         assert len(comparison_county_fips) == 5
+        comparison_state_fips      = comparison_county_fips[0:2]
 
         #Get name of comparison county using the FIPS code provdided
         comparison_area = c.sf1.state_county(fields=['NAME'],state_fips=comparison_county_fips[0:2],county_fips=comparison_county_fips[2:])[0]['NAME']
