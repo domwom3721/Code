@@ -3299,6 +3299,11 @@ def OverviewLanguage():
         print('Getting Metro_Language from CSV')
 
     #Section 1c: Grab summary text from Wikipedia
+
+    
+    #If not, then use wikipedia and the data we have collected to construct a few paragraphs.....
+
+    #Section 1: Grab summary text from Wikipedia
     try:
         wikipeida_summary      =  wikipedia.summary((county + ',' + state))
         wikipeida_summary      = wikipeida_summary.replace('the U.S. state of ','')
