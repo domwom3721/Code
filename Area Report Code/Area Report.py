@@ -3269,13 +3269,13 @@ def millify(n):
 def OverviewLanguage():
     print('Writing Overview Langauge')
 
-    # Section 1A: Grab overview summary from Metro_language CSV
-    print('The subject property is located in ' + county + ', ' + state + '. ')
+    # Section 1A: Identify county and state of subject property
+    subject_property_location_language = ('The subject property is located in ' + county + ', ' + state_name + '. ')
 
-    #Use the CBSA Code from IdentifyMSA to pull Metro Language
+    # Section 1B: Grab overview summary from Metro_language CSV using the CBSA Code from IdentifyMSA
     metro_area_language_df = pd.read_csv(os.path.join(data_location,'Metro_Language.csv'),
                                                 dtype={
-                                                    'cbsa_code': object,
+                                                    'CBSA_Code': object,
                                                     'metro_name': object,
                                                     'overview': object,
                                                     'economy': object,
@@ -3285,26 +3285,20 @@ def OverviewLanguage():
                                                     'Colleges and Education': object
                                                       }
                                         )
+    #print(metro_area_language_df)
 
     #restrict data to only rows with the Subject County CBSA Code
-    #I thought the CBSA was defined in the IdentifyMSA section? but based on error below, it is not. 
-    metro_area_language_df = metro_area_language_df.loc[metro_area_language_df['cbsa_code'] == cbsa] #restrict to only the row for the metro area in question
-    
+    metro_area_language_df = metro_area_language_df.loc[metro_area_language_df['CBSA_Code'] == cbsa]
+    #print(metro_area_language_df)
+
     #If we have a cbsa/msa for the county, then use the excel file text
     if len(metro_area_language_df) == 1:   
         CBSA_overview_language       = metro_area_language_df['Overview'].iloc[-1]
         CBSA_economy_language        = metro_area_language_df['Economy'].iloc[-1]
         CBSA_infrastructure_language = metro_area_language_df['Infrastructure'].iloc[-1]
-        return([cbsa,CBSA_overview_language,CBSA_economy_language,CBSA_infrastructure_language]) #"return" stops the function and you can disreguard everything below if this is executed
+        print('Getting Metro_Language from CSV')
 
-
-
-
-
-    
-    #If not, then use wikipedia and the data we have collected to construct a few paragraphs.....
-
-    #Section 1: Grab summary text from Wikipedia
+    #Section 1c: Grab summary text from Wikipedia
     try:
         wikipeida_summary      =  wikipedia.summary((county + ',' + state))
         wikipeida_summary      = wikipeida_summary.replace('the U.S. state of ','')
@@ -3403,7 +3397,7 @@ def OverviewLanguage():
 
     
     #Section 4: Put together our 3 sections and return it
-    overview_language = [wikipeida_summary, wikipeida_economy_summary, covid_context_pargaraph, economic_overview_paragraph]
+    overview_language = [subject_property_location_language, CBSA_overview_language, wikipeida_summary, wikipeida_economy_summary, covid_context_pargaraph, economic_overview_paragraph]
     return(overview_language)
 
 def CountyEmploymentBreakdownLanguage(county_industry_breakdown):
