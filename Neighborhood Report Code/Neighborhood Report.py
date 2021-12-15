@@ -44,7 +44,7 @@ from docx.shared import Inches, Pt, RGBColor
 from fredapi import Fred
 from genericpath import exists
 from numpy import true_divide
-from osgeo import gdal, ogr
+# from osgeo import gdal, ogr
 from PIL import Image, ImageOps
 from plotly.subplots import make_subplots
 from requests.adapters import HTTPAdapter
@@ -76,7 +76,7 @@ primary_space_after_paragraph = 8
 #Decide if you want to export data in excel files in the county folder
 data_export                   = False
 testing_mode                  = True
-testing_mode                  = False
+# testing_mode                  = False
 
 
 #Directory Realted Functions
@@ -2876,7 +2876,6 @@ def CreateGraphs():
     except Exception as e:
         print(e,'unable to create travel mode graph')
 
-#Langauge Related Functions    
 def WikipediaTransitLanguage(category):
     #Searches through a wikipedia page for a number of section titles and returns the text from them (if any)
     try:
@@ -2932,7 +2931,7 @@ def SummaryLangauge():
         print(e)
         apartmentsdotcomlanguage = ('')
         
-    return[wikipedia_summary,apartmentsdotcomlanguage]
+    return[favorite_ice_cream,wikipedia_summary,apartmentsdotcomlanguage]
 
 def CommunityAssetsLanguage():
     print('Creating Community Assets Langauge')
@@ -3751,6 +3750,11 @@ def IntroSection(document):
         summary_style                                   = summary_paragraph.style
         summary_style.font.name                         = primary_font
 
+    
+    intro_table_size_paragraph                               = document.add_paragraph('Population and Hosuehold Growth')
+    intro_table_size_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
+    intro_table_size_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+    
     try:
         #Add Overview Table
         AddTable(document = document,data_for_table = overview_table_data )
