@@ -2931,7 +2931,7 @@ def SummaryLangauge():
         print(e)
         apartmentsdotcomlanguage = ('')
         
-    return[favorite_ice_cream,wikipedia_summary,apartmentsdotcomlanguage]
+    return[wikipedia_summary,apartmentsdotcomlanguage]
 
 def CommunityAssetsLanguage():
     print('Creating Community Assets Langauge')
