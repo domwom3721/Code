@@ -3297,6 +3297,12 @@ def OverviewLanguage():
         CBSA_economy_language        = metro_area_language_df['Economy'].iloc[-1]
         CBSA_infrastructure_language = metro_area_language_df['Infrastructure'].iloc[-1]
         print('Getting Metro_Language from CSV')
+    
+    else:
+        CBSA_overview_language       = ''
+        CBSA_economy_language        = ''
+        CBSA_infrastructure_language = ''
+
 
     #Section 1c: Grab summary text from Wikipedia
 
