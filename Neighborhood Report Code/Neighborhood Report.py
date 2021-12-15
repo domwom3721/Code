@@ -2938,17 +2938,24 @@ def CommunityAssetsLanguage():
     community_assets_language = (neighborhood + ' has a number of community assets. ')
     
     location_iq_data                             = LocationIQ(              lat = latitude, lon = longitude, radius = 5000                                     )
+    # print(location_iq_data)
     
     for poi in location_iq_data:
-        poi_name      = poi['display_name']
+        # print(poi)
+        poi_name      = poi['name']
         poi_type      = poi['type']
         poi_city      = poi['address']['city']
-        poi_sentence  = (' ' + poi_name + ' is a ' + poi_type + '.')
-        community_assets_language = community_assets_language + poi_sentence
+        poi_sentence  = (' ' + poi_name + ' is a ' + poi_type + '. ')
+        
+        #For cities/towns, restirct points of interest to those inside the city limits
+        if neighborhood_level == 'place':
+            if neighborhood == poi_city:
+                community_assets_language = community_assets_language + poi_sentence
 
-    # print(poi)
-    print(location_iq_data)
-    # print(type(location_iq_data))
+        else:
+            community_assets_language = community_assets_language + poi_sentence
+
+    
 
     return([community_assets_language])
     
@@ -4179,8 +4186,8 @@ def GetUserInputs():
 
         neighborhood_level = 'place'
         if testing_mode == False:
-            # fips = input('Enter the 7 digit Census Place FIPS Code')
-            fips = '44-49960'
+            fips = input('Enter the 7 digit Census Place FIPS Code')
+            # fips = '44-49960'
         else:
             fips = '36-22876'
 
@@ -4322,8 +4329,8 @@ def GetUserInputs():
 
         #Get comparison county FIPS code from user
         if testing_mode == False:
-            # comparison_county_fips = input('Enter the 5 digit FIPS code for the comparison county')
-            comparison_county_fips = '44005'
+            comparison_county_fips = input('Enter the 5 digit FIPS code for the comparison county')
+            # comparison_county_fips = '44005'
 
         else:
             comparison_county_fips = '36061'
