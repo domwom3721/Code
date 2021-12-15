@@ -76,7 +76,7 @@ primary_space_after_paragraph = 8
 #Decide if you want to export data in excel files in the county folder
 data_export                   = False
 testing_mode                  = True
-# testing_mode                  = False
+testing_mode                  = False
 
 
 #Directory Realted Functions
@@ -3172,7 +3172,7 @@ def HousingYearBuiltLanguage():
                        neighborhood                                         + 
                        ' have a median year built of about '                + 
                         "{:.0f}".format(hood_median_yrblt)                 +
-                       ', displayed in the chart below. '                   +
+                       '. '                   +
                        
                        'In '                                                + 
                        neighborhood                                         + 
@@ -3215,7 +3215,7 @@ def HouseholdSizeLanguage():
                                neighborhood                                           + 
                               ' have a median size of '                      + 
                         "{:,.0f} people".format(hood_median_size)                   +
-                       ', displayed in the chart below. '                     +
+                       '. '                     +
                        
                        'In '                                                  + 
                        neighborhood                                           + 
@@ -3253,7 +3253,7 @@ def PopulationAgeLanguage():
                        neighborhood                                                         + 
                        ' is around '                         + 
                         "{:,.0f}".format(hood_median_age)                                   +
-                       ', displayed in the chart below. '                                   +
+                       '. '                                   +
                        
                        'In '                                                                + 
                        neighborhood                                                         + 
@@ -3310,7 +3310,7 @@ def IncomeLanguage():
                        neighborhood                                          + 
                        ' have a median household income of around '          + 
                         "${:,.0f}".format(hood_median_income)                 +
-                       ', displayed in the chart below. '                    +
+                       '. '                    +
                        
                        'In '                                                 + 
                        neighborhood                                          + 
@@ -3359,7 +3359,7 @@ def TravelTimeLanguage():
                        neighborhood                                           + 
                        ' have a median commute time of about '                      + 
                         "{:,.0f} minutes".format(hood_median_time)                   +
-                       ', displayed in the chart below. '                     +
+                       '. '                     +
                        
                        'In '                                                  + 
                        neighborhood                                           + 
