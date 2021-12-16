@@ -121,8 +121,8 @@ def GetLatandLon():
     # Look up lat and lon of area with geocoding using google maps api
     gmaps          = googlemaps.Client(key=google_maps_api_key) 
     
-    if neighborhood_level == 'custom:':
-        geocode_result = gmaps.geocode(address=(neighborhood + ', ' + comparison_area + ',' + hood_state),)
+    if neighborhood_level == 'custom':
+        geocode_result = gmaps.geocode(address=(neighborhood + ', ' + comparison_area + ',' + comparison_state),)
     else:
         geocode_result = gmaps.geocode(address=(neighborhood + ',' + hood_state),)
     
@@ -4750,7 +4750,7 @@ def GetUserInputs():
 
     elif neighborhood_level == 'custom': #When our neighborhood is a neighboorhood within a city (eg: Financial District, New York City)
         #Get name of hood
-        neighborhood      = input('Enter the name of the custom neighborhood')
+        neighborhood      = input('Enter the name of the custom neighborhood').strip()
 
     global comparison_area, comparison_tract ,comparison_zip, comparison_place_fips, comparison_suvdiv_fips, comparison_county_fips
     global comparison_state, comparison_state_fips, comparison_state_full_name
@@ -4802,7 +4802,7 @@ def GetUserInputs():
         comparison_state_fips                 = tract_info[5]
   
     elif comparison_level == 'custom':   #When our comparison area is a neighboorhood within a city (eg: Financial District, New York City)
-        comparison_area = input('Enter the name of the custom comparison area')
+        comparison_area = input('Enter the name of the custom comparison area').strip()
 
 def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
     if type == None:
