@@ -682,9 +682,6 @@ def OverviewSection():
         AddMarketPerformanceTable(document = document,market_data_frame = df_market_cut ,col_width = 1.2,sector=sector)
         document.add_paragraph('')
 
-    page_break_paragraph = document.add_paragraph('')
-    run = page_break_paragraph.add_run()
-    run.add_break(WD_BREAK.PAGE)
 
 def SupplyDemandSection():
     #Supply and Demand Section
@@ -746,9 +743,7 @@ def SupplyDemandSection():
         absorption_format = document.styles['Normal'].paragraph_format
         absorption_format.space_after = Pt(0)
     
-    page_break_paragraph = document.add_paragraph('')
-    run = page_break_paragraph.add_run()
-    run.add_break(WD_BREAK.PAGE)
+
     
 def RentSecton():
     AddHeading(document,'Rents',3)   
@@ -799,9 +794,7 @@ def RentSecton():
         last_paragraph = document.paragraphs[-1] 
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
     
-    page_break_paragraph = document.add_paragraph('')
-    run = page_break_paragraph.add_run()
-    run.add_break(WD_BREAK.PAGE)
+
 
 def ConstructionSection():
     #Construction Section
@@ -827,9 +820,6 @@ def ConstructionSection():
     else:
         pass
 
-    page_break_paragraph = document.add_paragraph('')
-    run = page_break_paragraph.add_run()
-    run.add_break(WD_BREAK.PAGE)
 
 def CapitalMarketsSection():
     #Captial Markets Section
@@ -908,10 +898,6 @@ def CapitalMarketsSection():
         last_paragraph = document.paragraphs[-1] 
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
     
-    page_break_paragraph = document.add_paragraph('')
-    run = page_break_paragraph.add_run()
-    run.add_break(WD_BREAK.PAGE)
-
 def OutlookSection():
     #Outlook Section
     AddHeading(document,'Outlook',2)
