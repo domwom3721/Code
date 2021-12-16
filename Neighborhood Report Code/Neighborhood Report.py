@@ -500,6 +500,7 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
     return(neighborhood_household_size_distribution)
 
 
+#In Progress ------- Replacing these functions with the one above ^^
 
 #Household Size
 def GetHouseholdSizeData(geographic_level,hood_or_comparison_area):
@@ -1934,7 +1935,6 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     
 
 
-
     #Calculate growth rates
     hood_pop_growth        = ((int(current_hood_pop)/int(_2010_hood_pop)) - 1) * 100
     hood_hh_growth         = ((int(current_hood_hh)/int(_2010_hood_hh))   - 1) * 100
@@ -2356,12 +2356,10 @@ def GetData():
     print(neighborhood_household_income_data2)
     
     neighborhood_time_to_work_distribution        = GetTravelTimeData(        geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Time to Work
-    neighborhood_time_to_work_distribution2       = GetCensusFrequencyDistribution(        geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',fields_list=fields_list = ["B08012_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,14)])          #Travel Time to Work
+    neighborhood_time_to_work_distribution2       = GetCensusFrequencyDistribution(        geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',fields_list = ["B08012_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,14)])          #Travel Time to Work
     print(neighborhood_time_to_work_distribution)
     print(neighborhood_time_to_work_distribution2)
     
-
-
 
     neighborhood_number_units_data               = GetNumberUnitsData(       geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by units in building
     neighborhood_age_data                        = GetAgeData(               geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Population by age data
@@ -2388,8 +2386,6 @@ def GetData():
     comparison_number_units_data                 = GetNumberUnitsData(      geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
     comparison_top_occupations_data              = GetTopOccupationsData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
     
-
-
 
 
 
