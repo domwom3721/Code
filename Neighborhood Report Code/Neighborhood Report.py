@@ -2254,15 +2254,12 @@ def ApartmentsDotComSearch():
             if ('Learn'  in paragraph.text) and ('More' in paragraph.text):
                 return(descriptive_paragraphs)
             if count > 3 :
-                continue            
+                continue
+            if 'Let Apartments.com help you find your perfect fit' in  paragraph.text:
+                continue          
             descriptive_paragraphs.append(paragraph.text)
         
-        #Avoid returning the null search results paragraph
-        if  'Let Apartments.com help you find your perfect fit' in descriptive_paragraphs:
-            descriptive_paragraphs = ''
-        
         return(descriptive_paragraphs)
-    
     
     
     except Exception as e:
