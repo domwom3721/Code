@@ -771,10 +771,14 @@ def GetHousingValues(geographic_level,hood_or_comparison_area):
             if hood_or_comparison_area == 'hood':
                 county_fips = hood_county_fips
                 subdiv_fips = hood_suvdiv_fips
+                state_fips = hood_state_fips
+
 
             elif hood_or_comparison_area == 'comparison area':
                 county_fips = comparison_county_fips
                 subdiv_fips = comparison_suvdiv_fips
+                state_fips = comparison_state_fips
+
             
             household_value_raw_data = c.acs5.state_county_subdivision(fields=fields_list,state_fips=state_fips,county_fips=county_fips,subdiv_fips=subdiv_fips)[0]
         
@@ -884,10 +888,13 @@ def GetHouseholdIncomeValues(geographic_level,hood_or_comparison_area):
             if hood_or_comparison_area == 'hood':
                 county_fips = hood_county_fips
                 subdiv_fips = hood_suvdiv_fips
+                state_fips = hood_state_fips
 
             elif hood_or_comparison_area == 'comparison area':
                 county_fips = comparison_county_fips
                 subdiv_fips = comparison_suvdiv_fips
+                state_fips = comparison_state_fips
+
             
             household_income_data = c.acs5.state_county_subdivision(fields = fields_list, state_fips = state_fips, county_fips = county_fips, subdiv_fips = subdiv_fips)[0]
         
@@ -1001,10 +1008,13 @@ def GetHouseYearBuiltData(geographic_level,hood_or_comparison_area):
             if hood_or_comparison_area == 'hood':
                 county_fips = hood_county_fips
                 subdiv_fips = hood_suvdiv_fips
+                state_fips = hood_state_fips
+
 
             elif hood_or_comparison_area == 'comparison area':
                 county_fips = comparison_county_fips
                 subdiv_fips = comparison_suvdiv_fips
+                state_fips = comparison_state_fips
             
             year_built_raw_data = c.acs5.state_county_subdivision(fields=fields_list,state_fips=state_fips,county_fips=county_fips,subdiv_fips = subdiv_fips)[0]
         
@@ -1110,10 +1120,13 @@ def GetTravelTimeData(geographic_level,hood_or_comparison_area):
             if hood_or_comparison_area == 'hood':
                 county_fips = hood_county_fips
                 subdiv_fips = hood_suvdiv_fips
+                state_fips = hood_state_fips
 
             elif hood_or_comparison_area == 'comparison area':
                 county_fips = comparison_county_fips
                 subdiv_fips = comparison_suvdiv_fips
+                state_fips = comparison_state_fips
+
             
             travel_time_raw_data = c.acs5.state_county_subdivision(fields=fields_list,state_fips=state_fips,county_fips=county_fips,subdiv_fips=subdiv_fips)[0]
         
@@ -1179,7 +1192,7 @@ def GetTravelTimeData(geographic_level,hood_or_comparison_area):
 
 #Travel Method to work
 def GetTravelMethodData(geographic_level,hood_or_comparison_area):
-    print('Getting travel method to work data for: ')
+    print('Getting travel method to work data for: ' + hood_or_comparison_area)
     
     fields_list = ['B08006_001E','B08006_003E','B08006_004E','B08006_015E','B08006_008E','B08006_017E','B08006_016E','B08006_014E']
 
@@ -1221,10 +1234,14 @@ def GetTravelMethodData(geographic_level,hood_or_comparison_area):
             if hood_or_comparison_area == 'hood':
                 county_fips = hood_county_fips
                 subdiv_fips = hood_suvdiv_fips
+                state_fips = hood_state_fips
+
 
             elif hood_or_comparison_area == 'comparison area':
                 county_fips = comparison_county_fips
                 subdiv_fips = comparison_suvdiv_fips
+                state_fips = comparison_state_fips
+
             
             neighborhood_method_to_work_distribution_raw   = c.acs5.state_county_subdivision(fields=fields_list,state_fips=state_fips,county_fips=county_fips,subdiv_fips=subdiv_fips)[0]
         
@@ -1286,11 +1303,6 @@ def GetTravelMethodData(geographic_level,hood_or_comparison_area):
         
     return(neighborhood_method_to_work_distribution) 
 
-
-
-
-
-
 #Age Related Data Functions
 def GetAgeData(geographic_level,hood_or_comparison_area):
     print('Getting age breakdown for: ',hood_or_comparison_area)
@@ -1340,10 +1352,14 @@ def GetAgeData(geographic_level,hood_or_comparison_area):
             if hood_or_comparison_area == 'hood':
                 county_fips = hood_county_fips
                 subdiv_fips = hood_suvdiv_fips
+                state_fips  = hood_state_fips
+
 
             elif hood_or_comparison_area == 'comparison area':
                 county_fips = comparison_county_fips
                 subdiv_fips = comparison_suvdiv_fips
+                state_fips  = comparison_state_fips
+
 
             male_age_data   = c.acs5.state_county_subdivision(fields=male_fields_list,state_fips=state_fips,county_fips=county_fips,subdiv_fips=subdiv_fips)[0]
             female_age_data = c.acs5.state_county_subdivision(fields=female_fields_list,state_fips=state_fips,county_fips=county_fips,subdiv_fips=subdiv_fips)[0]
@@ -1490,10 +1506,14 @@ def GetNumberUnitsData(geographic_level,hood_or_comparison_area):
             if hood_or_comparison_area == 'hood':
                 county_fips = hood_county_fips
                 subdiv_fips = hood_suvdiv_fips
+                state_fips  = hood_state_fips
+
 
             elif hood_or_comparison_area == 'comparison area':
                 county_fips = comparison_county_fips
                 subdiv_fips = comparison_suvdiv_fips
+                state_fips = comparison_state_fips
+
         
             owner_occupied_units_raw_data  = c.acs5.state_county_subdivision(fields = owner_occupied_fields_list, state_fips  = state_fips, county_fips=county_fips,  subdiv_fips=subdiv_fips)[0]
             renter_occupied_units_raw_data = c.acs5.state_county_subdivision(fields = renter_occupied_fields_list, state_fips = state_fips, county_fips=county_fips,  subdiv_fips=subdiv_fips)[0]
@@ -1627,10 +1647,14 @@ def GetTopOccupationsData(geographic_level,hood_or_comparison_area):
             if hood_or_comparison_area == 'hood':
                 county_fips = hood_county_fips
                 subdiv_fips = hood_suvdiv_fips
+                state_fips  = hood_state_fips
+
 
             elif hood_or_comparison_area == 'comparison area':
                 county_fips = comparison_county_fips
                 subdiv_fips = comparison_suvdiv_fips
+                state_fips  = comparison_state_fips
+
             
             data = c.acs5.state_county_subdivision(fields=list(cateogries_dict.keys()),state_fips=state_fips,county_fips=county_fips, subdiv_fips = subdiv_fips)[0]
             del data['state']
@@ -1709,22 +1733,6 @@ def GetTopOccupationsData(geographic_level,hood_or_comparison_area):
         data[key] = (data.get(key)/total_workers) * 100
         
     return(data)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     print('Getting Overview table data')
@@ -2324,54 +2332,47 @@ def GetData():
 
 
     neighborhood_household_size_distribution        = GetHouseholdSizeData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Neighborhood households by size
-    neighborhood_household_size_distribution2       = GetCensusFrequencyDistribution(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',fields_list=['H013002','H013003','H013004','H013005','H013006','H013007','H013008'])          #Neighborhood households by size
+    # neighborhood_household_size_distribution2       = GetCensusFrequencyDistribution(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',fields_list=['H013002','H013003','H013004','H013005','H013006','H013007','H013008'])          #Neighborhood households by size
     
-    print(neighborhood_household_size_distribution)
-    print(neighborhood_household_size_distribution2)
+    # print(neighborhood_household_size_distribution)
+    # print(neighborhood_household_size_distribution2)
 
     
     neighborhood_tenure_distribution              = GetHousingTenureData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Tenure (owner occupied/renter)
-    neighborhood_tenure_distribution2             = GetCensusFrequencyDistribution(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',fields_list = ['H004004','H004003','H004002'])          #Housing Tenure (owner occupied/renter)
-    print(neighborhood_tenure_distribution)
-    print(neighborhood_tenure_distribution2)
+    # neighborhood_tenure_distribution2             = GetCensusFrequencyDistribution(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',fields_list = ['H004004','H004003','H004002'])          #Housing Tenure (owner occupied/renter)
+    # print(neighborhood_tenure_distribution)
+    # print(neighborhood_tenure_distribution2)
 
     neighborhood_housing_value_data               = GetHousingValues(         geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Owner Occupied housing units by value
-    neighborhood_housing_value_data2              = GetCensusFrequencyDistribution(         geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', fields_list = ["B25075_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,28)])          #Owner Occupied housing units by value
-    print(neighborhood_housing_value_data)
-    print(neighborhood_housing_value_data2)
+    # neighborhood_housing_value_data2              = GetCensusFrequencyDistribution(         geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', fields_list = ["B25075_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,28)])          #Owner Occupied housing units by value
+    # print(neighborhood_housing_value_data)
+    # print(neighborhood_housing_value_data2)
     
     neighborhood_year_built_data                  = GetHouseYearBuiltData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by year structure built
-    neighborhood_year_built_data2                 = GetCensusFrequencyDistribution(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',  fields_list = ["B25034_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,12)])          #Housing Units by year structure built
-    print(neighborhood_year_built_data)
-    print(neighborhood_year_built_data2)
+    # neighborhood_year_built_data2                 = GetCensusFrequencyDistribution(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',  fields_list = ["B25034_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,12)])          #Housing Units by year structure built
+    # print(neighborhood_year_built_data)
+    # print(neighborhood_year_built_data2)
     
     neighborhood_method_to_work_distribution      = GetTravelMethodData(           geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Mode to Work
-    neighborhood_method_to_work_distribution2     = GetCensusFrequencyDistribution(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', fields_list = ['B08006_001E','B08006_003E','B08006_004E','B08006_015E','B08006_008E','B08006_017E','B08006_016E','B08006_014E'])          #Travel Mode to Work
-    print(neighborhood_method_to_work_distribution)
-    print(neighborhood_method_to_work_distribution2)
+    # neighborhood_method_to_work_distribution2     = GetCensusFrequencyDistribution(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', fields_list = ['B08006_001E','B08006_003E','B08006_004E','B08006_015E','B08006_008E','B08006_017E','B08006_016E','B08006_014E'])          #Travel Mode to Work
+    # print(neighborhood_method_to_work_distribution)
+    # print(neighborhood_method_to_work_distribution2)
     
     neighborhood_household_income_data            = GetHouseholdIncomeValues( geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Households by household income data
-    neighborhood_household_income_data2           = GetCensusFrequencyDistribution( geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', fields_list = ["B19001_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,18)])          #Households by household income data
-    print(neighborhood_household_income_data)
-    print(neighborhood_household_income_data2)
+    # neighborhood_household_income_data2           = GetCensusFrequencyDistribution( geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', fields_list = ["B19001_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,18)])          #Households by household income data
+    # print(neighborhood_household_income_data)
+    # print(neighborhood_household_income_data2)
     
     neighborhood_time_to_work_distribution        = GetTravelTimeData(        geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Time to Work
-    neighborhood_time_to_work_distribution2       = GetCensusFrequencyDistribution(        geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',fields_list = ["B08012_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,14)])          #Travel Time to Work
-    print(neighborhood_time_to_work_distribution)
-    print(neighborhood_time_to_work_distribution2)
+    # neighborhood_time_to_work_distribution2       = GetCensusFrequencyDistribution(        geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',fields_list = ["B08012_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,14)])          #Travel Time to Work
+    # print(neighborhood_time_to_work_distribution)
+    # print(neighborhood_time_to_work_distribution2)
     
 
     neighborhood_number_units_data               = GetNumberUnitsData(       geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by units in building
     neighborhood_age_data                        = GetAgeData(               geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Population by age data
     neighborhood_top_occupations_data            = GetTopOccupationsData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Top Employment Occupations
     
-
-
-
-
-
-
-
 
     print('Getting Data For ' + comparison_area)
     comparison_household_size_distribution       = GetHouseholdSizeData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
@@ -2386,11 +2387,6 @@ def GetData():
     comparison_number_units_data                 = GetNumberUnitsData(      geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
     comparison_top_occupations_data              = GetTopOccupationsData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
     
-
-
-
-
-
 
 
     #Walk score
@@ -4389,8 +4385,8 @@ def TransportationSection(document):
         row_cells = tab.add_row().cells
         paragraph = row_cells[0].paragraphs[0]
         run = paragraph.add_run()
-        if pic == 'car.png':
-            run.add_text(' ')
+        # if pic == 'car.png':
+        #     run.add_text(' ')
         run.add_picture(os.path.join(graphics_location,pic))
     
 
@@ -4537,9 +4533,9 @@ def UserSelectsNeighborhoodLevel():
     analysis_type_number = input('What is the geographic level of the neighborhood and comparison area?' + '\n'
   
                                 '1.) = Place  vs. County'+ '\n' #+
-                                # '2.) = County Subdivison vs. County' + '\n' +
-                                # '3.) = Custom vs. Place'  + '\n' +
-                                # '4.) = Place  vs. County Subdivison'+ '\n' +
+                                '2.) = County Subdivison vs. County' + '\n' +
+                                '3.) = Custom vs. Place'  + '\n' +
+                                '4.) = Place  vs. County Subdivison'+ '\n' +
                                 # '5.) = Zip    vs. Place'+ '\n' #+
 
                                 # '6.) = Tract vs. Place'   + '\n' +
@@ -4579,6 +4575,7 @@ def UserSelectsNeighborhoodLevel():
                                 # '34.) = Custom vs. County' + '\n' +
                                 # '35.) = Custom vs. Zip'  + '\n' +
                                 # '36.) = Custom  vs. None'  
+                                ''
                                 )
 
     
@@ -4592,18 +4589,18 @@ def GetUserInputs():
     if analysis_type_number == 1: #Place  vs. County
         neighborhood_level = 'place'
         comparison_level   = 'county'
-    # elif analysis_type_number == 2: #County Subdivison vs. County
-    #     neighborhood_level = 'sd'
-    #     comparison_level   = 'county'
-    # elif analysis_type_number == 3: #Custom vs. Place
-    #     neighborhood_level = 'custom'
-    #     comparison_level   = 'place'
-    # elif analysis_type_number == 4: #Place vs. County Subdivison
-    #     neighborhood_level = 'place'
-    #     comparison_level   = 'sd'
+    elif analysis_type_number == 2: #County Subdivison vs. County
+        neighborhood_level = 'county subdivision'
+        comparison_level   = 'county'
+    elif analysis_type_number == 3: #Custom vs. Place
+        neighborhood_level = 'custom'
+        comparison_level   = 'place'
+    elif analysis_type_number == 4: #Place vs. County Subdivison
+        neighborhood_level = 'place'
+        comparison_level   = 'county subdivision'
     # elif analysis_type_number == 5: #Zip vs. Place
-    #     neighborhood_level = 'z'
-    #     comparison_level   = 'p'
+    #     neighborhood_level = 'zip'
+    #     comparison_level   = 'place'
     # elif analysis_type_number == 6: #Tract vs. Place
     #   neighborhood_level = ''
     #   comparison_level   = ''
