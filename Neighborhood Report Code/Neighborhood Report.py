@@ -501,17 +501,6 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 #Household Size
 def GetHouseholdSizeData(geographic_level,hood_or_comparison_area):
     print('Getting household size data for: ',hood_or_comparison_area)
@@ -735,6 +724,572 @@ def GetHousingTenureData(geographic_level,hood_or_comparison_area):
 
     return(neighborhood_tenure_distribution)
     
+#Housing related data functions
+def GetHousingValues(geographic_level,hood_or_comparison_area):
+    print('Getting housing value data for: ',hood_or_comparison_area)
+
+    #5 Year ACS household  value range:  B25075_002E -B25075_027E
+    fields_list = ["B25075_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,28)]
+
+    
+    if geographic_level == 'place':
+
+        try:
+            if hood_or_comparison_area == 'hood':
+                place_fips = hood_place_fips
+                state_fips = hood_state_fips
+            
+            elif hood_or_comparison_area == 'comparison area':
+                place_fips = comparison_place_fips
+                state_fips = comparison_state_fips
+
+            household_value_raw_data = c.acs5.state_place(fields = fields_list, state_fips = state_fips, place = place_fips)[0]
+        except Exception as e:
+            print(e, 'Problem getting housing value data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+            return()
+    
+    elif geographic_level == 'county':
+        try:
+            if hood_or_comparison_area == 'hood':
+                county_fips = hood_county_fips
+                state_fips = hood_state_fips
+
+
+            elif hood_or_comparison_area == 'comparison area':
+                county_fips = comparison_county_fips
+                state_fips = comparison_state_fips
+
+            household_value_raw_data = c.acs5.state_county(fields=fields_list,state_fips=state_fips,county_fips=county_fips)[0]
+        
+        except Exception as e:
+            print(e, 'Problem getting housing value data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+            return()
+    
+    elif geographic_level == 'county subdivision':
+        try:
+            if hood_or_comparison_area == 'hood':
+                county_fips = hood_county_fips
+                subdiv_fips = hood_suvdiv_fips
+
+            elif hood_or_comparison_area == 'comparison area':
+                county_fips = comparison_county_fips
+                subdiv_fips = comparison_suvdiv_fips
+            
+            household_value_raw_data = c.acs5.state_county_subdivision(fields=fields_list,state_fips=state_fips,county_fips=county_fips,subdiv_fips=subdiv_fips)[0]
+        
+        except Exception as e:
+            print(e, 'Problem getting housing value data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+            return()
+    
+    elif geographic_level == 'zip':
+        try:
+            if hood_or_comparison_area == 'hood':
+                zcta =  hood_zip
+
+            elif hood_or_comparison_area == 'comparison area':
+                zcta =  comparison_zip
+            
+            household_value_raw_data       = c.acs5.zipcode(fields = fields_list, zcta = '*')
+            household_value_raw_data       = FindZipCodeDictionary(zip_code_data_dictionary_list =   household_value_raw_data  , zcta = zcta, state_fips = state_fips )
+            
+        except Exception as e:
+            print(e, 'Problem getting housing value data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+            return()
+
+    elif geographic_level == 'tract':
+        try:
+            if hood_or_comparison_area == 'hood':
+                tract       = hood_tract 
+                county_fips = hood_county_fips
+
+            elif hood_or_comparison_area == 'comparison area':
+                tract       = comparison_tract
+                county_fips = comparison_county_fips
+        
+            household_value_raw_data = c.acs5.state_county_tract(fields = fields_list, state_fips = state_fips, county_fips = county_fips, tract = tract)[0]
+        
+        except Exception as e:
+            print(e, 'Problem getting housing value data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+            return()
+
+    elif geographic_level == 'custom':
+        #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
+        neighborhood_tracts_data = []
+
+        #Fetch census data for all relevant census tracts within the neighborhood
+        raw_census_data = c_area.acs5.geo_tract(fields_list, neighborhood_shape)
+        
+        for tract_geojson, tract_data, tract_proportion in raw_census_data:
+            neighborhood_tracts_data.append((tract_data))
+
+        #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
+        household_value_raw_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = fields_list )
+    
+    try:
+        #Create an empty list and place the values from the dictionary inside of it
+        household_value_data = []
+        for field in fields_list:
+            household_value_data.append(household_value_raw_data[field])
+
+        household_value_data = ConvertListElementsToFractionOfTotal(household_value_data)
+        
+        return(household_value_data)
+    except Exception as e:
+        print(e, 'Problem getting housing value data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+
+#Household Income data functions
+def GetHouseholdIncomeValues(geographic_level,hood_or_comparison_area):
+    print('Getting household income data for: ',hood_or_comparison_area)
+
+    #5 Year ACS household income range:  B19001_002E - B19001_017E
+    fields_list = ["B19001_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,18)]
+
+    if geographic_level == 'place':
+        try:
+            if hood_or_comparison_area == 'hood':
+                place_fips = hood_place_fips
+                state_fips = hood_state_fips
+
+            elif hood_or_comparison_area == 'comparison area':
+                place_fips = comparison_place_fips
+                state_fips = comparison_state_fips
+        
+
+            household_income_data = c.acs5.state_place(fields=fields_list, state_fips=state_fips, place=place_fips)[0]
+        except Exception as e:
+            print(e, 'Problem getting household income data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+            return()
+    
+    elif geographic_level == 'county':
+        try:
+            if hood_or_comparison_area == 'hood':
+                county_fips = hood_county_fips
+                state_fips = hood_state_fips
+
+
+            elif hood_or_comparison_area == 'comparison area':
+                county_fips = comparison_county_fips
+                state_fips = comparison_state_fips
+
+
+            household_income_data = c.acs5.state_county(fields=fields_list, state_fips=state_fips, county_fips=county_fips)[0]
+        
+        except Exception as e:
+            print(e, 'Problem getting household income data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+            return()
+
+    elif geographic_level == 'county subdivision':
+        try:
+            if hood_or_comparison_area == 'hood':
+                county_fips = hood_county_fips
+                subdiv_fips = hood_suvdiv_fips
+
+            elif hood_or_comparison_area == 'comparison area':
+                county_fips = comparison_county_fips
+                subdiv_fips = comparison_suvdiv_fips
+            
+            household_income_data = c.acs5.state_county_subdivision(fields = fields_list, state_fips = state_fips, county_fips = county_fips, subdiv_fips = subdiv_fips)[0]
+        
+        except Exception as e:
+            print(e, 'Problem getting household income data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+            return()
+
+    elif geographic_level == 'zip':
+        try:
+            if hood_or_comparison_area == 'hood':
+                zcta = hood_zip
+
+            elif hood_or_comparison_area == 'comparison area':
+                zcta = comparison_zip
+                
+
+            household_income_data       = c.acs5.zipcode(fields = fields_list, zcta = '*')
+            household_income_data       = FindZipCodeDictionary(zip_code_data_dictionary_list =   household_income_data  , zcta = zcta, state_fips = state_fips )
+
+        except Exception as e:
+            print(e, 'Problem getting household income data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+            return()
+
+    elif geographic_level == 'tract':
+        try:
+            if hood_or_comparison_area == 'hood':
+                tract       = hood_tract 
+                county_fips = hood_county_fips
+
+            elif hood_or_comparison_area == 'comparison area':
+                tract       = comparison_tract
+                county_fips = comparison_county_fips
+            
+            household_income_data = c.acs5.state_county_tract(fields=fields_list, state_fips=state_fips, county_fips=county_fips, tract=tract)[0]
+        
+        except Exception as e:
+            print(e, 'Problem getting household income data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+            return()
+
+    elif geographic_level == 'custom':
+        #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
+        neighborhood_tracts_data = []
+
+        #Fetch census data for all relevant census tracts within the neighborhood
+        raw_census_data = c_area.acs5.geo_tract(fields_list, neighborhood_shape)
+        
+        for tract_geojson, tract_data, tract_proportion in raw_census_data:
+            neighborhood_tracts_data.append((tract_data))
+
+        #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
+        household_income_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = fields_list )
+
+
+
+
+    #Create an empty list and place the values from the dictionary inside of it
+    household_income_breakdown = []
+    for field in fields_list:
+        household_income_breakdown.append(household_income_data[field])
+
+
+    total_pop = sum(household_income_breakdown) 
+
+    total_income_breakdown = []
+    for i in household_income_breakdown:
+        total_income_breakdown.append((i/total_pop) * 100)
+
+    assert len(total_income_breakdown) == 16
+    return(total_income_breakdown)
+
+#Year Housing Built Data
+def GetHouseYearBuiltData(geographic_level,hood_or_comparison_area):
+    print('Getting year built data for: ',hood_or_comparison_area)
+
+    #5 Year ACS household year house built range:  B25034_002E -B25034_011E
+    fields_list = ["B25034_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,12)]
+
+    if geographic_level == 'place':
+        try:
+            if hood_or_comparison_area == 'hood':
+                place_fips = hood_place_fips
+                state_fips = hood_state_fips
+
+            elif hood_or_comparison_area == 'comparison area':
+                place_fips = comparison_place_fips
+                state_fips = comparison_state_fips
+
+            year_built_raw_data = c.acs5.state_place(fields=fields_list,state_fips=state_fips,place=place_fips)[0]
+        
+        except Exception as e:
+            print(e, 'Problem getting year built data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+            return()
+
+    elif geographic_level == 'county':
+        try:
+            if hood_or_comparison_area == 'hood':
+                county_fips = hood_county_fips
+                state_fips = hood_state_fips
+
+            elif hood_or_comparison_area == 'comparison area':
+                county_fips = comparison_county_fips
+                state_fips = comparison_state_fips
+            year_built_raw_data = c.acs5.state_county(fields=fields_list,state_fips=state_fips,county_fips=county_fips)[0]
+        
+        except Exception as e:
+            print(e, 'Problem getting year built data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+            return()
+    
+    elif geographic_level == 'county subdivision':
+        try:
+            if hood_or_comparison_area == 'hood':
+                county_fips = hood_county_fips
+                subdiv_fips = hood_suvdiv_fips
+
+            elif hood_or_comparison_area == 'comparison area':
+                county_fips = comparison_county_fips
+                subdiv_fips = comparison_suvdiv_fips
+            
+            year_built_raw_data = c.acs5.state_county_subdivision(fields=fields_list,state_fips=state_fips,county_fips=county_fips,subdiv_fips = subdiv_fips)[0]
+        
+        except Exception as e:
+            print(e, 'Problem getting year built data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+            return()
+
+    elif geographic_level == 'zip':
+        try:
+            if hood_or_comparison_area == 'hood':
+                zcta = hood_zip
+
+            elif hood_or_comparison_area == 'comparison area':
+                zcta = comparison_zip
+             
+            year_built_raw_data       = c.acs5.zipcode(fields = fields_list, zcta = '*')
+            year_built_raw_data       = FindZipCodeDictionary(zip_code_data_dictionary_list =   year_built_raw_data  , zcta = zcta, state_fips = state_fips )
+
+        except Exception as e:
+            print(e, 'Problem getting year built data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+            return()
+
+    elif geographic_level == 'tract':
+        try:
+            if hood_or_comparison_area == 'hood':
+                tract       = hood_tract 
+                county_fips = hood_county_fips
+
+            elif hood_or_comparison_area == 'comparison area':
+                tract       = comparison_tract
+                county_fips = comparison_county_fips
+            
+            year_built_raw_data = c.acs5.state_county_tract(fields=fields_list,state_fips=state_fips,county_fips=county_fips,tract = tract)[0]
+        
+        except Exception as e:
+            print(e, 'Problem getting year built data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+            return()
+
+    elif geographic_level == 'custom':
+        #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
+        neighborhood_tracts_data = []
+
+        #Fetch census data for all relevant census tracts within the neighborhood
+        raw_census_data = c_area.acs5.geo_tract(fields_list, neighborhood_shape)
+        
+        for tract_geojson, tract_data, tract_proportion in raw_census_data:
+            neighborhood_tracts_data.append((tract_data))
+
+        #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
+        year_built_raw_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = fields_list )
+
+
+    #Create an empty list and place the values from the dictionary inside of it
+    year_built_data = []
+    for field in fields_list:
+        year_built_data.append(year_built_raw_data[field])
+
+    #Convert list with raw totals into a list where each element is a fraction of the total
+    year_built_data = ConvertListElementsToFractionOfTotal(year_built_data) 
+    year_built_data.reverse()
+
+    return(year_built_data)
+
+#Travel Time to Work
+def GetTravelTimeData(geographic_level,hood_or_comparison_area):
+    print('Getting travel time data for: ', hood_or_comparison_area)
+    #5 Year ACS travel time range:   B08012_003E - B08012_013E
+    fields_list = ["B08012_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,14)]
+
+    if geographic_level == 'place':
+        try:
+            if hood_or_comparison_area == 'hood':
+                place_fips = hood_place_fips
+                state_fips = hood_state_fips
+
+            elif hood_or_comparison_area == 'comparison area':
+                place_fips = comparison_place_fips
+                state_fips = comparison_state_fips
+
+            travel_time_raw_data = c.acs5.state_place(fields=fields_list,state_fips=state_fips,place=place_fips)[0]
+        except Exception as e:
+            print(e, 'Problem getting travel time  data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+            return()
+
+    elif geographic_level == 'county':
+        try:
+            if hood_or_comparison_area == 'hood':
+                county_fips = hood_county_fips
+                state_fips = hood_state_fips
+
+            elif hood_or_comparison_area == 'comparison area':
+                county_fips = comparison_county_fips
+                state_fips = comparison_state_fips
+
+            travel_time_raw_data = c.acs5.state_county(fields=fields_list,state_fips=state_fips,county_fips=county_fips)[0]
+
+        except Exception as e:
+            print(e, 'Problem getting year built data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+            return()
+
+    elif geographic_level == 'county subdivision':
+        try:
+            if hood_or_comparison_area == 'hood':
+                county_fips = hood_county_fips
+                subdiv_fips = hood_suvdiv_fips
+
+            elif hood_or_comparison_area == 'comparison area':
+                county_fips = comparison_county_fips
+                subdiv_fips = comparison_suvdiv_fips
+            
+            travel_time_raw_data = c.acs5.state_county_subdivision(fields=fields_list,state_fips=state_fips,county_fips=county_fips,subdiv_fips=subdiv_fips)[0]
+        
+        except Exception as e:
+            print(e, 'Problem getting year built data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+            return()
+
+    elif geographic_level == 'zip':
+        try:
+            if hood_or_comparison_area == 'hood':
+                zcta = hood_zip
+
+            elif hood_or_comparison_area == 'comparison area':
+                zcta = comparison_zip
+            
+            travel_time_raw_data       = c.acs5.zipcode(fields = fields_list, zcta = '*')
+            travel_time_raw_data       = FindZipCodeDictionary(zip_code_data_dictionary_list =   travel_time_raw_data  , zcta = zcta, state_fips = state_fips )
+
+        except Exception as e:
+            print(e, 'Problem getting year built data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+            return()
+    
+    elif geographic_level == 'tract':
+        try:
+            if hood_or_comparison_area == 'hood':
+                tract       = hood_tract 
+                county_fips = hood_county_fips
+
+            elif hood_or_comparison_area == 'comparison area':
+                tract       = comparison_tract
+                county_fips = comparison_county_fips
+            
+            travel_time_raw_data = c.acs5.state_county_tract(fields=fields_list,state_fips=state_fips,county_fips=county_fips,tract=tract)[0]
+        except Exception as e:
+            print(e, 'Problem getting year built data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+            return()
+
+    elif geographic_level == 'custom':
+        #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
+        neighborhood_tracts_data = []
+
+        #Fetch census data for all relevant census tracts within the neighborhood
+        raw_census_data = c_area.acs5.geo_tract(fields_list, neighborhood_shape)
+        
+        for tract_geojson, tract_data, tract_proportion in raw_census_data:
+            neighborhood_tracts_data.append((tract_data))
+
+        #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
+        travel_time_raw_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = fields_list )
+
+
+
+
+
+    #Create an empty list and place the values from the dictionary inside of it
+    travel_time_data = []
+    for field in fields_list:
+        travel_time_data.append(travel_time_raw_data[field])
+
+    #Convert list with raw totals into a list where each element is a fraction of the total
+    travel_time_data = ConvertListElementsToFractionOfTotal(travel_time_data)
+    return(travel_time_data)
+
+#Travel Method to work
+def GetTravelMethodData(geographic_level,hood_or_comparison_area):
+    print('Getting travel method to work data for: ')
+    
+    fields_list = ['B08006_001E','B08006_003E','B08006_004E','B08006_015E','B08006_008E','B08006_017E','B08006_016E','B08006_014E']
+
+    if geographic_level == 'place':
+        try:
+            if hood_or_comparison_area == 'hood':
+                place_fips = hood_place_fips
+                state_fips = hood_state_fips
+
+
+            elif hood_or_comparison_area == 'comparison area':
+                place_fips = comparison_place_fips
+                state_fips = comparison_state_fips
+
+            neighborhood_method_to_work_distribution_raw   = c.acs5.state_place(fields = fields_list, state_fips = state_fips, place = place_fips)[0]
+        
+        except Exception as e:
+            print(e, 'Problem getting travel method data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+            return()
+
+    elif geographic_level == 'county': 
+        try:
+            if hood_or_comparison_area == 'hood':
+                county_fips = hood_county_fips
+                state_fips = hood_state_fips
+
+            elif hood_or_comparison_area == 'comparison area':
+                county_fips = comparison_county_fips
+                state_fips = comparison_state_fips
+
+            neighborhood_method_to_work_distribution_raw   = c.acs5.state_county(fields=fields_list,state_fips=state_fips,county_fips=county_fips)[0]
+        
+        except Exception as e:
+            print(e, 'Problem getting travel method data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+            return()
+
+    elif geographic_level == 'county subdivision':
+        try:
+            if hood_or_comparison_area == 'hood':
+                county_fips = hood_county_fips
+                subdiv_fips = hood_suvdiv_fips
+
+            elif hood_or_comparison_area == 'comparison area':
+                county_fips = comparison_county_fips
+                subdiv_fips = comparison_suvdiv_fips
+            
+            neighborhood_method_to_work_distribution_raw   = c.acs5.state_county_subdivision(fields=fields_list,state_fips=state_fips,county_fips=county_fips,subdiv_fips=subdiv_fips)[0]
+        
+        except Exception as e:
+            print(e, 'Problem getting travel method data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+            return()
+        
+    elif geographic_level == 'zip':
+        try:
+            if hood_or_comparison_area == 'hood':
+                zcta = hood_zip
+
+            elif hood_or_comparison_area == 'comparison area':
+                zcta = comparison_zip
+            
+            
+            neighborhood_method_to_work_distribution_raw       = c.acs5.zipcode(fields = fields_list, zcta = '*')
+            neighborhood_method_to_work_distribution_raw       = FindZipCodeDictionary(zip_code_data_dictionary_list =   neighborhood_method_to_work_distribution_raw  , zcta = zcta, state_fips = state_fips )
+        
+        except Exception as e:
+            print(e, 'Problem getting travel method data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+            return()
+
+    elif geographic_level == 'tract':
+        try:        
+            if hood_or_comparison_area == 'hood':
+                tract       = hood_tract 
+                county_fips = hood_county_fips
+
+            elif hood_or_comparison_area == 'comparison area':
+                tract       = comparison_tract
+                county_fips = comparison_county_fips
+            
+            neighborhood_method_to_work_distribution_raw   = c.acs5.state_county_tract(fields=fields_list,state_fips=state_fips,county_fips=county_fips,tract=tract)[0]
+        
+        except Exception as e:
+            print(e, 'Problem getting travel method data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+            return()
+
+    elif geographic_level == 'custom':
+        #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
+        neighborhood_tracts_data = []
+
+        #Fetch census data for all relevant census tracts within the neighborhood
+        raw_census_data = c_area.acs5.geo_tract(fields_list, neighborhood_shape)
+        
+        for tract_geojson, tract_data, tract_proportion in raw_census_data:
+            neighborhood_tracts_data.append((tract_data))
+
+        #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
+        neighborhood_method_to_work_distribution_raw = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = fields_list )
+
+    neighborhood_method_to_work_distribution = []
+    for field in fields_list:
+        neighborhood_method_to_work_distribution.append(neighborhood_method_to_work_distribution_raw[field])
+        
+
+    neighborhood_method_to_work_distribution = ConvertListElementsToFractionOfTotal(neighborhood_method_to_work_distribution)
+        
+    return(neighborhood_method_to_work_distribution) 
+
+
+
+
+
+
 #Age Related Data Functions
 def GetAgeData(geographic_level,hood_or_comparison_area):
     print('Getting age breakdown for: ',hood_or_comparison_area)
@@ -766,12 +1321,15 @@ def GetAgeData(geographic_level,hood_or_comparison_area):
         try:
             if hood_or_comparison_area == 'hood':
                 county_fips = hood_county_fips
+                state_fips  = hood_state_fips
 
             elif hood_or_comparison_area == 'comparison area':
                 county_fips = comparison_county_fips
-            
-            male_age_data = c.acs5.state_county(fields=male_fields_list,state_fips=state_fips,county_fips=county_fips)[0]
+                state_fips  = comparison_state_fips
+
+            male_age_data   = c.acs5.state_county(fields=male_fields_list,state_fips=state_fips,county_fips=county_fips)[0]
             female_age_data = c.acs5.state_county(fields=female_fields_list,state_fips=state_fips,county_fips=county_fips)[0]
+
         except Exception as e:
             print(e, 'Problem getting age data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
             return()
@@ -884,554 +1442,6 @@ def GetAgeData(geographic_level,hood_or_comparison_area):
 
     return(total_age_breakdown)
 
-#Housing related data functions
-def GetHousingValues(geographic_level,hood_or_comparison_area):
-    print('Getting housing value data for: ',hood_or_comparison_area)
-
-    #5 Year ACS household  value range:  B25075_002E -B25075_027E
-    fields_list = ["B25075_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,28)]
-
-    
-    if geographic_level == 'place':
-
-        try:
-            if hood_or_comparison_area == 'hood':
-                place_fips = hood_place_fips
-                state_fips = hood_state_fips
-            
-            elif hood_or_comparison_area == 'comparison area':
-                place_fips = comparison_place_fips
-                state_fips = comparison_state_fips
-
-            household_value_raw_data = c.acs5.state_place(fields = fields_list, state_fips = state_fips, place = place_fips)[0]
-        except Exception as e:
-            print(e, 'Problem getting housing value data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-    
-    elif geographic_level == 'county':
-        try:
-            if hood_or_comparison_area == 'hood':
-                county_fips = hood_county_fips
-
-            elif hood_or_comparison_area == 'comparison area':
-                county_fips = comparison_county_fips
-
-            household_value_raw_data = c.acs5.state_county(fields=fields_list,state_fips=state_fips,county_fips=county_fips)[0]
-        
-        except Exception as e:
-            print(e, 'Problem getting housing value data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-    
-    elif geographic_level == 'county subdivision':
-        try:
-            if hood_or_comparison_area == 'hood':
-                county_fips = hood_county_fips
-                subdiv_fips = hood_suvdiv_fips
-
-            elif hood_or_comparison_area == 'comparison area':
-                county_fips = comparison_county_fips
-                subdiv_fips = comparison_suvdiv_fips
-            
-            household_value_raw_data = c.acs5.state_county_subdivision(fields=fields_list,state_fips=state_fips,county_fips=county_fips,subdiv_fips=subdiv_fips)[0]
-        
-        except Exception as e:
-            print(e, 'Problem getting housing value data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-    
-    elif geographic_level == 'zip':
-        try:
-            if hood_or_comparison_area == 'hood':
-                zcta =  hood_zip
-
-            elif hood_or_comparison_area == 'comparison area':
-                zcta =  comparison_zip
-            
-            household_value_raw_data       = c.acs5.zipcode(fields = fields_list, zcta = '*')
-            household_value_raw_data       = FindZipCodeDictionary(zip_code_data_dictionary_list =   household_value_raw_data  , zcta = zcta, state_fips = state_fips )
-            
-        except Exception as e:
-            print(e, 'Problem getting housing value data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-
-    elif geographic_level == 'tract':
-        try:
-            if hood_or_comparison_area == 'hood':
-                tract       = hood_tract 
-                county_fips = hood_county_fips
-
-            elif hood_or_comparison_area == 'comparison area':
-                tract       = comparison_tract
-                county_fips = comparison_county_fips
-        
-            household_value_raw_data = c.acs5.state_county_tract(fields = fields_list, state_fips = state_fips, county_fips = county_fips, tract = tract)[0]
-        
-        except Exception as e:
-            print(e, 'Problem getting housing value data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-
-    elif geographic_level == 'custom':
-        #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
-        neighborhood_tracts_data = []
-
-        #Fetch census data for all relevant census tracts within the neighborhood
-        raw_census_data = c_area.acs5.geo_tract(fields_list, neighborhood_shape)
-        
-        for tract_geojson, tract_data, tract_proportion in raw_census_data:
-            neighborhood_tracts_data.append((tract_data))
-
-        #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
-        household_value_raw_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = fields_list )
-    
-    try:
-        #Create an empty list and place the values from the dictionary inside of it
-        household_value_data = []
-        for field in fields_list:
-            household_value_data.append(household_value_raw_data[field])
-
-        household_value_data = ConvertListElementsToFractionOfTotal(household_value_data)
-        
-        return(household_value_data)
-    except Exception as e:
-        print(e, 'Problem getting housing value data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-
-#Household Income data functions
-def GetHouseholdIncomeValues(geographic_level,hood_or_comparison_area):
-    print('Getting household income data for: ',hood_or_comparison_area)
-
-    #5 Year ACS household income range:  B19001_002E - B19001_017E
-    fields_list = ["B19001_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,18)]
-
-    if geographic_level == 'place':
-        try:
-            if hood_or_comparison_area == 'hood':
-                place_fips = hood_place_fips
-                state_fips = hood_state_fips
-
-            elif hood_or_comparison_area == 'comparison area':
-                place_fips = comparison_place_fips
-                state_fips = comparison_state_fips
-        
-
-            household_income_data = c.acs5.state_place(fields=fields_list, state_fips=state_fips, place=place_fips)[0]
-        except Exception as e:
-            print(e, 'Problem getting household income data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-    
-    elif geographic_level == 'county':
-        try:
-            if hood_or_comparison_area == 'hood':
-                county_fips = hood_county_fips
-
-            elif hood_or_comparison_area == 'comparison area':
-                county_fips = comparison_county_fips
-
-            household_income_data = c.acs5.state_county(fields=fields_list, state_fips=state_fips, county_fips=county_fips)[0]
-        
-        except Exception as e:
-            print(e, 'Problem getting household income data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-
-    elif geographic_level == 'county subdivision':
-        try:
-            if hood_or_comparison_area == 'hood':
-                county_fips = hood_county_fips
-                subdiv_fips = hood_suvdiv_fips
-
-            elif hood_or_comparison_area == 'comparison area':
-                county_fips = comparison_county_fips
-                subdiv_fips = comparison_suvdiv_fips
-            
-            household_income_data = c.acs5.state_county_subdivision(fields = fields_list, state_fips = state_fips, county_fips = county_fips, subdiv_fips = subdiv_fips)[0]
-        
-        except Exception as e:
-            print(e, 'Problem getting household income data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-
-    elif geographic_level == 'zip':
-        try:
-            if hood_or_comparison_area == 'hood':
-                zcta = hood_zip
-
-            elif hood_or_comparison_area == 'comparison area':
-                zcta = comparison_zip
-                
-
-            household_income_data       = c.acs5.zipcode(fields = fields_list, zcta = '*')
-            household_income_data       = FindZipCodeDictionary(zip_code_data_dictionary_list =   household_income_data  , zcta = zcta, state_fips = state_fips )
-
-        except Exception as e:
-            print(e, 'Problem getting household income data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-
-    elif geographic_level == 'tract':
-        try:
-            if hood_or_comparison_area == 'hood':
-                tract       = hood_tract 
-                county_fips = hood_county_fips
-
-            elif hood_or_comparison_area == 'comparison area':
-                tract       = comparison_tract
-                county_fips = comparison_county_fips
-            
-            household_income_data = c.acs5.state_county_tract(fields=fields_list, state_fips=state_fips, county_fips=county_fips, tract=tract)[0]
-        
-        except Exception as e:
-            print(e, 'Problem getting household income data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-
-    elif geographic_level == 'custom':
-        #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
-        neighborhood_tracts_data = []
-
-        #Fetch census data for all relevant census tracts within the neighborhood
-        raw_census_data = c_area.acs5.geo_tract(fields_list, neighborhood_shape)
-        
-        for tract_geojson, tract_data, tract_proportion in raw_census_data:
-            neighborhood_tracts_data.append((tract_data))
-
-        #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
-        household_income_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = fields_list )
-
-
-
-
-    #Create an empty list and place the values from the dictionary inside of it
-    household_income_breakdown = []
-    for field in fields_list:
-        household_income_breakdown.append(household_income_data[field])
-
-
-    total_pop = sum(household_income_breakdown) 
-
-    total_income_breakdown = []
-    for i in household_income_breakdown:
-        total_income_breakdown.append((i/total_pop) * 100)
-
-    assert len(total_income_breakdown) == 16
-    return(total_income_breakdown)
-
-#Year Housing Built Data
-def GetHouseYearBuiltData(geographic_level,hood_or_comparison_area):
-    print('Getting year built data for: ',hood_or_comparison_area)
-
-    #5 Year ACS household year house built range:  B25034_002E -B25034_011E
-    fields_list = ["B25034_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,12)]
-
-    if geographic_level == 'place':
-        try:
-            if hood_or_comparison_area == 'hood':
-                place_fips = hood_place_fips
-                state_fips = hood_state_fips
-
-
-            elif hood_or_comparison_area == 'comparison area':
-                place_fips = comparison_place_fips
-                state_fips = comparison_state_fips
-            year_built_raw_data = c.acs5.state_place(fields=fields_list,state_fips=state_fips,place=place_fips)[0]
-        
-        except Exception as e:
-            print(e, 'Problem getting year built data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-
-    elif geographic_level == 'county':
-        try:
-            if hood_or_comparison_area == 'hood':
-                county_fips = hood_county_fips
-
-            elif hood_or_comparison_area == 'comparison area':
-                county_fips = comparison_county_fips
-            year_built_raw_data = c.acs5.state_county(fields=fields_list,state_fips=state_fips,county_fips=county_fips)[0]
-        
-        except Exception as e:
-            print(e, 'Problem getting year built data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-    
-    elif geographic_level == 'county subdivision':
-        try:
-            if hood_or_comparison_area == 'hood':
-                county_fips = hood_county_fips
-                subdiv_fips = hood_suvdiv_fips
-
-            elif hood_or_comparison_area == 'comparison area':
-                county_fips = comparison_county_fips
-                subdiv_fips = comparison_suvdiv_fips
-            
-            year_built_raw_data = c.acs5.state_county_subdivision(fields=fields_list,state_fips=state_fips,county_fips=county_fips,subdiv_fips = subdiv_fips)[0]
-        
-        except Exception as e:
-            print(e, 'Problem getting year built data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-
-    elif geographic_level == 'zip':
-        try:
-            if hood_or_comparison_area == 'hood':
-                zcta = hood_zip
-
-            elif hood_or_comparison_area == 'comparison area':
-                zcta = comparison_zip
-             
-            year_built_raw_data       = c.acs5.zipcode(fields = fields_list, zcta = '*')
-            year_built_raw_data       = FindZipCodeDictionary(zip_code_data_dictionary_list =   year_built_raw_data  , zcta = zcta, state_fips = state_fips )
-
-        except Exception as e:
-            print(e, 'Problem getting year built data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-
-    elif geographic_level == 'tract':
-        try:
-            if hood_or_comparison_area == 'hood':
-                tract       = hood_tract 
-                county_fips = hood_county_fips
-
-            elif hood_or_comparison_area == 'comparison area':
-                tract       = comparison_tract
-                county_fips = comparison_county_fips
-            
-            year_built_raw_data = c.acs5.state_county_tract(fields=fields_list,state_fips=state_fips,county_fips=county_fips,tract = tract)[0]
-        
-        except Exception as e:
-            print(e, 'Problem getting year built data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-
-    elif geographic_level == 'custom':
-        #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
-        neighborhood_tracts_data = []
-
-        #Fetch census data for all relevant census tracts within the neighborhood
-        raw_census_data = c_area.acs5.geo_tract(fields_list, neighborhood_shape)
-        
-        for tract_geojson, tract_data, tract_proportion in raw_census_data:
-            neighborhood_tracts_data.append((tract_data))
-
-        #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
-        year_built_raw_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = fields_list )
-
-
-    #Create an empty list and place the values from the dictionary inside of it
-    year_built_data = []
-    for field in fields_list:
-        year_built_data.append(year_built_raw_data[field])
-
-    #Convert list with raw totals into a list where each element is a fraction of the total
-    year_built_data = ConvertListElementsToFractionOfTotal(year_built_data) 
-    year_built_data.reverse()
-
-    return(year_built_data)
-
-#Travel Time to Work
-def GetTravelTimeData(geographic_level,hood_or_comparison_area):
-    print('Getting travel time data for: ', hood_or_comparison_area)
-    #5 Year ACS travel time range:   B08012_003E - B08012_013E
-    fields_list = ["B08012_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,14)]
-
-    
-    if geographic_level == 'place':
-        try:
-            if hood_or_comparison_area == 'hood':
-                place_fips = hood_place_fips
-                state_fips = hood_state_fips
-
-            elif hood_or_comparison_area == 'comparison area':
-                place_fips = comparison_place_fips
-                state_fips = comparison_state_fips
-
-            travel_time_raw_data = c.acs5.state_place(fields=fields_list,state_fips=state_fips,place=place_fips)[0]
-        except Exception as e:
-            print(e, 'Problem getting travel time  data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-
-    elif geographic_level == 'county':
-        try:
-            if hood_or_comparison_area == 'hood':
-                county_fips = hood_county_fips
-
-            elif hood_or_comparison_area == 'comparison area':
-                county_fips = comparison_county_fips
-            travel_time_raw_data = c.acs5.state_county(fields=fields_list,state_fips=state_fips,county_fips=county_fips)[0]
-
-        except Exception as e:
-            print(e, 'Problem getting year built data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-
-    elif geographic_level == 'county subdivision':
-        try:
-            if hood_or_comparison_area == 'hood':
-                county_fips = hood_county_fips
-                subdiv_fips = hood_suvdiv_fips
-
-            elif hood_or_comparison_area == 'comparison area':
-                county_fips = comparison_county_fips
-                subdiv_fips = comparison_suvdiv_fips
-            
-            travel_time_raw_data = c.acs5.state_county_subdivision(fields=fields_list,state_fips=state_fips,county_fips=county_fips,subdiv_fips=subdiv_fips)[0]
-        
-        except Exception as e:
-            print(e, 'Problem getting year built data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-
-    elif geographic_level == 'zip':
-        try:
-            if hood_or_comparison_area == 'hood':
-                zcta = hood_zip
-
-            elif hood_or_comparison_area == 'comparison area':
-                zcta = comparison_zip
-            
-            travel_time_raw_data       = c.acs5.zipcode(fields = fields_list, zcta = '*')
-            travel_time_raw_data       = FindZipCodeDictionary(zip_code_data_dictionary_list =   travel_time_raw_data  , zcta = zcta, state_fips = state_fips )
-
-        except Exception as e:
-            print(e, 'Problem getting year built data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-    
-    elif geographic_level == 'tract':
-        try:
-            if hood_or_comparison_area == 'hood':
-                tract       = hood_tract 
-                county_fips = hood_county_fips
-
-            elif hood_or_comparison_area == 'comparison area':
-                tract       = comparison_tract
-                county_fips = comparison_county_fips
-            
-            travel_time_raw_data = c.acs5.state_county_tract(fields=fields_list,state_fips=state_fips,county_fips=county_fips,tract=tract)[0]
-        except Exception as e:
-            print(e, 'Problem getting year built data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-
-    elif geographic_level == 'custom':
-        #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
-        neighborhood_tracts_data = []
-
-        #Fetch census data for all relevant census tracts within the neighborhood
-        raw_census_data = c_area.acs5.geo_tract(fields_list, neighborhood_shape)
-        
-        for tract_geojson, tract_data, tract_proportion in raw_census_data:
-            neighborhood_tracts_data.append((tract_data))
-
-        #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
-        travel_time_raw_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = fields_list )
-
-
-
-
-
-    #Create an empty list and place the values from the dictionary inside of it
-    travel_time_data = []
-    for field in fields_list:
-        travel_time_data.append(travel_time_raw_data[field])
-
-    #Convert list with raw totals into a list where each element is a fraction of the total
-    travel_time_data = ConvertListElementsToFractionOfTotal(travel_time_data)
-    return(travel_time_data)
-
-#Travel Method to work
-def GetTravelMethodData(geographic_level,hood_or_comparison_area):
-    print('Getting travel method to work data for: ')
-    
-    fields_list = ['B08006_001E','B08006_003E','B08006_004E','B08006_015E','B08006_008E','B08006_017E','B08006_016E','B08006_014E']
-
-    if geographic_level == 'place':
-        try:
-            if hood_or_comparison_area == 'hood':
-                place_fips = hood_place_fips
-                state_fips = hood_state_fips
-
-
-            elif hood_or_comparison_area == 'comparison area':
-                place_fips = comparison_place_fips
-                state_fips = comparison_state_fips
-
-            neighborhood_method_to_work_distribution_raw   = c.acs5.state_place(fields = fields_list, state_fips = state_fips, place = place_fips)[0]
-        
-        except Exception as e:
-            print(e, 'Problem getting travel method data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-
-    elif geographic_level == 'county': 
-        try:
-            if hood_or_comparison_area == 'hood':
-                county_fips = hood_county_fips
-
-            elif hood_or_comparison_area == 'comparison area':
-                county_fips = comparison_county_fips
-
-            neighborhood_method_to_work_distribution_raw   = c.acs5.state_county(fields=fields_list,state_fips=state_fips,county_fips=county_fips)[0]
-        
-        except Exception as e:
-            print(e, 'Problem getting travel method data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-
-    elif geographic_level == 'county subdivision':
-        try:
-            if hood_or_comparison_area == 'hood':
-                county_fips = hood_county_fips
-                subdiv_fips = hood_suvdiv_fips
-
-            elif hood_or_comparison_area == 'comparison area':
-                county_fips = comparison_county_fips
-                subdiv_fips = comparison_suvdiv_fips
-            
-            neighborhood_method_to_work_distribution_raw   = c.acs5.state_county_subdivision(fields=fields_list,state_fips=state_fips,county_fips=county_fips,subdiv_fips=subdiv_fips)[0]
-        
-        except Exception as e:
-            print(e, 'Problem getting travel method data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-        
-    elif geographic_level == 'zip':
-        try:
-            if hood_or_comparison_area == 'hood':
-                zcta = hood_zip
-
-            elif hood_or_comparison_area == 'comparison area':
-                zcta = comparison_zip
-            
-            
-            neighborhood_method_to_work_distribution_raw       = c.acs5.zipcode(fields = fields_list, zcta = '*')
-            neighborhood_method_to_work_distribution_raw       = FindZipCodeDictionary(zip_code_data_dictionary_list =   neighborhood_method_to_work_distribution_raw  , zcta = zcta, state_fips = state_fips )
-        
-        except Exception as e:
-            print(e, 'Problem getting travel method data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-
-    elif geographic_level == 'tract':
-        try:        
-            if hood_or_comparison_area == 'hood':
-                tract       = hood_tract 
-                county_fips = hood_county_fips
-
-            elif hood_or_comparison_area == 'comparison area':
-                tract       = comparison_tract
-                county_fips = comparison_county_fips
-            
-            neighborhood_method_to_work_distribution_raw   = c.acs5.state_county_tract(fields=fields_list,state_fips=state_fips,county_fips=county_fips,tract=tract)[0]
-        
-        except Exception as e:
-            print(e, 'Problem getting travel method data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-
-    elif geographic_level == 'custom':
-        #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
-        neighborhood_tracts_data = []
-
-        #Fetch census data for all relevant census tracts within the neighborhood
-        raw_census_data = c_area.acs5.geo_tract(fields_list, neighborhood_shape)
-        
-        for tract_geojson, tract_data, tract_proportion in raw_census_data:
-            neighborhood_tracts_data.append((tract_data))
-
-        #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
-        neighborhood_method_to_work_distribution_raw = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = fields_list )
-
-    neighborhood_method_to_work_distribution = []
-    for field in fields_list:
-        neighborhood_method_to_work_distribution.append(neighborhood_method_to_work_distribution_raw[field])
-        
-
-    neighborhood_method_to_work_distribution = ConvertListElementsToFractionOfTotal(neighborhood_method_to_work_distribution)
-        
-    return(neighborhood_method_to_work_distribution) 
-
 #Number of Housing Units based on number of units in building
 def GetNumberUnitsData(geographic_level,hood_or_comparison_area):
     print('Getting housing units by number of units data for: ', hood_or_comparison_area)
@@ -1462,10 +1472,12 @@ def GetNumberUnitsData(geographic_level,hood_or_comparison_area):
             
             if hood_or_comparison_area == 'hood':
                 county_fips = hood_county_fips
+                state_fips = hood_state_fips
 
             elif hood_or_comparison_area == 'comparison area':
                 county_fips = comparison_county_fips
-            
+                state_fips = comparison_state_fips
+
             owner_occupied_units_raw_data  = c.acs5.state_county(fields = owner_occupied_fields_list,  state_fips = state_fips, county_fips = county_fips)[0]
             renter_occupied_units_raw_data = c.acs5.state_county(fields = renter_occupied_fields_list, state_fips = state_fips, county_fips = county_fips)[0]
         except Exception as e:
@@ -1596,8 +1608,11 @@ def GetTopOccupationsData(geographic_level,hood_or_comparison_area):
         try:
             if hood_or_comparison_area == 'hood':
                 county_fips = hood_county_fips
+                state_fips  = hood_state_fips
             elif hood_or_comparison_area == 'comparison area':
                 county_fips = comparison_county_fips
+                state_fips  = comparison_state_fips
+
             data = c.acs5.state_county(fields=list(cateogries_dict.keys()),state_fips=state_fips,county_fips=county_fips)[0]
             del data['state']
             del data['county']
@@ -1965,7 +1980,7 @@ def GetWikipediaPage():
     global page
     if (neighborhood_level == 'place') or (neighborhood_level == 'county subdivision') or (neighborhood_level == 'county'): #Don't bother looking for wikipedia page if zip code
         try:
-            wikipedia_page_search_term    = (neighborhood + ', ' + state)
+            wikipedia_page_search_term    = (neighborhood + ', ' + hood_state)
             page                          =  wikipedia.page(wikipedia_page_search_term)
                 
         except Exception as e:
@@ -1973,7 +1988,7 @@ def GetWikipediaPage():
             
     elif (neighborhood_level == 'custom'):
         try:
-            wikipedia_page_search_term    = (neighborhood + ', ' + comparison_area +', ' + state)
+            wikipedia_page_search_term    = (neighborhood + ', ' + comparison_area +', ' + hood_state)
             page                          =  wikipedia.page(wikipedia_page_search_term)        
         except Exception as e:
             print(e,': problem getting wikipedia page')
@@ -2149,7 +2164,7 @@ def SearchGreatSchoolDotOrg():
         if neighborhood_level == 'custom':
             search_term = (neighborhood + ', ' + comparison_area)
         else:
-            search_term = (neighborhood + ', ' + state)
+            search_term = (neighborhood + ', ' + hood_state)
 
         #Search https://www.greatschools.org/ for the area
         options = webdriver.ChromeOptions()
@@ -2204,9 +2219,9 @@ def SearchGreatSchoolDotOrg():
 def ApartmentDotComSearchTerm():
     #Takes the name of the city or neighborhood and creates a url for apartments.com
     if neighborhood_level == 'place':
-        search_term = 'https://www.apartments.com/' + '-'.join(neighborhood.lower().split(' ')) + '-' + state.lower() + '/'
+        search_term = 'https://www.apartments.com/' + '-'.join(neighborhood.lower().split(' ')) + '-' + hood_state.lower() + '/'
     elif neighborhood_level == 'custom':
-        search_term = 'https://www.apartments.com/' + '-'.join(neighborhood.lower().split(' ')) + '-' + '-'.join(comparison_area.lower().split(' ')) +  '-' + state.lower() + '/'
+        search_term = 'https://www.apartments.com/' + '-'.join(neighborhood.lower().split(' ')) + '-' + '-'.join(comparison_area.lower().split(' ')) +  '-' + hood_state.lower() + '/'
 
 
     return(search_term)
@@ -2305,6 +2320,9 @@ def GetData():
     global walk_score_data
 
     print('Getting Data for ' + neighborhood)
+
+
+
     neighborhood_household_size_distribution        = GetHouseholdSizeData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Neighborhood households by size
     neighborhood_household_size_distribution2       = GetCensusFrequencyDistribution(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',fields_list=['H013002','H013003','H013004','H013005','H013006','H013007','H013008'])          #Neighborhood households by size
     
@@ -2312,32 +2330,78 @@ def GetData():
     print(neighborhood_household_size_distribution2)
 
     
-    # neighborhood_tenure_distribution             = GetHousingTenureData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Tenure (owner occupied/renter)
-    # neighborhood_housing_value_data              = GetHousingValues(         geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Owner Occupied housing units by value
-    # neighborhood_number_units_data               = GetNumberUnitsData(       geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by units in building
-    # neighborhood_year_built_data                 = GetHouseYearBuiltData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by year structure built
-    # neighborhood_method_to_work_distribution     = GetTravelMethodData(      geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Mode to Work
-    # neighborhood_household_income_data           = GetHouseholdIncomeValues( geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Households by household income data
-    # neighborhood_age_data                        = GetAgeData(               geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Population by age data
-    # neighborhood_time_to_work_distribution       = GetTravelTimeData(        geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Time to Work
-    # neighborhood_top_occupations_data            = GetTopOccupationsData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Top Employment Occupations
-    
-    # print('Getting Data For ' + comparison_area)
-    # comparison_household_size_distribution       = GetHouseholdSizeData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    # comparison_tenure_distribution               = GetHousingTenureData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    # comparison_housing_value_data                = GetHousingValues(        geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
-    # comparison_number_units_data                 = GetNumberUnitsData(      geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
-    # comparison_year_built_data                   = GetHouseYearBuiltData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    # comparison_age_data                          = GetAgeData(              geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    # comparison_household_income_data             = GetHouseholdIncomeValues(geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')   
-    # comparison_top_occupations_data              = GetTopOccupationsData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    # comparison_time_to_work_distribution         = GetTravelTimeData(       geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    
-    # #Walk score
-    # walk_score_data                              = GetWalkScore(            lat = latitude, lon = longitude                                                    )
+    neighborhood_tenure_distribution              = GetHousingTenureData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Tenure (owner occupied/renter)
+    neighborhood_tenure_distribution2             = GetCensusFrequencyDistribution(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',fields_list = ['H004004','H004003','H004002'])          #Housing Tenure (owner occupied/renter)
+    print(neighborhood_tenure_distribution)
+    print(neighborhood_tenure_distribution2)
 
-    # #Overview Table Data
-    # overview_table_data = GetOverviewTable(hood_geographic_level = neighborhood_level ,comparison_geographic_level = comparison_level )
+    neighborhood_housing_value_data               = GetHousingValues(         geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Owner Occupied housing units by value
+    neighborhood_housing_value_data2              = GetCensusFrequencyDistribution(         geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', fields_list = ["B25075_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,28)])          #Owner Occupied housing units by value
+    print(neighborhood_housing_value_data)
+    print(neighborhood_housing_value_data2)
+    
+    neighborhood_year_built_data                  = GetHouseYearBuiltData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by year structure built
+    neighborhood_year_built_data2                 = GetCensusFrequencyDistribution(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',  fields_list = ["B25034_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,12)])          #Housing Units by year structure built
+    print(neighborhood_year_built_data)
+    print(neighborhood_year_built_data2)
+    
+    neighborhood_method_to_work_distribution      = GetTravelMethodData(           geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Mode to Work
+    neighborhood_method_to_work_distribution2     = GetCensusFrequencyDistribution(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', fields_list = ['B08006_001E','B08006_003E','B08006_004E','B08006_015E','B08006_008E','B08006_017E','B08006_016E','B08006_014E'])          #Travel Mode to Work
+    print(neighborhood_method_to_work_distribution)
+    print(neighborhood_method_to_work_distribution2)
+    
+    neighborhood_household_income_data            = GetHouseholdIncomeValues( geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Households by household income data
+    neighborhood_household_income_data2           = GetCensusFrequencyDistribution( geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', fields_list = ["B19001_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,18)])          #Households by household income data
+    print(neighborhood_household_income_data)
+    print(neighborhood_household_income_data2)
+    
+    neighborhood_time_to_work_distribution        = GetTravelTimeData(        geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Time to Work
+    neighborhood_time_to_work_distribution2       = GetCensusFrequencyDistribution(        geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',fields_list=fields_list = ["B08012_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,14)])          #Travel Time to Work
+    print(neighborhood_time_to_work_distribution)
+    print(neighborhood_time_to_work_distribution2)
+    
+
+
+
+    neighborhood_number_units_data               = GetNumberUnitsData(       geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by units in building
+    neighborhood_age_data                        = GetAgeData(               geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Population by age data
+    neighborhood_top_occupations_data            = GetTopOccupationsData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Top Employment Occupations
+    
+
+
+
+
+
+
+
+
+    print('Getting Data For ' + comparison_area)
+    comparison_household_size_distribution       = GetHouseholdSizeData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    comparison_tenure_distribution               = GetHousingTenureData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    comparison_housing_value_data                = GetHousingValues(        geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
+    comparison_year_built_data                   = GetHouseYearBuiltData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    comparison_household_income_data             = GetHouseholdIncomeValues(geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')   
+    comparison_time_to_work_distribution         = GetTravelTimeData(       geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    
+    
+    comparison_age_data                          = GetAgeData(              geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    comparison_number_units_data                 = GetNumberUnitsData(      geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
+    comparison_top_occupations_data              = GetTopOccupationsData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    
+
+
+
+
+
+
+
+
+
+    #Walk score
+    walk_score_data                              = GetWalkScore(            lat = latitude, lon = longitude                                                    )
+
+    #Overview Table Data
+    overview_table_data = GetOverviewTable(hood_geographic_level = neighborhood_level ,comparison_geographic_level = comparison_level )
     
     #Unused functions
     #SearchGreatSchoolDotOrg()
@@ -3225,7 +3289,7 @@ def WikipediaTransitLanguage(category):
 def SummaryLangauge():
     print('Creating Summary Langauge')
     try:
-        wikipedia_summary = (wikipedia.summary((neighborhood + ',' + state)))
+        wikipedia_summary = (wikipedia.summary((neighborhood + ',' + hood_state)))
     except Exception as e:
         print(e)
         wikipedia_summary = ('')
@@ -3806,7 +3870,7 @@ def GetMap():
         Place = browser.find_element_by_class_name("tactile-searchbox-input")
 
         if neighborhood_level != 'custom':
-            Place.send_keys((neighborhood + ', ' + state))
+            Place.send_keys((neighborhood + ', ' + hood_state))
         
         elif neighborhood_level == 'custom':
             Place.send_keys((neighborhood + ', ' + comparison_area))
@@ -4103,7 +4167,7 @@ def CommunityAssetsSection(document):
     AddTableTitle(document = document, title = 'Community Assets')
 
     #Add Community Assets Table
-    graphics_list            = ['plane.png','plane.png','plane.png','plane.png','plane.png','plane.png','plane.png'] #list of graphics for each row (col 1)
+    graphics_list            = ['bank.png','food.png','healthcare.png','park.png','retail.png','school.png','food.png'] #list of graphics for each row (col 1)
     community_table_language = ['ROW 1', 'ROW 2', 'ROW 3', 'ROW 4', 'ROW 5', 'ROW 6', 'ROW 7']                       #list of text for each row (col 2)
     assert len(graphics_list) == len(community_table_language)
 
@@ -4325,7 +4389,7 @@ def TransportationSection(document):
 
     #Insert the transit graphics(car, bus,plane, train)
     tab = document.add_table(rows=1, cols=2)
-    for pic in ['car.png','train.png','bus.png','plane.png','plane.png','plane.png']:
+    for pic in ['car.png','train.png','bus.png','plane.png','walk.png','plane.png']:
         row_cells = tab.add_row().cells
         paragraph = row_cells[0].paragraphs[0]
         run = paragraph.add_run()
@@ -4464,19 +4528,13 @@ def CreateDirectoryCSV():
 
 def DecideIfWritingReport():
     global report_creation
-    if testing_mode == False:
-        #Give the user 10 seconds to decide if writing reports for metro areas or individual county entries
-        try:
-            # report_creation = input_with_timeout('Create new report? y/n', 10).strip()
-            report_creation = 'y'
-
-        except TimeoutExpired:
-            report_creation = ''
-
-        # report_creation = 'y'
-
-    else:
+    #Give the user 10 seconds to decide if writing reports for metro areas or individual county entries
+    try:
+        # report_creation = input_with_timeout('Create new report? y/n', 10).strip()
         report_creation = 'y'
+
+    except TimeoutExpired:
+        report_creation = ''
 
 def UserSelectsNeighborhoodLevel():
     
