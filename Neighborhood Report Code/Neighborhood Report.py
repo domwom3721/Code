@@ -142,7 +142,8 @@ def GetNeighborhoodShape():
             feature_hood_name = my_shape_geojson['features'][i]['properties']['name']
             if feature_hood_name == neighborhood:
                 neighborhood_shape = my_shape_geojson['features'][i]['geometry']
-    
+
+        print('Succfully pulled hood shape from stored geojson file')
         return(neighborhood_shape) 
              
     
@@ -166,12 +167,13 @@ def GetNeighborhoodShape():
             srcDS                              = gdal.OpenEx(kml_file_location)
             ds                                 = gdal.VectorTranslate(new_geojson_file_location, srcDS, format='GeoJSON')
 
-        
         with open(new_geojson_file_location) as infile: 
             print('Opened geojson file with custom boundraries')
             my_shape_geojson = json.load(infile)
         
-        neighborhood_shape = my_shape_geojson['features'][0]['geometry']
+        neighborhood_shape       = my_shape_geojson['features'][0]['geometry']
+        neighborhood_custom_name = my_shape_geojson['features'][0]['name']
+        input('We are using a downloaded file from google for custom bounds for ' + neighborhood_custom_name +  'press enter to confirm')
         return(neighborhood_shape) 
 
 #####################################################User FIPS input proccessing Functions####################################
@@ -3316,33 +3318,7 @@ def CommunityAssetsLanguage():
         else:
             community_assets_language = community_assets_language + poi_sentence
 
-    
-
     return([community_assets_language])
-    
-    
-  
-
-
-    # try:
-    #     yelp_language = YelpLanguage(yelp_data)
-    # except Exception as e:
-    #     print(e)
-    #     yelp_language =''
-
-    #     #Takes a dictionary as input and returns string
-    # assert type(yelp_data) == dict
-
-    # return_string = ''
-    # for category in yelp_data.keys(): 
-    #     yelp_string = category.title() + ': ' + ', '.join(yelp_data[category]) + '. '
-    #     return_string = return_string + yelp_string
-
-    # return(return_string)
-
-    # global yelp_data,location_iq_data
-    
-    # yelp_data                                    = GetYelpData(             lat = latitude, lon = longitude, radius = 30000                                    ) #radius in meters
 
 def CarLanguage():
     print('Creating auto Langauge')
@@ -3957,7 +3933,6 @@ def OverlayMapImages():
     img1.save(map3_path)
     
 def AddMap(document):
-    print('Adding Map')
     map_path  = os.path.join(hood_folder_map,'map.png')
     map2_path = os.path.join(hood_folder_map,'map2.png')
     map3_path = os.path.join(hood_folder_map,'map3.png')
@@ -3967,7 +3942,8 @@ def AddMap(document):
 
     if os.path.exists(map3_path) == False: #If we don't have an image with a zommed in map overlayed on zoomed out map, create one
         OverlayMapImages()
-    
+   
+    print('Adding Map') 
     if os.path.exists(map3_path):
         map = document.add_picture(map3_path,width=Inches(6.5))
 
@@ -4159,7 +4135,7 @@ def CommunityAssetsSection(document):
     AddTableTitle(document = document, title = 'Community Assets')
 
     #Add Community Assets Table
-    graphics_list            = ['bank.png','food.png','healthcare.png','park.png','retail.png','school.png','food.png'] #list of graphics for each row (col 1)
+    graphics_list            = ['bank.png','food.png','medical.png','park.png','retail.png','school.png','food.png'] #list of graphics for each row (col 1)
     community_table_language = ['ROW 1', 'ROW 2', 'ROW 3', 'ROW 4', 'ROW 5', 'ROW 6', 'ROW 7']                       #list of text for each row (col 2)
     assert len(graphics_list) == len(community_table_language)
 
@@ -4171,7 +4147,12 @@ def CommunityAssetsSection(document):
         row_cells = tab.add_row().cells
         paragraph = row_cells[0].paragraphs[0]
         run       = paragraph.add_run()
-        run.add_picture(os.path.join(graphics_location,pic))
+        if os.path.exists(os.path.join(graphics_location,pic)):
+            run.add_picture(os.path.join(graphics_location,pic))
+        else:
+            run.add_picture(os.path.join(graphics_location,'food.png'))
+
+
     
 
     #Loop through the rows in the table write in the text
@@ -4803,6 +4784,10 @@ def GetUserInputs():
   
     elif comparison_level == 'custom':   #When our comparison area is a neighboorhood within a city (eg: Financial District, New York City)
         comparison_area = input('Enter the name of the custom comparison area').strip()
+
+    #Use comparison area state when doing a custom report
+    if neighborhood_level == 'custom':
+        hood_state                      = comparison_state
 
 def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
     if type == None:
