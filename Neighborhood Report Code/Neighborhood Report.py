@@ -2257,6 +2257,10 @@ def ApartmentsDotComSearch():
                 continue            
             descriptive_paragraphs.append(paragraph.text)
         
+        #Avoid returning the null search results paragraph
+        if  'Let Apartments.com help you find your perfect fit 'in descriptive_paragraphs:
+            descriptive_paragraphs = ''
+        
         return(descriptive_paragraphs)
     
     
