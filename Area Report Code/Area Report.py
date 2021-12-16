@@ -5343,10 +5343,6 @@ def EmploymentSection(document):
         Citation(document,'U.S. Bureau of Labor Statistics')
         Note(document,'Employment growth rates are not displayed for industries where the BLS has suppressed employment data for quality or privacy concerns.')
     
-    #Add page break
-    # page_break_paragraph = document.add_paragraph('')
-    # run = page_break_paragraph.add_run()
-    # run.add_break(WD_BREAK.PAGE)
 
 def ProductionSection(document):
     print('Writing Production Section')
@@ -5368,9 +5364,7 @@ def ProductionSection(document):
         gdp_format.space_after = Pt(0)
         Citation(document,'U.S. Bureau of Economic Analysis')
     
-    page_break_paragraph = document.add_paragraph('')
-    run = page_break_paragraph.add_run()
-    run.add_break(WD_BREAK.PAGE)
+
     
 def DemographicsSection(document):
     print('Writing Demographic Section')
@@ -5417,10 +5411,6 @@ def DemographicsSection(document):
     #     last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
     #     Citation(document,'U.S. Census Bureau')
 
-
-    # page_break_paragraph = document.add_paragraph('')
-    # run = page_break_paragraph.add_run()
-    # run.add_break(WD_BREAK.PAGE)
 
 def InfrastructureSection(document):
     print('Writing Infrastructure Section')
