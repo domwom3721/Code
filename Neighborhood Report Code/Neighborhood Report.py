@@ -3421,10 +3421,8 @@ def CreateLanguage():
     population_age_language            = PopulationAgeLanguage()
     income_language                    = IncomeLanguage()
     household_size_language            = HouseholdSizeLanguage()
-
     travel_method_language             = TravelMethodLanguage() 
     travel_time_language               = TravelTimeLanguage()
-
 
     bus_language                       = BusLanguage() 
     train_language                     = TrainLanguage()
