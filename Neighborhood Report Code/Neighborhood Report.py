@@ -4303,70 +4303,102 @@ def GetUserInputs():
     elif analysis_type_number == 4: #Place vs. County Subdivison
         neighborhood_level = 'p'
         comparison_level   = 'sd'
-    # elif analysis_type_number == 5: #Zip vs. Place
-    #     pass
+    elif analysis_type_number == 5: #Zip vs. Place
+        neighborhood_level = ''
+        comparison_level   = ''
     # elif analysis_type_number == 6: #Tract vs. Place
-    #     pass
+    #   neighborhood_level = ''
+    #   comparison_level   = ''
     # elif analysis_type_number == 7: #Tract vs. County
-    #     pass
+    #   neighborhood_level = ''
+    #   comparison_level   = ''
     # elif analysis_type_number == 8: #Tract vs. Zip
-    #     pass
+      #   neighborhood_level = ''
+    #   comparison_level   = ''
     # elif analysis_type_number == 9: #Tract vs. County Subdivison
-    #     pass
+    #   neighborhood_level = ''
+    #   comparison_level   = ''
     # elif analysis_type_number == 10: #Tract vs. Custom
-    #     pass
+    #   neighborhood_level = ''
+    #   comparison_level   = ''
     # elif analysis_type_number == 11: #Tract vs. None
-    #     pass
+     #   neighborhood_level = ''
+    #   comparison_level   = ''
     # elif analysis_type_number == 12: #Place  vs. Zip
-    #     pass
+    #   neighborhood_level = ''
+    #   comparison_level   = ''
     # elif analysis_type_number == 13: #Place  vs. Custom
-    #     pass
+    #   neighborhood_level = ''
+    #   comparison_level   = ''
     # elif analysis_type_number == 14: #Place  vs. Tract
-    #     pass
+     #   neighborhood_level = ''
+    #   comparison_level   = ''
     # elif analysis_type_number == 15: #Place  vs. None
-    #     pass
+    #   neighborhood_level = ''
+    #   comparison_level   = ''
     # elif analysis_type_number == 16: #County  vs. Place
-    #     pass
+    #   neighborhood_level = ''
+    #   comparison_level   = ''
     # elif analysis_type_number == 17: #County  vs. Tract
-    #     pass
+    #   neighborhood_level = ''
+    #   comparison_level   = ''
     # elif analysis_type_number == 18: #County vs. Zip
-    #     pass
+     #   neighborhood_level = ''
+    #   comparison_level   = ''
     # elif analysis_type_number == 19: #County vs. Custom
-    #     pass
+    #   neighborhood_level = ''
+    #   comparison_level   = ''
     # elif analysis_type_number == 20: #County vs. County Subdivison
-    #     pass
+    #   neighborhood_level = ''
+    #   comparison_level   = ''
     # elif analysis_type_number == 21: #County  vs. None
-    #     pass
+     #   neighborhood_level = ''
+    #   comparison_level   = ''
     # elif analysis_type_number == 22: #Zip vs. Tract
-    #     pass
+     #   neighborhood_level = ''
+    #   comparison_level   = ''
     # elif analysis_type_number == 23: #Zip vs. Custom
-    #     pass
+        #   neighborhood_level = ''
+    #   comparison_level   = ''
     # elif analysis_type_number == 24: #Zip vs. County Subdivison
-    #     pass
+        #   neighborhood_level = ''
+    #   comparison_level   = ''
     # elif analysis_type_number == 25: #Zip vs. County
-    #     pass
+        #   neighborhood_level = ''
+    #   comparison_level   = ''
     # elif analysis_type_number == 26: #Zip vs. None
-    #     pass
+    #    #   neighborhood_level = ''
+    #   comparison_level   = ''
     # elif analysis_type_number == 27: #County Subdivison vs. Place
-    #     pass
+        #   neighborhood_level = ''
+    #   comparison_level   = ''
     # elif analysis_type_number == 28: #County Subdivison vs. Custom
-    #     pass
+        #   neighborhood_level = ''
+    #   comparison_level   = ''
     # elif analysis_type_number == 29: #County Subdivison vs. Zip
-    #     pass
+        #   neighborhood_level = ''
+    #   comparison_level   = ''
     # elif analysis_type_number == 30: #County Subdivison vs. Tract
-    #     pass
+        #   neighborhood_level = ''
+    #   comparison_level   = ''
     # elif analysis_type_number == 31: #County Subdivison vs. None
-    #     pass
+        #   neighborhood_level = ''
+    #   comparison_level   = ''
     # elif analysis_type_number == 32: #Custom vs. Tract
-    #     pass
+        #   neighborhood_level = ''
+    #   comparison_level   = ''
     # elif analysis_type_number == 33 : #Custom vs. County Subdivison
-    #     pass
+        #   neighborhood_level = ''
+    #   comparison_level   = ''
     # elif analysis_type_number == 34 : #Custom vs. County
-    #     pass
+        #   neighborhood_level = ''
+    #   comparison_level   = ''
     # elif analysis_type_number == 35: #Custom vs. Zip
-    #     pass
+       #   neighborhood_level = ''
+    #   comparison_level   = ''
     # elif analysis_type_number == 36: #Custom  vs. None
-    #     pass
+        #   neighborhood_level = ''
+    #   comparison_level   = ''
     else:
             print('Not a supported level currently')
     
