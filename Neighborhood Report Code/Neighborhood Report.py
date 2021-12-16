@@ -1998,7 +1998,7 @@ def GetWikipediaPage():
             
     elif (neighborhood_level == 'custom'):
         try:
-            wikipedia_page_search_term    = (neighborhood + ', ' + comparison_area +', ' + hood_state)
+            wikipedia_page_search_term    = (neighborhood + ', ' + comparison_area )
             page                          =  wikipedia.page(wikipedia_page_search_term)        
         except Exception as e:
             print(e,': problem getting wikipedia page')
