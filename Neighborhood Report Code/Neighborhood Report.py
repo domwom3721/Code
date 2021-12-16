@@ -4278,9 +4278,9 @@ def UserSelectsNeighborhoodLevel():
 def GetUserInputs():
     
     global neighborhood_level,comparison_level
-    hood_comparison_levels = UserSelectsNeighborhoodLevel()
-    neighborhood_level     = hood_comparison_levels[0] 
-    comparison_level       = hood_comparison_levels[1] 
+    # hood_comparison_levels = UserSelectsNeighborhoodLevel()
+    # neighborhood_level     = hood_comparison_levels[0] 
+    # comparison_level       = hood_comparison_levels[1] 1
     
     global neighborhood, hood_tract, hood_zip, hood_place_fips, place_type, hood_suvdiv_fips, hood_county_fips
     global state, state_fips, state_full_name
