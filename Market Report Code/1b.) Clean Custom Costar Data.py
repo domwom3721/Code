@@ -234,8 +234,10 @@ def DestringVariablesConvertToNumeric(df,sector):
                 # 'Available SF'
                 ]
 
-    for var in vars_list_to_destring:         
+    for var in vars_list_to_destring:
+        print(var)         
         if df[var].dtype == 'object': #only do the following for string variables
+            df[var] = df[var].astype(str)
             df[var] = df[var].str.replace('$', '', regex=False)
             df[var] = df[var].str.replace(',', '', regex=False)
             df[var] = df[var].str.replace('%', '', regex=False)
@@ -468,4 +470,4 @@ print(df_custom)
 df_custom.to_excel(clean_custom_file)
 
 #Now run report creation script
-import Market_Report.py
+# import Market_Report.py
