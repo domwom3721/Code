@@ -1204,7 +1204,6 @@ def GetTravelMethodData(geographic_level,hood_or_comparison_area):
                 place_fips = hood_place_fips
                 state_fips = hood_state_fips
 
-
             elif hood_or_comparison_area == 'comparison area':
                 place_fips = comparison_place_fips
                 state_fips = comparison_state_fips
@@ -1255,10 +1254,11 @@ def GetTravelMethodData(geographic_level,hood_or_comparison_area):
         try:
             if hood_or_comparison_area == 'hood':
                 zcta = hood_zip
+                state_fips = hood_state_fips
 
             elif hood_or_comparison_area == 'comparison area':
                 zcta = comparison_zip
-            
+                state_fips = comparison_state_fips
             
             neighborhood_method_to_work_distribution_raw       = c.acs5.zipcode(fields = fields_list, zcta = '*')
             neighborhood_method_to_work_distribution_raw       = FindZipCodeDictionary(zip_code_data_dictionary_list =   neighborhood_method_to_work_distribution_raw  , zcta = zcta, state_fips = state_fips )
@@ -1272,10 +1272,14 @@ def GetTravelMethodData(geographic_level,hood_or_comparison_area):
             if hood_or_comparison_area == 'hood':
                 tract       = hood_tract 
                 county_fips = hood_county_fips
+                state_fips  = hood_state_fips
+
 
             elif hood_or_comparison_area == 'comparison area':
                 tract       = comparison_tract
                 county_fips = comparison_county_fips
+                state_fips = comparison_state_fips
+
             
             neighborhood_method_to_work_distribution_raw   = c.acs5.state_county_tract(fields=fields_list,state_fips=state_fips,county_fips=county_fips,tract=tract)[0]
         
