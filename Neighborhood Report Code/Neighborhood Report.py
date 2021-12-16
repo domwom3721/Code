@@ -4275,8 +4275,6 @@ def UserSelectsNeighborhoodLevel():
     
     return(int(analysis_type_number))
 
-
-
 def GetUserInputs():
     
     global neighborhood_level,comparison_level
