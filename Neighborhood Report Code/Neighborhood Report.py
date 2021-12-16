@@ -3404,9 +3404,13 @@ def CreateLanguage():
     global household_size_language
 
     summary_langauge                   =  SummaryLangauge()
-    community_assets_language          =  CommunityAssetsLanguage()
     transportation_language            =  TransportationOverviewLanguage()
-
+    
+    try:
+        community_assets_language          =  CommunityAssetsLanguage()
+    except Exception as e:
+        print(e,'unable to get community assets langauge')
+        community_assets_language = []
     housing_tenure_breakdown_language  = HousingTenureLanguage()
     structure_size_breakdown_language  = HousingSizeLanguage()
     
