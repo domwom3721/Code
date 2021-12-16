@@ -1,7 +1,6 @@
 #By Mike Leahy
 #Started 06/30/2021
 #Summary: This script creates reports on neighborhoods/cities for Bowery
-
 import json
 import math
 import msvcrt
@@ -75,8 +74,8 @@ primary_space_after_paragraph = 8
 
 #Decide if you want to export data in excel files in the county folder
 data_export                   = False
-testing_mode                  = True
-# testing_mode                  = False
+# testing_mode                  = True
+testing_mode                  = False
 
 
 #Data Manipulation functions
@@ -4222,7 +4221,61 @@ def UserSelectsNeighborhoodLevel():
     # return([neighborhood_level,comparison_level])
 
     # return(['custom','p'])
-    return(['p','c'])
+    # return(['p','c'])
+
+ 
+    analysis_type_number = input('What is the geographic level of the neighborhood and comparison area?' + '\n'
+  
+                                '1.) = Place  vs. County'+ '\n' +
+                                '2.) = County Subdivison vs. County' + '\n' +
+                                '3.) = Custom vs. Place'  + '\n' +
+                                '4.) = Place  vs. County Subdivison'+ '\n' +
+                                '5.) = Zip    vs. Place'+ '\n' +
+
+                                '6.) = Tract vs. Place'   + '\n' +
+                                '7.) = Tract vs. County ' + '\n' +
+                                '8.) = Tract vs. Zip'     + '\n' +
+                                '9.) = Tract vs. County Subdivison'+ '\n' +
+                                '10.) = Tract vs. Custom'+ '\n' +
+                                '11.) = Tract vs. None'+ '\n' +
+
+                                '12.) = Place  vs. Zip'+ '\n' +
+                                '13.) = Place  vs. Custom'+ '\n' +
+                                '14.) = Place  vs. Tract'+ '\n' +
+                                '15.) = Place  vs. None'+ '\n' +
+
+
+                                '16.) = County  vs. Place'+ '\n' +
+                                '17.) = County  vs. Tract' + '\n' +
+                                '18.) = County vs. Zip' + '\n' +
+                                '19.) = County vs. Custom'+ '\n' +
+                                '20.) = County vs. County Subdivison'+ '\n' +
+                                '21.) = County  vs. None'+ '\n' +
+
+                                '22.) = Zip vs. Tract '+ '\n' +
+                                '23.) = Zip vs. Custom'+ '\n' +
+                                '24.) = Zip vs. County Subdivison'+ '\n' +
+                                '25.) = Zip vs. County'+ '\n' +
+                                '26.) = Zip vs. None'+ '\n' +
+
+                                '27.) = County Subdivison vs. Place'  + '\n' +
+                                '28.) = County Subdivison vs. Custom' + '\n' +
+                                '29.) = County Subdivison vs. Zip'+ '\n' +
+                                '30.) = County Subdivison vs. Tract'+ '\n' +
+                                '31.) = County Subdivison vs. None'  + '\n' +
+                            
+                                '32.) = Custom vs. Tract'  + '\n' +
+                                '33.) = Custom vs. County Subdivison' + '\n' +
+                                '34.) = Custom vs. County' + '\n' +
+                                '35.) = Custom vs. Zip'  + '\n' +
+                                '36.) = Custom  vs. None'  
+                                )
+
+
+    
+    return(int(analysis_type_number))
+
+
 
 def GetUserInputs():
     
@@ -4234,6 +4287,110 @@ def GetUserInputs():
     global neighborhood, hood_tract, hood_zip, hood_place_fips, place_type, hood_suvdiv_fips, hood_county_fips
     global state, state_fips, state_full_name
     global comparison_area, comparison_tract ,comparison_zip, comparsion_place_fips, comparison_suvdiv_fips, comparison_county_fips,comparison_state_fips
+
+    #************************FIX AND FILL IN#********
+    analysis_type_number = UserSelectsNeighborhoodLevel()
+    #Each number corresponds to a different analysis level pair eg: place vs county, zip vs. place, etc
+    if analysis_type_number == 1: #Place  vs. County
+        neighborhood_level = 'p'
+        comparison_level   = 'c'
+    elif analysis_type_number == 2: #County Subdivison vs. County
+        neighborhood_level = 'sd'
+        comparison_level   = 'c'
+    elif analysis_type_number == 3: #Custom vs. Place
+        neighborhood_level = 'custom'
+        comparison_level   = 'p'
+    elif analysis_type_number == 4: #Place vs. County Subdivison
+        neighborhood_level = 'p'
+        comparison_level   = 'sd'
+    # elif analysis_type_number == 5: #Zip vs. Place
+    #     pass
+    # elif analysis_type_number == 6: #Tract vs. Place
+    #     pass
+    # elif analysis_type_number == 7: #Tract vs. County
+    #     pass
+    # elif analysis_type_number == 8: #Tract vs. Zip
+    #     pass
+    # elif analysis_type_number == 9: #Tract vs. County Subdivison
+    #     pass
+    # elif analysis_type_number == 10: #Tract vs. Custom
+    #     pass
+    # elif analysis_type_number == 11: #Tract vs. None
+    #     pass
+    # elif analysis_type_number == 12: #Place  vs. Zip
+    #     pass
+    # elif analysis_type_number == 13: #Place  vs. Custom
+    #     pass
+    # elif analysis_type_number == 14: #Place  vs. Tract
+    #     pass
+    # elif analysis_type_number == 15: #Place  vs. None
+    #     pass
+    # elif analysis_type_number == 16: #County  vs. Place
+    #     pass
+    # elif analysis_type_number == 17: #County  vs. Tract
+    #     pass
+    # elif analysis_type_number == 18: #County vs. Zip
+    #     pass
+    # elif analysis_type_number == 19: #County vs. Custom
+    #     pass
+    # elif analysis_type_number == 20: #County vs. County Subdivison
+    #     pass
+    # elif analysis_type_number == 21: #County  vs. None
+    #     pass
+    # elif analysis_type_number == 22: #Zip vs. Tract
+    #     pass
+    # elif analysis_type_number == 23: #Zip vs. Custom
+    #     pass
+    # elif analysis_type_number == 24: #Zip vs. County Subdivison
+    #     pass
+    # elif analysis_type_number == 25: #Zip vs. County
+    #     pass
+    # elif analysis_type_number == 26: #Zip vs. None
+    #     pass
+    # elif analysis_type_number == 27: #County Subdivison vs. Place
+    #     pass
+    # elif analysis_type_number == 28: #County Subdivison vs. Custom
+    #     pass
+    # elif analysis_type_number == 29: #County Subdivison vs. Zip
+    #     pass
+    # elif analysis_type_number == 30: #County Subdivison vs. Tract
+    #     pass
+    # elif analysis_type_number == 31: #County Subdivison vs. None
+    #     pass
+    # elif analysis_type_number == 32: #Custom vs. Tract
+    #     pass
+    # elif analysis_type_number == 33 : #Custom vs. County Subdivison
+    #     pass
+    # elif analysis_type_number == 34 : #Custom vs. County
+    #     pass
+    # elif analysis_type_number == 35: #Custom vs. Zip
+    #     pass
+    # elif analysis_type_number == 36: #Custom  vs. None
+    #     pass
+    else:
+            print('Not a supported level currently')
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     #Get User input on neighborhood/subject area
     if neighborhood_level == 'p':        #when our neighborhood is a town or city eg: East Rockaway Village, New York
@@ -4558,5 +4715,3 @@ def Main():
 
 #This is our main function that calls all other functions we will use
 Main()
-
-
