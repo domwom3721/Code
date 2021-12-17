@@ -3277,7 +3277,7 @@ def WikipediaTransitLanguage(category):
               
 
             elif category == 'train':
-                return(neighborhood + ' is not served by any commuter or light rail lines.')
+                return(neighborhood + ' is not served by any commuter or light-rail lines.')
             else:
                 return('')
 
