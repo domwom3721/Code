@@ -76,6 +76,7 @@ def ConvertListElementsToFractionOfTotal(raw_list):
 
     converted_list = []
     for i in raw_list:
+        assert i >= 0
         converted_list.append(i/total * 100)
     
     return(converted_list)
