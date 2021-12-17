@@ -4367,7 +4367,7 @@ def TransportationSection(document):
 
     #Insert the transit graphics(car, bus,plane, train)
     tab = document.add_table(rows=1, cols=2)
-    for pic in ['car.png','train.png','bus.png','plane.png','walk.png','plane.png']:
+    for pic in ['car.png','train.png','bus.png','plane.png','walk.png']:
         row_cells = tab.add_row().cells
         paragraph = row_cells[0].paragraphs[0]
         run = paragraph.add_run()
@@ -4376,7 +4376,7 @@ def TransportationSection(document):
         run.add_picture(os.path.join(graphics_location,pic))
     
 
-    transit_table_language = [car_language, train_language, bus_language, plane_language,walk_score_data[0],walk_score_data[2]]
+    transit_table_language = [car_language, train_language, bus_language, plane_language,walk_score_data[0]]
 
     #Loop through the rows in the table
     for current_row ,row in enumerate(tab.rows): 
