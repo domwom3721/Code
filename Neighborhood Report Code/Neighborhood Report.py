@@ -68,12 +68,6 @@ data_location                  =  os.path.join(project_location,'Data','Neighbor
 graphics_location              =  os.path.join(project_location,'Data','Graphics')
 map_location                   =  os.path.join(project_location,'Data','Maps','Neighborhood Maps')
 
-#Set formatting paramaters for reports
-primary_font                  = 'Avenir Next LT Pro Light' 
-primary_space_after_paragraph = 8
-
-#Decide if you want to export data in excel files in the county folder
-data_export                   = False
 
 #Data Manipulation functions
 def ConvertListElementsToFractionOfTotal(raw_list):
@@ -370,6 +364,16 @@ def DeclareAPIKeys():
     walkscore_api                 = WalkScoreAPI(api_key = walkscore_api_key)
     c                             = Census(census_api_key) #Census API wrapper package
     c_area                        = CensusArea(census_api_key) #Census API package, sepearete extension of main package that allows for custom boundries
+
+#Data Gathering Related Functions
+def DeclareFormattingParameters():
+    global primary_font
+    global primary_space_after_paragraph
+    
+    #Set formatting paramaters for reports
+    primary_font                  = 'Avenir Next LT Pro Light' 
+    primary_space_after_paragraph = 8
+
 class TimeoutExpired(Exception):
     pass
 
@@ -4830,6 +4834,7 @@ def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
 
 def Main():
     DeclareAPIKeys()
+    DeclareFormattingParameters()
     DecideIfWritingReport()
    
 
