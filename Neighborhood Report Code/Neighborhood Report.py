@@ -3624,17 +3624,15 @@ def IncomeLanguage():
     hood_largest_income_category = income_categories[neighborhood_household_income_data.index(max(neighborhood_household_income_data))] #get the most common income category
     
 
-
-
     #If not the last or first category
     if (hood_largest_income_category != income_categories[len(income_categories)-1]) and (hood_largest_income_category != income_categories[0]) :
         hood_largest_income_category = 'between ' + hood_largest_income_category
 
-    elif (hood_largest_income_category != income_categories[len(income_categories)-1]):
-        hood_largest_income_category = 'over ' + hood_largest_income_category.replace('>','')
-    
-    elif (hood_largest_income_category != income_categories[0]):
+    elif (hood_largest_income_category == income_categories[0]):
         hood_largest_income_category = 'under ' + hood_largest_income_category.replace('<','')
+    
+    elif (hood_largest_income_category == income_categories[len(income_categories)-1]):
+        hood_largest_income_category = 'over ' + hood_largest_income_category.replace('>','')
 
 
 
@@ -3644,11 +3642,11 @@ def IncomeLanguage():
     if (comp_largest_income_category != income_categories[len(income_categories)-1]) and (comp_largest_income_category != income_categories[0]) :
         comp_largest_income_category = 'between ' + comp_largest_income_category
 
-    elif (comp_largest_income_category != income_categories[len(income_categories)-1]):
-        comp_largest_income_category = 'over ' + comp_largest_income_category.replace('>','')
+    elif (comp_largest_income_category == income_categories[0]):
+        comp_largest_income_category = 'under ' + comp_largest_income_category.replace('>','')
     
-    elif (comp_largest_income_category != income_categories[0]):
-        comp_largest_income_category = 'under ' + comp_largest_income_category.replace('<','')
+    elif (comp_largest_income_category == income_categories[len(income_categories)-1]):
+        comp_largest_income_category = 'over ' + comp_largest_income_category.replace('>','')
 
 
     income_language = ('Households in '                                      +
