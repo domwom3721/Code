@@ -170,7 +170,7 @@ def GetNeighborhoodShape():
             
             neighborhood_shape       = my_shape_geojson['features'][0]['geometry']
             neighborhood_custom_name = my_shape_geojson['features'][0]['properties']['Name']
-            input('We are using a downloaded file from google for custom bounds for ' + neighborhood_custom_name +  'press enter to confirm')
+            input('We are using a downloaded file from google for custom bounds for ' + neighborhood_custom_name +  ' --- press enter to confirm!')
             return(neighborhood_shape) 
 
 #####################################################User FIPS input proccessing Functions####################################
