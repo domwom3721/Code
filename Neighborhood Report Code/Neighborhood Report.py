@@ -4417,7 +4417,7 @@ def OutlookSection(document):
     
 def WriteReport():
     print('Writing Report')
-    #Create Document
+    Create Document
     document = Document()
     SetPageMargins(           document  = document, margin_size=1)
     SetDocumentStyle(         document = document)
