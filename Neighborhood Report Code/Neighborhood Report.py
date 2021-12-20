@@ -42,7 +42,6 @@ from docx.oxml.ns import qn
 from docx.oxml.table import CT_Row, CT_Tc
 from docx.shared import Inches, Pt, RGBColor
 from fredapi import Fred
-# from osgeo import gdal, ogr #package for custom boundaries
 from PIL import Image, ImageOps
 from plotly.subplots import make_subplots
 from requests.adapters import HTTPAdapter
@@ -493,7 +492,7 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
         neighborhood_tracts_data = []
 
         #Fetch census data for all relevant census tracts within the neighborhood
-        raw_census_data = c_area.sf1.geo_tract(fields_list, neighborhood_shape)
+        raw_census_data = operator.geo_tract(fields_list, neighborhood_shape)
         
         for tract_geojson, tract_data, tract_proportion in raw_census_data:
             neighborhood_tracts_data.append((tract_data))
@@ -564,7 +563,7 @@ def GetAgeData(geographic_level,hood_or_comparison_area):
     #Return a list with the fraction of the population in different age groups 
 
     #Define 2 lists of variables, 1 for male age groups and another for female
-    male_fields_list   = ["B01001_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(3,26)]  #5 Year ACS age variables for men range:  B01001_003E - B01001_025E
+    male_fields_list   =  ["B01001_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(3,26)]  #5 Year ACS age variables for men range:  B01001_003E - B01001_025E
     female_fields_list =  ["B01001_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(27,50)] #5 Year ACS age variables for women range:  B01001_027E - B01001_049E
 
    
@@ -678,8 +677,6 @@ def GetAgeData(geographic_level,hood_or_comparison_area):
         male_age_data   = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_male_tracts_data, fields_list   = male_fields_list )
         female_age_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_female_tracts_data, fields_list = female_fields_list )
 
-
-
     #Create an empty list and place the age values from the dictionary inside of it
     male_age_breakdown = []
     for field in male_fields_list:
@@ -690,7 +687,6 @@ def GetAgeData(geographic_level,hood_or_comparison_area):
     female_age_breakdown = []
     for field in female_fields_list:
         female_age_breakdown.append(female_age_data[field])
-    
     
 
     total_age_breakdown = []
