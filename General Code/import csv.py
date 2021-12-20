@@ -16,5 +16,6 @@ open(daily_salesforce_jobs,'rb')
 df_salesforce = pd.read_csv(daily_salesforce_jobs)
 print(df_salesforce)
 
-df_salesforce["latlong"] = df_salesforce["Property Latitude"] + df_salesforce["Property Longitude"]
-print(df_salesforce)
+#df_salesforce["latlong"] = df_salesforce['Property Latitude', 'Property Longitude'].agg(','.join)
+#df_salesforce["lat_long"] = list(zip(df_salesforce["property_latitude"], df_salesforce["property_longitude"]))
+#print(df_salesforce)
