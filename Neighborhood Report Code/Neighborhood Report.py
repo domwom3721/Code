@@ -4345,11 +4345,6 @@ def OutlookSection(document):
 
     AddDocumentParagraph(document = document,language_variable =  conclusion_langauge)
 
-    conclusion_paragraph                               = document.add_paragraph(conclusion_langauge)
-    conclusion_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
-    conclusion_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
-    conclusion_style                                   = conclusion_paragraph.style
-    conclusion_style.font.name                         = primary_font
     
 def WriteReport():
     print('Writing Report')
