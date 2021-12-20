@@ -3407,7 +3407,6 @@ def HousingIntroLanguage():
     
 	return([housing_intro_language])
 
-
 def HousingTypeTenureLanguage():
     print('Creating housing type and tenure Langauge')
     number_units_categories = ['Single Family Homes','Townhomes','Duplexes','3-4 Units','5-9 Units','10-19 Units','20-49 Units','50 >= Units']
@@ -3449,7 +3448,7 @@ def HousingValueLanguage():
     print('Creating Household by value Langauge')
 
     housing_value_categories = ['$10,000 <','$10,000-14,999','$15,000-19,999','$20,000-24,999','$25,000-29,999','$30,000-34,000','$35,000-39,999','$40,000-49,000','$50,000-59,9999','$60,000-69,999','$70,000-79,999','$80,000-89,999','$90,000-99,999','$100,000-124,999','$125,000-149,999','$150,000-174,999','$175,000-199,999','$200,000-249,999','$250,000-299,999','$300,000-399,999','$400,000-499,999','$500,000-749,999','$750,000-999,999','$1,000,000-1,499,999','$1,500,000-1,999,999','$2,000,000 >=']
-
+    assert len(neighborhood_housing_value_data) == len(housing_value_categories) == len(comparison_housing_value_data)
     #Estimate a median household income from a category freqeuncy distribution
     hood_median_value_range     = FindMedianCategory(frequency_list = neighborhood_housing_value_data, category_list = housing_value_categories)
     hood_median_value_range     = hood_median_value_range.replace('$','')
@@ -3974,6 +3973,7 @@ def PageBreak(document):
     run.add_break(WD_BREAK.PAGE)
 
 def AddDocumentParagraph(document,language_variable):
+    assert type(language_variable) == list
     for paragraph in language_variable:
         if paragraph == '':
             continue
@@ -3982,8 +3982,8 @@ def AddDocumentParagraph(document,language_variable):
         par.paragraph_format.space_after                  = Pt(primary_space_after_paragraph)
         summary_format                                    = document.styles['Normal'].paragraph_format
         summary_format.line_spacing_rule                  = WD_LINE_SPACING.SINGLE
-        par_style                                         = par.style
-        par.font.name                                     = primary_font
+        # par_style                                         = par.style
+        # par.font.name                                     = primary_font
 
 def AddTable(document,data_for_table): #Function we use to insert our overview table into the report document
     #list of list where each list is a row for our table
