@@ -4164,7 +4164,7 @@ def CommunityAssetsSection(document):
     assert len(graphics_list) == len(community_table_language)
 
     #Create an empty table
-    tab                      = document.add_table(rows=1, cols=2)
+    tab                      = document.add_table(rows=0, cols=2)
 
     #Insert the graphics by adding a row for each one
     for pic in graphics_list:
