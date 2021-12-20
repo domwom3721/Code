@@ -3442,7 +3442,6 @@ def HousingTypeTenureLanguage():
            "{:,.1f}%".format(comparsion_owner_occupied_fraction)                    +
            '.'
            )
-        #    '. This chart shows the ownership percentage in ' + neighborhood + ' compared to _______. ')
 
     return([housing_type_tenure_langugage])
 
@@ -3753,8 +3752,8 @@ def CreateLanguage():
     except Exception as e:
         print(e,'unable to get community assets langauge')
         community_assets_language = []
-    housing_type_tenure_language  = HousingTypeTenureLanguage()
-    #structure_size_breakdown_language  = HousingSizeLanguage()
+    housing_type_tenure_language       = HousingTypeTenureLanguage()
+    # structure_size_breakdown_language  = HousingSizeLanguage()
     
     housing_value_language             = HousingValueLanguage()
     year_built_language                = HousingYearBuiltLanguage()
@@ -4156,49 +4155,45 @@ def CommunityAssetsSection(document):
     AddTableTitle(document = document, title = 'Community Assets')
 
     #Add Community Assets Table
-    graphics_list            = ['bank.png','food.png','medical.png','park.png','retail.png','school.png','food.png'] #list of graphics for each row (col 1)
-    community_table_language = ['ROW 1', 'ROW 2', 'ROW 3', 'ROW 4', 'ROW 5', 'ROW 6', 'ROW 7']                       #list of text for each row (col 2)
-    assert len(graphics_list) == len(community_table_language)
-
-    #Create an empty table
-    tab                      = document.add_table(rows=0, cols=2)
-
-    #Insert the graphics by adding a row for each one
-    for pic in graphics_list:
+    #Insert the transit graphics(car, bus,plane, train)
+    tab = document.add_table(rows=0, cols=2)
+    pic_list  = ['bank.png','food.png','medical.png','park.png','retail.png','school.png','food.png'] #list of graphics for each row (col 1)
+    lang_list = ['ROW 1', 'ROW 2', 'ROW 3', 'ROW 4', 'ROW 5', 'ROW 6', 'ROW 7']                       #list of text for each row (col 2)
+    for pic,lang in zip(pic_list,lang_list):
         row_cells = tab.add_row().cells
-        paragraph = row_cells[0].paragraphs[0]
-        run       = paragraph.add_run()
-        if os.path.exists(os.path.join(graphics_location,pic)):
-            run.add_picture(os.path.join(graphics_location,pic))
-        else:
-            run.add_picture(os.path.join(graphics_location,'food.png'))
+        
+        left_paragraph = row_cells[0].paragraphs[0]
+        run            = left_paragraph.add_run()
+        if pic == 'car.png':
+            run.add_text(' ')
+        run.add_picture(os.path.join(graphics_location,pic))
 
+        right_paragraph = row_cells[1].paragraphs[0]
+        run             = right_paragraph.add_run()
+        run.add_text(str(lang))
 
-    
-
-    #Loop through the rows in the table write in the text
-    for current_row ,row in enumerate(tab.rows): 
-        #loop through all cells in the current row
+    #We have now defined our table object,loop through all rows then all cells in each current row
+    for row in tab.rows:
         for current_column,cell in enumerate(row.cells):
-            if current_column == 1 and current_row >= 0:
-                cell.text = str(community_table_language[current_row-1])
-
+            #Set Width for cell
             if current_column == 0:
                 cell.width = Inches(.2)
-            else:
+            elif current_column == 1:
                 cell.width = Inches(6)
 
+
+            
 def HousingSection(document):
     print('Writing Neighborhood Section')
     AddHeading(document = document, title = 'Housing',                  heading_level = 1,heading_number='Heading 3',font_size=11)
     
-    #Add structure size language
-    for paragraph in structure_size_breakdown_language:
-        if paragraph == '':
-            continue
-        structure_size_paragraph                               = document.add_paragraph(paragraph)
-        structure_size_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
-        structure_size_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+    # #Add structure size language
+    # for paragraph in housing_type_tenure_language: 
+    #     if paragraph == '':
+    #         continue
+    #     structure_size_paragraph                               = document.add_paragraph(paragraph)
+    #     structure_size_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
+    #     structure_size_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
 
     #Insert household units by units in_structure graph
     if os.path.exists(os.path.join(hood_folder,'household_units_in_structure_graph.png')):
@@ -4383,7 +4378,9 @@ def TransportationSection(document):
 
     #Insert the transit graphics(car, bus,plane, train)
     tab = document.add_table(rows=0, cols=2)
-    for pic,lang in zip(['car.png','train.png','bus.png','plane.png','walk.png'],[car_language, train_language, bus_language, plane_language,walk_score_data[0]]):
+    pic_list  = ['car.png','train.png','bus.png','plane.png','walk.png']
+    lang_list = [car_language, train_language, bus_language, plane_language,walk_score_data[0]]
+    for pic,lang in zip(pic_list,lang_list):
         row_cells = tab.add_row().cells
         
         left_paragraph = row_cells[0].paragraphs[0]
