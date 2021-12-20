@@ -126,9 +126,12 @@ def GetLatandLon():
 def GetNeighborhoodShape():
     if neighborhood_level == 'custom':
         try:
+            from osgeo import gdal
             #Method 1: Pull geojson from file with city name
             with open(os.path.join(data_location,'Neighborhood Shapes',comparison_area + '.geojson')) as infile: #Open a geojson file with the city as the name the name of the file with the neighborhood boundries for that city
                 my_shape_geojson = json.load(infile)
+            
+            print('Successfully opened geojson file for ' + comparison_area)
                 
             #Iterate through the features in the file (each feature is a negihborhood) and find the boundry of interest
             for i in range(len(my_shape_geojson['features'])):
@@ -136,12 +139,13 @@ def GetNeighborhoodShape():
                 if feature_hood_name == neighborhood:
                     neighborhood_shape = my_shape_geojson['features'][i]['geometry']
 
-            print('Succfully pulled hood shape from stored geojson file')
+            print('Successfully pulled hood shape from stored geojson file')
             return(neighborhood_shape) 
                 
         
         except Exception as e:
-            print(e,'problem getting shape from city geojson file')
+            print(e,'problem getting shape from ' + comparison_area + ' geojson file')
+            print('Looking for exported kml file from my google maps')
             #Method 2: Get bounds from my google maps custom layer export
             
             #Define file locations
@@ -165,7 +169,7 @@ def GetNeighborhoodShape():
                 my_shape_geojson = json.load(infile)
             
             neighborhood_shape       = my_shape_geojson['features'][0]['geometry']
-            neighborhood_custom_name = my_shape_geojson['features'][0]['name']
+            neighborhood_custom_name = my_shape_geojson['features'][0]['properties']['Name']
             input('We are using a downloaded file from google for custom bounds for ' + neighborhood_custom_name +  'press enter to confirm')
             return(neighborhood_shape) 
 
