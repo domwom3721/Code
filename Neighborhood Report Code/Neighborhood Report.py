@@ -3411,7 +3411,7 @@ def HousingTypeTenureLanguage():
     print('Creating housing type and tenure Langauge')
     number_units_categories = ['Single Family Homes','Townhomes','Duplexes','3-4 Units','5-9 Units','10-19 Units','20-49 Units','50 >= Units']
     most_common_category = number_units_categories[neighborhood_number_units_data.index(max(neighborhood_number_units_data))] #get the most common number units category
-    second_most_common_category = number_units_categories[neighborhood_number_units_data.index(max-1( #get 2nd most common house type
+    #second_most_common_category = number_units_categories[neighborhood_number_units_data.index(max-1( #get 2nd most common house type
     hood_owner_occupied_fraction        =  neighborhood_tenure_distribution[1] 
     comparsion_owner_occupied_fraction  =  comparison_tenure_distribution[1]
 
@@ -3752,8 +3752,8 @@ def CreateLanguage():
     except Exception as e:
         print(e,'unable to get community assets langauge')
         community_assets_language = []
-    housing_tenure_breakdown_language  = HousingTenureLanguage()
-    structure_size_breakdown_language  = HousingSizeLanguage()
+    housing_tenure_breakdown_language  = HousingTypeTenureLanguage()
+    #structure_size_breakdown_language  = HousingSizeLanguage()
     
     housing_value_language             = HousingValueLanguage()
     year_built_language                = HousingYearBuiltLanguage()
@@ -4382,7 +4382,6 @@ def TransportationSection(document):
 
     #Insert the transit graphics(car, bus,plane, train)
     tab = document.add_table(rows=0, cols=2)
-    row_num = 0
     for pic,lang in zip(['car.png','train.png','bus.png','plane.png','walk.png'],[car_language, train_language, bus_language, plane_language,walk_score_data[0]]):
         row_cells = tab.add_row().cells
         paragraph = row_cells[0].paragraphs[0]
@@ -4405,22 +4404,7 @@ def TransportationSection(document):
 
         row_num += 1
 
-    # transit_table_language = 
 
-    #Loop through the rows in the table
-    # for current_row ,row in enumerate(tab.rows): 
-    #     #loop through all cells in the current row
-    #     for current_column,cell in enumerate(row.cells):
-    #         if current_column == 1 and current_row >= 0:
-    #             cell.text = str(transit_table_language[current_row-1])
-
-    #         if current_column == 0:
-    #             cell.width = Inches(.2)
-    #         else:
-    #             cell.width = Inches(6)
-
-
-    # Citation(document,'https://www.walkscore.com/')
 
 def OutlookSection(document):
     print('Writing Outlook Section')
