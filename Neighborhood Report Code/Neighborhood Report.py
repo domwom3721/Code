@@ -3428,7 +3428,7 @@ def HousingTypeTenureLanguage():
         hood_owner_ouccupied_higher_lower   =  '[lower than/higher than/equal to]'
     
     housing_type_tenure_langugage = ('Data from the the most recent American Community Survey indicates a precense of single family homes, some smaller multifamily properties, along with larger garden style properties, and even some buildings with 50+ units. ' +
-        most_common_category + ' are the most common form of housing in ' + neighborhood + ', followed by ' + second_most_common_category + '. According to the most recent American Community Survey, ' +
+        most_common_category + ' are the most common form of housing in ' + neighborhood + ', followed by ' + '#second_most_common_category' + '. According to the most recent American Community Survey, ' +
             "{:,.1f}%".format(hood_owner_occupied_fraction)                        +   
            ' of the housing units in '                                             + 
            neighborhood                                                            + 
@@ -3736,7 +3736,7 @@ def CreateLanguage():
     global yelp_language
     global airport_language
     global apartmentsdotcomlanguage
-    global housing_tenure_breakdown_language, structure_size_breakdown_language
+    global housing_type_tenure_language
     global employment_language
     global population_age_language
     global income_language
@@ -3752,7 +3752,7 @@ def CreateLanguage():
     except Exception as e:
         print(e,'unable to get community assets langauge')
         community_assets_language = []
-    housing_tenure_breakdown_language  = HousingTypeTenureLanguage()
+    housing_type_tenure_language  = HousingTypeTenureLanguage()
     #structure_size_breakdown_language  = HousingSizeLanguage()
     
     housing_value_language             = HousingValueLanguage()
@@ -4207,7 +4207,7 @@ def HousingSection(document):
         Citation(document,'U.S. Census Bureau')
 
     #Add tenure language
-    for paragraph in housing_type_tenure_breakdown_language:
+    for paragraph in housing_type_tenure_language:
         if paragraph == '':
             continue
         housing_type_tenure_paragraph                               = document.add_paragraph(paragraph)
