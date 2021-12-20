@@ -2,18 +2,20 @@
 #Started 06/30/2021
 #Summary: This script creates reports on neighborhoods/cities for Bowery
 import json
-import math
+# import math
+# import re
+# from bls_datasets import oes, qcew
+# from blsconnect import RequestBLS, bls_search
+# from ctypes import addressof
+# import census_area
+# import docx
+# from pprint import pprint
 import msvcrt
 import os
-import re
 import shutil
 import sys
 import time
-from ctypes import addressof
 from datetime import date, datetime
-from itertools import count
-from pprint import pprint
-from random import randrange
 from tkinter.constants import E
 
 import googlemaps
@@ -26,13 +28,9 @@ import requests
 import shapefile
 import us
 import wikipedia
-from bls_datasets import oes, qcew
-from blsconnect import RequestBLS, bls_search
 from bs4 import BeautifulSoup
 from census import Census
 from census_area import Census as CensusArea
-import census_area
-import docx
 from docx import Document
 from docx.enum.table import WD_ALIGN_VERTICAL, WD_TABLE_ALIGNMENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING, WD_BREAK
@@ -43,7 +41,7 @@ from docx.shared import Inches, Pt, RGBColor
 from fredapi import Fred
 from genericpath import exists
 from numpy import true_divide
-# from osgeo import gdal, ogr
+# from osgeo import gdal, ogr #package for custom boundaries
 from PIL import Image, ImageOps
 from plotly.subplots import make_subplots
 from requests.adapters import HTTPAdapter
