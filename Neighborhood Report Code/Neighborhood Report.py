@@ -3903,9 +3903,11 @@ def GetMap():
 
         im2.save(os.path.join(hood_folder_map,'map2.png'))
         im2.close()
-        time.sleep(1)
 
-    
+        #Wait till we have saved both png images before proceeding
+        while (os.path.exists(os.path.join(hood_folder_map,'map.png')) == False) or (os.path.exists(os.path.join(hood_folder_map,'map2.png')) == False):
+            pass
+
         browser.quit()
     except Exception as e:
          print(e)
@@ -3924,19 +3926,20 @@ def add_border(input_image, output_image, border):
     bimg.save(output_image)
 
 def OverlayMapImages():
-    
     #Add image of map
     map_path  =  os.path.join(hood_folder_map,'map.png')
     map2_path = os.path.join(hood_folder_map,'map2.png')
     map3_path = os.path.join(hood_folder_map,'map3.png')
+    
+    #Make sure we have map 1 and map 2 in order to create map 3 (the overlayed map image)
+    assert (os.path.exists(map_path)) and (os.path.exists(map2_path)):
 
     #Open zommed out map
     img1 = Image.open(map2_path)
     
-    #Open zommed in map
-
     add_border(map_path, output_image = map_path, border=1)
     time.sleep(.2)
+    #Open zommed in map
     img2 = Image.open(map_path)
 
     #Reduce size of zommed in image by a constant factor
@@ -3948,7 +3951,6 @@ def OverlayMapImages():
     # simulating an raster overlay
     img1.paste(img2, (img1.size[1] - 25,900))
     
-    # img1.show()
     img1.save(map3_path)
     
 def AddMap(document):
@@ -3956,9 +3958,8 @@ def AddMap(document):
     map2_path = os.path.join(hood_folder_map,'map2.png')
     map3_path = os.path.join(hood_folder_map,'map3.png')
     
-    if os.path.exists(map_path) == False or os.path.exists(map2_path) == False: #If we don't have a zommed in map image or a zoomed out map, create one
+    if (os.path.exists(map_path) == False) or (os.path.exists(map2_path) == False): #If we don't have a zommed in map image or a zoomed out map, create one
         GetMap()    
-
     if os.path.exists(map3_path) == False: #If we don't have an image with a zommed in map overlayed on zoomed out map, create one
         OverlayMapImages()
    
