@@ -4184,7 +4184,7 @@ def CommunityAssetsSection(document):
     for current_row ,row in enumerate(tab.rows): 
         #loop through all cells in the current row
         for current_column,cell in enumerate(row.cells):
-            if current_column == 1 and current_row > 0:
+            if current_column == 1 and current_row >= 0:
                 cell.text = str(community_table_language[current_row-1])
 
             if current_column == 0:
@@ -4387,28 +4387,42 @@ def TransportationSection(document):
 
     #Insert the transit graphics(car, bus,plane, train)
     tab = document.add_table(rows=0, cols=2)
-    for pic in ['car.png','train.png','bus.png','plane.png','walk.png']:
+    row_num = 0
+    for pic,lang in zip(['car.png','train.png','bus.png','plane.png','walk.png'],[car_language, train_language, bus_language, plane_language,walk_score_data[0]]):
         row_cells = tab.add_row().cells
         paragraph = row_cells[0].paragraphs[0]
-        run = paragraph.add_run()
+        run       = paragraph.add_run()
         if pic == 'car.png':
             run.add_text(' ')
         run.add_picture(os.path.join(graphics_location,pic))
-    
 
-    transit_table_language = [car_language, train_language, bus_language, plane_language,walk_score_data[0]]
-
-    #Loop through the rows in the table
-    for current_row ,row in enumerate(tab.rows): 
         #loop through all cells in the current row
-        for current_column,cell in enumerate(row.cells):
-            if current_column == 1 and current_row > 0:
-                cell.text = str(transit_table_language[current_row-1])
-
+        for current_column,cell in enumerate(tab.row[row_num]):
+            #Set text for cell
+            if current_column == 1:
+                cell.text = str(lang)
+            
+            #Set Width for cell
             if current_column == 0:
                 cell.width = Inches(.2)
             else:
                 cell.width = Inches(6)
+
+        row_num += 1
+
+    # transit_table_language = 
+
+    #Loop through the rows in the table
+    # for current_row ,row in enumerate(tab.rows): 
+    #     #loop through all cells in the current row
+    #     for current_column,cell in enumerate(row.cells):
+    #         if current_column == 1 and current_row >= 0:
+    #             cell.text = str(transit_table_language[current_row-1])
+
+    #         if current_column == 0:
+    #             cell.width = Inches(.2)
+    #         else:
+    #             cell.width = Inches(6)
 
 
     # Citation(document,'https://www.walkscore.com/')
