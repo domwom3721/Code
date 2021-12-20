@@ -12,5 +12,5 @@ daily_salesforce_jobs          =  os.path.join(salesforce_report,'report.csv')
 
 # Import raw census places data as pandas data frames
 open(daily_salesforce_jobs,'rb')
-#df_places = pd.read_csv(raw_Census_places_file)
-#print(df_places)
+df_salesforce = pd.read_csv(daily_salesforce_jobs)
+print(df_salesforce)
