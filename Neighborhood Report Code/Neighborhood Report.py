@@ -4877,7 +4877,6 @@ def Main():
         latitude    = coordinates[0] 
         longitude   = coordinates[1]
         neighborhood_shape = GetNeighborhoodShape()
-        # todays_date  = date.today()
         current_year = str(date.today().year)
         SetGraphFormatVariables()
         CreateDirectory()
