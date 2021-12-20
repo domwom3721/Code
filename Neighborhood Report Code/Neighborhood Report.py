@@ -1198,8 +1198,8 @@ def GetTravelTimeData(geographic_level,hood_or_comparison_area):
 def GetTravelMethodData(geographic_level,hood_or_comparison_area):
     print('Getting travel method to work data for: ' + hood_or_comparison_area)
     
-    fields_list = ['B08006_001E','B08006_003E','B08006_004E','B08006_015E','B08006_008E','B08006_017E','B08006_016E','B08006_014E']
-
+    fields_list = ['B08006_003E','B08006_004E','B08006_008E','B08006_015E','B08006_017E','B08006_014E','B08006_016E']
+    
     if geographic_level == 'place':
         try:
             if hood_or_comparison_area == 'hood':
@@ -3132,7 +3132,7 @@ def CreateTravelModeHistogram():
     fig = make_subplots(specs=[[{"secondary_y": False}]])
 
     travel_method_categories = ['Drove Alone','Car Pooled','Public Transportation','Walked','Worked from Home','Biked','Other']
-    
+    assert len(neighborhood_method_to_work_distribution) == len(travel_method_categories)
     fig.add_trace(
     go.Bar(y=neighborhood_method_to_work_distribution,
            x=travel_method_categories,
@@ -3153,7 +3153,7 @@ def CreateTravelModeHistogram():
                     
                     )
     
-    # #Set Legend Layout
+    #Set Legend Layout
     fig.update_layout(
     legend=dict(
         orientation="h",
@@ -4390,8 +4390,8 @@ def TransportationSection(document):
         row_cells = tab.add_row().cells
         paragraph = row_cells[0].paragraphs[0]
         run = paragraph.add_run()
-        # if pic == 'car.png':
-        #     run.add_text(' ')
+        if pic == 'car.png':
+            run.add_text(' ')
         run.add_picture(os.path.join(graphics_location,pic))
     
 
