@@ -2,6 +2,7 @@ import csv
 import os
 import pandas as pd
 from pandas import read_csv
+from pandas.core.frame import DataFrame
 
 #Define file location pre paths
 project_location               =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Projects','Research Report Automation Project')  
@@ -13,4 +14,7 @@ daily_salesforce_jobs          =  os.path.join(salesforce_report,'report.csv')
 # Import raw census places data as pandas data frames
 open(daily_salesforce_jobs,'rb')
 df_salesforce = pd.read_csv(daily_salesforce_jobs)
+print(df_salesforce)
+
+df_salesforce["latlong"] = df_salesforce["Property Latitude"] + df_salesforce["Property Longitude"]
 print(df_salesforce)

@@ -4154,8 +4154,8 @@ def CommunityAssetsSection(document):
     #Add Community Assets Table
     #Insert the transit graphics(car, bus,plane, train)
     tab = document.add_table(rows=0, cols=2)
-    pic_list  = ['bank.png','food.png','medical.png','park.png','retail.png','school.png','food.png'] #list of graphics for each row (col 1)
-    lang_list = ['ROW 1', 'ROW 2', 'ROW 3', 'ROW 4', 'ROW 5', 'ROW 6', 'ROW 7']                       #list of text for each row (col 2)
+    pic_list  = ['bank.png','food.png','medical.png','park.png','retail.png','school.png'] #list of graphics for each row (col 1)
+    lang_list = ['ROW 1', 'ROW 2', 'ROW 3', 'ROW 4', 'ROW 5', 'ROW 6']                       #list of text for each row (col 2)
     for pic,lang in zip(pic_list,lang_list):
         row_cells = tab.add_row().cells
         
@@ -4345,7 +4345,6 @@ def OutlookSection(document):
     AddHeading(document = document, title = 'Conclusion',            heading_level = 1,heading_number='Heading 3',font_size=11)
 
     AddDocumentParagraph(document = document,language_variable =  conclusion_langauge)
-
     
 def WriteReport():
     print('Writing Report')
