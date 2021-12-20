@@ -4387,45 +4387,42 @@ def TransportationSection(document):
 
     #Insert the transit graphics(car, bus,plane, train)
     tab = document.add_table(rows=0, cols=2)
-    row_num = 0
-    for pic,lang in zip(['car.png','train.png','bus.png','plane.png','walk.png'],[car_language, train_language, bus_language, plane_language,walk_score_data[0]]):
-        row_cells = tab.add_row().cells
-        paragraph = row_cells[0].paragraphs[0]
-        run       = paragraph.add_run()
+    # row_num  = 0
+    #Define lists of graphics images and corresponding language
+    png_list = ['car.png','train.png','bus.png','plane.png','walk.png'] 
+    lang_list = [car_language, train_language, bus_language, plane_language,walk_score_data[0]]
+    for pic,lang in zip(png_list,lang_list):
+        #Add new row
+        row_cells      = tab.add_row().cells
+        
+        #Add graphic to left column
+        left_paragraph = row_cells[0].paragraphs[0]
+        run            = left_paragraph.add_run()
         if pic == 'car.png':
             run.add_text(' ')
         run.add_picture(os.path.join(graphics_location,pic))
 
-        #loop through all cells in the current row
-        for current_column,cell in enumerate(tab.row[row_num]):
-            #Set text for cell
-            if current_column == 1:
-                cell.text = str(lang)
-            
+        #Add language to right column
+        right_paragraph = row_cells[1].paragraphs[0]
+        run             = right_paragraph.add_run()        
+        run.add_text(str(lang))
+        # row_num        += 1
+
+      
+    #We have now created our table object, loop through the rows changing the cell width
+    for row in tab.rows:
+         for current_column,cell in enumerate(row.cells):
             #Set Width for cell
             if current_column == 0:
                 cell.width = Inches(.2)
-            else:
+            elif current_column == 1:
                 cell.width = Inches(6)
+    
+    
 
-        row_num += 1
-
-    # transit_table_language = 
-
-    #Loop through the rows in the table
-    # for current_row ,row in enumerate(tab.rows): 
-    #     #loop through all cells in the current row
-    #     for current_column,cell in enumerate(row.cells):
-    #         if current_column == 1 and current_row >= 0:
-    #             cell.text = str(transit_table_language[current_row-1])
-
-    #         if current_column == 0:
-    #             cell.width = Inches(.2)
-    #         else:
-    #             cell.width = Inches(6)
+        
 
 
-    # Citation(document,'https://www.walkscore.com/')
 
 def OutlookSection(document):
     print('Writing Outlook Section')
