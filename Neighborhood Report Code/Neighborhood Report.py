@@ -124,49 +124,50 @@ def GetLatandLon():
     return([latitude,longitude]) 
 
 def GetNeighborhoodShape():
-    try:
-        #Method 1: Pull geojson from file with city name
-        with open(os.path.join(data_location,'Neighborhood Shapes',comparison_area + '.geojson')) as infile: #Open a geojson file with the city as the name the name of the file with the neighborhood boundries for that city
-            my_shape_geojson = json.load(infile)
+    if neighborhood_level == 'custom':
+        try:
+            #Method 1: Pull geojson from file with city name
+            with open(os.path.join(data_location,'Neighborhood Shapes',comparison_area + '.geojson')) as infile: #Open a geojson file with the city as the name the name of the file with the neighborhood boundries for that city
+                my_shape_geojson = json.load(infile)
+                
+            #Iterate through the features in the file (each feature is a negihborhood) and find the boundry of interest
+            for i in range(len(my_shape_geojson['features'])):
+                feature_hood_name = my_shape_geojson['features'][i]['properties']['name']
+                if feature_hood_name == neighborhood:
+                    neighborhood_shape = my_shape_geojson['features'][i]['geometry']
+
+            print('Succfully pulled hood shape from stored geojson file')
+            return(neighborhood_shape) 
+                
+        
+        except Exception as e:
+            print(e,'problem getting shape from city geojson file')
+            #Method 2: Get bounds from my google maps custom layer export
             
-        #Iterate through the features in the file (each feature is a negihborhood) and find the boundry of interest
-        for i in range(len(my_shape_geojson['features'])):
-            feature_hood_name = my_shape_geojson['features'][i]['properties']['name']
-            if feature_hood_name == neighborhood:
-                neighborhood_shape = my_shape_geojson['features'][i]['geometry']
+            #Define file locations
+            kml_file_download_location         = os.path.join(os.environ['USERPROFILE'],'Downloads', 'Untitled layer.kml')
+            kml_file_location                  = os.path.join(data_location,'Neighborhood Shapes',   'Untitled layer.kml')
+            new_geojson_file_location          = os.path.join(data_location,'Neighborhood Shapes',   'custom_neighborhood_shape.geojson')
+            
+            #Step 1: Move the exported kml file from downloads to data folder 
+            if os.path.exists(kml_file_download_location) == True:
+                print('Moving KML file from downloads folder into data folder')
+                shutil.move(kml_file_download_location,kml_file_location)
 
-        print('Succfully pulled hood shape from stored geojson file')
-        return(neighborhood_shape) 
-             
-    
-    except Exception as e:
-        print(e,'problem getting shape from city geojson file')
-        #Method 2: Get bounds from my google maps custom layer export
-        
-        #Define file locations
-        kml_file_download_location         = os.path.join(os.environ['USERPROFILE'],'Downloads', 'Untitled layer.kml')
-        kml_file_location                  = os.path.join(data_location,'Neighborhood Shapes',   'Untitled layer.kml')
-        new_geojson_file_location          = os.path.join(data_location,'Neighborhood Shapes',   'custom_neighborhood_shape.geojson')
-        
-        #Step 1: Move the exported kml file from downloads to data folder 
-        if os.path.exists(kml_file_download_location) == True:
-            print('Moving KML file from downloads folder into data folder')
-            shutil.move(kml_file_download_location,kml_file_location)
+            #Step 2: Convert the exported google maps kmz file to geojson
+            if os.path.exists(new_geojson_file_location) == False:
+                print('Converting custom kml file into a geojson file')
+                srcDS                              = gdal.OpenEx(kml_file_location)
+                ds                                 = gdal.VectorTranslate(new_geojson_file_location, srcDS, format='GeoJSON')
 
-        #Step 2: Convert the exported google maps kmz file to geojson
-        if os.path.exists(new_geojson_file_location) == False:
-            print('Converting custom kml file into a geojson file')
-            srcDS                              = gdal.OpenEx(kml_file_location)
-            ds                                 = gdal.VectorTranslate(new_geojson_file_location, srcDS, format='GeoJSON')
-
-        with open(new_geojson_file_location) as infile: 
-            print('Opened geojson file with custom boundraries')
-            my_shape_geojson = json.load(infile)
-        
-        neighborhood_shape       = my_shape_geojson['features'][0]['geometry']
-        neighborhood_custom_name = my_shape_geojson['features'][0]['name']
-        input('We are using a downloaded file from google for custom bounds for ' + neighborhood_custom_name +  'press enter to confirm')
-        return(neighborhood_shape) 
+            with open(new_geojson_file_location) as infile: 
+                print('Opened geojson file with custom boundraries')
+                my_shape_geojson = json.load(infile)
+            
+            neighborhood_shape       = my_shape_geojson['features'][0]['geometry']
+            neighborhood_custom_name = my_shape_geojson['features'][0]['name']
+            input('We are using a downloaded file from google for custom bounds for ' + neighborhood_custom_name +  'press enter to confirm')
+            return(neighborhood_shape) 
 
 #####################################################User FIPS input proccessing Functions####################################
 
@@ -4865,7 +4866,6 @@ def Main():
     DeclareFormattingParameters()
     DecideIfWritingReport()
    
-
     if report_creation == 'y':
         GetUserInputs() #user selects if they want to run report and gives input for report subject
         print('Preparing report for: ' + neighborhood + ' compared to ' + comparison_area)
@@ -4876,12 +4876,9 @@ def Main():
         coordinates = GetLatandLon()
         latitude    = coordinates[0] 
         longitude   = coordinates[1]
-
-        if neighborhood_level == 'custom':
-            neighborhood_shape = GetNeighborhoodShape()
-
-        todays_date  = date.today()
-        current_year = str(todays_date.year)
+        neighborhood_shape = GetNeighborhoodShape()
+        # todays_date  = date.today()
+        current_year = str(date.today().year)
         SetGraphFormatVariables()
         CreateDirectory()
         GetWikipediaPage()
