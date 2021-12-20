@@ -4385,7 +4385,7 @@ def TransportationSection(document):
     AddTableTitle(document = document, title = 'Transportation Methods')
 
     #Insert the transit graphics(car, bus,plane, train)
-    tab = document.add_table(rows=1, cols=2)
+    tab = document.add_table(rows=0, cols=2)
     for pic in ['car.png','train.png','bus.png','plane.png','walk.png']:
         row_cells = tab.add_row().cells
         paragraph = row_cells[0].paragraphs[0]
