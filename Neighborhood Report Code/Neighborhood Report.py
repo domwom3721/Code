@@ -488,7 +488,7 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
             operator = c_area.acs5
         elif operator == c.sf1:
             operator = c_area.sf1
-            
+
         #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
         neighborhood_tracts_data = []
 
@@ -860,135 +860,9 @@ def GetNumberUnitsData(geographic_level,hood_or_comparison_area):
 #Occupations Data
 def GetTopOccupationsData(geographic_level,hood_or_comparison_area):
     print('Getting occupation data for: ',hood_or_comparison_area)
-
-    cateogries_dict = {'B24011_002E':'Management and Business','B24011_018E':'Service','B24011_026E':'Sales and Office','B24011_029E':'Natural Resources','B24011_036E':'Production'}
-
-    if geographic_level == 'place':
-        try:
-            if hood_or_comparison_area == 'hood':
-                place_fips = hood_place_fips
-                state_fips = hood_state_fips
-
-            elif hood_or_comparison_area == 'comparison area':
-                place_fips = comparison_place_fips
-                state_fips = comparison_state_fips
-
-            data = c.acs5.state_place(fields=list(cateogries_dict.keys()),state_fips=state_fips,place=place_fips)[0]
-            del data['state']
-            del data['place']
-        except Exception as e:
-            print(e, 'Problem getting top occupations data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-
-    elif  geographic_level == 'county':
-        try:
-            if hood_or_comparison_area == 'hood':
-                county_fips = hood_county_fips
-                state_fips  = hood_state_fips
-            elif hood_or_comparison_area == 'comparison area':
-                county_fips = comparison_county_fips
-                state_fips  = comparison_state_fips
-
-            data = c.acs5.state_county(fields=list(cateogries_dict.keys()),state_fips=state_fips,county_fips=county_fips)[0]
-            del data['state']
-            del data['county']
-        
-        except Exception as e:
-            print(e, 'Problem getting top occupations data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
+    top_occupations_data = GetCensusFrequencyDistribution(        geographic_level = geographic_level, hood_or_comparison_area = hood_or_comparison_area,fields_list =  ['B24011_002E','B24011_018E','B24011_026E','B24011_029E','B24011_036E'],operator=c.acs5)   
+    return(top_occupations_data)
     
-    elif geographic_level == 'county subdivision':
-        try:
-            if hood_or_comparison_area == 'hood':
-                county_fips = hood_county_fips
-                subdiv_fips = hood_suvdiv_fips
-                state_fips  = hood_state_fips
-
-
-            elif hood_or_comparison_area == 'comparison area':
-                county_fips = comparison_county_fips
-                subdiv_fips = comparison_suvdiv_fips
-                state_fips  = comparison_state_fips
-
-            
-            data = c.acs5.state_county_subdivision(fields=list(cateogries_dict.keys()),state_fips=state_fips,county_fips=county_fips, subdiv_fips = subdiv_fips)[0]
-            del data['state']
-            del data['county']
-            del data['county subdivision']
-        
-        except Exception as e:
-            print(e, 'Problem getting top occupations data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-
-    elif geographic_level == 'zip':
-        try:
-            if hood_or_comparison_area == 'hood':
-                zcta = hood_zip
-
-            elif hood_or_comparison_area == 'comparison area':
-                zcta = comparison_zip
-        
-
-            data       = c.acs5.zipcode(fields = list(cateogries_dict.keys()), zcta = '*')
-            data       = FindZipCodeDictionary(zip_code_data_dictionary_list =   data  , zcta = zcta, state_fips = state_fips )
-            
-            del data['state']
-            del data['zip code tabulation area']
-        
-        except Exception as e:
-            print(e, 'Problem getting top occupations data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-        
-    elif geographic_level == 'tract':
-        try:        
-            if hood_or_comparison_area == 'hood':
-                tract       = hood_tract 
-                county_fips = hood_county_fips
-
-            elif hood_or_comparison_area == 'comparison area':
-                tract       = comparison_tract
-                county_fips = comparison_county_fips
-
-            data = c.acs5.state_county_tract(fields=list(cateogries_dict.keys()),state_fips=state_fips,county_fips=county_fips, tract = tract)[0]
-        
-            del data['state']
-            del data['county']
-            del data['tract']
-        
-        except Exception as e:
-            print(e, 'Problem getting top occupations data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-
-    elif geographic_level == 'custom':
-        
-        #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
-        neighborhood_tracts_data = []
-
-        #Fetch census data for all relevant census tracts within the neighborhood
-        raw_census_data = c_area.acs5.geo_tract(list(cateogries_dict.keys()), neighborhood_shape)
-        
-        for tract_geojson, tract_data, tract_proportion in raw_census_data:
-            neighborhood_tracts_data.append((tract_data))
-
-        #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
-        data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = cateogries_dict.keys() )
-        print(data)
-
-
-
-    
-    data = dict((cateogries_dict[key], value) for (key, value) in data.items())
-    data = {k: v for k, v in sorted(data.items(), key=lambda item: item[1])}
-
-    total_workers = sum(list(data.values()))
-   
-
-    #Convert from raw ammount to percent of total
-    for key in data:
-        data[key] = (data.get(key)/total_workers) * 100
-        
-    return(data)
-
 def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     print('Getting Overview table data')
 
@@ -1585,8 +1459,6 @@ def GetData():
 
     print('Getting Data for ' + neighborhood)
 
-
-
     neighborhood_household_size_distribution          = GetHouseholdSizeData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Neighborhood households by size
     neighborhood_tenure_distribution                  = GetHousingTenureData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Tenure (owner occupied/renter)
     neighborhood_housing_value_data                   = GetHousingValues(         geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Owner Occupied housing units by value
@@ -1594,12 +1466,10 @@ def GetData():
     neighborhood_method_to_work_distribution          = GetTravelMethodData(      geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Mode to Work
     neighborhood_household_income_data                = GetHouseholdIncomeValues( geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Households by household income data
     neighborhood_time_to_work_distribution            = GetTravelTimeData(        geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Time to Work
-
     neighborhood_number_units_data                    = GetNumberUnitsData(       geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by units in building
     neighborhood_age_data                             = GetAgeData(               geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Population by age data
     neighborhood_top_occupations_data                 = GetTopOccupationsData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Top Employment Occupations
     
-
     print('Getting Data For ' + comparison_area)
     comparison_household_size_distribution       = GetHouseholdSizeData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
     comparison_tenure_distribution               = GetHousingTenureData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
@@ -1607,7 +1477,6 @@ def GetData():
     comparison_year_built_data                   = GetHouseYearBuiltData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
     comparison_household_income_data             = GetHouseholdIncomeValues(geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')   
     comparison_time_to_work_distribution         = GetTravelTimeData(       geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    
     
     comparison_age_data                          = GetAgeData(              geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
     comparison_number_units_data                 = GetNumberUnitsData(      geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
@@ -1618,8 +1487,6 @@ def GetData():
 
     #Overview Table Data
     overview_table_data = GetOverviewTable(hood_geographic_level = neighborhood_level ,comparison_geographic_level = comparison_level )
-    
-
     
 #####################################################Graph Related Functions####################################
 def SetGraphFormatVariables():
@@ -2204,9 +2071,9 @@ def CreateTopOccupationsHistogram():
     print('Creating Top Occupations Graph')
     fig = make_subplots(specs=[[{"secondary_y": False}]])
     
-    occupations_categories = list(neighborhood_top_occupations_data.keys())
-    neighborhood_top_occupations = list(neighborhood_top_occupations_data.values())
-
+    occupations_categories       =  ['Management and Business','Service','Sales and Office','Natural Resources','Production']
+    neighborhood_top_occupations = neighborhood_top_occupations_data
+    
     #Add Bars with neighborhood household size distribution
     fig.add_trace(
     go.Bar(y=neighborhood_top_occupations,
