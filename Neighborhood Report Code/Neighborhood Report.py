@@ -10,13 +10,15 @@ import json
 # import census_area
 # import docx
 # from pprint import pprint
+# from numpy import true_divide
+# from genericpath import exists
+# from us import states
 import msvcrt
 import os
 import shutil
 import sys
 import time
 from datetime import date, datetime
-from tkinter.constants import E
 
 import googlemaps
 import mpu
@@ -39,8 +41,6 @@ from docx.oxml.ns import qn
 from docx.oxml.table import CT_Row, CT_Tc
 from docx.shared import Inches, Pt, RGBColor
 from fredapi import Fred
-from genericpath import exists
-from numpy import true_divide
 # from osgeo import gdal, ogr #package for custom boundaries
 from PIL import Image, ImageOps
 from plotly.subplots import make_subplots
@@ -52,7 +52,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from shapely.geometry import LineString, MultiPoint, Point, shape
 from shapely.ops import nearest_points
-from us import states
 from walkscore import WalkScoreAPI
 from wikipedia.wikipedia import random
 from yelpapi import YelpAPI
