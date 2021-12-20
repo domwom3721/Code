@@ -4180,9 +4180,7 @@ def CommunityAssetsSection(document):
                 cell.width = Inches(.2)
             elif current_column == 1:
                 cell.width = Inches(6)
-
-
-            
+    
 def HousingSection(document):
     print('Writing Neighborhood Section')
     AddHeading(document = document, title = 'Housing',                  heading_level = 1,heading_number='Heading 3',font_size=11)
