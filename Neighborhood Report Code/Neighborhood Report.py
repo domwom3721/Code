@@ -3307,23 +3307,22 @@ def CommunityAssetsLanguage():
     print('Creating Community Assets Langauge')
     community_assets_language = (neighborhood + ' has a number of community assets. ')
     
-    location_iq_data                             = LocationIQ(              lat = latitude, lon = longitude, radius = 5000                                     )
-    # print(location_iq_data)
+    # location_iq_data                             = LocationIQ(              lat = latitude, lon = longitude, radius = 5000                                     )
     
-    for poi in location_iq_data:
-        # print(poi)
-        poi_name      = poi['name']
-        poi_type      = poi['type']
-        poi_city      = poi['address']['city']
-        poi_sentence  = (' ' + poi_name + ' is a ' + poi_type + '. ')
+    # for poi in location_iq_data:
+    #     # print(poi)
+    #     poi_name      = poi['name']
+    #     poi_type      = poi['type']
+    #     poi_city      = poi['address']['city']
+    #     poi_sentence  = (' ' + poi_name + ' is a ' + poi_type + '. ')
         
-        #For cities/towns, restirct points of interest to those inside the city limits
-        if neighborhood_level == 'place':
-            if neighborhood == poi_city:
-                community_assets_language = community_assets_language + poi_sentence
+    #     #For cities/towns, restirct points of interest to those inside the city limits
+    #     if neighborhood_level == 'place':
+    #         if neighborhood == poi_city:
+    #             community_assets_language = community_assets_language + poi_sentence
 
-        else:
-            community_assets_language = community_assets_language + poi_sentence
+    #     else:
+    #         community_assets_language = community_assets_language + poi_sentence
 
     return([community_assets_language])
 
@@ -3360,13 +3359,33 @@ def TrainLanguage():
 
 def OutlookLanguage():
     print('Creating Outlook Langauge')
-    return('Neighborhood analysis can best be summarized by referring to neighborhood life cycles. ' +
-          'Neighborhoods are perceived to go through four cycles, the first being growth, the second being stability, the third decline, and the fourth revitalization. ' +
-          'It is our observation that the subject’s neighborhood is exhibiting several stages of the economic life, with an overall predominance of stability and both limited decline and limited revitalization in some sectors. ' +
-          'The immediate area surrounding the subject, has had a historically low vacancy level and is located just to the south of the ------ submarket,' +
-          """ which has multiple office and retail projects completed within the past two years and more development in the subject’s immediate vicinity either under construction or preparing to break ground."""+
-          ' The proximity of the ________ and ________ will ensure the neighborhood will continue ' +
-          'to attract growth in the long-term.')
+    pop_growth_description = '[negative/modest/moderate/strong]'
+
+    outlook_language = (neighborhood + 
+                        ' is a '     + 
+                        hood_place_type + 
+                        ' in '          + 
+                        comparison_area + 
+                        ', '            + 
+                        comparison_state_full_name + 
+                        ' well-served by [interstate highways, public transportation, and recreational amenities]. ' +
+                        
+                        #Growth sentance
+                        'It has seen ' +
+                        pop_growth_description +
+                        ' population growth over the past decade, a trend that is expected to contiue in the near-term.'
+                        
+                         )
+    
+    return(outlook_language)
+
+    # return('Neighborhood analysis can best be summarized by referring to neighborhood life cycles. ' +
+    #       'Neighborhoods are perceived to go through four cycles, the first being growth, the second being stability, the third decline, and the fourth revitalization. ' +
+    #       'It is our observation that the subject’s neighborhood is exhibiting several stages of the economic life, with an overall predominance of stability and both limited decline and limited revitalization in some sectors. ' +
+    #       'The immediate area surrounding the subject, has had a historically low vacancy level and is located just to the south of the ------ submarket,' +
+    #       """ which has multiple office and retail projects completed within the past two years and more development in the subject’s immediate vicinity either under construction or preparing to break ground."""+
+    #       ' The proximity of the ________ and ________ will ensure the neighborhood will continue ' +
+    #       'to attract growth in the long-term.')
     
 def TransportationOverviewLanguage():
     print('Creating Transporation Overview Langauge')
@@ -4685,7 +4704,7 @@ def GetUserInputs():
     
 
 
-    global neighborhood, hood_tract, hood_zip, hood_place_fips, place_type, hood_suvdiv_fips, hood_county_fips
+    global neighborhood, hood_tract, hood_zip, hood_place_fips, hood_place_type, hood_suvdiv_fips, hood_county_fips
     global hood_state, hood_state_fips, hood_state_full_name
 
     #Get User input on neighborhood/subject area
@@ -4716,7 +4735,8 @@ def GetUserInputs():
         hood_state_full_name            = tract_info[3]
         hood_state                      = tract_info[4]
         hood_state_fips                 = tract_info[5]
-                             
+        hood_place_type                 = 'census tract'
+                    
     elif neighborhood_level == 'zip':      #When our neighborhood is a zip code eg: 11563
         zip_info                         = ProcessZipCode(zip_code=input('Enter the 5 digit zip code for hood'))
         hood_county_fips                 = zip_info[0]
@@ -4725,7 +4745,8 @@ def GetUserInputs():
         hood_state_full_name             = zip_info[3]
         hood_state                       = zip_info[4]
         hood_state_fips                  = zip_info[5]
-      
+        hood_place_type                  = 'zip code'
+
     elif neighborhood_level == 'county':      #When our neighborhood is a county eg Nassau County, New York
         county_fips_info                = ProcessCountyFIPS(county_fips =   input('Enter the 5 digit county FIPS Code for the hood'))
         hood_county_fips                = county_fips_info[0]
@@ -4733,13 +4754,17 @@ def GetUserInputs():
         neighborhood                    = county_fips_info[2]
         hood_state_full_name            = county_fips_info[3]
         hood_state                      = county_fips_info[4]
+        hood_place_type                 = 'county'
 
     elif neighborhood_level == 'custom': #When our neighborhood is a neighboorhood within a city (eg: Financial District, New York City)
         #Get name of hood
         neighborhood      = input('Enter the name of the custom neighborhood').strip()
+        hood_place_type   = 'neighborhood'
+
 
     global comparison_area, comparison_tract ,comparison_zip, comparison_place_fips, comparison_suvdiv_fips, comparison_county_fips
     global comparison_state, comparison_state_fips, comparison_state_full_name
+    global comparison_place_type
 
     #Get user input on comparison area
     if comparison_level == 'county':          #When our comparison area is a county eg Nassau County, New York
@@ -4749,6 +4774,7 @@ def GetUserInputs():
         comparison_area                       = county_fips_info[2]
         comparison_state_full_name            = county_fips_info[3]
         comparison_state                      = county_fips_info[4]
+        comparison_place_type                 = 'county'
 
     elif comparison_level == 'place':        #when our comparison area is a town or city eg: East Rockaway Village, New York
         place_fips_info                      = ProcessPlaceFIPS(place_fips = input('Enter the 7 digit Census Place FIPS Code') )
@@ -4777,6 +4803,8 @@ def GetUserInputs():
         comparison_state_full_name             = zip_info[3]
         comparison_state                       = zip_info[4]
         comparison_state_fips                  = zip_info[5]
+        comparison_place_type                  = 'zip code'
+
       
     elif comparison_level == 'tract':        #when our comparison area is a census tract eg: Tract 106.01 in Manhattan
         tract_info                            = ProcessCountyTract(tract = input('Enter the 6 digit tract code'), county_fips =  input('Enter the 5 digit County FIPS Code for the county the hood tract is in'))
@@ -4786,9 +4814,13 @@ def GetUserInputs():
         comparison_state_full_name            = tract_info[3]
         comparison_state                      = tract_info[4]
         comparison_state_fips                 = tract_info[5]
+        comparison_place_type                 = 'census tract'
+
   
     elif comparison_level == 'custom':   #When our comparison area is a neighboorhood within a city (eg: Financial District, New York City)
-        comparison_area = input('Enter the name of the custom comparison area').strip()
+        comparison_area                       = input('Enter the name of the custom comparison area').strip()
+        comparison_place_type                 = 'neighborhood'
+
 
     #Use comparison area state when doing a custom report
     if neighborhood_level == 'custom':
