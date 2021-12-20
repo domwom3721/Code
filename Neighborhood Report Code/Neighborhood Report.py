@@ -3378,7 +3378,7 @@ def OutlookLanguage():
                         
                          )
     
-    return(outlook_language)
+    return([outlook_language])
 
     # return('Neighborhood analysis can best be summarized by referring to neighborhood life cycles. ' +
     #       'Neighborhoods are perceived to go through four cycles, the first being growth, the second being stability, the third decline, and the fourth revitalization. ' +
@@ -3973,6 +3973,18 @@ def PageBreak(document):
     run = page_break_paragraph.add_run()
     run.add_break(WD_BREAK.PAGE)
 
+def AddDocumentParagraph(document,language_variable):
+    for paragraph in language_variable:
+        if paragraph == '':
+            continue
+        par                                               = document.add_paragraph(paragraph)
+        par.alignment                                     = WD_ALIGN_PARAGRAPH.JUSTIFY
+        par.paragraph_format.space_after                  = Pt(primary_space_after_paragraph)
+        summary_format                                    = document.styles['Normal'].paragraph_format
+        summary_format.line_spacing_rule                  = WD_LINE_SPACING.SINGLE
+        par_style                                         = par.style
+        par.font.name                                     = primary_font
+
 def AddTable(document,data_for_table): #Function we use to insert our overview table into the report document
     #list of list where each list is a row for our table
      
@@ -4119,18 +4131,7 @@ def IntroSection(document):
     AddHeading(document = document, title =  (neighborhood + ' at a Glance'),            heading_level = 1,heading_number='Heading 3',font_size=11)
    
     #Add neighborhood overview language
-    for paragraph in summary_langauge:
-        if paragraph == '':
-            continue
-        summary_paragraph                               = document.add_paragraph(paragraph)
-        summary_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
-        summary_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
-        summary_format                                  = document.styles['Normal'].paragraph_format
-        summary_format.line_spacing_rule                = WD_LINE_SPACING.SINGLE
-        summary_style                                   = summary_paragraph.style
-        summary_style.font.name                         = primary_font
-
-    
+    AddDocumentParagraph(document = document,language_variable =  summary_langauge)
     AddTableTitle(document = document, title = 'Population and Household Growth')
     
     try:
@@ -4144,12 +4145,7 @@ def CommunityAssetsSection(document):
     #Community Assets Section
     AddHeading(document = document, title = 'Community Assets',            heading_level = 1,heading_number='Heading 3',font_size=11)
 
-    for paragraph in community_assets_language:
-        if paragraph == '':
-            continue
-        community_paragraph                               = document.add_paragraph(paragraph)
-        community_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
-        community_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+    AddDocumentParagraph(document = document,language_variable =  community_assets_language)
 
     #Table Title
     AddTableTitle(document = document, title = 'Community Assets')
@@ -4185,14 +4181,6 @@ def HousingSection(document):
     print('Writing Neighborhood Section')
     AddHeading(document = document, title = 'Housing',                  heading_level = 1,heading_number='Heading 3',font_size=11)
     
-    # #Add structure size language
-    # for paragraph in housing_type_tenure_language: 
-    #     if paragraph == '':
-    #         continue
-    #     structure_size_paragraph                               = document.add_paragraph(paragraph)
-    #     structure_size_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
-    #     structure_size_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
-
     #Insert household units by units in_structure graph
     if os.path.exists(os.path.join(hood_folder,'household_units_in_structure_graph.png')):
         fig = document.add_picture(os.path.join(hood_folder,'household_units_in_structure_graph.png'),width=Inches(fig_width))
@@ -4201,12 +4189,7 @@ def HousingSection(document):
         Citation(document,'U.S. Census Bureau')
 
     #Add tenure language
-    for paragraph in housing_type_tenure_language:
-        if paragraph == '':
-            continue
-        housing_type_tenure_paragraph                               = document.add_paragraph(paragraph)
-        housing_type_tenure_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
-        housing_type_tenure_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+    AddDocumentParagraph(document = document,language_variable =  housing_type_tenure_language)
 
     #Insert Household Tenure graph
     if os.path.exists(os.path.join(hood_folder,'household_tenure_graph.png')):
@@ -4216,12 +4199,7 @@ def HousingSection(document):
         Citation(document,'U.S. Census Bureau')
     
     #Add housing value language
-    for paragraph in housing_value_language:
-        if paragraph == '':
-            continue
-        housing_value_paragraph                               = document.add_paragraph(paragraph)
-        housing_value_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
-        housing_value_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+    AddDocumentParagraph(document = document,language_variable =  housing_value_language)
 
     #Insert Household value graph
     if os.path.exists(os.path.join(hood_folder,'household_value_graph.png')):
@@ -4231,12 +4209,7 @@ def HousingSection(document):
         Citation(document,'U.S. Census Bureau')
 
     #Add language
-    for paragraph in year_built_language :
-        if paragraph == '':
-            continue
-        year_built_paragraph                                   = document.add_paragraph(paragraph)
-        year_built_paragraph.alignment                         = WD_ALIGN_PARAGRAPH.JUSTIFY
-        year_built_paragraph.paragraph_format.space_after      = Pt(primary_space_after_paragraph)
+    AddDocumentParagraph(document = document,language_variable =  year_built_language)
 
     #Insert household units by year built graph
     if os.path.exists(os.path.join(hood_folder,'household_year_built_graph.png')):
@@ -4268,13 +4241,7 @@ def PopulationSection(document):
     AddHeading(document = document, title = 'Population',                                     heading_level = 1,heading_number='Heading 3',font_size=11)
     
     #household size langauge
-    for paragraph in household_size_language:
-        if paragraph == '':
-            continue
-        hh_size_paragraph                               = document.add_paragraph(paragraph)
-        hh_size_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
-        hh_size_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
-
+    AddDocumentParagraph(document = document,language_variable =  household_size_language)
 
     #Insert Household size graph
     if os.path.exists(os.path.join(hood_folder,'household_size_graph.png')):
@@ -4284,13 +4251,8 @@ def PopulationSection(document):
         Citation(document,'U.S. Census Bureau')
 
     #Age langauge
-    for paragraph in population_age_language:
-        if paragraph == '':
-            continue
-        pop_paragraph                               = document.add_paragraph(paragraph)
-        pop_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
-        pop_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
-
+    AddDocumentParagraph(document = document,language_variable =  population_age_language)
+    
     #Insert population by age graph
     if os.path.exists(os.path.join(hood_folder,'population_by_age_graph.png')):
         fig = document.add_picture(os.path.join(hood_folder,'population_by_age_graph.png'),width=Inches(fig_width))
@@ -4298,16 +4260,8 @@ def PopulationSection(document):
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
     
-
-
-
     #Income langauge
-    for paragraph in income_language:
-        if paragraph == '':
-            continue
-        inc_paragraph                               = document.add_paragraph(paragraph)
-        inc_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
-        inc_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+    AddDocumentParagraph(document = document,language_variable =  income_language)
 
     #Insert populatin by income graph
     if os.path.exists(os.path.join(hood_folder,'population_by_income_graph.png')):
@@ -4322,13 +4276,8 @@ def EmploymentSection(document):
     #Employment and Transportation Section
     AddHeading(document = document, title = 'Employment',                  heading_level = 1,heading_number='Heading 3',font_size=11)
 
-    for paragraph in employment_language:
-        if paragraph == '':
-            continue
-        emp_paragraph                               = document.add_paragraph(paragraph)
-        emp_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
-        emp_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
-
+    AddDocumentParagraph(document = document,language_variable =  employment_language)
+    
     #Insert top occupations graph
     if os.path.exists(os.path.join(hood_folder,'top_occupations_graph.png')):
         fig = document.add_picture(os.path.join(hood_folder,'top_occupations_graph.png'),width=Inches(fig_width))
@@ -4342,12 +4291,7 @@ def TransportationSection(document):
     AddHeading(document = document, title = 'Transportation',                  heading_level = 1,heading_number='Heading 3',font_size=11)
 
     #Travel time Lanaguage
-    for paragraph in travel_time_language:
-        if paragraph == '':
-            continue
-        travel_time_paragraph                               = document.add_paragraph(paragraph)
-        travel_time_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
-        travel_time_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+    AddDocumentParagraph(document = document,language_variable =  travel_time_language)
 
     #Insert Travel Time to Work graph
     if os.path.exists(os.path.join(hood_folder,'travel_time_graph.png')):
@@ -4357,13 +4301,8 @@ def TransportationSection(document):
         Citation(document,'U.S. Census Bureau')
     
     #Travel method Lanaguage
-    for paragraph in travel_method_language:
-        if paragraph == '':
-            continue
-        travel_time_paragraph                               = document.add_paragraph(paragraph)
-        travel_time_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
-        travel_time_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
-    
+    AddDocumentParagraph(document = document,language_variable =  travel_method_language)
+
     #Insert Transport Method to Work graph
     if os.path.exists(os.path.join(hood_folder,'travel_mode_graph.png')):
         fig = document.add_picture(os.path.join(hood_folder,'travel_mode_graph.png'),width=Inches(fig_width))
@@ -4403,6 +4342,9 @@ def TransportationSection(document):
 def OutlookSection(document):
     print('Writing Outlook Section')
     AddHeading(document = document, title = 'Conclusion',            heading_level = 1,heading_number='Heading 3',font_size=11)
+
+    AddDocumentParagraph(document = document,language_variable =  conclusion_langauge)
+
     conclusion_paragraph                               = document.add_paragraph(conclusion_langauge)
     conclusion_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
     conclusion_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
