@@ -3399,24 +3399,36 @@ def TransportationOverviewLanguage():
     
     return(transportation_language)
 
-def HousingTenureLanguage():
-    print('Creating housing units by tenure Langauge')
+def HousingIntroLanguage():
+	print('Creating housing intro Langauge')
+	housing_intro_language = ('Housing is one of the most identifiable characteristics of an area. Different elements related to housing, such as the property type, ' +
+		' renter/owner mix, housing age, and household characteristics play crucial roles in how an area is defined. ' +
+		'In ' + neighborhood + ', housing is diverse, with a variety of types, tenure status, age, and price points. ')
+
+	return([housing_intro_language])
+
+def HousingTypeTenureLanguage():
+    print('Creating housing type and tenure Langauge')
+    number_units_categories = ['Single Family Homes','Townhomes','Duplexes','3-4 Units','5-9 Units','10-19 Units','20-49 Units','50 >= Units']
+    most_common_category = number_units_categories[neighborhood_number_units_data.index(max(neighborhood_number_units_data))] #get the most common number units category
+    second_most_common_category = number_units_categories[neighborhood_number_units_data.index(max-1( #get 2nd most common house type
     hood_owner_occupied_fraction        =  neighborhood_tenure_distribution[1] 
     comparsion_owner_occupied_fraction  =  comparison_tenure_distribution[1]
 
     if hood_owner_occupied_fraction > comparsion_owner_occupied_fraction:
         hood_owner_ouccupied_higher_lower   =  'higher than'
-    
+        own_or_rent = 'the majority of households own instead of rent.'
     elif hood_owner_occupied_fraction < comparsion_owner_occupied_fraction:
         hood_owner_ouccupied_higher_lower   =  'lower than'
-
+        own_or_rent = 'the majority of households rent instead of own.'
     elif hood_owner_occupied_fraction > comparsion_owner_occupied_fraction:
         hood_owner_ouccupied_higher_lower   =  'equal to'
-            
+        own_or_rent = 'an equal share of households rent or own.'        
     else:
         hood_owner_ouccupied_higher_lower   =  '[lower than/higher than/equal to]'
     
-    tenure_langugage = ('According to the most recent American Community Survey, ' +
+    housing_type_tenure_langugage = ('Data from the the most recent American Community Survey indicates a precense of single family homes, some smaller multifamily properties, along with larger garden style properties, and even some buildings with 50+ units. ' +
+        most_common_category + ' are the most common form of housing in ' + neighborhood + ', followed by ' + second_most_common_category + '. According to the most recent American Community Survey, ' +
             "{:,.1f}%".format(hood_owner_occupied_fraction)                        +   
            ' of the housing units in '                                             + 
            neighborhood                                                            + 
@@ -3431,24 +3443,7 @@ def HousingTenureLanguage():
            )
         #    '. This chart shows the ownership percentage in ' + neighborhood + ' compared to _______. ')
 
-    return([tenure_langugage])
-
-def HousingSizeLanguage():
-    print('Creating housing units by Size Langauge')
-
-    number_units_categories = ['Single Family Homes','Townhomes','Duplexes','3-4 Units','5-9 Units','10-19 Units','20-49 Units','50 >= Units']
-    
-    most_common_category           = number_units_categories[neighborhood_number_units_data.index(max(neighborhood_number_units_data))] #get the most common number units category
-
-
-    housing_size_langauge = ( neighborhood + 
-                              ' offers a wide variety of housing options including single family homes, some duplexes and smaller multifamily properties, along with larger garden style properties, and even some buildings with 50+ units. ' + 
-                              most_common_category +
-                              ' is the most common form of housing in ' +
-                              neighborhood 
-                            
-                             )
-    return[housing_size_langauge]
+    return([housing_type_tenure_langugage])
 
 def HousingValueLanguage():
     print('Creating Household by value Langauge')
@@ -4212,12 +4207,12 @@ def HousingSection(document):
         Citation(document,'U.S. Census Bureau')
 
     #Add tenure language
-    for paragraph in housing_tenure_breakdown_language:
+    for paragraph in housing_type_tenure_breakdown_language:
         if paragraph == '':
             continue
-        tenure_paragraph                               = document.add_paragraph(paragraph)
-        tenure_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
-        tenure_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
+        housing_type_tenure_paragraph                               = document.add_paragraph(paragraph)
+        housing_type_tenure_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
+        housing_type_tenure_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
 
     #Insert Household Tenure graph
     if os.path.exists(os.path.join(hood_folder,'household_tenure_graph.png')):
@@ -4387,42 +4382,45 @@ def TransportationSection(document):
 
     #Insert the transit graphics(car, bus,plane, train)
     tab = document.add_table(rows=0, cols=2)
-    # row_num  = 0
-    #Define lists of graphics images and corresponding language
-    png_list = ['car.png','train.png','bus.png','plane.png','walk.png'] 
-    lang_list = [car_language, train_language, bus_language, plane_language,walk_score_data[0]]
-    for pic,lang in zip(png_list,lang_list):
-        #Add new row
-        row_cells      = tab.add_row().cells
-        
-        #Add graphic to left column
-        left_paragraph = row_cells[0].paragraphs[0]
-        run            = left_paragraph.add_run()
+    row_num = 0
+    for pic,lang in zip(['car.png','train.png','bus.png','plane.png','walk.png'],[car_language, train_language, bus_language, plane_language,walk_score_data[0]]):
+        row_cells = tab.add_row().cells
+        paragraph = row_cells[0].paragraphs[0]
+        run       = paragraph.add_run()
         if pic == 'car.png':
             run.add_text(' ')
         run.add_picture(os.path.join(graphics_location,pic))
 
-        #Add language to right column
-        right_paragraph = row_cells[1].paragraphs[0]
-        run             = right_paragraph.add_run()        
-        run.add_text(str(lang))
-        # row_num        += 1
-
-      
-    #We have now created our table object, loop through the rows changing the cell width
-    for row in tab.rows:
-         for current_column,cell in enumerate(row.cells):
+        #loop through all cells in the current row
+        for current_column,cell in enumerate(tab.row[row_num]):
+            #Set text for cell
+            if current_column == 1:
+                cell.text = str(lang)
+            
             #Set Width for cell
             if current_column == 0:
                 cell.width = Inches(.2)
-            elif current_column == 1:
+            else:
                 cell.width = Inches(6)
-    
-    
 
-        
+        row_num += 1
+
+    # transit_table_language = 
+
+    #Loop through the rows in the table
+    # for current_row ,row in enumerate(tab.rows): 
+    #     #loop through all cells in the current row
+    #     for current_column,cell in enumerate(row.cells):
+    #         if current_column == 1 and current_row >= 0:
+    #             cell.text = str(transit_table_language[current_row-1])
+
+    #         if current_column == 0:
+    #             cell.width = Inches(.2)
+    #         else:
+    #             cell.width = Inches(6)
 
 
+    # Citation(document,'https://www.walkscore.com/')
 
 def OutlookSection(document):
     print('Writing Outlook Section')
