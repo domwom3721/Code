@@ -3404,8 +3404,9 @@ def HousingIntroLanguage():
 	housing_intro_language = ('Housing is one of the most identifiable characteristics of an area. Different elements related to housing, such as the property type, ' +
 		' renter/owner mix, housing age, and household characteristics play crucial roles in how an area is defined. ' +
 		'In ' + neighborhood + ', housing is diverse, with a variety of types, tenure status, age, and price points. ')
-
+    
 	return([housing_intro_language])
+
 
 def HousingTypeTenureLanguage():
     print('Creating housing type and tenure Langauge')
@@ -4384,27 +4385,25 @@ def TransportationSection(document):
     tab = document.add_table(rows=0, cols=2)
     for pic,lang in zip(['car.png','train.png','bus.png','plane.png','walk.png'],[car_language, train_language, bus_language, plane_language,walk_score_data[0]]):
         row_cells = tab.add_row().cells
-        paragraph = row_cells[0].paragraphs[0]
-        run       = paragraph.add_run()
+        
+        left_paragraph = row_cells[0].paragraphs[0]
+        run            = left_paragraph.add_run()
         if pic == 'car.png':
             run.add_text(' ')
         run.add_picture(os.path.join(graphics_location,pic))
 
-        #loop through all cells in the current row
-        for current_column,cell in enumerate(tab.row[row_num]):
-            #Set text for cell
-            if current_column == 1:
-                cell.text = str(lang)
-            
+        right_paragraph = row_cells[1].paragraphs[0]
+        run             = right_paragraph.add_run()
+        run.add_text(str(lang))
+
+    #We have now defined our table object,loop through all rows then all cells in each current row
+    for row in tab.rows:
+        for current_column,cell in enumerate(row.cells):
             #Set Width for cell
             if current_column == 0:
                 cell.width = Inches(.2)
-            else:
+            elif current_column == 1:
                 cell.width = Inches(6)
-
-        row_num += 1
-
-
 
 def OutlookSection(document):
     print('Writing Outlook Section')
@@ -4417,7 +4416,7 @@ def OutlookSection(document):
     
 def WriteReport():
     print('Writing Report')
-    Create Document
+    #Create Document
     document = Document()
     SetPageMargins(           document  = document, margin_size=1)
     SetDocumentStyle(         document = document)
