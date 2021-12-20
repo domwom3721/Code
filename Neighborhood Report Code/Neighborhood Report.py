@@ -3932,7 +3932,11 @@ def OverlayMapImages():
     map3_path = os.path.join(hood_folder_map,'map3.png')
     
     #Make sure we have map 1 and map 2 in order to create map 3 (the overlayed map image)
-    assert (os.path.exists(map_path)) and (os.path.exists(map2_path))
+    try:
+        assert (os.path.exists(map_path)) and (os.path.exists(map2_path))
+    except:
+        print('Unable to make overlayed map')
+        return()
 
     #Open zommed out map
     img1 = Image.open(map2_path)
