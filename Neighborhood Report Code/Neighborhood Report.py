@@ -2261,7 +2261,7 @@ def ApartmentsDotComSearch():
                 return(descriptive_paragraphs)
             if count > 3 :
                 continue
-            if 'Let Apartments.com help you find your perfect fit' in  paragraph.text:
+            if 'Let Apartments.com help you find' in  paragraph.text:
                 continue          
             descriptive_paragraphs.append(paragraph.text)
         
