@@ -5,12 +5,12 @@ from pandas import read_csv
 
 #Define file location pre paths
 project_location               =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Projects','Research Report Automation Project')  
-census_data_location           =  os.path.join(project_location,'Data','Neighborhood Reports Data','Census Area Codes') 
+salesforce_report              =  os.path.join(project_location,'Data','Neighborhood Reports Data','Salesforce') 
 
 #Define location of raw Census Places data files
-raw_Census_places_file           =  os.path.join(census_data_location,'national_places.csv')
+daily_salesforce_jobs          =  os.path.join(salesforce_report,'report.csv')
 
 # Import raw census places data as pandas data frames
-open(raw_Census_places_file,'rb')
+open(daily_salesforce_jobs,'rb')
 #df_places = pd.read_csv(raw_Census_places_file)
 #print(df_places)
