@@ -3067,8 +3067,11 @@ def AddDocumentParagraph(document,language_variable):
         par.paragraph_format.space_after                  = Pt(primary_space_after_paragraph)
         summary_format                                    = document.styles['Normal'].paragraph_format
         summary_format.line_spacing_rule                  = WD_LINE_SPACING.SINGLE
-        # par_style                                         = par.style
-        # par.font.name                                     = primary_font
+        style = document.styles['Normal']
+        font = style.font
+        font.name = 'Avenir Next LT Pro Light'
+        par.style = document.styles['Normal']
+
 
 def AddTable(document,data_for_table): #Function we use to insert our overview table into the report document
     #list of list where each list is a row for our table
