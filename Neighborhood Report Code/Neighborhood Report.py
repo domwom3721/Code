@@ -64,6 +64,7 @@ main_output_location           =  os.path.join(project_location,'Output','Neighb
 data_location                  =  os.path.join(project_location,'Data','Neighborhood Reports Data')
 graphics_location              =  os.path.join(project_location,'Data','General Data','Graphics')
 map_location                   =  os.path.join(project_location,'Data','Neighborhood Reports Data','Neighborhood Maps')
+nyc_cd_map_location            =  os.path.join(project_location,'Data','Neighborhood Reports Data','NYC_CD Maps')
 
 
 #Data Manipulation functions
@@ -198,20 +199,15 @@ def DetermineNYCCommunityDistrict(lat,lon):
         with open(os.path.join(data_location,'Neighborhood Shapes','NY','nyc_communitydistricts.json')) as infile: #Open a geojson file with the city as the name the name of the file with the neighborhood boundries for that city
             my_shape_geojson = json.load(infile)
         
-        
-            
         #Iterate through the features in the file (each feature is a communtiy district) and find the boundry of interest
         for communtiy_district in range(len(my_shape_geojson['features'])):
-            communtiy_district_number = my_shape_geojson['features'][communtiy_district]['id']
+            communtiy_district_number = my_shape_geojson['features'][communtiy_district]['properties']["BoroCD"]
             communtiy_district_shape  = my_shape_geojson['features'][communtiy_district]['geometry']['coordinates'][0]
             
             try:
                 point   = Point(lon, lat)
                 polygon = Polygon([tuple(l) for l in communtiy_district_shape])      
-                
-                # print(communtiy_district_shape)
-                print(communtiy_district_number)
-                
+                                
                 #Check if lat and lon is inside the communtiy district
                 if polygon.contains(point) == True:
                     return(communtiy_district_number)
@@ -3095,9 +3091,10 @@ def OverlayMapImages():
     img1.save(map3_path)
     
 def AddMap(document):
-    map_path  = os.path.join(hood_folder_map,'map.png')
-    map2_path = os.path.join(hood_folder_map,'map2.png')
-    map3_path = os.path.join(hood_folder_map,'map3.png')
+    map_path        = os.path.join(hood_folder_map,'map.png')
+    map2_path       = os.path.join(hood_folder_map,'map2.png')
+    map3_path       = os.path.join(hood_folder_map,'map3.png')
+    nyc_cd_map_path = os.path.join(nyc_cd_map_location,nyc_community_district,'map.png')
     
     if (os.path.exists(map_path) == False) or (os.path.exists(map2_path) == False): #If we don't have a zommed in map image or a zoomed out map, create one
         GetMap()    
@@ -3107,6 +3104,10 @@ def AddMap(document):
     print('Adding Map') 
     if os.path.exists(map3_path):
         map = document.add_picture(map3_path,width=Inches(6.5))
+    
+    if os.path.exists(nyc_cd_map_path):
+        print('Adding NYC Community District Map') 
+        nyc_map = document.add_picture(nyc_cd_map_path,width=Inches(6.5))
 
 def PageBreak(document):
     #Add page break
@@ -3953,7 +3954,6 @@ if batch_mode == True:
                 Main(analysis_type_number =     3)
             except Exception as e:
                 print(e,'REORT CREATION FAILED')
-                # break
 else:
     Main(analysis_type_number = UserSelectsNeighborhoodLevel())
 
