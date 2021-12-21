@@ -1449,34 +1449,6 @@ def ApartmentsDotComSearch():
         print(e)
         return([''])
 
-def LocationIQ(lat,lon,radius):
-    #Searches the Locate IQ API for points of interest
-    print('Searching Location IQ API')
-
-    url = "https://us1.locationiq.com/v1/nearby.php"
-
-    data = {
-    'key': location_iq_api_key,
-    'lat': lat,
-    'lon': lon,
-    'tag': 'all',
-    'radius': radius,
-    'format': 'json'
-        }
-
-    try:
-        response = requests.get(url, params=data).json()
-    except Exception as e:
-        print(e)
-        response = [{}]
-        
-    # for poi in response:
-    #     print(poi['name'],poi['type'],)
-    #     print('------------')
-        
-
-    return(response)
-
 def Zoneomics(address):
     #Searches the Zoneomics API for screenshot of Local Zoning
     print('Getting Zoneomics Zoning Map')
@@ -2446,24 +2418,6 @@ def SummaryLangauge():
 def CommunityAssetsLanguage():
     print('Creating Community Assets Langauge')
     community_assets_language = (neighborhood + ' has a number of community assets. ')
-    
-    # location_iq_data                             = LocationIQ(              lat = latitude, lon = longitude, radius = 5000                                     )
-    
-    # for poi in location_iq_data:
-    #     # print(poi)
-    #     poi_name      = poi['name']
-    #     poi_type      = poi['type']
-    #     poi_city      = poi['address']['city']
-    #     poi_sentence  = (' ' + poi_name + ' is a ' + poi_type + '. ')
-        
-    #     #For cities/towns, restirct points of interest to those inside the city limits
-    #     if neighborhood_level == 'place':
-    #         if neighborhood == poi_city:
-    #             community_assets_language = community_assets_language + poi_sentence
-
-    #     else:
-    #         community_assets_language = community_assets_language + poi_sentence
-
     return([community_assets_language])
 
 def CarLanguage():
@@ -2867,7 +2821,44 @@ def TravelTimeLanguage():
     
     return([time_language])
 
+def LocationIQPOIListLanguage(lat,lon,category):
+    #Searches the Locate IQ API for points of interest
+    print('Searching Location IQ API')
+
+    url = "https://us1.locationiq.com/v1/nearby.php"
+
+    data = {
+    'key': location_iq_api_key,
+    'lat': lat,
+    'lon': lon,
+    'tag': category,
+    'radius': 5000,
+    'format': 'json'
+        }
+
+    try:
+        response = requests.get(url, params=data).json()
+    except Exception as e:
+        return('')
+    
+    poi_list = (neighborhood + ' has several ' + category + 'assets including: ')
+    for poi in response:
+        if type(poi) == dict:
+            poi_name      = poi['name']
+            poi_type      = poi['type']
+            poi_city      = poi['address']['city']
+            poi_sentence  = (' ' + poi_name + ', ' )
+
+            #For cities/towns, restrict points of interest to those inside the city limits
+            if neighborhood_level == 'place':
+                if neighborhood == poi_city:
+                    poi_sentence = poi_list + poi_sentence
+
+            else:
+                poi_list = poi_list + poi_sentence
+
 def CreateLanguage():
+    
     print('Creating Langauge')
 
     global bus_language,car_language,plane_language,train_language,transportation_language,summary_langauge,conclusion_langauge,community_assets_language
@@ -2881,7 +2872,8 @@ def CreateLanguage():
     global travel_method_language, travel_time_language
     global housing_value_language,year_built_language
     global household_size_language
-
+    global bank_language, food_language, hospital_language, park_language, retail_language, edu_language
+    
     summary_langauge                   =  SummaryLangauge()
     transportation_language            =  TransportationOverviewLanguage()
     
@@ -2890,12 +2882,33 @@ def CreateLanguage():
     except Exception as e:
         print(e,'unable to get community assets langauge')
         community_assets_language = []
-    housing_type_tenure_language       = HousingTypeTenureLanguage()
-    # structure_size_breakdown_language  = HousingSizeLanguage()
     
-    housing_value_language             = HousingValueLanguage()
-    year_built_language                = HousingYearBuiltLanguage()
+    try:
+        housing_type_tenure_language       = HousingTypeTenureLanguage()
+    except Exception as e:
+        housing_type_tenure_language       = []
     
+    try:
+        housing_value_language             = HousingValueLanguage()
+    except Exception as e:
+        housing_value_language             = []
+    
+    try:
+        year_built_language                = HousingYearBuiltLanguage()
+    except Exception as e:
+        year_built_language                = []
+
+
+    #Communtiy assets langauge variables
+    bank_language                      = LocationIQPOIListLanguage(lat = latitude, lon = longitude , category = 'bank' ) 
+    food_language                      = LocationIQPOIListLanguage(lat = latitude, lon = longitude,  category = 'food' ) 
+    hospital_language                  = LocationIQPOIListLanguage(lat = latitude, lon = longitude,  category = 'hospital' ) 
+    park_language                      = LocationIQPOIListLanguage(lat = latitude, lon = longitude,  category = 'park' ) 
+    retail_language                    = LocationIQPOIListLanguage(lat = latitude, lon = longitude,  category = 'retail' ) 
+    edu_language                       = LocationIQPOIListLanguage(lat = latitude, lon = longitude,  category = 'school' ) 
+
+
+    #Paragraph Language
     employment_language                = EmploymentLanguage()
     population_age_language            = PopulationAgeLanguage()
     income_language                    = IncomeLanguage()
@@ -2903,6 +2916,7 @@ def CreateLanguage():
     travel_method_language             = TravelMethodLanguage() 
     travel_time_language               = TravelTimeLanguage()
 
+    #Transit Table Language
     bus_language                       = BusLanguage() 
     train_language                     = TrainLanguage()
     car_language                       = CarLanguage()
@@ -3327,8 +3341,8 @@ def CommunityAssetsSection(document):
     #Table Title
     AddTableTitle(document = document, title = 'Community Assets')
 
-    #Add Community Assets Table
-    AddTwoColumnTable(document,pic_list      = ['bank.png','food.png','medical.png','park.png','retail.png','school.png'],lang_list =['ROW 1', 'ROW 2', 'ROW 3', 'ROW 4', 'ROW 5', 'ROW 6'] )
+    #Add Community Assets Table                 
+    AddTwoColumnTable(document,pic_list      = ['bank.png','food.png','medical.png','park.png','retail.png','school.png'],lang_list =[bank_language, food_language, hospital_language, park_language, retail_language,edu_language] )
 
 def HousingSection(document):
     print('Writing Neighborhood Section')
