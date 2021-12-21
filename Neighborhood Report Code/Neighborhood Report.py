@@ -371,6 +371,7 @@ def FindZipCodeDictionary(zip_code_data_dictionary_list,zcta,state_fips):
 def DeclareAPIKeys():
     global census_api_key,walkscore_api_key,google_maps_api_key,yelp_api_key,yelp_api,yelp_client_id,location_iq_api_key
     global c,c_area,walkscore_api
+    global zoneomics_api_key
     
     #Declare API Keys
     census_api_key                = '18335344cf4a0242ae9f7354489ef2f8860a9f61'
@@ -394,7 +395,6 @@ def DeclareFormattingParameters():
     #Set formatting paramaters for reports
     primary_font                  = 'Avenir Next LT Pro Light' 
     primary_space_after_paragraph = 8
-
 class TimeoutExpired(Exception):
     pass
 
@@ -3090,7 +3090,6 @@ def AddDocumentParagraph(document,language_variable):
         font.name = 'Avenir Next LT Pro Light'
         par.style = document.styles['Normal']
 
-
 def AddTable(document,data_for_table): #Function we use to insert our overview table into the report document
     #list of list where each list is a row for our table
      
@@ -3618,9 +3617,9 @@ def UserSelectsNeighborhoodLevel():
 
 def GetUserInputs():
     global neighborhood_level,comparison_level
-    try:
-        assert analysis_type_number > 0
-    except:
+    if batch_mode == True:
+        analysis_type_number = 3
+    else:
         analysis_type_number = UserSelectsNeighborhoodLevel()
     
     #Each number corresponds to a different analysis level pair eg: place vs county, zip vs. place, etc
@@ -3936,8 +3935,6 @@ batch_mode = True
 if batch_mode == True:
     for city,place_fips in zip(['Fort Lauderdale','Boston'],['12-24000','25-07000']):
         
-        
-
         analysis_type_number =     3
         for  neighborhood in GetListOfNeighborhoods(city):
             try:
