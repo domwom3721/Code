@@ -214,10 +214,12 @@ def DetermineNYCCommunityDistrict(lat,lon):
 
             except:
                 continue
+        
+        return('')
 
     except Exception as e:
         print(e)
-        return(None)
+        return('')
 
 #####################################################User FIPS input proccessing Functions####################################
 
@@ -343,7 +345,7 @@ def ProcessZipCode(zip_code):
      
 #####################################################Misc Functions####################################
 def CreateDirectory():
-
+    print('Creating Directories and file name')
     global report_path,hood_folder_map,hood_folder
     
     state_folder_map         = os.path.join(map_location,hood_state)
@@ -371,9 +373,13 @@ def CreateDirectory():
         hood_folder              = os.path.join(main_output_location,hood_state,comparison_area,neighborhood)
         hood_folder_map          = os.path.join(map_location,hood_state,city_folder_map,neighborhood)
 
+
     else:
         hood_folder              = os.path.join(main_output_location,hood_state,neighborhood)
         hood_folder_map          = os.path.join(map_location,hood_state,neighborhood)
+    
+    report_path = os.path.join(hood_folder,current_year + ' ' + hood_state + ' - ' + neighborhood  + ' - hood' + '_draft.docx')
+
 
 
     for folder in [state_folder,hood_folder,state_folder_map,hood_folder_map]:
@@ -381,8 +387,6 @@ def CreateDirectory():
             pass 
          else:
             os.mkdir(folder) 
-
-    report_path = os.path.join(hood_folder,current_year + ' ' + hood_state + ' - ' + neighborhood  + ' - hood' + '_draft.docx')
 
 def FindZipCodeDictionary(zip_code_data_dictionary_list,zcta,state_fips):
     #This function takes a list of dictionaries, where each zip code gets its own dictionary. Takes a zip code and state fips code and finds and returns just that dictionary.
@@ -3295,6 +3299,7 @@ def AddPointOfInterestsTable(document,data_for_table): #Function we use to inser
                         font.name = 'Avenir Next LT Pro Demi'
 
 def IntroSection(document):
+    print('Writing Intro Section')
     AddTitle(document = document)
     AddMap(document = document)
     Citation(document,'Google Maps')
