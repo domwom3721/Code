@@ -5201,6 +5201,30 @@ def AddMap(document):
             except:
                 pass
 
+def AddTwoColumnTable(document,pic_list,lang_list):
+    #Insert the transit graphics(car, bus,plane, train)
+    tab = document.add_table(rows=0, cols=2)
+    for pic,lang in zip(pic_list,lang_list):
+        row_cells = tab.add_row().cells
+        
+        left_paragraph = row_cells[0].paragraphs[0]
+        run            = left_paragraph.add_run()
+        if pic == 'car.png':
+            run.add_text(' ')
+        run.add_picture(os.path.join(graphics_location,pic))
+
+        right_paragraph = row_cells[1].paragraphs[0]
+        run             = right_paragraph.add_run()
+        run.add_text(str(lang))
+
+    #We have now defined our table object,loop through all rows then all cells in each current row
+    for row in tab.rows:
+        for current_column,cell in enumerate(row.cells):
+            #Set Width for cell
+            if current_column == 0:
+                cell.width = Inches(.2)
+            elif current_column == 1:
+                cell.width = Inches(6)
 
 #Report Section Functions
 def OverviewSection(document):
@@ -5347,7 +5371,6 @@ def EmploymentSection(document):
         Citation(document,'U.S. Bureau of Labor Statistics')
         Note(document,'Employment growth rates are not displayed for industries where the BLS has suppressed employment data for quality or privacy concerns.')
     
-
 def ProductionSection(document):
     print('Writing Production Section')
     AddHeading(document = document, title = 'Economic Production',            heading_level = 2)
@@ -5367,9 +5390,7 @@ def ProductionSection(document):
         gdp_format = document.styles['Normal'].paragraph_format
         gdp_format.space_after = Pt(0)
         Citation(document,'U.S. Bureau of Economic Analysis')
-    
-
-    
+        
 def DemographicsSection(document):
     print('Writing Demographic Section')
     AddHeading(document = document, title = 'Demographics',            heading_level = 2)
@@ -5415,7 +5436,6 @@ def DemographicsSection(document):
     #     last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
     #     Citation(document,'U.S. Census Bureau')
 
-
 def InfrastructureSection(document):
     print('Writing Infrastructure Section')
     AddHeading(document = document, title = 'Infrastructure',            heading_level = 2)
@@ -5437,32 +5457,9 @@ def InfrastructureSection(document):
         font.name = 'Avenir Next LT Pro Medium'
 
 
-
     #Insert the transit graphics(car, bus,plane, train)
-    tab = document.add_table(rows=1, cols=2)
-    for pic in ['car.png','train.png','bus.png','plane.png']:
-        row_cells = tab.add_row().cells
-        paragraph = row_cells[0].paragraphs[0]
-        run = paragraph.add_run()
-        if pic == 'car.png':
-            run.add_text(' ')
-        run.add_picture(os.path.join(graphics_location,pic))
-    
+    AddTwoColumnTable(document,pic_list      = ['car.png','train.png','bus.png','plane.png'],lang_list =[car_language,train_language,bus_language,plane_language] )
 
-
-    transit_language = [car_language,train_language,bus_language,plane_language]
-    
-    #Loop through the rows in the table
-    for current_row ,row in enumerate(tab.rows): 
-        #loop through all cells in the current row
-        for current_column,cell in enumerate(row.cells):
-            if current_column == 1 and current_row > 0:
-                cell.text = transit_language[current_row-1]
-
-            if current_column == 0:
-                cell.width = Inches(.2)
-            else:
-                cell.width = Inches(6)
 
 def HousingSection(document):
     print('Writing Housing Section')
@@ -5809,11 +5806,6 @@ for i,fips in enumerate(GetFIPSList()):
     except Exception as e:
         print(e)
         print('Report Creation Failed for : ',fips)
-
-
-
-        
-        
 
 CreateDirectoryCSV()
 
