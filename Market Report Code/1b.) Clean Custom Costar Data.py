@@ -40,7 +40,7 @@ geography_name                 = input('Enter the name of the market with the fo
 
 #Section 2: Define file location pre paths
 project_location               =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Projects','Research Report Automation Project')  
-costar_data_location           =  os.path.join(project_location,'Data','CoStar Data') 
+costar_data_location           =  os.path.join(project_location,'Market Reports Data','Data','CoStar Data') 
 
 #Define the location of the downloaded files and where we want to move them to
 if sector != 'Multifamily':

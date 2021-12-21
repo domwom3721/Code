@@ -54,8 +54,8 @@ project_location               =  os.path.join(os.environ['USERPROFILE'], 'Dropb
 main_output_location           =  os.path.join(dropbox_root,'Research','Market Analysis','Area') #Production
 general_data_location          =  os.path.join(project_location,'Data','General Data')
 data_location                  =  os.path.join(project_location,'Data','Area Reports Data')
-graphics_location              =  os.path.join(project_location,'Data','Graphics')
-map_location                   =  os.path.join(project_location,'Data','Maps','County Maps')
+graphics_location              =  os.path.join(project_location,'Data','General Data','Graphics')
+map_location                   =  os.path.join(project_location,'Data','Area Reports Data','County Maps')
 
 #Decide if you want to export data in excel files in the county folder
 # data_export = True

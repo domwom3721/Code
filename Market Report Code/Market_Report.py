@@ -37,10 +37,10 @@ dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropb
 project_location               =  os.path.join(dropbox_root,'Research','Projects','Research Report Automation Project') #Main Folder that stores all output, code, and documentation
 output_location                = os.path.join(dropbox_root,'Research','Market Analysis','Market')                       #The folder where we store our current reports, production
 # output_location                = os.path.join(project_location,'Output','Market')                               #The folder where we store our current reports, testing folder
-map_location                   = os.path.join(project_location,'Data','Maps','CoStar Maps')                             #Folders with maps png files  
-general_data_location          =  os.path.join(project_location,'Data','General Data')
-costar_data_location           = os.path.join(project_location,'Data','CoStar Data')                                    #Folder with clean CoStar CSV files
-costar_writeup_location        = os.path.join(project_location,'Data','CoStar Writeups')                                #Folder with clean CoStar CSV files
+map_location                   = os.path.join(project_location,'Data','Market Reports Data','CoStar Maps')                             #Folders with maps png files  
+general_data_location          =  os.path.join(project_location,'Data','Market Reports Data','General Data')
+costar_data_location           = os.path.join(project_location,'Data','Market Reports Data','CoStar Data')                                    #Folder with clean CoStar CSV files
+costar_writeup_location        = os.path.join(project_location,'Data','Market Reports Data','CoStar Writeups')                                #Folder with clean CoStar CSV files
 
 #If we have any custom data, read it in as a dataframe so we can append it to our primary data
 custom_data_file_location      = os.path.join(costar_data_location,'Clean Data','Clean Custom CoStar Data.xlsx')

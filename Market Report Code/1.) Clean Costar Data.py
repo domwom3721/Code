@@ -8,7 +8,7 @@ import numpy as np
 
 #Define file location pre paths
 project_location               =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Projects','Research Report Automation Project')  
-costar_data_location           =  os.path.join(project_location,'Data','CoStar Data') 
+costar_data_location           =  os.path.join(project_location,'Data','Market Reports Data','CoStar Data') 
 
 #Define location of raw CoStar data files
 raw_multifamily_file           =  os.path.join(costar_data_location,'Raw Data','mf.csv') 
