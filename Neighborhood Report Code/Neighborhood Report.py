@@ -190,7 +190,10 @@ def GetListOfNeighborhoods(city):
     except Exception as e:
         print(e)
         return([])
-                
+
+def DetermineNYCCommunityDistrict(lat,lon):
+    pass
+
 #####################################################User FIPS input proccessing Functions####################################
 
 def ProcessPlaceFIPS(place_fips):
@@ -433,7 +436,7 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
             
             neighborhood_household_size_distribution_raw = operator.state_place(fields = fields_list,state_fips = state_fips,place=place_fips)[0]
         except Exception as e:
-            print(e, 'Problem getting household size data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area)
+            print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area)
             return()
     
     elif geographic_level == 'county':
@@ -450,7 +453,7 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
             neighborhood_household_size_distribution_raw =operator.state_county(fields = fields_list, state_fips = state_fips,county_fips = county_fips)[0]
         
         except Exception as e:
-            print(e, 'Problem getting household size data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+            print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
             return()
 
     elif geographic_level == 'county subdivision':
@@ -468,7 +471,7 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
 
             neighborhood_household_size_distribution_raw = operator.state_county_subdivision(fields=fields_list,state_fips=state_fips,county_fips=county_fips,subdiv_fips=subdiv_fips)[0]
         except Exception as e:
-            print(e, 'Problem getting household size data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+            print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
             return()
 
     elif geographic_level == 'zip':
@@ -483,7 +486,7 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
 
             neighborhood_household_size_distribution_raw = operator.state_zipcode(fields=fields_list,state_fips=state_fips,zcta=zcta)[0]
         except Exception as e:
-            print(e, 'Problem getting household size data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+            print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
             return()
 
     elif geographic_level == 'tract':
@@ -501,7 +504,7 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
             neighborhood_household_size_distribution_raw = operator.state_county_tract(fields=fields_list, state_fips = state_fips,county_fips=county_fips,tract=tract)[0]
         
         except Exception as e:
-            print(e, 'Problem getting household size data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+            print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
             return()
 
     elif geographic_level == 'custom':
@@ -522,13 +525,17 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
         #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
         neighborhood_household_size_distribution_raw = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = fields_list )
     
+    
     #General data manipulation (same for all geographic levels)
-    neighborhood_household_size_distribution = []
+    distribution = []
     for field in fields_list:
-            neighborhood_household_size_distribution.append(neighborhood_household_size_distribution_raw[field])
-        
-    neighborhood_household_size_distribution = ConvertListElementsToFractionOfTotal(neighborhood_household_size_distribution)
-    return(neighborhood_household_size_distribution)
+            distribution.append(neighborhood_household_size_distribution_raw[field])
+
+    try:    
+        distribution = ConvertListElementsToFractionOfTotal(distribution)
+        return(distribution)
+    except Exception as e:
+        print(e)
 
 #Households by number of memebrs
 def GetHouseholdSizeData(geographic_level,hood_or_comparison_area):
@@ -1474,38 +1481,41 @@ def GetData():
     global neighborhood_top_occupations_data,comparison_top_occupations_data
     global neighborhood_year_built_data, comparison_year_built_data   
     global walk_score_data
+    global nyc_community_district
 
     print('Getting Data for ' + neighborhood)
 
-    neighborhood_household_size_distribution          = GetHouseholdSizeData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Neighborhood households by size
-    neighborhood_tenure_distribution                  = GetHousingTenureData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Tenure (owner occupied/renter)
-    neighborhood_housing_value_data                   = GetHousingValues(         geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Owner Occupied housing units by value
-    neighborhood_year_built_data                      = GetHouseYearBuiltData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by year structure built
-    neighborhood_method_to_work_distribution          = GetTravelMethodData(      geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Mode to Work
-    neighborhood_household_income_data                = GetHouseholdIncomeValues( geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Households by household income data
-    neighborhood_time_to_work_distribution            = GetTravelTimeData(        geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Time to Work
-    neighborhood_number_units_data                    = GetNumberUnitsData(       geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by units in building
-    neighborhood_age_data                             = GetAgeData(               geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Population by age data
-    neighborhood_top_occupations_data                 = GetTopOccupationsData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Top Employment Occupations
+    # neighborhood_household_size_distribution          = GetHouseholdSizeData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Neighborhood households by size
+    # neighborhood_tenure_distribution                  = GetHousingTenureData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Tenure (owner occupied/renter)
+    # neighborhood_housing_value_data                   = GetHousingValues(         geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Owner Occupied housing units by value
+    # neighborhood_year_built_data                      = GetHouseYearBuiltData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by year structure built
+    # neighborhood_method_to_work_distribution          = GetTravelMethodData(      geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Mode to Work
+    # neighborhood_household_income_data                = GetHouseholdIncomeValues( geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Households by household income data
+    # neighborhood_time_to_work_distribution            = GetTravelTimeData(        geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Time to Work
+    # neighborhood_number_units_data                    = GetNumberUnitsData(       geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by units in building
+    # neighborhood_age_data                             = GetAgeData(               geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Population by age data
+    # neighborhood_top_occupations_data                 = GetTopOccupationsData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Top Employment Occupations
     
-    print('Getting Data For ' + comparison_area)
-    comparison_household_size_distribution       = GetHouseholdSizeData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    comparison_tenure_distribution               = GetHousingTenureData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    comparison_housing_value_data                = GetHousingValues(        geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
-    comparison_year_built_data                   = GetHouseYearBuiltData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    comparison_household_income_data             = GetHouseholdIncomeValues(geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')   
-    comparison_time_to_work_distribution         = GetTravelTimeData(       geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    # print('Getting Data For ' + comparison_area)
+    # comparison_household_size_distribution            = GetHouseholdSizeData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    # comparison_tenure_distribution                    = GetHousingTenureData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    # comparison_housing_value_data                     = GetHousingValues(        geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
+    # comparison_year_built_data                        = GetHouseYearBuiltData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    # comparison_household_income_data                  = GetHouseholdIncomeValues(geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')   
+    # comparison_time_to_work_distribution              = GetTravelTimeData(       geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
     
-    comparison_age_data                          = GetAgeData(              geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    comparison_number_units_data                 = GetNumberUnitsData(      geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
-    comparison_top_occupations_data              = GetTopOccupationsData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    # comparison_age_data                               = GetAgeData(              geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    # comparison_number_units_data                      = GetNumberUnitsData(      geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
+    # comparison_top_occupations_data                   = GetTopOccupationsData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
     
-    #Walk score
-    walk_score_data                              = GetWalkScore(            lat = latitude, lon = longitude                                                    )
+    # #Walk score
+    # walk_score_data                                   = GetWalkScore(            lat = latitude, lon = longitude                                                    )
 
-    #Overview Table Data
-    overview_table_data = GetOverviewTable(hood_geographic_level = neighborhood_level ,comparison_geographic_level = comparison_level )
-    
+    # #Overview Table Data
+    # overview_table_data                               = GetOverviewTable(hood_geographic_level = neighborhood_level ,comparison_geographic_level = comparison_level)
+    nyc_community_district                            = DetermineNYCCommunityDistrict(lat = latitude, lon = longitude )
+    print('THE NYC COMMUNITY DISTRICT IS')
+    fish
 #####################################################Graph Related Functions####################################
 def SetGraphFormatVariables():
     global graph_width, graph_height, scale,tickfont_size,left_margin,right_margin,top_margin,bottom_margin,legend_position,paper_backgroundcolor,title_position
@@ -3153,6 +3163,31 @@ def AddTable(document,data_for_table): #Function we use to insert our overview t
                         font.bold = True
                         font.name = 'Avenir Next LT Pro Demi'
 
+def AddTwoColumnTable(document,pic_list,lang_list):
+    #Insert the transit graphics(car, bus,plane, train)
+    tab = document.add_table(rows=0, cols=2)
+    for pic,lang in zip(pic_list,lang_list):
+        row_cells = tab.add_row().cells
+        
+        left_paragraph = row_cells[0].paragraphs[0]
+        run            = left_paragraph.add_run()
+        if pic == 'car.png':
+            run.add_text(' ')
+        run.add_picture(os.path.join(graphics_location,pic))
+
+        right_paragraph = row_cells[1].paragraphs[0]
+        run             = right_paragraph.add_run()
+        run.add_text(str(lang))
+
+    #We have now defined our table object,loop through all rows then all cells in each current row
+    for row in tab.rows:
+        for current_column,cell in enumerate(row.cells):
+            #Set Width for cell
+            if current_column == 0:
+                cell.width = Inches(.2)
+            elif current_column == 1:
+                cell.width = Inches(6)
+
 def AddPointOfInterestsTable(document,data_for_table): #Function we use to insert our table with Location IQ points of interest into the report document
     print(data_for_table)
     print(type(data_for_table))
@@ -3256,32 +3291,8 @@ def CommunityAssetsSection(document):
     AddTableTitle(document = document, title = 'Community Assets')
 
     #Add Community Assets Table
-    #Insert the transit graphics(car, bus,plane, train)
-    tab = document.add_table(rows=0, cols=2)
-    pic_list  = ['bank.png','food.png','medical.png','park.png','retail.png','school.png'] #list of graphics for each row (col 1)
-    lang_list = ['ROW 1', 'ROW 2', 'ROW 3', 'ROW 4', 'ROW 5', 'ROW 6']                       #list of text for each row (col 2)
-    for pic,lang in zip(pic_list,lang_list):
-        row_cells = tab.add_row().cells
-        
-        left_paragraph = row_cells[0].paragraphs[0]
-        run            = left_paragraph.add_run()
-        if pic == 'car.png':
-            run.add_text(' ')
-        run.add_picture(os.path.join(graphics_location,pic))
+    AddTwoColumnTable(document,pic_list      = ['bank.png','food.png','medical.png','park.png','retail.png','school.png'],lang_list =['ROW 1', 'ROW 2', 'ROW 3', 'ROW 4', 'ROW 5', 'ROW 6'] )
 
-        right_paragraph = row_cells[1].paragraphs[0]
-        run             = right_paragraph.add_run()
-        run.add_text(str(lang))
-
-    #We have now defined our table object,loop through all rows then all cells in each current row
-    for row in tab.rows:
-        for current_column,cell in enumerate(row.cells):
-            #Set Width for cell
-            if current_column == 0:
-                cell.width = Inches(.2)
-            elif current_column == 1:
-                cell.width = Inches(6)
-    
 def HousingSection(document):
     print('Writing Neighborhood Section')
     AddHeading(document = document, title = 'Housing',                  heading_level = 1,heading_number='Heading 3',font_size=11)
@@ -3417,32 +3428,7 @@ def TransportationSection(document):
     
     #Transportation Methods table
     AddTableTitle(document = document, title = 'Transportation Methods')
-
-    #Insert the transit graphics(car, bus,plane, train)
-    tab = document.add_table(rows=0, cols=2)
-    pic_list  = ['car.png','train.png','bus.png','plane.png','walk.png']
-    lang_list = [car_language, train_language, bus_language, plane_language,walk_score_data[0]]
-    for pic,lang in zip(pic_list,lang_list):
-        row_cells = tab.add_row().cells
-        
-        left_paragraph = row_cells[0].paragraphs[0]
-        run            = left_paragraph.add_run()
-        if pic == 'car.png':
-            run.add_text(' ')
-        run.add_picture(os.path.join(graphics_location,pic))
-
-        right_paragraph = row_cells[1].paragraphs[0]
-        run             = right_paragraph.add_run()
-        run.add_text(str(lang))
-
-    #We have now defined our table object,loop through all rows then all cells in each current row
-    for row in tab.rows:
-        for current_column,cell in enumerate(row.cells):
-            #Set Width for cell
-            if current_column == 0:
-                cell.width = Inches(.2)
-            elif current_column == 1:
-                cell.width = Inches(6)
+    AddTwoColumnTable(document,pic_list      = ['car.png','train.png','bus.png','plane.png','walk.png'],lang_list =[car_language, train_language, bus_language, plane_language,walk_score_data[0]] )
 
 def OutlookSection(document):
     print('Writing Outlook Section')
@@ -3563,7 +3549,7 @@ def DecideIfWritingReport():
         report_creation = ''
 
 def UserSelectsNeighborhoodLevel():
-    
+    global analysis_type_number
     analysis_type_number = input('What is the geographic level of the neighborhood and comparison area?' + '\n'
   
                                 '1.) = Place  vs. County'+ '\n' #+
@@ -3615,12 +3601,9 @@ def UserSelectsNeighborhoodLevel():
     
     return(int(analysis_type_number))
 
-def GetUserInputs():
+def GetUserInputs(analysis_type_number):
     global neighborhood_level,comparison_level
-    if batch_mode == True:
-        analysis_type_number = 3
-    else:
-        analysis_type_number = UserSelectsNeighborhoodLevel()
+
     
     #Each number corresponds to a different analysis level pair eg: place vs county, zip vs. place, etc
     if analysis_type_number == 1: #Place  vs. County
@@ -3741,7 +3724,7 @@ def GetUserInputs():
 
     #Get User input on neighborhood/subject area
     if neighborhood_level == 'place':        #when our neighborhood is a town or city eg: East Rockaway Village, New York
-        place_fips_info                 = ProcessPlaceFIPS(place_fips = input('Enter the 7 digit Census Place FIPS Code'))
+        place_fips_info                 = ProcessPlaceFIPS(input('Enter the 7 digit Census Place FIPS Code'))
         hood_place_fips                 = place_fips_info[0]
         hood_state_fips                 = place_fips_info[1]
         neighborhood                    = place_fips_info[2]
@@ -3837,7 +3820,6 @@ def GetUserInputs():
         comparison_state                       = zip_info[4]
         comparison_state_fips                  = zip_info[5]
         comparison_place_type                  = 'zip code'
-
       
     elif comparison_level == 'tract':        #when our comparison area is a census tract eg: Tract 106.01 in Manhattan
         tract_info                            = ProcessCountyTract(tract = input('Enter the 6 digit tract code'), county_fips =  input('Enter the 5 digit County FIPS Code for the county the hood tract is in'))
@@ -3849,11 +3831,9 @@ def GetUserInputs():
         comparison_state_fips                 = tract_info[5]
         comparison_place_type                 = 'census tract'
 
-  
     elif comparison_level == 'custom':   #When our comparison area is a neighboorhood within a city (eg: Financial District, New York City)
         comparison_area                       = input('Enter the name of the custom comparison area').strip()
         comparison_place_type                 = 'neighborhood'
-
 
     #Use comparison area state when doing a custom report
     if neighborhood_level == 'custom':
@@ -3893,13 +3873,13 @@ def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
         print(f'Deleting temporary CSV: ', csv_path)
         os.remove(csv_path)           
 
-def Main():
+def Main(analysis_type_number):
     DeclareAPIKeys()
     DeclareFormattingParameters()
     DecideIfWritingReport()
    
     if report_creation == 'y':
-        GetUserInputs() #user selects if they want to run report and gives input for report subject
+        GetUserInputs(analysis_type_number) #user selects if they want to run report and gives input for report subject
         print('Preparing report for: ' + neighborhood + ' compared to ' + comparison_area)
         global latitude
         global longitude
@@ -3918,6 +3898,8 @@ def Main():
         CreateLanguage()
         WriteReport()
         CleanUpPNGs()
+        print('Report for: ---------' + neighborhood + ' compared to ' + comparison_area + ' Complete ----------------')
+
     
     #Crawl through directory and create CSV with all current neighborhood report documents
     CreateDirectoryCSV()
@@ -3929,17 +3911,20 @@ def Main():
                     csv_path=os.path.join(main_output_location, service_api_csv_name),
                     dropbox_dir='https://www.dropbox.com/home/Research/Market Analysis/Neighborhood/')
 
+
+
 #This is our main function that calls all other functions we will use
 batch_mode = True
 #EXPERIMENT IN PROGRESS BATCH HOOD RERPORTS
 if batch_mode == True:
-    for city,place_fips in zip(['Fort Lauderdale','Boston'],['12-24000','25-07000']):
+    for city,place_fips in zip(['New York City'],['36-51000']):
         
-        analysis_type_number =     3
         for  neighborhood in GetListOfNeighborhoods(city):
             try:
-                Main()
+                Main(analysis_type_number =     3)
             except Exception as e:
                 print(e,'REORT CREATION FAILED')
 else:
-    Main()
+    Main(analysis_type_number = UserSelectsNeighborhoodLevel())
+
+
