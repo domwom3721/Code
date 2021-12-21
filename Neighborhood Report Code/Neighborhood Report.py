@@ -386,7 +386,9 @@ def CreateDirectory():
             pass 
          else:
             os.mkdir(folder) 
+    
     report_path = os.path.join(hood_folder,current_year + ' ' + hood_state + ' - ' + neighborhood  + ' - hood' + '_draft.docx')[:255]
+
 def FindZipCodeDictionary(zip_code_data_dictionary_list,zcta,state_fips):
     #This function takes a list of dictionaries, where each zip code gets its own dictionary. Takes a zip code and state fips code and finds and returns just that dictionary.
     #We need to use this, because the census api is causing an error that requires us to retrive data for all zip codes in the country
@@ -1542,7 +1544,6 @@ def GetData():
     #Overview Table Data
     overview_table_data                               = GetOverviewTable(hood_geographic_level = neighborhood_level ,comparison_geographic_level = comparison_level)
     nyc_community_district                            = DetermineNYCCommunityDistrict(lat = latitude, lon = longitude )
-    print('THE NYC COMMUNITY DISTRICT IS ' + str(nyc_community_district))
     
 #####################################################Graph Related Functions####################################
 def SetGraphFormatVariables():
@@ -2129,6 +2130,7 @@ def CreateTopOccupationsHistogram():
     
     occupations_categories       =  ['Management and Business','Service','Sales and Office','Natural Resources','Production']
     neighborhood_top_occupations = neighborhood_top_occupations_data
+    assert len(occupations_categories) == len(neighborhood_top_occupations)
     
     #Add Bars with neighborhood household size distribution
     fig.add_trace(
