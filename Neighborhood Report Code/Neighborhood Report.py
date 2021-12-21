@@ -3934,12 +3934,12 @@ def Main():
 batch_mode = True
 #EXPERIMENT IN PROGRESS BATCH HOOD RERPORTS
 if batch_mode == True:
-    for city,place_fips in zip(['Richmond','Boston'],['51-67000','25-07000']):
+    for city,place_fips in zip(['Fort Lauderdale','Boston'],['12-24000','25-07000']):
         
         
 
+        analysis_type_number =     3
         for  neighborhood in GetListOfNeighborhoods(city):
-            analysis_type_number =     3
             try:
                 Main()
             except Exception as e:
