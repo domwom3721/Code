@@ -2513,7 +2513,7 @@ def OutlookLanguage():
                         #Growth sentance
                         'It has seen ' +
                         pop_growth_description +
-                        ' population growth over the past decade, a trend that is expected to contiue in the near-term.'
+                        ' population growth over the past decade, a trend that is expected to continue in the near-term.'
                         
                          )
     
@@ -3951,7 +3951,7 @@ def Main(analysis_type_number):
 
 
 #This is our main function that calls all other functions we will use
-batch_mode = True
+batch_mode = False
 #EXPERIMENT IN PROGRESS BATCH HOOD RERPORTS
 if batch_mode == True:
     for city,place_fips in zip(['New York'],['36-51000']):
