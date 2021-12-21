@@ -2823,7 +2823,7 @@ def TravelTimeLanguage():
 
 def LocationIQPOIListLanguage(lat,lon,category):
     #Searches the Locate IQ API for points of interest
-    print('Searching Location IQ API')
+    print('Searching Location IQ API for: ',category)
 
     url = "https://us1.locationiq.com/v1/nearby.php"
 
@@ -2841,21 +2841,29 @@ def LocationIQPOIListLanguage(lat,lon,category):
     except Exception as e:
         return('')
     
-    poi_list = (neighborhood + ' has several ' + category + 'assets including: ')
-    for poi in response:
-        if type(poi) == dict:
-            poi_name      = poi['name']
-            poi_type      = poi['type']
-            poi_city      = poi['address']['city']
-            poi_sentence  = (' ' + poi_name + ', ' )
+    try:
+        poi_list = (neighborhood + ' has several ' + category + 'assets including: ')
+        for poi in response:
+            try:
+                poi_name      = poi['name']
+                print(poi_name)
+                poi_type      = poi['type']
+                poi_city      = poi['address']['city']
+                poi_sentence  = (' ' + poi_name + ', ' )
 
-            #For cities/towns, restrict points of interest to those inside the city limits
-            if neighborhood_level == 'place':
-                if neighborhood == poi_city:
-                    poi_sentence = poi_list + poi_sentence
-
-            else:
                 poi_list = poi_list + poi_sentence
+            except:
+                continue
+            #For cities/towns, restrict points of interest to those inside the city limits
+
+            # if neighborhood_level == 'place':
+            #     if neighborhood == poi_city:
+            #         poi_sentence = poi_list + poi_sentence
+            # else:
+
+        return(poi_list)
+    except Exception as e:
+            print(e)
 
 def CreateLanguage():
     
