@@ -342,7 +342,17 @@ def ProcessZipCode(zip_code):
 
 
     return([county_fips, zip_code, name,state_full_name,state,state_fips])
-     
+
+def PlaceFIPSToCountyFIPS(place_fips):
+    #Takes 7 digit place fips code for a city and returns the 5 digit fips code for that city
+    
+    #Open file with place fips code and county fips code
+
+    #Restrict to observations that include the provieded place fips
+
+    #Return the last row if that's there's only one, otherwise ask user to choose
+    pass
+         
 #####################################################Misc Functions####################################
 def CreateDirectory():
     print('Creating Directories and file name')
@@ -3832,8 +3842,9 @@ def GetUserInputs(analysis_type_number):
 
     elif neighborhood_level == 'custom': #When our neighborhood is a neighboorhood within a city (eg: Financial District, New York City)
         #Get name of hood
-        # neighborhood      = input('Enter the name of the custom neighborhood').strip()
-        hood_place_type   = 'neighborhood'
+        neighborhood      = input('Enter the name of the custom neighborhood').strip()
+        # hood_place_type   = 'neighborhood' #use this for batches of  all the hoods in a city
+        hood_place_type                 = 'custom'
 
 
     global comparison_area, comparison_tract ,comparison_zip, comparison_place_fips, comparison_suvdiv_fips, comparison_county_fips
@@ -3851,8 +3862,8 @@ def GetUserInputs(analysis_type_number):
         comparison_place_type                 = 'county'
 
     elif comparison_level == 'place':        #when our comparison area is a town or city eg: East Rockaway Village, New York
-        place_fips_info                      = ProcessPlaceFIPS(place_fips)
-        # place_fips_info                      = ProcessPlaceFIPS(place_fips = input('Enter the 7 digit Census Place FIPS Code') )
+        # place_fips_info                      = ProcessPlaceFIPS(place_fips) #use this for batches of  all the hoods in a city
+        place_fips_info                      = ProcessPlaceFIPS(place_fips = input('Enter the 7 digit Census Place FIPS Code') )
         comparison_place_fips                = place_fips_info[0]
         comparison_state_fips                = place_fips_info[1]
         comparison_area                      = place_fips_info[2]
