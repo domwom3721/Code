@@ -50,7 +50,7 @@ from requests.packages.urllib3.util.retry import Retry
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from shapely.geometry import LineString, MultiPoint, Point, shape
+from shapely.geometry import LineString, MultiPoint, Point, shape,Polygon
 from shapely.ops import nearest_points
 from walkscore import WalkScoreAPI
 from wikipedia.wikipedia import random
@@ -192,7 +192,36 @@ def GetListOfNeighborhoods(city):
         return([])
 
 def DetermineNYCCommunityDistrict(lat,lon):
-    pass
+    try:
+        from osgeo import gdal
+        #Method 1: Pull geojson from file with city name
+        with open(os.path.join(data_location,'Neighborhood Shapes','NY','nyc_communitydistricts.json')) as infile: #Open a geojson file with the city as the name the name of the file with the neighborhood boundries for that city
+            my_shape_geojson = json.load(infile)
+        
+        
+            
+        #Iterate through the features in the file (each feature is a communtiy district) and find the boundry of interest
+        for communtiy_district in range(len(my_shape_geojson['features'])):
+            communtiy_district_number = my_shape_geojson['features'][communtiy_district]['id']
+            communtiy_district_shape  = my_shape_geojson['features'][communtiy_district]['geometry']['coordinates'][0]
+            
+            try:
+                point   = Point(lon, lat)
+                polygon = Polygon([tuple(l) for l in communtiy_district_shape])      
+                
+                # print(communtiy_district_shape)
+                print(communtiy_district_number)
+                
+                #Check if lat and lon is inside the communtiy district
+                if polygon.contains(point) == True:
+                    return(communtiy_district_number)
+
+            except:
+                continue
+
+    except Exception as e:
+        print(e)
+        return(None)
 
 #####################################################User FIPS input proccessing Functions####################################
 
@@ -1485,37 +1514,37 @@ def GetData():
 
     print('Getting Data for ' + neighborhood)
 
-    # neighborhood_household_size_distribution          = GetHouseholdSizeData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Neighborhood households by size
-    # neighborhood_tenure_distribution                  = GetHousingTenureData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Tenure (owner occupied/renter)
-    # neighborhood_housing_value_data                   = GetHousingValues(         geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Owner Occupied housing units by value
-    # neighborhood_year_built_data                      = GetHouseYearBuiltData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by year structure built
-    # neighborhood_method_to_work_distribution          = GetTravelMethodData(      geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Mode to Work
-    # neighborhood_household_income_data                = GetHouseholdIncomeValues( geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Households by household income data
-    # neighborhood_time_to_work_distribution            = GetTravelTimeData(        geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Time to Work
-    # neighborhood_number_units_data                    = GetNumberUnitsData(       geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by units in building
-    # neighborhood_age_data                             = GetAgeData(               geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Population by age data
-    # neighborhood_top_occupations_data                 = GetTopOccupationsData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Top Employment Occupations
+    neighborhood_household_size_distribution          = GetHouseholdSizeData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Neighborhood households by size
+    neighborhood_tenure_distribution                  = GetHousingTenureData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Tenure (owner occupied/renter)
+    neighborhood_housing_value_data                   = GetHousingValues(         geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Owner Occupied housing units by value
+    neighborhood_year_built_data                      = GetHouseYearBuiltData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by year structure built
+    neighborhood_method_to_work_distribution          = GetTravelMethodData(      geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Mode to Work
+    neighborhood_household_income_data                = GetHouseholdIncomeValues( geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Households by household income data
+    neighborhood_time_to_work_distribution            = GetTravelTimeData(        geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Time to Work
+    neighborhood_number_units_data                    = GetNumberUnitsData(       geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by units in building
+    neighborhood_age_data                             = GetAgeData(               geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Population by age data
+    neighborhood_top_occupations_data                 = GetTopOccupationsData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Top Employment Occupations
     
-    # print('Getting Data For ' + comparison_area)
-    # comparison_household_size_distribution            = GetHouseholdSizeData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    # comparison_tenure_distribution                    = GetHousingTenureData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    # comparison_housing_value_data                     = GetHousingValues(        geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
-    # comparison_year_built_data                        = GetHouseYearBuiltData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    # comparison_household_income_data                  = GetHouseholdIncomeValues(geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')   
-    # comparison_time_to_work_distribution              = GetTravelTimeData(       geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    print('Getting Data For ' + comparison_area)
+    comparison_household_size_distribution            = GetHouseholdSizeData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    comparison_tenure_distribution                    = GetHousingTenureData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    comparison_housing_value_data                     = GetHousingValues(        geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
+    comparison_year_built_data                        = GetHouseYearBuiltData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    comparison_household_income_data                  = GetHouseholdIncomeValues(geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')   
+    comparison_time_to_work_distribution              = GetTravelTimeData(       geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
     
-    # comparison_age_data                               = GetAgeData(              geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    # comparison_number_units_data                      = GetNumberUnitsData(      geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
-    # comparison_top_occupations_data                   = GetTopOccupationsData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    comparison_age_data                               = GetAgeData(              geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    comparison_number_units_data                      = GetNumberUnitsData(      geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
+    comparison_top_occupations_data                   = GetTopOccupationsData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
     
-    # #Walk score
-    # walk_score_data                                   = GetWalkScore(            lat = latitude, lon = longitude                                                    )
+    #Walk score
+    walk_score_data                                   = GetWalkScore(            lat = latitude, lon = longitude                                                    )
 
-    # #Overview Table Data
-    # overview_table_data                               = GetOverviewTable(hood_geographic_level = neighborhood_level ,comparison_geographic_level = comparison_level)
+    #Overview Table Data
+    overview_table_data                               = GetOverviewTable(hood_geographic_level = neighborhood_level ,comparison_geographic_level = comparison_level)
     nyc_community_district                            = DetermineNYCCommunityDistrict(lat = latitude, lon = longitude )
-    print('THE NYC COMMUNITY DISTRICT IS')
-    fish
+    print('THE NYC COMMUNITY DISTRICT IS ' + str(nyc_community_district))
+    
 #####################################################Graph Related Functions####################################
 def SetGraphFormatVariables():
     global graph_width, graph_height, scale,tickfont_size,left_margin,right_margin,top_margin,bottom_margin,legend_position,paper_backgroundcolor,title_position
@@ -3917,13 +3946,14 @@ def Main(analysis_type_number):
 batch_mode = True
 #EXPERIMENT IN PROGRESS BATCH HOOD RERPORTS
 if batch_mode == True:
-    for city,place_fips in zip(['New York City'],['36-51000']):
+    for city,place_fips in zip(['New York'],['36-51000']):
         
         for  neighborhood in GetListOfNeighborhoods(city):
             try:
                 Main(analysis_type_number =     3)
             except Exception as e:
                 print(e,'REORT CREATION FAILED')
+                # break
 else:
     Main(analysis_type_number = UserSelectsNeighborhoodLevel())
 
