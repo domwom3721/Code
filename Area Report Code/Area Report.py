@@ -645,13 +645,17 @@ def GetMSAGDP(cbsa,observation_start):
 
 def GetMSAResidentPopulation(cbsa,observation_start):
     print('Getting MSA Population')
-    #Resident Population 
-    resident_population_series_names = pd.read_excel(os.path.join(data_location,'FRED Series Names','GeoFRED_Resident_Population_by_Metropolitan_Statistical_Area_Thousands_of_Persons.xls'),
-                dtype={'Region Code': object
-                      })
-    resident_population_series_names['Region Code'] = resident_population_series_names['Region Code'].astype(str)
-    resident_population_series_names = resident_population_series_names.loc[resident_population_series_names['Region Code'] == cbsa]
-    msa_pop_series_code = resident_population_series_names['Series ID'].iloc[0]
+    try:
+        #Resident Population 
+        resident_population_series_names = pd.read_excel(os.path.join(data_location,'FRED Series Names','GeoFRED_Resident_Population_by_Metropolitan_Statistical_Area_Thousands_of_Persons.xls'),
+                    dtype={'Region Code': object
+                        })
+        resident_population_series_names['Region Code'] = resident_population_series_names['Region Code'].astype(str)
+        resident_population_series_names = resident_population_series_names.loc[resident_population_series_names['Region Code'] == cbsa]
+        msa_pop_series_code = resident_population_series_names['Series ID'].iloc[0]
+    except:
+        msa_pop_series_code = input('enter the FRED series code for resident population for MSA')
+
     
     msa_pop_df = fred.get_series(series_id = msa_pop_series_code,observation_start=observation_start)
     msa_pop_df = msa_pop_df.to_frame().reset_index()
