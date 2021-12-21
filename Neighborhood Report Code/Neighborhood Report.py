@@ -173,6 +173,24 @@ def GetNeighborhoodShape():
             input('We are using a downloaded file from google for custom bounds for ' + neighborhood_custom_name +  ' --- press enter to confirm!')
             return(neighborhood_shape) 
 
+def GetListOfNeighborhoods(city):
+    try:
+        from osgeo import gdal
+            #Method 1: Pull geojson from file with city name
+        with open(os.path.join(data_location,'Neighborhood Shapes',city + '.geojson')) as infile: #Open a geojson file with the city as the name the name of the file with the neighborhood boundries for that city
+                    my_shape_geojson = json.load(infile)
+                
+        #Iterate through the features in the file (each feature is a negihborhood) and find the boundry of interest
+        feature_hood_names = []
+        for i in range(len(my_shape_geojson['features'])):
+            feature_hood_name = my_shape_geojson['features'][i]['properties']['name']
+            feature_hood_names.append(feature_hood_name)
+            
+        return(feature_hood_names) 
+    except Exception as e:
+        print(e)
+        return([])
+                
 #####################################################User FIPS input proccessing Functions####################################
 
 def ProcessPlaceFIPS(place_fips):
@@ -3600,8 +3618,11 @@ def UserSelectsNeighborhoodLevel():
 
 def GetUserInputs():
     global neighborhood_level,comparison_level
+    try:
+        assert analysis_type_number > 0
+    except:
+        analysis_type_number = UserSelectsNeighborhoodLevel()
     
-    analysis_type_number = UserSelectsNeighborhoodLevel()
     #Each number corresponds to a different analysis level pair eg: place vs county, zip vs. place, etc
     if analysis_type_number == 1: #Place  vs. County
         neighborhood_level = 'place'
@@ -3770,7 +3791,7 @@ def GetUserInputs():
 
     elif neighborhood_level == 'custom': #When our neighborhood is a neighboorhood within a city (eg: Financial District, New York City)
         #Get name of hood
-        neighborhood      = input('Enter the name of the custom neighborhood').strip()
+        # neighborhood      = input('Enter the name of the custom neighborhood').strip()
         hood_place_type   = 'neighborhood'
 
 
@@ -3789,7 +3810,8 @@ def GetUserInputs():
         comparison_place_type                 = 'county'
 
     elif comparison_level == 'place':        #when our comparison area is a town or city eg: East Rockaway Village, New York
-        place_fips_info                      = ProcessPlaceFIPS(place_fips = input('Enter the 7 digit Census Place FIPS Code') )
+        place_fips_info                      = ProcessPlaceFIPS(place_fips)
+        # place_fips_info                      = ProcessPlaceFIPS(place_fips = input('Enter the 7 digit Census Place FIPS Code') )
         comparison_place_fips                = place_fips_info[0]
         comparison_state_fips                = place_fips_info[1]
         comparison_area                      = place_fips_info[2]
@@ -3909,5 +3931,18 @@ def Main():
                     dropbox_dir='https://www.dropbox.com/home/Research/Market Analysis/Neighborhood/')
 
 #This is our main function that calls all other functions we will use
-Main()
+batch_mode = True
+#EXPERIMENT IN PROGRESS BATCH HOOD RERPORTS
+if batch_mode == True:
+    for city,place_fips in zip(['Richmond','Boston'],['51-67000','25-07000']):
+        
+        
 
+        for  neighborhood in GetListOfNeighborhoods(city):
+            analysis_type_number =     3
+            try:
+                Main()
+            except Exception as e:
+                print(e,'REORT CREATION FAILED')
+else:
+    Main()
