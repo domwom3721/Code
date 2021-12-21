@@ -2842,7 +2842,7 @@ def LocationIQPOIListLanguage(lat,lon,category):
         return('')
     
     try:
-        poi_list = (neighborhood + ' has several ' + category + 'assets including: ')
+        poi_list = (neighborhood + ' has several ' + category + ' assets including: ')
         for poi in response:
             try:
                 poi_name      = poi['name']
