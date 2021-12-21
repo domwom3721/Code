@@ -21,4 +21,6 @@ df = pd.DataFrame(df_salesforce)
 
 df['lat_long'] = df["Property Latitude"].astype(str) + ',' + df['Property Longitude'].astype(str)
 df.head()
-print(df_salesforce)
+print(df)
+df.to_csv(os.path.join(salesforce_report,'salesforce_export_test.csv'))
+
