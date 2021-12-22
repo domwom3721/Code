@@ -2876,11 +2876,10 @@ def LocationIQPOIListLanguage(lat,lon,category):
         for poi in response:
             try:
                 poi_name      = poi['name']
-                print(poi_name)
+                # print(poi_name)
                 poi_type      = poi['type']
                 poi_city      = poi['address']['city']
                 poi_sentence  = (' ' + poi_name + ', ' )
-
                 poi_list = poi_list + poi_sentence
             except:
                 continue
@@ -2890,7 +2889,7 @@ def LocationIQPOIListLanguage(lat,lon,category):
             #     if neighborhood == poi_city:
             #         poi_sentence = poi_list + poi_sentence
             # else:
-
+        time.sleep(.25)
         return(poi_list)
     except Exception as e:
             print(e)
