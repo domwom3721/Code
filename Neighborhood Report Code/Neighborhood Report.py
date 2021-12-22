@@ -356,17 +356,16 @@ def PlaceFIPSToCountyFIPS(place_fips):
     place_county_crosswalk_df['County_FIPS']             = place_county_crosswalk_df['County_FIPS'].str.zfill(5)
 
     #Restrict to observations that include the provieded place fips
-    print(place_county_crosswalk_df)
     place_county_crosswalk_df            = place_county_crosswalk_df.loc[place_county_crosswalk_df['PLACEFP'] == str(place_fips)]                 #restrict to rows for zip code
-    print(place_county_crosswalk_df)
+    print(place_county_crosswalk_df['County_FIPS'])
     
     #Return the last row if that's there's only one, otherwise ask user to choose
     if len(place_county_crosswalk_df) == 1:
-        county_fips                         = str(place_county_crosswalk_df['County_FIPS'].iloc[-1])[2:]
+        county_fips                         = str(place_county_crosswalk_df['County_FIPS'].iloc[-1])[0:5]
     elif len(place_county_crosswalk_df) > 1:
         print(place_county_crosswalk_df)
         input('There are more than 1 counties for this city: using last one please confirm') #** Fix later by giving user chance to choose 
-        county_fips                         = str(place_county_crosswalk_df['County_FIPS'].iloc[-1])[2:]
+        county_fips                         = str(place_county_crosswalk_df['County_FIPS'].iloc[-1])[0:5]
     else:
         return(None)
 
