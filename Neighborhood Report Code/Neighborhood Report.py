@@ -362,6 +362,7 @@ def PlaceFIPSToCountyFIPS(place_fips):
     if len(place_county_crosswalk_df) == 1:
         county_fips                         = str(place_county_crosswalk_df['County_FIPS'].iloc[-1])[2:]
     else:
+        print(place_county_crosswalk_df)
         input('There are more than 1 counties for this city: using last one please confirm') #** Fix later by giving user chance to choose 
         county_fips                         = str(place_county_crosswalk_df['County_FIPS'].iloc[-1])[2:]
 
