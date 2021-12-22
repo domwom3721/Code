@@ -359,7 +359,6 @@ def PlaceFIPSToCountyFIPS(place_fips):
 
     #Restrict to observations that include the provieded place fips
     place_county_crosswalk_df            = place_county_crosswalk_df.loc[place_county_crosswalk_df['PLACEFP'] == str(place_fips)]                 #restrict to rows for zip code
-    print(place_county_crosswalk_df['County_FIPS'])
     
     #Return the last row if that's there's only one, otherwise ask user to choose
     if len(place_county_crosswalk_df) == 1:
@@ -3241,7 +3240,8 @@ def AddTable(document,data_for_table): #Function we use to insert our overview t
                     paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
                 else:
                      paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
-                if current_row == 1:
+                #Make first row flush agaisnt bottom
+                if current_row == 0:
                     paragraph.paragraph_format.space_after   = Pt(0)
                     paragraph.paragraph_format.space_before  = Pt(0)
 
