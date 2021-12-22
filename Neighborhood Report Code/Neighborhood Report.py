@@ -2464,13 +2464,13 @@ def SummaryLangauge():
     try:
         wikipedia_summary = (wikipedia.summary((neighborhood + ',' + hood_state)))
     except Exception as e:
-        print(e)
+        print(e,'trouble getting wikiepdia summary')
         wikipedia_summary = ('')
 
     try:
         apartmentsdotcomlanguage = ApartmentsDotComSearch() #neighborhood summary pulled from Apartments.com
     except Exception as e:
-        print(e)
+        print(e,'trouble getting apartments.com summary')
         apartmentsdotcomlanguage = ('')
         
     return[wikipedia_summary,apartmentsdotcomlanguage]
