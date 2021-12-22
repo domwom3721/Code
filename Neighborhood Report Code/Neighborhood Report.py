@@ -1224,19 +1224,15 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
 def GetWikipediaPage():
     global page
     if (neighborhood_level == 'place') or (neighborhood_level == 'county subdivision') or (neighborhood_level == 'county'): #Don't bother looking for wikipedia page if zip code
-        try:
             wikipedia_page_search_term    = (neighborhood + ', ' + hood_state)
-            page                          =  wikipedia.page(wikipedia_page_search_term)
-                
-        except Exception as e:
-            print(e,': problem getting wikipedia page')
-            
+                       
     elif (neighborhood_level == 'custom'):
-        try:
             wikipedia_page_search_term    = (neighborhood + ', ' + comparison_area )
-            page                          =  wikipedia.page(wikipedia_page_search_term)        
-        except Exception as e:
-            print(e,': problem getting wikipedia page')
+    try:
+        page                          =  wikipedia.page(wikipedia_page_search_term)   
+    except Exception as e:
+        print(e,': problem getting wikipedia page')
+        page = None
 
 def GetWalkScore(lat,lon):
 
@@ -2462,7 +2458,7 @@ def WikipediaTransitLanguage(category):
 def SummaryLangauge():
     print('Creating Summary Langauge')
     try:
-        wikipedia_summary = (wikipedia.summary((neighborhood + ',' + hood_state)))
+        wikipedia_summary = page.summmary()
     except Exception as e:
         print(e,'trouble getting wikiepdia summary')
         wikipedia_summary = ('')
@@ -3011,7 +3007,6 @@ def CreateLanguage():
     year_built_language                =  HousingYearBuiltLanguage()
 
 
-
     #Communtiy assets langauge variables
     bank_language                      = LocationIQPOIListLanguage(lat = latitude, lon = longitude , category = 'bank' ) 
     food_language                      = LocationIQPOIListLanguage(lat = latitude, lon = longitude,  category = 'food' ) 
@@ -3274,7 +3269,6 @@ def AddDocumentPicture(document,image_path,citation):
 
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,citation)
-
 
 def AddTable(document,data_for_table): #Function we use to insert our overview table into the report document
     #list of list where each list is a row for our table
