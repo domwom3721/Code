@@ -2153,14 +2153,22 @@ def CreateTopOccupationsHistogram():
     print('Creating Top Occupations Graph')
     fig = make_subplots(specs=[[{"secondary_y": False}]])
     
-    occupations_categories       =  ['Management and Business','Service','Sales and Office','Natural Resources','Production']
-    neighborhood_top_occupations = neighborhood_top_occupations_data
-    assert len(occupations_categories) == len(neighborhood_top_occupations)
+    occupations_categories       =  ['Management and Business','Service','Sales and Office','Natural Resources','Production'] 
+    assert                       len(occupations_categories) == len(neighborhood_top_occupations_data)
+        
+    #We have a list of categories and a list of their respecitive employment shares. Covert to list, then sort from smallest to largest
+    top_occ_dict = {occupations_categories[i]: neighborhood_top_occupations_data[i] for i in range(len(occupations_categories))}
     
+    #Now sort dict by values
+    top_occ_dict = {k: v for k, v in sorted(top_occ_dict.items(), key=lambda item: item[1])}
+    
+    sorted_occupations_categories = list(top_occ_dict.keys())
+    sorted_occupations_shares     = list(top_occ_dict.values())
+
     #Add Bars with neighborhood household size distribution
     fig.add_trace(
-    go.Bar(y=neighborhood_top_occupations,
-           x=occupations_categories,
+    go.Bar(y=sorted_occupations_shares,
+           x=sorted_occupations_categories,
            name=neighborhood,
            marker_color="#4160D3")
             ,secondary_y=False
@@ -2696,7 +2704,6 @@ def EmploymentLanguage():
         
         #Now sort dict by values
         top_occ_dict = {k: v for k, v in sorted(top_occ_dict.items(), key=lambda item: item[1])}
-        print(top_occ_dict)
         
         industry_list   = list(top_occ_dict.keys())
         top_industry    = industry_list[len(industry_list) - 1]
