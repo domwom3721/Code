@@ -3266,6 +3266,16 @@ def AddDocumentParagraph(document,language_variable):
         font.name = 'Avenir Next LT Pro Light'
         par.style = document.styles['Normal']
 
+def AddDocumentPicture(document,image_path,citation):
+    if os.path.exists(image_path):
+        fig = document.add_picture(os.path.join(image_path),width=Inches(fig_width))
+        last_paragraph = document.paragraphs[-1] 
+        last_paragraph.paragraph_format.space_after       = Pt(0)
+
+        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        Citation(document,citation)
+
+
 def AddTable(document,data_for_table): #Function we use to insert our overview table into the report document
     #list of list where each list is a row for our table
      
@@ -3478,12 +3488,8 @@ def HousingSection(document):
     AddDocumentParagraph(document = document,language_variable =  housing_intro_language)
 
     #Insert household units by units in_structure graph
-    if os.path.exists(os.path.join(hood_folder,'household_units_in_structure_graph.png')):
-        fig = document.add_picture(os.path.join(hood_folder,'household_units_in_structure_graph.png'),width=Inches(fig_width))
-        last_paragraph = document.paragraphs[-1] 
-        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        Citation(document,'U.S. Census Bureau')
-
+    AddDocumentPicture(document = document, image_path = os.path.join(hood_folder,'household_units_in_structure_graph.png'),citation ='U.S. Census Bureau')
+    
     #Add tenure language
     AddDocumentParagraph(document = document,language_variable =  housing_type_tenure_language)
 
@@ -3540,31 +3546,19 @@ def PopulationSection(document):
     AddDocumentParagraph(document = document,language_variable =  household_size_language)
 
     #Insert Household size graph
-    if os.path.exists(os.path.join(hood_folder,'household_size_graph.png')):
-        fig = document.add_picture(os.path.join(hood_folder,'household_size_graph.png'),width=Inches(fig_width))
-        last_paragraph = document.paragraphs[-1] 
-        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        Citation(document,'U.S. Census Bureau')
+    AddDocumentPicture(document = document, image_path = os.path.join(hood_folder,'household_size_graph.png'),citation ='U.S. Census Bureau')
 
     #Age langauge
     AddDocumentParagraph(document = document,language_variable =  population_age_language)
     
     #Insert population by age graph
-    if os.path.exists(os.path.join(hood_folder,'population_by_age_graph.png')):
-        fig = document.add_picture(os.path.join(hood_folder,'population_by_age_graph.png'),width=Inches(fig_width))
-        last_paragraph = document.paragraphs[-1] 
-        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        Citation(document,'U.S. Census Bureau')
+    AddDocumentPicture(document = document, image_path = os.path.join(hood_folder,'population_by_age_graph.png'),citation ='U.S. Census Bureau')
     
     #Income langauge
     AddDocumentParagraph(document = document,language_variable =  income_language)
 
-    #Insert populatin by income graph
-    if os.path.exists(os.path.join(hood_folder,'population_by_income_graph.png')):
-        fig = document.add_picture(os.path.join(hood_folder,'population_by_income_graph.png'),width=Inches(fig_width))
-        last_paragraph = document.paragraphs[-1] 
-        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        Citation(document,'U.S. Census Bureau')
+    #Insert population by income graph
+    AddDocumentPicture(document = document, image_path = os.path.join(hood_folder,'population_by_income_graph.png'),citation ='U.S. Census Bureau')
 
 def EmploymentSection(document):
     print('Writing Employment Section')
@@ -3575,11 +3569,7 @@ def EmploymentSection(document):
     AddDocumentParagraph(document = document,language_variable =  employment_language)
     
     #Insert top occupations graph
-    if os.path.exists(os.path.join(hood_folder,'top_occupations_graph.png')):
-        fig = document.add_picture(os.path.join(hood_folder,'top_occupations_graph.png'),width=Inches(fig_width))
-        last_paragraph = document.paragraphs[-1] 
-        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        Citation(document,'U.S. Census Bureau')
+    AddDocumentPicture(document = document, image_path = os.path.join(hood_folder,'top_occupations_graph.png'),citation ='U.S. Census Bureau')
         
 def TransportationSection(document):
     print('Writing Transportation Section')
@@ -3590,21 +3580,13 @@ def TransportationSection(document):
     AddDocumentParagraph(document = document,language_variable =  travel_time_language)
 
     #Insert Travel Time to Work graph
-    if os.path.exists(os.path.join(hood_folder,'travel_time_graph.png')):
-        fig = document.add_picture(os.path.join(hood_folder,'travel_time_graph.png'),width=Inches(fig_width))
-        last_paragraph = document.paragraphs[-1] 
-        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        Citation(document,'U.S. Census Bureau')
+    AddDocumentPicture(document = document, image_path = os.path.join(hood_folder,'travel_time_graph.png'),citation ='U.S. Census Bureau')
     
     #Travel method Lanaguage
     AddDocumentParagraph(document = document,language_variable =  travel_method_language)
 
     #Insert Transport Method to Work graph
-    if os.path.exists(os.path.join(hood_folder,'travel_mode_graph.png')):
-        fig = document.add_picture(os.path.join(hood_folder,'travel_mode_graph.png'),width=Inches(fig_width))
-        last_paragraph = document.paragraphs[-1] 
-        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        Citation(document,'U.S. Census Bureau')
+    AddDocumentPicture(document = document, image_path = os.path.join(hood_folder,'travel_mode_graph.png'),citation ='U.S. Census Bureau')
     
     #Transportation Methods table
     AddTableTitle(document = document, title = 'Transportation Methods')
