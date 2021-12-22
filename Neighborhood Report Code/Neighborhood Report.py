@@ -2681,7 +2681,8 @@ def HousingYearBuiltLanguage():
 
 def EmploymentLanguage():
     print('Creating Employment by Industry angauge')
-    return(['The majority of working age residents are employed in the ______, ______, and _______ industries. ' + 'Given its large share of employees in the production industry, '])
+    employment_language = ('The majority of working age residents are employed in the ______, ______, and _______ industries. ')
+    return([employment_language])
 
 def HouseholdSizeLanguage():
     print('Creating Household by Size Langauge')
@@ -3900,9 +3901,8 @@ def GetUserInputs(analysis_type_number):
 
     elif neighborhood_level == 'custom': #When our neighborhood is a neighboorhood within a city (eg: Financial District, New York City)
         #Get name of hood
-        neighborhood      = input('Enter the name of the custom neighborhood').strip()
-        # hood_place_type   = 'neighborhood' #use this for batches of  all the hoods in a city
-        hood_place_type                 = 'custom'
+        neighborhood        = input('Enter the name of the custom neighborhood').strip()
+        hood_place_type     = 'neighborhood'
 
 
     global comparison_area, comparison_tract ,comparison_zip, comparison_place_fips, comparison_suvdiv_fips, comparison_county_fips
