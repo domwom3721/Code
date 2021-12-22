@@ -3585,7 +3585,13 @@ def TransportationSection(document):
     
     #Transportation Methods table
     AddTableTitle(document = document, title = 'Transportation Methods')
-    AddTwoColumnTable(document,pic_list      = ['car.png','train.png','bus.png','plane.png','walk.png'],lang_list =[car_language, train_language, bus_language, plane_language,walk_score_data[0]] )
+    
+    #Only include walk score for custom neighborhoods
+    if neighborhood_level == 'custom':
+        AddTwoColumnTable(document,pic_list      = ['walk.png','car.png','train.png','bus.png','plane.png',],lang_list =[walk_score_data[0],car_language, train_language, bus_language, plane_language] )
+    else:
+        AddTwoColumnTable(document,pic_list      = ['car.png','train.png','bus.png','plane.png',],lang_list =[car_language, train_language, bus_language, plane_language] )
+
 
 def OutlookSection(document):
     print('Writing Outlook Section')
