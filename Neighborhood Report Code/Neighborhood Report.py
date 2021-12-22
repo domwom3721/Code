@@ -2893,11 +2893,40 @@ def IncomeLanguage():
 
 def TravelMethodLanguage():
     print('Creating Travel Method Langauge')
-    travel_method_categories = ['driving alone','car pooling','public transportation','walking','working from home','biking','other']
-    hood_largest_travel_category      = travel_method_categories[neighborhood_method_to_work_distribution.index(max(neighborhood_method_to_work_distribution))] #get the most common income category
-    hood_largest_travel_category_frac = neighborhood_method_to_work_distribution[neighborhood_method_to_work_distribution.index(max(neighborhood_method_to_work_distribution))]
+    try:
+        travel_method_categories = ['driving alone','car pooling','public transportation','walking','working from home','biking','other']
+        assert len(travel_method_categories) == len(neighborhood_method_to_work_distribution)
+        
+        #We have a list of categories and a list of their respecitive employment shares. Covert to list, then sort from smallest to largest
+        top_method_dict = {travel_method_categories[i]: neighborhood_method_to_work_distribution[i] for i in range(len(travel_method_categories))}
+            
+        #Now sort dict by values
+        top_method_dict =  {k: v for k, v in sorted(top_method_dict.items(), key=lambda item: item[1])}
+        
+        methods_list   = list(top_method_dict.keys())
+        frac_list      = list(top_method_dict.values())
+        
+        hood_largest_travel_category        = methods_list[len(methods_list)     - 1]
+        hood_largest_travel_category_frac   = methods_list[len(methods_list)     - 1]
 
-    travel_method_language = ('In ' + neighborhood + ', the most common method for traveling to work is ' + hood_largest_travel_category.lower()  + ' with ' +  "{:,.0f}%".format(hood_largest_travel_category_frac) + ' of commuters using it.')
+        second_most_common_category         = frac_list[len(methods_list)     -    2]
+        second_most_common_frac             = frac_list[len(methods_list)     -    2]
+
+
+
+
+
+        travel_method_language = ('In ' + neighborhood + ', the most common method for traveling to work is ' + hood_largest_travel_category.lower()  + ' with ' +  "{:,.0f}%".format(hood_largest_travel_category_frac) + ' of commuters using it.' +
+                                 'The second most popular method is ' + 
+                                 second_most_common_category +
+                                 ' with ' +
+                                 "{:,.0f}%".format(second_most_common_frac) +
+                                 ' of commuters using it.'
+                                )
+    except Exception as e:
+        print(e,'problem creating travel method langauge')
+        travel_method_language = ''
+    
     return([travel_method_language])
     
 def TravelTimeLanguage():
@@ -2997,7 +3026,7 @@ def CreateLanguage():
     global travel_method_language, travel_time_language
     global housing_value_language,year_built_language
     global household_size_language
-    global bank_language, food_language, hospital_language, park_language, retail_language, edu_language
+    global bank_language, food_language, hospital_language, park_language, retail_language
     global housing_intro_language
 
     summary_langauge                   =  SummaryLangauge()
