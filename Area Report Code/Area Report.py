@@ -5226,23 +5226,39 @@ def AddTwoColumnTable(document,pic_list,lang_list):
             elif current_column == 1:
                 cell.width = Inches(6)
 
+def AddDocumentParagraph(document,language_variable):
+    assert type(language_variable) == list
+    for paragraph in language_variable:
+        if paragraph == '':
+            continue
+        par                                               = document.add_paragraph(paragraph)
+        par.alignment                                     = WD_ALIGN_PARAGRAPH.JUSTIFY
+        par.paragraph_format.space_after                  = Pt(primary_space_after_paragraph)
+        summary_format                                    = document.styles['Normal'].paragraph_format
+        summary_format.line_spacing_rule                  = WD_LINE_SPACING.SINGLE
+        style = document.styles['Normal']
+        font = style.font
+        font.name = 'Avenir Next LT Pro Light'
+        par.style = document.styles['Normal']
+
+def AddDocumentPicture(document,image_path,citation):
+    if os.path.exists(image_path):
+        fig = document.add_picture(os.path.join(image_path),width=Inches(6.5))
+        last_paragraph = document.paragraphs[-1] 
+        last_paragraph.paragraph_format.space_after       = Pt(0)
+
+        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        Citation(document,citation)
+
+
 #Report Section Functions
 def OverviewSection(document):
     print('Writing Overview Section')
     AddHeading(document = document, title = 'Overview',            heading_level = 2)
 
-    for paragraph in overview_language:
-        if paragraph == '': #Skip blank sections
-            continue
-        summary_paragraph = document.add_paragraph(paragraph)
-        summary_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-        summary_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-        summary_format = document.styles['Normal'].paragraph_format
-        summary_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
-        summary_style =  summary_paragraph.style
-        summary_style.font.name =primary_font
-    
+    AddDocumentParagraph(document = document, language_variable = overview_language)
 
+    
     #Overview table title
     table_title_paragraph = document.add_paragraph('Area Fundamentals')
     table_title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -5268,38 +5284,16 @@ def EmploymentSection(document):
     AddHeading(document = document, title = 'Labor Market Conditions',            heading_level = 2)
 
     #Add MSA Employment Breakdown Language
-    for paragraph in msa_emplopyment_industry_breakdown_language:
-        if paragraph == '': #Skip blank sections
-            continue
-        emp_paragraph = document.add_paragraph(paragraph)
-        emp_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-        emp_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-
-
+    AddDocumentParagraph(document = document, language_variable = msa_emplopyment_industry_breakdown_language)
 
     #Add MSA employment treemap chart
-    if os.path.exists(os.path.join(county_folder,'msa_employment_by_industry.png')):
-        employment_tree_fig = document.add_picture(os.path.join(county_folder,'msa_employment_by_industry.png'),width=Inches(6.5))
-        last_paragraph = document.paragraphs[-1] 
-        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        Citation(document,'U.S. Bureau of Labor Statistics')
-    
-    #Add County Employment Breakdown Language
-    for paragraph in county_emplopyment_industry_breakdown_language:
-        if paragraph == '': #Skip blank sections
-            continue
-        emp_paragraph = document.add_paragraph(paragraph)
-        emp_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-        emp_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    AddDocumentPicture(document = document,image_path = os.path.join(county_folder,'msa_employment_by_industry.png') ,citation = 'U.S. Bureau of Labor Statistics')
 
+    #Add County Employment Breakdown Language
+    AddDocumentParagraph(document = document, language_variable = county_emplopyment_industry_breakdown_language)
 
     #Add county employment treemap chart
-    if os.path.exists(os.path.join(county_folder,'employment_by_industry.png')):
-        employment_tree_fig = document.add_picture(os.path.join(county_folder,'employment_by_industry.png'),width=Inches(6.5))
-        last_paragraph = document.paragraphs[-1] 
-        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        Citation(document,'U.S. Bureau of Labor Statistics')
-    
+    AddDocumentPicture(document = document,image_path = os.path.join(county_folder,'employment_by_industry.png') ,citation = 'U.S. Bureau of Labor Statistics')
     
     # top_emp_paragraph = document.add_paragraph("""The Region’s largest employers shown below illustrates the size of the top industries in the region, accounting for the majority of the top Employers.""")
     # top_emp_paragraph.paragraph_format.space_after = Pt(0)
@@ -5317,136 +5311,53 @@ def EmploymentSection(document):
     # AddTable(document=document,data_for_table=[['Company Name','Industry'],['X','X'],['X','X'],['X','X'],['X','X'],['X','X'],['X','X'],['X','X'],['X','X'],['X','X'],['X','X'] ])
     # Citation(document=document,text='')
 
+    AddDocumentParagraph(document = document, language_variable = unemplopyment_language)
 
-
-    
-
-    emp_paragraph2 = document.add_paragraph(unemplopyment_language)
-    emp_paragraph2.paragraph_format.space_after = Pt(0)
-    emp_paragraph2.paragraph_format.space_after = Pt(6)
-    emp_paragraph2.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    emp_format2 = document.styles['Normal'].paragraph_format 
-    emp_format2.line_spacing_rule = WD_LINE_SPACING.SINGLE
-
-    
     #Add combined unemployment rate and employment growth graph
-    if os.path.exists(os.path.join(county_folder,'unemployment_rate_employment_growth.png')):
-        unemployment_fig = document.add_picture(os.path.join(county_folder,'unemployment_rate_employment_growth.png'),width=Inches(6.5))
-        last_paragraph = document.paragraphs[-1] 
-        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        Citation(document,'U.S. Bureau of Labor Statistics')
-
-
+    AddDocumentPicture(document = document,image_path = os.path.join(county_folder,'unemployment_rate_employment_growth.png') ,citation = 'U.S. Bureau of Labor Statistics')
 
     #MSA Employment growth language
-    for paragraph in msa_emplopyment_growth_language:
-        if paragraph == '': #Skip blank sections
-            continue
-        emp_paragraph = document.add_paragraph(paragraph)
-        emp_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-        emp_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-
+    AddDocumentParagraph(document = document, language_variable = msa_emplopyment_growth_language)
 
     #Add MSA employment growth by industry bar chart
-    if os.path.exists(os.path.join(county_folder,'msa_employment_growth_by_industry.png')):
-        msa_employment_pie_fig   = document.add_picture(os.path.join(county_folder,'msa_employment_growth_by_industry.png'),width=Inches(6.5))
-        last_paragraph           = document.paragraphs[-1] 
-        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        Citation(document,'U.S. Bureau of Labor Statistics')
-        Note(document,'Employment growth rates are not displayed for industries where the BLS has suppressed employment data for quality or privacy concerns.')
+    AddDocumentPicture(document = document,image_path = os.path.join(county_folder,'msa_employment_growth_by_industry.png') ,citation = 'U.S. Bureau of Labor Statistics')
 
     #County Employment growth language
-    for paragraph in county_emplopyment_growth_language:
-        if paragraph == '': #Skip blank sections
-            continue
-        emp_paragraph = document.add_paragraph(paragraph)
-        emp_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-        emp_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    AddDocumentParagraph(document = document, language_variable = county_emplopyment_growth_language)
 
     #Add county employment growth by industry bar chart
-    if os.path.exists(os.path.join(county_folder,'employment_growth_by_industry.png')):
-        employment_pie_fig = document.add_picture(os.path.join(county_folder,'employment_growth_by_industry.png'),width=Inches(6.5))
-        last_paragraph = document.paragraphs[-1] 
-        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        Citation(document,'U.S. Bureau of Labor Statistics')
-        Note(document,'Employment growth rates are not displayed for industries where the BLS has suppressed employment data for quality or privacy concerns.')
-    
+    AddDocumentPicture(document = document,image_path = os.path.join(county_folder,'employment_growth_by_industry.png') ,citation = 'U.S. Bureau of Labor Statistics')
+
 def ProductionSection(document):
     print('Writing Production Section')
     AddHeading(document = document, title = 'Economic Production',            heading_level = 2)
     
-    for paragraph in production_language:
-        if paragraph == '':
-            continue
-        production_paragraph = document.add_paragraph(paragraph)
-        production_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-        production_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    #Add GDP Language
+    AddDocumentParagraph(document = document, language_variable = production_language)
 
     #Add GDP Graph
-    if os.path.exists(os.path.join(county_folder,'gdp.png')):
-        gdp_fig = document.add_picture(os.path.join(county_folder,'gdp.png'),width=Inches(6.5))
-        last_paragraph = document.paragraphs[-1] 
-        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        gdp_format = document.styles['Normal'].paragraph_format
-        gdp_format.space_after = Pt(0)
-        Citation(document,'U.S. Bureau of Economic Analysis')
-        
+    AddDocumentPicture(document = document,image_path = os.path.join(county_folder,'gdp.png') ,citation = 'U.S. Bureau of Economic Analysis')
+
 def DemographicsSection(document):
     print('Writing Demographic Section')
     AddHeading(document = document, title = 'Demographics',            heading_level = 2)
 
     #Add langugage on population/population growth
-    pop_paragraph = document.add_paragraph(population_language)
-    pop_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-    pop_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-  
+    AddDocumentParagraph(document = document, language_variable = population_language)
 
     #Population graph
-    if os.path.exists(os.path.join(county_folder,'resident_population_and_growth.png')):
-        pop_fig = document.add_picture(os.path.join(county_folder,'resident_population_and_growth.png'),width=Inches(6.5))
-        last_paragraph = document.paragraphs[-1] 
-        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        Citation(document,'U.S. Census Bureau')
+    AddDocumentPicture(document = document,image_path = os.path.join(county_folder,'resident_population_and_growth.png') ,citation = 'U.S. Census Bureau')
 
     #Add langugage on per captia income and income growth
-    income_paragraph = document.add_paragraph(income_language)
-    income_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-    income_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    
+    AddDocumentParagraph(document = document, language_variable = income_language)
+
     #Per Capita Income and Income Growth
-    if os.path.exists(os.path.join(county_folder,'per_capita_income_and_growth.png')):
-        hhinc_fig = document.add_picture(os.path.join(county_folder,'per_capita_income_and_growth.png'),width=Inches(6.5))
-        last_paragraph = document.paragraphs[-1] 
-        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        Citation(document,'U.S. Census Bureau')
-    
-    # #Add Education Language Paragraph
-    # for paragraph in education_language:
-    #     if paragraph == '': #Skip blank sections
-    #         continue
-    #     education_paragraph = document.add_paragraph(paragraph)
-    #     education_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-    #     education_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-
-
-    # #Education Graph
-    # if os.path.exists(os.path.join(county_folder,'education_levels.png')):
-    #     edu_fig = document.add_picture(os.path.join(county_folder,'education_levels.png'),width=Inches(6.5))
-    #     last_paragraph = document.paragraphs[-1] 
-    #     last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    #     Citation(document,'U.S. Census Bureau')
+    AddDocumentPicture(document = document,image_path = os.path.join(county_folder,'per_capita_income_and_growth.png') ,citation = 'U.S. Census Bureau')
 
 def InfrastructureSection(document):
     print('Writing Infrastructure Section')
     AddHeading(document = document, title = 'Infrastructure',            heading_level = 2)
-
-    for paragreaph in infrastructure_language:
-        production_paragraph = document.add_paragraph(paragreaph)
-        production_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-        production_paragraph.paragraph_format.space_before = Pt(6)
-        production_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-
-
+    AddDocumentParagraph(document = document, language_variable = infrastructure_language)
 
     table_paragraph = document.add_paragraph('Transportation Methods')
     table_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -5460,32 +5371,16 @@ def InfrastructureSection(document):
     #Insert the transit graphics(car, bus,plane, train)
     AddTwoColumnTable(document,pic_list      = ['car.png','train.png','bus.png','plane.png'],lang_list =[car_language,train_language,bus_language,plane_language] )
 
-
 def HousingSection(document):
     print('Writing Housing Section')
     AddHeading(document = document, title = 'Housing',            heading_level = 2)
-    
-    for paragarph in housing_language:
-        housing_paragraph = document.add_paragraph(paragarph)
-        housing_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-        housing_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-
-
-    if os.path.exists(os.path.join(county_folder,'mlp.png')):
-        mlp_fig = document.add_picture(os.path.join(county_folder,'mlp.png'),width=Inches(6.5))
-        last_paragraph = document.paragraphs[-1] 
-        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        Citation(document,'Realtor.com')
+    AddDocumentParagraph(document = document, language_variable = housing_language)
+    AddDocumentPicture(document = document,image_path = os.path.join(county_folder,'mlp.png') ,citation = 'Realtor.com')
         
 def OutlookSection(document):
     print('Writing Outlook Section')
     AddHeading(document = document, title = 'Outlook',            heading_level = 2)
-    
-    for paragraph in outlook_language:
-        outlook_paragraph = document.add_paragraph(paragraph)
-        outlook_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-        outlook_paragraph.paragraph_format.space_before = Pt(6)
-        outlook_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    AddDocumentParagraph(document = document, language_variable = outlook_language)
 
 def WriteReport():
     print('Writing Report')
