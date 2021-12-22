@@ -3131,7 +3131,7 @@ def OverlayMapImages():
     #Open zommed out map
     img1 = Image.open(map2_path)
     
-    add_border(map_path, output_image = map_path, border=1)
+    add_border(map_path, output_image = map_path, border=5)
     time.sleep(.2)
     #Open zommed in map
     img2 = Image.open(map_path)
