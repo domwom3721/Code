@@ -2549,7 +2549,7 @@ def HousingTypeTenureLanguage():
     else:
         hood_owner_ouccupied_higher_lower   =  '[lower than/higher than/equal to]'
     
-    housing_type_tenure_langugage = ('Data from the the most recent American Community Survey indicates a precense of single family homes, some smaller multifamily properties, along with larger garden style properties, and even some buildings with 50+ units. ' +
+    housing_type_tenure_langugage = ('Data from the the most recent American Community Survey indicates a presence of single family homes, some smaller multifamily properties, along with larger garden style properties, and even some buildings with 50+ units. ' +
         most_common_category + ' are the most common form of housing in ' + neighborhood + ', followed by ' + '#second_most_common_category' + '. According to the most recent American Community Survey, ' +
             "{:,.1f}%".format(hood_owner_occupied_fraction)                        +   
            ' of the housing units in '                                             + 
