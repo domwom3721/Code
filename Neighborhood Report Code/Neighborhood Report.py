@@ -346,14 +346,15 @@ def ProcessZipCode(zip_code):
 
 def PlaceFIPSToCountyFIPS(place_fips):
     #Takes 7 digit place fips code for a city and returns the 5 digit fips code for that city
-    print(place_fips)
+    
     #Open file with place fips code and county fips code
     place_county_crosswalk_df                            = pd.read_csv(os.path.join(data_location,'Census Area Codes','national_places.csv'),encoding='latin-1') #read in crosswalk file
     
     place_county_crosswalk_df['PLACEFP']                 = place_county_crosswalk_df['PLACEFP'].astype(str)
     place_county_crosswalk_df['PLACEFP']                 = place_county_crosswalk_df['PLACEFP'].str.zfill(5)
     place_county_crosswalk_df['County_FIPS']             = place_county_crosswalk_df['County_FIPS'].astype(str)
-    place_county_crosswalk_df['County_FIPS']             = place_county_crosswalk_df['County_FIPS'].str.zfill(5)
+    place_county_crosswalk_df['County_FIPS']             = place_county_crosswalk_df['County_FIPS'].str.zfill(7)
+
 
     #Restrict to observations that include the provieded place fips
     place_county_crosswalk_df            = place_county_crosswalk_df.loc[place_county_crosswalk_df['PLACEFP'] == str(place_fips)]                 #restrict to rows for zip code
