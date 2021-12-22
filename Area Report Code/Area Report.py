@@ -3,6 +3,7 @@
 
 import math
 import os
+import re
 import time
 from threading import Thread
 from datetime import date
@@ -4156,192 +4157,202 @@ def ProductionLanguage(county_data_frame,msa_data_frame,state_data_frame):
 
 def IncomeLanguage():
     print('Writing Income Langauge')   
-    
-    #Get latest county income level
-    latest_county_income          = round(county_pci['Per Capita Personal Income'].iloc[-1])
-    latest_county_year            = str(county_pci['Period'].iloc[-1])[0:4]  
+    try:
+        #Get latest county income level
+        latest_county_income          = round(county_pci['Per Capita Personal Income'].iloc[-1])
+        latest_county_year            = str(county_pci['Period'].iloc[-1])[0:4]  
 
-    #Get County growth rates
-    county_pci['Per Capita Personal Income_1year_growth'] =  (((county_pci['Per Capita Personal Income']/county_pci['Per Capita Personal Income'].shift(1))  - 1) * 100)/1
-    county_pci['Per Capita Personal Income_3year_growth'] =  (((county_pci['Per Capita Personal Income']/county_pci['Per Capita Personal Income'].shift(3))   - 1) * 100)/3
-    county_pci['Per Capita Personal Income_5year_growth'] =  (((county_pci['Per Capita Personal Income']/county_pci['Per Capita Personal Income'].shift(5))   - 1) * 100)/5
+        #Get County growth rates
+        county_pci['Per Capita Personal Income_1year_growth'] =  (((county_pci['Per Capita Personal Income']/county_pci['Per Capita Personal Income'].shift(1))  - 1) * 100)/1
+        county_pci['Per Capita Personal Income_3year_growth'] =  (((county_pci['Per Capita Personal Income']/county_pci['Per Capita Personal Income'].shift(3))   - 1) * 100)/3
+        county_pci['Per Capita Personal Income_5year_growth'] =  (((county_pci['Per Capita Personal Income']/county_pci['Per Capita Personal Income'].shift(5))   - 1) * 100)/5
 
-    county_1y_growth  = county_pci.iloc[-1]['Per Capita Personal Income_1year_growth'] 
-    county_3y_growth  = county_pci.iloc[-1]['Per Capita Personal Income_3year_growth'] 
-    county_5y_growth  = county_pci.iloc[-1]['Per Capita Personal Income_5year_growth']
+        county_1y_growth  = county_pci.iloc[-1]['Per Capita Personal Income_1year_growth'] 
+        county_3y_growth  = county_pci.iloc[-1]['Per Capita Personal Income_3year_growth'] 
+        county_5y_growth  = county_pci.iloc[-1]['Per Capita Personal Income_5year_growth']
 
-    #See if 3 year income growth rate was higher or lower than 5 year growth rate
-    if county_3y_growth > county_5y_growth:
-        three_five_year_county_declined_or_expanded = 'expanded'
-    elif county_3y_growth < county_5y_growth:
-        three_five_year_county_declined_or_expanded = 'declined'
-    elif county_3y_growth == county_5y_growth:
-        three_five_year_county_declined_or_expanded = 'remained stable'
+        #See if 3 year income growth rate was higher or lower than 5 year growth rate
+        if county_3y_growth > county_5y_growth:
+            three_five_year_county_declined_or_expanded = 'expanded'
+        elif county_3y_growth < county_5y_growth:
+            three_five_year_county_declined_or_expanded = 'declined'
+        elif county_3y_growth == county_5y_growth:
+            three_five_year_county_declined_or_expanded = 'remained stable'
 
-    #Get national growth rates
-    national_pci_restricted = national_pci.loc[national_pci['Period'] <= (county_pci['Period'].max())] #Restrict to last year of county data to marke sure we comapre appples to apples
-    national_pci_restricted['Per Capita Personal Income_1year_growth'] =  (((national_pci_restricted['Per Capita Personal Income']/national_pci_restricted['Per Capita Personal Income'].shift(1))  - 1) * 100)/1
-    national_pci_restricted['Per Capita Personal Income_3year_growth'] =  (((national_pci_restricted['Per Capita Personal Income']/national_pci_restricted['Per Capita Personal Income'].shift(3))   - 1) * 100)/3
-    national_pci_restricted['Per Capita Personal Income_5year_growth'] =  (((national_pci_restricted['Per Capita Personal Income']/national_pci_restricted['Per Capita Personal Income'].shift(5))   - 1) * 100)/5
+        #Get national growth rates
+        national_pci_restricted = national_pci.loc[national_pci['Period'] <= (county_pci['Period'].max())] #Restrict to last year of county data to marke sure we comapre appples to apples
+        national_pci_restricted['Per Capita Personal Income_1year_growth'] =  (((national_pci_restricted['Per Capita Personal Income']/national_pci_restricted['Per Capita Personal Income'].shift(1))  - 1) * 100)/1
+        national_pci_restricted['Per Capita Personal Income_3year_growth'] =  (((national_pci_restricted['Per Capita Personal Income']/national_pci_restricted['Per Capita Personal Income'].shift(3))   - 1) * 100)/3
+        national_pci_restricted['Per Capita Personal Income_5year_growth'] =  (((national_pci_restricted['Per Capita Personal Income']/national_pci_restricted['Per Capita Personal Income'].shift(5))   - 1) * 100)/5
 
-    national_1y_growth  = national_pci_restricted.iloc[-1]['Per Capita Personal Income_1year_growth']
-    national_3y_growth  = national_pci_restricted.iloc[-1]['Per Capita Personal Income_3year_growth'] 
-    national_5y_growth  = national_pci_restricted.iloc[-1]['Per Capita Personal Income_5year_growth'] 
-    
-    
-    
-    #See if 3 year income growth rate was higher or lower than nation
-    if county_3y_growth > national_3y_growth:
-        county_vs_nation_3y_exceeds_lags = 'exceeds'
-    elif county_3y_growth < national_3y_growth:
-         county_vs_nation_3y_exceeds_lags = 'lags'
-    elif county_3y_growth == national_3y_growth:
-         county_vs_nation_3y_exceeds_lags = 'is equal to'
+        national_1y_growth  = national_pci_restricted.iloc[-1]['Per Capita Personal Income_1year_growth']
+        national_3y_growth  = national_pci_restricted.iloc[-1]['Per Capita Personal Income_3year_growth'] 
+        national_5y_growth  = national_pci_restricted.iloc[-1]['Per Capita Personal Income_5year_growth'] 
+        
+        
+        
+        #See if 3 year income growth rate was higher or lower than nation
+        if county_3y_growth > national_3y_growth:
+            county_vs_nation_3y_exceeds_lags = 'exceeds'
+        elif county_3y_growth < national_3y_growth:
+            county_vs_nation_3y_exceeds_lags = 'lags'
+        elif county_3y_growth == national_3y_growth:
+            county_vs_nation_3y_exceeds_lags = 'is equal to'
 
 
 
-    return('Going back five years, ' +
-            county                   +
-           ' residents have seen its per capita personal income '+
-           'expand ' + 
-            "{:,.1f}%".format(county_5y_growth)     + 
-            ' per annum to the '                    +
-            latest_county_year                      + 
-            ' level of '                            +
-            "${:,}".format(latest_county_income)    +
-             '. '                                   +
-           'Over the past three years, growth has ' +
-           three_five_year_county_declined_or_expanded  +
-           ', growing '                             +
-            "{:,.1f}%".format(county_3y_growth)     + 
-            ' per annum since '                     + 
-            str(int(latest_county_year) - 3)        + 
-            '. '                                    +
-           'This growth rate '                      + 
-          county_vs_nation_3y_exceeds_lags          +
-            ' the Nation, which has '               +
-             'expanded'                             +     
-             ' '                                    +   
-             "{:,.1f}%".format(national_3y_growth)  + 
-             ' per year over the last three years.'
-            )
+        income_language = ('Going back five years, ' +
+                county                   +
+            ' residents have seen its per capita personal income '+
+            'expand ' + 
+                "{:,.1f}%".format(county_5y_growth)     + 
+                ' per annum to the '                    +
+                latest_county_year                      + 
+                ' level of '                            +
+                "${:,}".format(latest_county_income)    +
+                '. '                                   +
+            'Over the past three years, growth has ' +
+            three_five_year_county_declined_or_expanded  +
+            ', growing '                             +
+                "{:,.1f}%".format(county_3y_growth)     + 
+                ' per annum since '                     + 
+                str(int(latest_county_year) - 3)        + 
+                '. '                                    +
+            'This growth rate '                      + 
+            county_vs_nation_3y_exceeds_lags          +
+                ' the Nation, which has '               +
+                'expanded'                             +     
+                ' '                                    +   
+                "{:,.1f}%".format(national_3y_growth)  + 
+                ' per year over the last three years.'
+                )
+    except Exception as e:
+        print(e,'unable to get income language') 
+        income_language = ''
+
+    return([income_language])   
 
 def PopulationLanguage(national_resident_pop):
     print('Writing Demographic Langauge')
-    county_resident_pop['Period'] = county_resident_pop['Period'].dt.strftime('%m/%d/%Y')
-    latest_period                 = county_resident_pop['Period'].iloc[-1]
-    latest_period                 = latest_period[-4:]
-    latest_county_pop             = round(county_resident_pop['Resident Population'].iloc[-1])
-    latest_county_pop             = "{:,}".format(latest_county_pop)
+    try:
+            county_resident_pop['Period'] = county_resident_pop['Period'].dt.strftime('%m/%d/%Y')
+            latest_period                 = county_resident_pop['Period'].iloc[-1]
+            latest_period                 = latest_period[-4:]
+            latest_county_pop             = round(county_resident_pop['Resident Population'].iloc[-1])
+            latest_county_pop             = "{:,}".format(latest_county_pop)
 
-    county_resident_pop['Resident Population_1year_growth'] =  (((county_resident_pop['Resident Population']/county_resident_pop['Resident Population'].shift(1))  - 1) * 100)/1
-    county_resident_pop['Resident Population_5year_growth'] =  (((county_resident_pop['Resident Population']/county_resident_pop['Resident Population'].shift(5))   - 1) * 100)/5
-    county_resident_pop['Resident Population_10year_growth'] =  (((county_resident_pop['Resident Population']/county_resident_pop['Resident Population'].shift(10)) - 1) * 100)/10
+            county_resident_pop['Resident Population_1year_growth'] =  (((county_resident_pop['Resident Population']/county_resident_pop['Resident Population'].shift(1))  - 1) * 100)/1
+            county_resident_pop['Resident Population_5year_growth'] =  (((county_resident_pop['Resident Population']/county_resident_pop['Resident Population'].shift(5))   - 1) * 100)/5
+            county_resident_pop['Resident Population_10year_growth'] =  (((county_resident_pop['Resident Population']/county_resident_pop['Resident Population'].shift(10)) - 1) * 100)/10
 
-    county_1y_growth  = county_resident_pop.iloc[-1]['Resident Population_1year_growth'] 
-    county_5y_growth  = county_resident_pop.iloc[-1]['Resident Population_5year_growth'] 
-    county_10y_growth = county_resident_pop.iloc[-1]['Resident Population_10year_growth']
+            county_1y_growth  = county_resident_pop.iloc[-1]['Resident Population_1year_growth'] 
+            county_5y_growth  = county_resident_pop.iloc[-1]['Resident Population_5year_growth'] 
+            county_10y_growth = county_resident_pop.iloc[-1]['Resident Population_10year_growth']
 
-    #Determine how to describe 10 year county population growth
-    if county_10y_growth > 0:
-        county_10y_expand_or_compress =  'expand'
-    elif county_10y_growth < 0:
-         county_10y_expand_or_compress =  'compress'
-    else:
-        county_10y_expand_or_compress =  '[expand/compress]'
-    
-    #Determine how to describe 5 year county population growth
-    if county_5y_growth > 0:
-        county_5y_expand_or_compress =  'growing'
-    elif county_5y_growth < 0:
-         county_5y_expand_or_compress =  'contracting'
-    else:
-        county_5y_expand_or_compress =  '[growing/contracting]'
+            #Determine how to describe 10 year county population growth
+            if county_10y_growth > 0:
+                county_10y_expand_or_compress =  'expand'
+            elif county_10y_growth < 0:
+                county_10y_expand_or_compress =  'compress'
+            else:
+                county_10y_expand_or_compress =  '[expand/compress]'
+            
+            #Determine how to describe 5 year county population growth
+            if county_5y_growth > 0:
+                county_5y_expand_or_compress =  'growing'
+            elif county_5y_growth < 0:
+                county_5y_expand_or_compress =  'contracting'
+            else:
+                county_5y_expand_or_compress =  '[growing/contracting]'
 
-    #Determine if 5 year growth is slower of faster than 10 year growth
-    if county_5y_growth > county_10y_growth:
-        growth_declined_or_expanded = 'expanded'
-    elif county_5y_growth < county_10y_growth:
-        growth_declined_or_expanded = 'declined'
-    elif county_5y_growth == county_10y_growth:
-        growth_declined_or_expanded = 'remained stable'
-    else:
-        growth_declined_or_expanded = '[declined/expanded]'
-
-
-    #Make sure we are comparing same years for calculating growth rates for county and USA
-    national_resident_pop['Resident Population_1year_growth'] =  (((national_resident_pop['Resident Population']/national_resident_pop['Resident Population'].shift(1))  - 1) * 100)/1
-    national_resident_pop['Resident Population_5year_growth'] =  (((national_resident_pop['Resident Population']/national_resident_pop['Resident Population'].shift(5))   - 1) * 100)/5
-    national_resident_pop['Resident Population_10year_growth'] =  (((national_resident_pop['Resident Population']/national_resident_pop['Resident Population'].shift(10)) - 1) * 100)/10
-    national_resident_pop = national_resident_pop.loc[national_resident_pop['Period'] <= (county_resident_pop['Period'].max())]
-
-    national_1y_growth  = national_resident_pop.iloc[-1]['Resident Population_1year_growth'] 
-    national_5y_growth  = national_resident_pop.iloc[-1]['Resident Population_5year_growth'] 
-    national_10y_growth = national_resident_pop.iloc[-1]['Resident Population_10year_growth']
-
-    #Determine if county 5 year growth was slower or faster than national growth
-    if county_5y_growth > national_5y_growth:
-        county_5y_slower_or_faster_than_national = 'exceeds'
-    elif  county_5y_growth < national_5y_growth:
-        county_5y_slower_or_faster_than_national = 'falls short of'
-    elif  county_5y_growth == national_5y_growth:
-        county_5y_slower_or_faster_than_national = 'is equal to'
-    else:
-        county_5y_slower_or_faster_than_national = '[falls short of/exceeds]'
-
-    
+            #Determine if 5 year growth is slower of faster than 10 year growth
+            if county_5y_growth > county_10y_growth:
+                growth_declined_or_expanded = 'expanded'
+            elif county_5y_growth < county_10y_growth:
+                growth_declined_or_expanded = 'declined'
+            elif county_5y_growth == county_10y_growth:
+                growth_declined_or_expanded = 'remained stable'
+            else:
+                growth_declined_or_expanded = '[declined/expanded]'
 
 
-    county_1y_growth  = "{:,.1f}%".format(county_1y_growth)
-    county_5y_growth  = "{:,.1f}%".format(abs(county_5y_growth)) 
-    county_10y_growth = "{:,.1f}%".format(abs(county_10y_growth))
+            #Make sure we are comparing same years for calculating growth rates for county and USA
+            national_resident_pop['Resident Population_1year_growth'] =  (((national_resident_pop['Resident Population']/national_resident_pop['Resident Population'].shift(1))  - 1) * 100)/1
+            national_resident_pop['Resident Population_5year_growth'] =  (((national_resident_pop['Resident Population']/national_resident_pop['Resident Population'].shift(5))   - 1) * 100)/5
+            national_resident_pop['Resident Population_10year_growth'] =  (((national_resident_pop['Resident Population']/national_resident_pop['Resident Population'].shift(10)) - 1) * 100)/10
+            national_resident_pop = national_resident_pop.loc[national_resident_pop['Period'] <= (county_resident_pop['Period'].max())]
 
-    national_1y_growth  = "{:,.1f}%".format(national_1y_growth)
-    national_5y_growth  = "{:,.1f}%".format(national_5y_growth) 
-    national_10y_growth = "{:,.1f}%".format(national_10y_growth)
+            national_1y_growth  = national_resident_pop.iloc[-1]['Resident Population_1year_growth'] 
+            national_5y_growth  = national_resident_pop.iloc[-1]['Resident Population_5year_growth'] 
+            national_10y_growth = national_resident_pop.iloc[-1]['Resident Population_10year_growth']
 
-    return('Going back ten years, ' +
-            county +
-           ' has seen its population '+
-           county_10y_expand_or_compress +
-           ' ' +
-            county_10y_growth +
-            ' per annum ' +
-            'to the ' +
-            latest_period + 
-            ' ' +
-            'count of ' +
-            latest_county_pop +
-            '.' +
-            ' Over the past five years, growth has ' +
-            growth_declined_or_expanded +
-            ', '+
-            county_5y_expand_or_compress +
-            ' ' +
-            county_5y_growth +
-            ' per annum since ' +
-            str((int(latest_period) - 5)) +
-            '.' + 
-            ' This growth rate ' +
-            county_5y_slower_or_faster_than_national +
-            ' the Nation, which has ' +
-            'expanded' +
-            ' ' +
-            national_5y_growth +
-            ' per year ' +
-            'over the last five years.' 
-            )
+            #Determine if county 5 year growth was slower or faster than national growth
+            if county_5y_growth > national_5y_growth:
+                county_5y_slower_or_faster_than_national = 'exceeds'
+            elif  county_5y_growth < national_5y_growth:
+                county_5y_slower_or_faster_than_national = 'falls short of'
+            elif  county_5y_growth == national_5y_growth:
+                county_5y_slower_or_faster_than_national = 'is equal to'
+            else:
+                county_5y_slower_or_faster_than_national = '[falls short of/exceeds]'
+
+        
+            county_1y_growth  = "{:,.1f}%".format(county_1y_growth)
+            county_5y_growth  = "{:,.1f}%".format(abs(county_5y_growth)) 
+            county_10y_growth = "{:,.1f}%".format(abs(county_10y_growth))
+
+            national_1y_growth  = "{:,.1f}%".format(national_1y_growth)
+            national_5y_growth  = "{:,.1f}%".format(national_5y_growth) 
+            national_10y_growth = "{:,.1f}%".format(national_10y_growth)
+
+            population_language = ('Going back ten years, ' +
+                    county +
+                ' has seen its population '+
+                county_10y_expand_or_compress +
+                ' ' +
+                    county_10y_growth +
+                    ' per annum ' +
+                    'to the ' +
+                    latest_period + 
+                    ' ' +
+                    'count of ' +
+                    latest_county_pop +
+                    '.' +
+                    ' Over the past five years, growth has ' +
+                    growth_declined_or_expanded +
+                    ', '+
+                    county_5y_expand_or_compress +
+                    ' ' +
+                    county_5y_growth +
+                    ' per annum since ' +
+                    str((int(latest_period) - 5)) +
+                    '.' + 
+                    ' This growth rate ' +
+                    county_5y_slower_or_faster_than_national +
+                    ' the Nation, which has ' +
+                    'expanded' +
+                    ' ' +
+                    national_5y_growth +
+                    ' per year ' +
+                    'over the last five years.' 
+                    )
+    except Exception as e:
+        print(e,'unable to create population language')
 
 def EducationLanguage():
+    try:
+        education_language = ('In ' + county + ', ' + 
+                            "{:,.1f}%".format(county_edu[0])  +
+                            ' have a high school diploma or higher, with ' + 
+                            "{:,.1f}%".format(county_edu[1])  +
+                            ' having an Associates degree or higher' + 
+                            ' and ' +  "{:,.1f}%".format(county_edu[2])  +
+                                """ having a Bachelor's degree or higher. """
+                                )
+    except Exception as e:
+        print(e,'unable to create education langauge')
+        education_language = ''
     
-    education_language = ('In ' + county + ', ' + 
-                         "{:,.1f}%".format(county_edu[0])  +
-                         ' have a high school diploma or higher, with ' + 
-                          "{:,.1f}%".format(county_edu[1])  +
-                           ' having an Associates degree or higher' + 
-                           ' and ' +  "{:,.1f}%".format(county_edu[2])  +
-                            """ having a Bachelor's degree or higher. """
-                            )
     return([education_language])
 
 def InfrastructureLanguage():
@@ -4657,7 +4668,6 @@ def CreateLanguage():
     #Unemployment language
     try:
         unemplopyment_language  = UnemploymentLanguage()
-        # print(unemplopyment_language)
     except Exception as e:
         print(e, ' problem with unemployment language')
         unemplopyment_language = ''
@@ -4676,27 +4686,15 @@ def CreateLanguage():
         print(e, ' ---- problem with msa emp growth language')
         msa_emplopyment_growth_language = ['']
 
-   #Population language 
-    try:
-        population_language = PopulationLanguage(national_resident_pop = national_resident_pop )
-    except:
-        print('problem with population language')
-        population_language = ''
-    
-   #Income Language
-    try:
-        income_language = IncomeLanguage()
-    except Exception as e:
-        print(e,' problem with income langauge')
-        income_language= ''
+    #Population language 
+    population_language = PopulationLanguage(national_resident_pop = national_resident_pop )
 
-   #Education language
-    try:
-        education_language = EducationLanguage()
-    except Exception as e:
-        print(e, '--- problem with education language')
-        education_language = ''
-        
+    #Income Language
+    income_language = IncomeLanguage()
+
+    #Education language
+    education_language = EducationLanguage()
+
 #Table Realted functions 
 def GetDataAndLanguageForOverviewTable():
     print('Getting Data for overview table')
@@ -5072,7 +5070,7 @@ def AddTable(document,data_for_table): #Function we use to insert our overview t
                         font.name  = primary_font
              
 
-             
+
 #####################################################Report document related functions####################################
 def SetPageMargins(document,margin_size):
     sections = document.sections
