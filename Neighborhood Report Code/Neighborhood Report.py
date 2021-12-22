@@ -2477,7 +2477,12 @@ def SummaryLangauge():
 
 def CommunityAssetsLanguage():
     print('Creating Community Assets Langauge')
-    community_assets_language = (neighborhood + ' has a number of community assets. Primary corridors are home to restaurants and cafes, as well as many other small businesses to run errands at.')
+    try:
+        community_assets_language = (neighborhood + ' has a number of community assets. Primary corridors are home to restaurants and cafes, as well as many other small businesses to run errands at.')
+    except Exception as e:
+        print(e,'unable to get community assets langauge')
+        community_assets_language = ''
+
     return([community_assets_language])
 
 def CarLanguage():
@@ -2553,160 +2558,175 @@ def TransportationOverviewLanguage():
     return(transportation_language)
 
 def HousingIntroLanguage():
-	print('Creating housing intro Langauge')
-	housing_intro_language = ('Housing is one of the most identifiable characteristics of an area. Different elements related to housing, such as the property type, ' +
-		' renter/owner mix, housing age, and household characteristics play crucial roles in how an area is defined. ' +
-		'In ' + neighborhood + ', housing is diverse, with a variety of types, tenure status, age, and price points. ')
-    
-	return([housing_intro_language])
+    print('Creating housing intro Langauge')
+    try:
+        housing_intro_language = ('Housing is one of the most identifiable characteristics of an area. Different elements related to housing, such as the property type, ' +
+            ' renter/owner mix, housing age, and household characteristics play crucial roles in how an area is defined. ' +
+            'In ' + neighborhood + ', housing is diverse, with a variety of types, tenure status, age, and price points. ')
+    except Exception as e:
+        print(e,'Unable to create housing intro language')  
+	
+    return([housing_intro_language])
 
 def HousingTypeTenureLanguage():
     print('Creating housing type and tenure Langauge')
-
-    number_units_categories = ['Single Family Homes','Townhomes','Duplexes','3-4 units','5-9 units','10-19 units','20-49 units','50 >= units']
-    assert len(number_units_categories) == len(neighborhood_number_units_data)
-    
-    #We have a list of categories and a list of their respecitive employment shares. Covert to list, then sort from smallest to largest
-    top_size_dict = {number_units_categories[i]: neighborhood_number_units_data[i] for i in range(len(number_units_categories))}
+    try:
+        number_units_categories = ['Single Family Homes','Townhomes','Duplexes','3-4 units','5-9 units','10-19 units','20-49 units','50 >= units']
+        assert len(number_units_categories) == len(neighborhood_number_units_data)
         
-    #Now sort dict by values
-    top_size_dict =  {k: v for k, v in sorted(top_size_dict.items(), key=lambda item: item[1])}
-    
-    size_list   = list(top_size_dict.keys())
-    most_common_category        = size_list[len(size_list)     - 1]
-    second_most_common_category = size_list[len(size_list)     - 2]
+        #We have a list of categories and a list of their respecitive employment shares. Covert to list, then sort from smallest to largest
+        top_size_dict = {number_units_categories[i]: neighborhood_number_units_data[i] for i in range(len(number_units_categories))}
+            
+        #Now sort dict by values
+        top_size_dict =  {k: v for k, v in sorted(top_size_dict.items(), key=lambda item: item[1])}
+        
+        size_list   = list(top_size_dict.keys())
+        most_common_category        = size_list[len(size_list)     - 1]
+        second_most_common_category = size_list[len(size_list)     - 2]
 
-    
-    
-    hood_owner_occupied_fraction        =  neighborhood_tenure_distribution[1] 
-    comparsion_owner_occupied_fraction  =  comparison_tenure_distribution[1]
+        
+        
+        hood_owner_occupied_fraction        =  neighborhood_tenure_distribution[1] 
+        comparsion_owner_occupied_fraction  =  comparison_tenure_distribution[1]
 
-    if hood_owner_occupied_fraction > comparsion_owner_occupied_fraction:
-        hood_owner_ouccupied_higher_lower   =  'higher than'
-        # own_or_rent = 'the majority of households own instead of rent.'
-    elif hood_owner_occupied_fraction < comparsion_owner_occupied_fraction:
-        hood_owner_ouccupied_higher_lower   =  'lower than'
-        # own_or_rent = 'the majority of households rent instead of own.'
-    elif hood_owner_occupied_fraction > comparsion_owner_occupied_fraction:
-        hood_owner_ouccupied_higher_lower   =  'equal to'
-        # own_or_rent = 'an equal share of households rent or own.'        
-    else:
-        hood_owner_ouccupied_higher_lower   =  '[lower than/higher than/equal to]'
-    
-    housing_type_tenure_langugage = ('Data from the the most recent American Community Survey indicates a presence of single family homes, some smaller multifamily properties, along with larger garden style properties, and even some buildings with 50+ units. ' +
-                                      most_common_category + 
-                                      ' are the most common form of housing in ' +
-                                       neighborhood +
-                                    ', followed by ' +
-                                     second_most_common_category + 
-                                     '. ' +
-                                    "{:,.1f}%".format(hood_owner_occupied_fraction)                        +   
-                                    ' of the housing units in '                                             + 
-                                    neighborhood                                                            + 
-                                    ' were occupied by their owner. '                                       +
-                                    'This percentage of owner-occupation is '                                +
-                                    hood_owner_ouccupied_higher_lower                                        + 
-                                    ' the '                                                                  +
-                                    comparison_area                                                          +
-                                    ' level of '                                                             +
-                                    "{:,.1f}%".format(comparsion_owner_occupied_fraction)                    +
-                                    '.'
-                                    )
+        if hood_owner_occupied_fraction > comparsion_owner_occupied_fraction:
+            hood_owner_ouccupied_higher_lower   =  'higher than'
+            # own_or_rent = 'the majority of households own instead of rent.'
+        elif hood_owner_occupied_fraction < comparsion_owner_occupied_fraction:
+            hood_owner_ouccupied_higher_lower   =  'lower than'
+            # own_or_rent = 'the majority of households rent instead of own.'
+        elif hood_owner_occupied_fraction > comparsion_owner_occupied_fraction:
+            hood_owner_ouccupied_higher_lower   =  'equal to'
+            # own_or_rent = 'an equal share of households rent or own.'        
+        else:
+            hood_owner_ouccupied_higher_lower   =  '[lower than/higher than/equal to]'
+        
+        housing_type_tenure_langugage = ('Data from the the most recent American Community Survey indicates a presence of single family homes, some smaller multifamily properties, along with larger garden style properties, and even some buildings with 50+ units. ' +
+                                        most_common_category + 
+                                        ' are the most common form of housing in ' +
+                                        neighborhood +
+                                        ', followed by ' +
+                                        second_most_common_category + 
+                                        '. ' +
+                                        "{:,.1f}%".format(hood_owner_occupied_fraction)                        +   
+                                        ' of the housing units in '                                             + 
+                                        neighborhood                                                            + 
+                                        ' were occupied by their owner. '                                       +
+                                        'This percentage of owner-occupation is '                                +
+                                        hood_owner_ouccupied_higher_lower                                        + 
+                                        ' the '                                                                  +
+                                        comparison_area                                                          +
+                                        ' level of '                                                             +
+                                        "{:,.1f}%".format(comparsion_owner_occupied_fraction)                    +
+                                        '.'
+                                        )
+    except Exception as e:
+        print(e,'unable to get housing tenure type language')
+        housing_type_tenure_language = ''
+
+
+
 
     return([housing_type_tenure_langugage])
 
 def HousingValueLanguage():
     print('Creating Household by value Langauge')
+    try:
+        housing_value_categories = ['$10,000 <','$10,000-14,999','$15,000-19,999','$20,000-24,999','$25,000-29,999','$30,000-34,000','$35,000-39,999','$40,000-49,000','$50,000-59,9999','$60,000-69,999','$70,000-79,999','$80,000-89,999','$90,000-99,999','$100,000-124,999','$125,000-149,999','$150,000-174,999','$175,000-199,999','$200,000-249,999','$250,000-299,999','$300,000-399,999','$400,000-499,999','$500,000-749,999','$750,000-999,999','$1,000,000-1,499,999','$1,500,000-1,999,999','$2,000,000 >=']
+        assert len(neighborhood_housing_value_data) == len(housing_value_categories) == len(comparison_housing_value_data)
+        #Estimate a median household income from a category freqeuncy distribution
+        hood_median_value_range     = FindMedianCategory(frequency_list = neighborhood_housing_value_data, category_list = housing_value_categories)
+        hood_median_value_range     = hood_median_value_range.replace('$','')
+        hood_median_value_range     = hood_median_value_range.replace(',','').split('-')
+        hood_median_value           = round((int(hood_median_value_range[0]) + int(hood_median_value_range[1]))/2,1)
 
-    housing_value_categories = ['$10,000 <','$10,000-14,999','$15,000-19,999','$20,000-24,999','$25,000-29,999','$30,000-34,000','$35,000-39,999','$40,000-49,000','$50,000-59,9999','$60,000-69,999','$70,000-79,999','$80,000-89,999','$90,000-99,999','$100,000-124,999','$125,000-149,999','$150,000-174,999','$175,000-199,999','$200,000-249,999','$250,000-299,999','$300,000-399,999','$400,000-499,999','$500,000-749,999','$750,000-999,999','$1,000,000-1,499,999','$1,500,000-1,999,999','$2,000,000 >=']
-    assert len(neighborhood_housing_value_data) == len(housing_value_categories) == len(comparison_housing_value_data)
-    #Estimate a median household income from a category freqeuncy distribution
-    hood_median_value_range     = FindMedianCategory(frequency_list = neighborhood_housing_value_data, category_list = housing_value_categories)
-    hood_median_value_range     = hood_median_value_range.replace('$','')
-    hood_median_value_range     = hood_median_value_range.replace(',','').split('-')
-    hood_median_value           = round((int(hood_median_value_range[0]) + int(hood_median_value_range[1]))/2,1)
+        #Estimate a median household income from a category freqeuncy distribution
+        comp_median_value_range     = FindMedianCategory(frequency_list = comparison_housing_value_data, category_list = housing_value_categories)
+        comp_median_value_range     = comp_median_value_range.replace('$','')
+        comp_median_value_range     = comp_median_value_range.replace(',','').split('-')
+        comp_median_value           = round((int(comp_median_value_range[0]) + int(comp_median_value_range[1]))/2,1)
+        
+        hood_largest_value_category = housing_value_categories[neighborhood_housing_value_data.index(max(neighborhood_housing_value_data))] #get the most common income category
+        comp_largest_value_category = housing_value_categories[comparison_housing_value_data.index(max(comparison_housing_value_data))]
 
-    #Estimate a median household income from a category freqeuncy distribution
-    comp_median_value_range     = FindMedianCategory(frequency_list = comparison_housing_value_data, category_list = housing_value_categories)
-    comp_median_value_range     = comp_median_value_range.replace('$','')
-    comp_median_value_range     = comp_median_value_range.replace(',','').split('-')
-    comp_median_value           = round((int(comp_median_value_range[0]) + int(comp_median_value_range[1]))/2,1)
-    
-    hood_largest_value_category = housing_value_categories[neighborhood_housing_value_data.index(max(neighborhood_housing_value_data))] #get the most common income category
-    comp_largest_value_category = housing_value_categories[comparison_housing_value_data.index(max(comparison_housing_value_data))]
-
-    value_language = (  'Homes in '                                           +
-                       neighborhood                                           + 
-                       ' have a median value of about '                       + 
-                        "${:,.0f}".format(hood_median_value)                  +
-                       ', compared to '                                       +
-                       "${:,.0f}".format(comp_median_value)                   +
-                       ' for '                                            +  
-                       comparison_area                                        +
-                       '. In '                                                + 
-                       neighborhood                                           + 
-                       ', the largest share of homes have a value between ' +
-                       hood_largest_value_category +
-                       ', compared to ' +
-                       comp_largest_value_category        +
-                       ' for '           +
-                        comparison_area +
-                        '.'
-                        )
+        value_language = (  'Homes in '                                        +
+                        neighborhood                                           + 
+                        ' have a median value of about '                       + 
+                            "${:,.0f}".format(hood_median_value)               +
+                        ', compared to '                                       +
+                        "${:,.0f}".format(comp_median_value)                   +
+                        ' for '                                                +  
+                        comparison_area                                        +
+                        '. In '                                                + 
+                        neighborhood                                           + 
+                        ', the largest share of homes have a value between '   +
+                        hood_largest_value_category                            +
+                        ', compared to '                                       +
+                        comp_largest_value_category                            +
+                        ' for '                                                +
+                            comparison_area                                    +
+                            '.'
+                            )
+    except Exception as e:
+        print(e,'unable to get housing value langauge')
+        value_language = ''
     
     return([value_language])
 
 def HousingYearBuiltLanguage():
     print('Creating House by Year Built Langauge')
-    
-    year_built_categories       = ['2014','2010-2013','2000-2009','1990-1999','1980-1989','1970-1979','1960-1969','1950-1959','1940-1949','1939']
-    year_built_categories.reverse()
+    try:
+        year_built_categories       = ['2014','2010-2013','2000-2009','1990-1999','1980-1989','1970-1979','1960-1969','1950-1959','1940-1949','1939']
+        year_built_categories.reverse()
 
-    #Median Year Built for hoodS
-    hood_median_yrblt_range     =  FindMedianCategory(frequency_list = neighborhood_year_built_data, category_list = year_built_categories)
-    
-    if len(hood_median_yrblt_range) == 4:
-        hood_median_yrblt = int(hood_median_yrblt_range)
-    else:
-        hood_median_yrblt_range     = hood_median_yrblt_range.split('-')
-        hood_median_yrblt           = round((int(hood_median_yrblt_range[0]) + int(hood_median_yrblt_range[1]))/2,1)
-    
+        #Median Year Built for hoodS
+        hood_median_yrblt_range     =  FindMedianCategory(frequency_list = neighborhood_year_built_data, category_list = year_built_categories)
+        
+        if len(hood_median_yrblt_range) == 4:
+            hood_median_yrblt = int(hood_median_yrblt_range)
+        else:
+            hood_median_yrblt_range     = hood_median_yrblt_range.split('-')
+            hood_median_yrblt           = round((int(hood_median_yrblt_range[0]) + int(hood_median_yrblt_range[1]))/2,1)
+        
 
-    #Median Year Built for comparison area
-    comp_median_yrblt_range     =  FindMedianCategory(frequency_list = comparison_year_built_data, category_list = year_built_categories)
-    
-    if len(comp_median_yrblt_range) == 4:
-        comp_median_yrblt = int(comp_median_yrblt_range)
-    else:
-        comp_median_yrblt_range     = comp_median_yrblt_range.split('-')
-        comp_median_yrblt           = round((int(comp_median_yrblt_range[0]) + int(comp_median_yrblt_range[1]))/2,1)
-    
+        #Median Year Built for comparison area
+        comp_median_yrblt_range     =  FindMedianCategory(frequency_list = comparison_year_built_data, category_list = year_built_categories)
+        
+        if len(comp_median_yrblt_range) == 4:
+            comp_median_yrblt = int(comp_median_yrblt_range)
+        else:
+            comp_median_yrblt_range     = comp_median_yrblt_range.split('-')
+            comp_median_yrblt           = round((int(comp_median_yrblt_range[0]) + int(comp_median_yrblt_range[1]))/2,1)
+        
 
-    #Largest cateorgies for hood and comparison area
-    hood_largest_yrblt_category = year_built_categories[neighborhood_year_built_data.index(max(neighborhood_year_built_data))] #get the most common income category
-    comp_largest_yrblt_category = year_built_categories[comparison_year_built_data.index(max(comparison_year_built_data))]
+        #Largest cateorgies for hood and comparison area
+        hood_largest_yrblt_category = year_built_categories[neighborhood_year_built_data.index(max(neighborhood_year_built_data))] #get the most common income category
+        comp_largest_yrblt_category = year_built_categories[comparison_year_built_data.index(max(comparison_year_built_data))]
 
 
-    yrblt_language = (  'Homes in '                                         +
-                       neighborhood                                         + 
-                       ' have a median year built of about '                + 
-                        "{:.0f}".format(hood_median_yrblt)                  +
-                       ', compared to '                                     +
-                        "{:.0f}".format(comp_median_yrblt)                  +
-                        ' for '                                             +
-                        comparison_area                                     +
-                       '. '                                                 +
-                       
-                       'In '                                                + 
-                       neighborhood                                         + 
-                       ', the largest share of homes were built between '   +
-                       hood_largest_yrblt_category                          +
-                       ', compared to '                                     +
-                       comp_largest_yrblt_category                          +
-                       ' for '                                              +
-                        comparison_area                                     +
-                        '.'
-                        )
+        yrblt_language = (  'Homes in '                                         +
+                        neighborhood                                         + 
+                        ' have a median year built of about '                + 
+                            "{:.0f}".format(hood_median_yrblt)                  +
+                        ', compared to '                                     +
+                            "{:.0f}".format(comp_median_yrblt)                  +
+                            ' for '                                             +
+                            comparison_area                                     +
+                        '. '                                                 +
+                        
+                        'In '                                                + 
+                        neighborhood                                         + 
+                        ', the largest share of homes were built between '   +
+                        hood_largest_yrblt_category                          +
+                        ', compared to '                                     +
+                        comp_largest_yrblt_category                          +
+                        ' for '                                              +
+                            comparison_area                                     +
+                            '.'
+                            )
+    except Exception as e:
+        print(e,'Unable to create housing year built langauge')    
+        yrblt_language = ''
     
     return([yrblt_language])
 
@@ -2984,32 +3004,12 @@ def CreateLanguage():
 
     summary_langauge                   =  SummaryLangauge()
     transportation_language            =  TransportationOverviewLanguage()
-    
-    try:
-        community_assets_language          =  CommunityAssetsLanguage()
-    except Exception as e:
-        print(e,'unable to get community assets langauge')
-        community_assets_language = []
-    
-    try:
-        housing_type_tenure_language       = HousingTypeTenureLanguage()
-    except Exception as e:
-        housing_type_tenure_language       = []
-    
-    try:
-        housing_intro_language       = HousingIntroLanguage()
-    except Exception as e:
-        housing_intro_language       = []
-    
-    try:
-        housing_value_language             = HousingValueLanguage()
-    except Exception as e:
-        housing_value_language             = []
-    
-    try:
-        year_built_language                = HousingYearBuiltLanguage()
-    except Exception as e:
-        year_built_language                = []
+    community_assets_language          =  CommunityAssetsLanguage()
+    housing_type_tenure_language       =  HousingTypeTenureLanguage()
+    housing_intro_language             =  HousingIntroLanguage()
+    housing_value_language             =  HousingValueLanguage()
+    year_built_language                =  HousingYearBuiltLanguage()
+
 
 
     #Communtiy assets langauge variables
