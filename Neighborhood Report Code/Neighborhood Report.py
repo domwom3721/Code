@@ -345,7 +345,8 @@ def ProcessZipCode(zip_code):
 
     return([county_fips, zip_code, name,state_full_name,state,state_fips])
 
-def PlaceFIPSToCountyFIPS(place_fips):
+def PlaceFIPSToCountyFIPS(place_fips,state_fips):
+    print('Looking for county fips code')
     #Takes 7 digit place fips code for a city and returns the 5 digit fips code for that city
     
     #Open file with place fips code and county fips code
@@ -353,20 +354,24 @@ def PlaceFIPSToCountyFIPS(place_fips):
     
     place_county_crosswalk_df['PLACEFP']                 = place_county_crosswalk_df['PLACEFP'].astype(str)
     place_county_crosswalk_df['PLACEFP']                 = place_county_crosswalk_df['PLACEFP'].str.zfill(5)
+
+    place_county_crosswalk_df['STATEFP']                 = place_county_crosswalk_df['STATEFP'].astype(str)
+    place_county_crosswalk_df['STATEFP']                 = place_county_crosswalk_df['STATEFP'].str.zfill(2)
+
     place_county_crosswalk_df['County_FIPS']             = place_county_crosswalk_df['County_FIPS'].astype(str)
     place_county_crosswalk_df['County_FIPS']             = place_county_crosswalk_df['County_FIPS'].str.zfill(7)
 
 
     #Restrict to observations that include the provieded place fips
-    place_county_crosswalk_df            = place_county_crosswalk_df.loc[place_county_crosswalk_df['PLACEFP'] == str(place_fips)]                 #restrict to rows for zip code
+    place_county_crosswalk_df            = place_county_crosswalk_df.loc[(place_county_crosswalk_df['PLACEFP'] == str(place_fips)) & (place_county_crosswalk_df['STATEFP'] == str(state_fips))]                 
     
     #Return the last row if that's there's only one, otherwise ask user to choose
     if len(place_county_crosswalk_df) == 1:
         county_fips                         = str(place_county_crosswalk_df['County_FIPS'].iloc[-1])[0:5]
     elif len(place_county_crosswalk_df) > 1:
         print(place_county_crosswalk_df)
-        input('There are more than 1 counties for this city: using last one please confirm') #** Fix later by giving user chance to choose 
-        county_fips                         = str(place_county_crosswalk_df['County_FIPS'].iloc[-1])[0:5]
+        selected_county = int(input('There are more than 1 counties for this city: enter the number of your choice'))  
+        county_fips                         = str(place_county_crosswalk_df['County_FIPS'].iloc[selected_county])[0:5]
     else:
         return(None)
 
@@ -3912,7 +3917,7 @@ def GetUserInputs(analysis_type_number):
     #Get user input on comparison area
     if comparison_level == 'county':          #When our comparison area is a county eg Nassau County, New York
         if neighborhood_level == 'place':
-            county_fips_info                      = ProcessCountyFIPS(PlaceFIPSToCountyFIPS(hood_place_fips))
+            county_fips_info                      = ProcessCountyFIPS(PlaceFIPSToCountyFIPS(hood_place_fips,hood_state_fips))
         else:
             county_fips_info                      = ProcessCountyFIPS(county_fips =   input('Enter the 5 digit county FIPS Code for the hood'))
 
