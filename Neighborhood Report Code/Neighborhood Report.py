@@ -3741,7 +3741,9 @@ def DecideIfWritingReport():
 
 def UserSelectsNeighborhoodLevel():
     global analysis_type_number
-    analysis_type_number = input('What is the geographic level of the neighborhood and comparison area?' + '\n'
+    global neighborhood_level,comparison_level
+
+    analysis_type_number = int(input('What is the geographic level of the neighborhood and comparison area?' + '\n'
   
                                 '1.) = Place  vs. County'+ '\n' #+
                                 '2.) = County Subdivison vs. County' + '\n' +
@@ -3787,13 +3789,9 @@ def UserSelectsNeighborhoodLevel():
                                 # '35.) = Custom vs. Zip'  + '\n' +
                                 # '36.) = Custom  vs. None'  
                                 ''
-                                )
+                                ))
 
     
-    return(int(analysis_type_number))
-
-def GetUserInputs(analysis_type_number):
-    global neighborhood_level,comparison_level
 
     
     #Each number corresponds to a different analysis level pair eg: place vs county, zip vs. place, etc
@@ -3907,9 +3905,9 @@ def GetUserInputs(analysis_type_number):
     #   comparison_level   = ''
     else:
             print('Not a supported level currently')
-    
+    return(int(analysis_type_number))
 
-
+def GetUserInputs():
     global neighborhood, hood_tract, hood_zip, hood_place_fips, hood_place_type, hood_suvdiv_fips, hood_county_fips
     global hood_state, hood_state_fips, hood_state_full_name
 
@@ -4076,7 +4074,8 @@ def Main():
     DecideIfWritingReport()
    
     if report_creation == 'y':
-        GetUserInputs( UserSelectsNeighborhoodLevel()) #user selects if they want to run report and gives input for report subject
+        UserSelectsNeighborhoodLevel()
+        GetUserInputs( ) #user selects if they want to run report and gives input for report subject
         print('Preparing report for: ' + neighborhood + ' compared to ' + comparison_area)
         global latitude
         global longitude
