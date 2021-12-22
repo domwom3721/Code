@@ -3474,7 +3474,7 @@ def CommunityAssetsSection(document):
     AddTableTitle(document = document, title = 'Community Assets')
 
     #Add Community Assets Table                 
-    AddTwoColumnTable(document,pic_list      = ['bank.png','food.png','medical.png','park.png','retail.png','school.png'],lang_list =[bank_language, food_language, hospital_language, park_language, retail_language,edu_language] )
+    AddTwoColumnTable(document,pic_list      = ['bank.png','food.png','medical.png','park.png','retail.png'],lang_list =[bank_language, food_language, hospital_language, park_language, retail_language] )
 
 def HousingSection(document):
     print('Writing Neighborhood Section')
