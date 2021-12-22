@@ -65,7 +65,6 @@ data_location                  =  os.path.join(project_location,'Data','Neighbor
 graphics_location              =  os.path.join(project_location,'Data','General Data','Graphics')
 map_location                   =  os.path.join(project_location,'Data','Neighborhood Reports Data','Neighborhood Maps')
 nyc_cd_map_location            =  os.path.join(project_location,'Data','Neighborhood Reports Data','NYC_CD Maps')
-salesforce_report              =  os.path.join(project_location,'Data','Neighborhood Reports Data','Salesforce') 
 
 
 #Data Manipulation functions
@@ -125,21 +124,6 @@ def GetLatandLon():
 
     return([latitude,longitude]) 
 
-#def GetSalesforceJobLatLong():
-    # Grab Property Lat Long from Salesforce Report, identify hood and comparison FIPS
-    #Define location of raw Census Places data files
-#    salesforce_df=os.path.join(salesforce_report,'report.csv')
-#    salesforce_df['lat_long'] = salesforce_df["Property Latitude"].astype(str) + ',' + salesforce_df["Property Longitude"].astype(str)
-#    salesforce_df['neighborhod_district'] = salesforce_df["Property: Neighborhood/District"].astype(str) + ', ' + salesforce_df["Property: State"].astype(str)
-#
-#    #iterate through 
-#   for i in range(len(salesforce_df['neighborhood_district'])):
-#
-#    7digitFIPS     =
-#    5digitFIPS     =
-#
-#    return([7digitFIPS,5digitFIPS])
-#
 def GetNeighborhoodShape():
     if neighborhood_level == 'custom':
         try:
@@ -228,14 +212,15 @@ def DetermineNYCCommunityDistrict(lat,lon):
                 if polygon.contains(point) == True:
                     return(communtiy_district_number)
 
-            except:
+            except Exception as e:
+                print(e)
                 continue
         
-        return('')
+        return('x')
 
     except Exception as e:
         print(e)
-        return('')
+        return('x')
 
 #####################################################User FIPS input proccessing Functions####################################
 
@@ -358,7 +343,35 @@ def ProcessZipCode(zip_code):
 
 
     return([county_fips, zip_code, name,state_full_name,state,state_fips])
-     
+
+def PlaceFIPSToCountyFIPS(place_fips):
+    #Takes 7 digit place fips code for a city and returns the 5 digit fips code for that city
+    print(place_fips)
+    #Open file with place fips code and county fips code
+    place_county_crosswalk_df                            = pd.read_csv(os.path.join(data_location,'Census Area Codes','national_places.csv'),encoding='latin-1') #read in crosswalk file
+    
+    place_county_crosswalk_df['PLACEFP']                 = place_county_crosswalk_df['PLACEFP'].astype(str)
+    place_county_crosswalk_df['PLACEFP']                 = place_county_crosswalk_df['PLACEFP'].str.zfill(5)
+    place_county_crosswalk_df['County_FIPS']             = place_county_crosswalk_df['County_FIPS'].astype(str)
+    place_county_crosswalk_df['County_FIPS']             = place_county_crosswalk_df['County_FIPS'].str.zfill(5)
+
+    #Restrict to observations that include the provieded place fips
+    place_county_crosswalk_df            = place_county_crosswalk_df.loc[place_county_crosswalk_df['PLACEFP'] == str(place_fips)]                 #restrict to rows for zip code
+    print(place_county_crosswalk_df['County_FIPS'])
+    
+    #Return the last row if that's there's only one, otherwise ask user to choose
+    if len(place_county_crosswalk_df) == 1:
+        county_fips                         = str(place_county_crosswalk_df['County_FIPS'].iloc[-1])[0:5]
+    elif len(place_county_crosswalk_df) > 1:
+        print(place_county_crosswalk_df)
+        input('There are more than 1 counties for this city: using last one please confirm') #** Fix later by giving user chance to choose 
+        county_fips                         = str(place_county_crosswalk_df['County_FIPS'].iloc[-1])[0:5]
+    else:
+        return(None)
+
+
+    return(county_fips)
+         
 #####################################################Misc Functions####################################
 def CreateDirectory():
     print('Creating Directories and file name')
@@ -2536,7 +2549,7 @@ def HousingTypeTenureLanguage():
     else:
         hood_owner_ouccupied_higher_lower   =  '[lower than/higher than/equal to]'
     
-    housing_type_tenure_langugage = ('Data from the the most recent American Community Survey indicates a precense of single family homes, some smaller multifamily properties, along with larger garden style properties, and even some buildings with 50+ units. ' +
+    housing_type_tenure_langugage = ('Data from the the most recent American Community Survey indicates a presence of single family homes, some smaller multifamily properties, along with larger garden style properties, and even some buildings with 50+ units. ' +
         most_common_category + ' are the most common form of housing in ' + neighborhood + ', followed by ' + '#second_most_common_category' + '. According to the most recent American Community Survey, ' +
             "{:,.1f}%".format(hood_owner_occupied_fraction)                        +   
            ' of the housing units in '                                             + 
@@ -3103,7 +3116,7 @@ def add_border(input_image, output_image, border):
     bimg.save(output_image)
 
 def OverlayMapImages():
-    #Add image of map
+    print("Creating overlayed map image")
     map_path  =  os.path.join(hood_folder_map,'map.png')
     map2_path = os.path.join(hood_folder_map,'map2.png')
     map3_path = os.path.join(hood_folder_map,'map3.png')
@@ -3848,8 +3861,9 @@ def GetUserInputs(analysis_type_number):
 
     elif neighborhood_level == 'custom': #When our neighborhood is a neighboorhood within a city (eg: Financial District, New York City)
         #Get name of hood
-        # neighborhood      = input('Enter the name of the custom neighborhood').strip()
-        hood_place_type   = 'neighborhood'
+        neighborhood      = input('Enter the name of the custom neighborhood').strip()
+        # hood_place_type   = 'neighborhood' #use this for batches of  all the hoods in a city
+        hood_place_type                 = 'custom'
 
 
     global comparison_area, comparison_tract ,comparison_zip, comparison_place_fips, comparison_suvdiv_fips, comparison_county_fips
@@ -3858,7 +3872,11 @@ def GetUserInputs(analysis_type_number):
 
     #Get user input on comparison area
     if comparison_level == 'county':          #When our comparison area is a county eg Nassau County, New York
-        county_fips_info                      = ProcessCountyFIPS(county_fips =   input('Enter the 5 digit county FIPS Code for the hood'))
+        if neighborhood_level == 'place':
+            county_fips_info                      = ProcessCountyFIPS(PlaceFIPSToCountyFIPS(hood_place_fips))
+        else:
+            county_fips_info                      = ProcessCountyFIPS(county_fips =   input('Enter the 5 digit county FIPS Code for the hood'))
+
         comparison_county_fips                = county_fips_info[0]
         comparison_state_fips                 = county_fips_info[1]
         comparison_area                       = county_fips_info[2]
@@ -3867,8 +3885,8 @@ def GetUserInputs(analysis_type_number):
         comparison_place_type                 = 'county'
 
     elif comparison_level == 'place':        #when our comparison area is a town or city eg: East Rockaway Village, New York
-        place_fips_info                      = ProcessPlaceFIPS(place_fips)
-        # place_fips_info                      = ProcessPlaceFIPS(place_fips = input('Enter the 7 digit Census Place FIPS Code') )
+        # place_fips_info                      = ProcessPlaceFIPS(place_fips) #use this for batches of  all the hoods in a city
+        place_fips_info                      = ProcessPlaceFIPS(place_fips = input('Enter the 7 digit Census Place FIPS Code') )
         comparison_place_fips                = place_fips_info[0]
         comparison_state_fips                = place_fips_info[1]
         comparison_area                      = place_fips_info[2]
