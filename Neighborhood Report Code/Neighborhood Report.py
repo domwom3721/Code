@@ -3160,7 +3160,10 @@ def AddMap(document):
    
     print('Adding Map') 
     if os.path.exists(map3_path):
-        map = document.add_picture(map3_path,width=Inches(6.5))
+        paragraph = document.add_paragraph('')
+        paragraph.add_run().add_picture(map3_path,width=Inches(6.5))
+        paragraph.paragraph_format.space_after         = Pt(0)
+        
     
     if os.path.exists(nyc_cd_map_path):
         print('Adding NYC Community District Map') 
@@ -3259,13 +3262,16 @@ def AddTwoColumnTable(document,pic_list,lang_list):
     #Insert the transit graphics(car, bus,plane, train)
     tab = document.add_table(rows=0, cols=2)
     for pic,lang in zip(pic_list,lang_list):
+        pic_path = os.path.join(graphics_location,pic)
+        if os.path.exists(pic_path) == False:
+            continue
         row_cells = tab.add_row().cells
         
         left_paragraph = row_cells[0].paragraphs[0]
         run            = left_paragraph.add_run()
         if pic == 'car.png':
             run.add_text(' ')
-        run.add_picture(os.path.join(graphics_location,pic))
+        run.add_picture(pic_path)
 
         right_paragraph = row_cells[1].paragraphs[0]
         run             = right_paragraph.add_run()
