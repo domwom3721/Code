@@ -1223,6 +1223,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
 #####################################################Non Census Sources Data Functions####################################
 def GetWikipediaPage():
     global page
+    print('Getting Wikipedia page')
     if (neighborhood_level == 'place') or (neighborhood_level == 'county subdivision') or (neighborhood_level == 'county'): #Don't bother looking for wikipedia page if zip code
             wikipedia_page_search_term    = (neighborhood + ', ' + hood_state)
                        
