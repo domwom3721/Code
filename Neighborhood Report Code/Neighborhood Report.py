@@ -2910,7 +2910,8 @@ def CreateLanguage():
     global housing_value_language,year_built_language
     global household_size_language
     global bank_language, food_language, hospital_language, park_language, retail_language, edu_language
-    
+    global housing_intro_language
+
     summary_langauge                   =  SummaryLangauge()
     transportation_language            =  TransportationOverviewLanguage()
     
@@ -2924,6 +2925,11 @@ def CreateLanguage():
         housing_type_tenure_language       = HousingTypeTenureLanguage()
     except Exception as e:
         housing_type_tenure_language       = []
+    
+    try:
+        housing_intro_language       = HousingIntroLanguage()
+    except Exception as e:
+        housing_intro_language       = []
     
     try:
         housing_value_language             = HousingValueLanguage()
@@ -3399,6 +3405,8 @@ def HousingSection(document):
     print('Writing Neighborhood Section')
     AddHeading(document = document, title = 'Housing',                  heading_level = 1,heading_number='Heading 3',font_size=11)
     
+    AddDocumentParagraph(document = document,language_variable =  housing_intro_language)
+
     #Insert household units by units in_structure graph
     if os.path.exists(os.path.join(hood_folder,'household_units_in_structure_graph.png')):
         fig = document.add_picture(os.path.join(hood_folder,'household_units_in_structure_graph.png'),width=Inches(fig_width))
