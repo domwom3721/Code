@@ -2889,6 +2889,7 @@ def CreateLanguage():
     global yelp_language
     global airport_language
     global apartmentsdotcomlanguage
+    global housing_intro_language
     global housing_type_tenure_language
     global employment_language
     global population_age_language
@@ -2907,6 +2908,11 @@ def CreateLanguage():
         print(e,'unable to get community assets langauge')
         community_assets_language = []
     
+    try:
+        housing_intro_language       = HousingIntroLanguage()
+    except Exception as e:
+        housing_intro_language       = []
+
     try:
         housing_type_tenure_language       = HousingTypeTenureLanguage()
     except Exception as e:
