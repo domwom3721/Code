@@ -3268,12 +3268,15 @@ def AddTwoColumnTable(document,pic_list,lang_list):
         row_cells = tab.add_row().cells
         
         left_paragraph = row_cells[0].paragraphs[0]
+        left_paragraph.alignment                                    = WD_ALIGN_PARAGRAPH.JUSTIFY
+
         run            = left_paragraph.add_run()
         if pic == 'car.png':
             run.add_text(' ')
         run.add_picture(pic_path)
 
         right_paragraph = row_cells[1].paragraphs[0]
+        right_paragraph.alignment                                    = WD_ALIGN_PARAGRAPH.JUSTIFY
         run             = right_paragraph.add_run()
         run.add_text(str(lang))
 
