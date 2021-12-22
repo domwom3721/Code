@@ -2907,17 +2907,17 @@ def TravelMethodLanguage():
         frac_list      = list(top_method_dict.values())
         
         hood_largest_travel_category        = methods_list[len(methods_list)     - 1]
-        hood_largest_travel_category_frac   = methods_list[len(methods_list)     - 1]
+        hood_largest_travel_category_frac   = frac_list[len(methods_list)        - 1]
 
-        second_most_common_category         = frac_list[len(methods_list)     -    2]
-        second_most_common_frac             = frac_list[len(methods_list)     -    2]
+        second_most_common_category         = methods_list[len(methods_list)     - 2]
+        second_most_common_frac             = frac_list[len(methods_list)        - 2]
 
 
 
 
 
         travel_method_language = ('In ' + neighborhood + ', the most common method for traveling to work is ' + hood_largest_travel_category.lower()  + ' with ' +  "{:,.0f}%".format(hood_largest_travel_category_frac) + ' of commuters using it.' +
-                                 'The second most popular method is ' + 
+                                 ' The second most popular method is ' + 
                                  second_most_common_category +
                                  ' with ' +
                                  "{:,.0f}%".format(second_most_common_frac) +
