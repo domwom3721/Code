@@ -348,28 +348,25 @@ def PlaceFIPSToCountyFIPS(place_fips):
     #Takes 7 digit place fips code for a city and returns the 5 digit fips code for that city
     
     #Open file with place fips code and county fips code
-    place_county_crosswalk_df                 = pd.read_csv(os.path.join(data_location,'Census Area Codes','national_places.csv')) #read in crosswalk file
+    place_county_crosswalk_df                 = pd.read_csv(os.path.join(data_location,'Census Area Codes','national_places.csv'),encoding='latin-1') #read in crosswalk file
     
     place_county_crosswalk_df['State_Place_FP']          = place_county_crosswalk_df['State_Place_FP'].astype(str)
     place_county_crosswalk_df['State_Place_FP']          = place_county_crosswalk_df['State_Place_FP'].str.zfill(5)
-    place_county_crosswalk_df['County_FIPS']  = place_county_crosswalk_df['County_FIPS'].astype(str)
-    place_county_crosswalk_df['County_FIPS']  = place_county_crosswalk_df['County_FIPS'].str.zfill(5)
+    place_county_crosswalk_df['County_FIPS']             = place_county_crosswalk_df['County_FIPS'].astype(str)
+    place_county_crosswalk_df['County_FIPS']             = place_county_crosswalk_df['County_FIPS'].str.zfill(5)
 
     #Restrict to observations that include the provieded place fips
-    place_county_crosswalk_df            = place_county_crosswalk_df.loc[place_county_crosswalk_df['ZIP'] == place_fips]                 #restrict to rows for zip code
+    place_county_crosswalk_df            = place_county_crosswalk_df.loc[place_county_crosswalk_df['State_Place_FP'] == place_fips]                 #restrict to rows for zip code
     
     #Return the last row if that's there's only one, otherwise ask user to choose
     if len(place_county_crosswalk_df) == 1:
-        county_fips                         = str(place_county_crosswalk_df['COUNTY'].iloc[-1])[2:]
+        county_fips                         = str(place_county_crosswalk_df['County_FIPS'].iloc[-1])[2:]
     else:
         input('There are more than 1 counties for this city: using last one please confirm') #** Fix later by giving user chance to choose 
-        county_fips                         = str(place_county_crosswalk_df['COUNTY'].iloc[-1])[2:]
+        county_fips                         = str(place_county_crosswalk_df['County_FIPS'].iloc[-1])[2:]
 
 
     return(county_fips)
-
-
-    pass
          
 #####################################################Misc Functions####################################
 def CreateDirectory():
