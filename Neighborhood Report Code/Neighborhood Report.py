@@ -211,7 +211,7 @@ def DetermineNYCCommunityDistrict(lat,lon):
                                 
                 #Check if lat and lon is inside the communtiy district
                 if polygon.contains(point) == True:
-                    return(communtiy_district_number)
+                    return(str(communtiy_district_number))
 
             except Exception as e:
                 print(e)
@@ -3591,7 +3591,6 @@ def TransportationSection(document):
         AddTwoColumnTable(document,pic_list      = ['walk.png','car.png','train.png','bus.png','plane.png',],lang_list =[walk_score_data[0],car_language, train_language, bus_language, plane_language] )
     else:
         AddTwoColumnTable(document,pic_list      = ['car.png','train.png','bus.png','plane.png',],lang_list =[car_language, train_language, bus_language, plane_language] )
-
 
 def OutlookSection(document):
     print('Writing Outlook Section')
