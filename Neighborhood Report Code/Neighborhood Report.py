@@ -3947,6 +3947,8 @@ def GetUserInputs(analysis_type_number):
     if comparison_level == 'county':          #When our comparison area is a county eg Nassau County, New York
         if neighborhood_level == 'place':
             county_fips_info                      = ProcessCountyFIPS(PlaceFIPSToCountyFIPS(hood_place_fips,hood_state_fips))
+        elif neighborhood_level == 'subdivision':
+             county_fips_info                      = ProcessCountyFIPS(county_fips =   hood_state_fips + hood_county_fips)
         else:
             county_fips_info                      = ProcessCountyFIPS(county_fips =   input('Enter the 5 digit county FIPS Code for the hood'))
 
