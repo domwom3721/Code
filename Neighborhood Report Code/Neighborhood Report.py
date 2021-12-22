@@ -2562,38 +2562,56 @@ def HousingIntroLanguage():
 
 def HousingTypeTenureLanguage():
     print('Creating housing type and tenure Langauge')
+
     number_units_categories = ['Single Family Homes','Townhomes','Duplexes','3-4 Units','5-9 Units','10-19 Units','20-49 Units','50 >= Units']
-    most_common_category = number_units_categories[neighborhood_number_units_data.index(max(neighborhood_number_units_data))] #get the most common number units category
-    #second_most_common_category = number_units_categories[neighborhood_number_units_data.index(max-1( #get 2nd most common house type
+    assert len(number_units_categories) == len(neighborhood_number_units_data)
+    
+    #We have a list of categories and a list of their respecitive employment shares. Covert to list, then sort from smallest to largest
+    top_size_dict = {number_units_categories[i]: neighborhood_number_units_data[i] for i in range(len(number_units_categories))}
+        
+    #Now sort dict by values
+    top_size_dict =  {k: v for k, v in sorted(top_size_dict.items(), key=lambda item: item[1])}
+    
+    size_list   = list(top_size_dict.keys())
+    most_common_category        = size_list[len(size_list)     - 1]
+    second_most_common_category = size_list[len(size_list)     - 2]
+
+    
+    
     hood_owner_occupied_fraction        =  neighborhood_tenure_distribution[1] 
     comparsion_owner_occupied_fraction  =  comparison_tenure_distribution[1]
 
     if hood_owner_occupied_fraction > comparsion_owner_occupied_fraction:
         hood_owner_ouccupied_higher_lower   =  'higher than'
-        own_or_rent = 'the majority of households own instead of rent.'
+        # own_or_rent = 'the majority of households own instead of rent.'
     elif hood_owner_occupied_fraction < comparsion_owner_occupied_fraction:
         hood_owner_ouccupied_higher_lower   =  'lower than'
-        own_or_rent = 'the majority of households rent instead of own.'
+        # own_or_rent = 'the majority of households rent instead of own.'
     elif hood_owner_occupied_fraction > comparsion_owner_occupied_fraction:
         hood_owner_ouccupied_higher_lower   =  'equal to'
-        own_or_rent = 'an equal share of households rent or own.'        
+        # own_or_rent = 'an equal share of households rent or own.'        
     else:
         hood_owner_ouccupied_higher_lower   =  '[lower than/higher than/equal to]'
     
     housing_type_tenure_langugage = ('Data from the the most recent American Community Survey indicates a presence of single family homes, some smaller multifamily properties, along with larger garden style properties, and even some buildings with 50+ units. ' +
-        most_common_category + ' are the most common form of housing in ' + neighborhood + ', followed by ' + '#second_most_common_category' + '. According to the most recent American Community Survey, ' +
-            "{:,.1f}%".format(hood_owner_occupied_fraction)                        +   
-           ' of the housing units in '                                             + 
-           neighborhood                                                            + 
-           ' were occupied by their owner. '                                       +
-           'This percentage of owner-occupation is '                                +
-           hood_owner_ouccupied_higher_lower                                        + 
-           ' the '                                                                  +
-           comparison_area                                                          +
-           ' level of '                                                             +
-           "{:,.1f}%".format(comparsion_owner_occupied_fraction)                    +
-           '.'
-           )
+                                      most_common_category + 
+                                      ' are the most common form of housing in ' +
+                                       neighborhood +
+                                    ', followed by ' +
+                                     second_most_common_category + 
+                                     '. ' +
+                                    "{:,.1f}%".format(hood_owner_occupied_fraction)                        +   
+                                    ' of the housing units in '                                             + 
+                                    neighborhood                                                            + 
+                                    ' were occupied by their owner. '                                       +
+                                    'This percentage of owner-occupation is '                                +
+                                    hood_owner_ouccupied_higher_lower                                        + 
+                                    ' the '                                                                  +
+                                    comparison_area                                                          +
+                                    ' level of '                                                             +
+                                    "{:,.1f}%".format(comparsion_owner_occupied_fraction)                    +
+                                    '.'
+                                    )
 
     return([housing_type_tenure_langugage])
 
