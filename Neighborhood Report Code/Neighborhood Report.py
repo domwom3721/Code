@@ -2433,7 +2433,7 @@ def SummaryLangauge():
 
 def CommunityAssetsLanguage():
     print('Creating Community Assets Langauge')
-    community_assets_language = (neighborhood + ' has a number of community assets. ')
+    community_assets_language = (neighborhood + ' has a number of community assets. Primary corridors are home to restaurants and cafes, as well as many other small businesses to run errands at. ')
     return([community_assets_language])
 
 def CarLanguage():
