@@ -1530,10 +1530,10 @@ def GetData():
     global neighborhood_housing_value_data,comparison_housing_value_data
     global neighborhood_number_units_data,comparison_number_units_data
     global neighborhood_household_income_data, comparison_household_income_data
-    global neighborhood_top_occupations_data,comparison_top_occupations_data
     global neighborhood_year_built_data, comparison_year_built_data   
     global walk_score_data
     global nyc_community_district
+    # global neighborhood_top_occupations_data,comparison_top_occupations_data
 
     print('Getting Data for ' + neighborhood)
 
@@ -1546,7 +1546,7 @@ def GetData():
     neighborhood_time_to_work_distribution            = GetTravelTimeData(        geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Time to Work
     neighborhood_number_units_data                    = GetNumberUnitsData(       geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by units in building
     neighborhood_age_data                             = GetAgeData(               geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Population by age data
-    neighborhood_top_occupations_data                 = GetTopOccupationsData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Top Employment Occupations
+    # neighborhood_top_occupations_data                 = GetTopOccupationsData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Top Employment Occupations
     
     print('Getting Data For ' + comparison_area)
     comparison_household_size_distribution            = GetHouseholdSizeData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
@@ -1558,7 +1558,7 @@ def GetData():
     
     comparison_age_data                               = GetAgeData(              geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
     comparison_number_units_data                      = GetNumberUnitsData(      geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
-    comparison_top_occupations_data                   = GetTopOccupationsData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    # comparison_top_occupations_data                   = GetTopOccupationsData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
     
     #Walk score
     walk_score_data                                   = GetWalkScore(            lat = latitude, lon = longitude                                                    )
@@ -2399,10 +2399,10 @@ def CreateGraphs():
     except Exception as e:
         print(e,'unable to create population by income graph')
 
-    try:
-        CreateTopOccupationsHistogram()
-    except Exception as e:
-        print(e,'unable to create top occupation graph')
+    # try:
+    #     CreateTopOccupationsHistogram()
+    # except Exception as e:
+    #     print(e,'unable to create top occupation graph')
 
     try:
         CreateTravelTimeHistogram()
@@ -2459,7 +2459,8 @@ def WikipediaTransitLanguage(category):
 def SummaryLangauge():
     print('Creating Summary Langauge')
     try:
-        wikipedia_summary = page.summmary()
+        print('Getting summary from wikipedia')
+        wikipedia_summary = page.summary
     except Exception as e:
         print(e,'trouble getting wikiepdia summary')
         wikipedia_summary = ('')
@@ -2990,7 +2991,7 @@ def CreateLanguage():
     global airport_language
     global apartmentsdotcomlanguage
     global housing_type_tenure_language
-    global employment_language
+    # global employment_language
     global population_age_language
     global income_language
     global travel_method_language, travel_time_language
@@ -3014,11 +3015,10 @@ def CreateLanguage():
     hospital_language                  = LocationIQPOIListLanguage(lat = latitude, lon = longitude,  category = 'hospital' ) 
     park_language                      = LocationIQPOIListLanguage(lat = latitude, lon = longitude,  category = 'park' ) 
     retail_language                    = LocationIQPOIListLanguage(lat = latitude, lon = longitude,  category = 'retail' ) 
-    edu_language                       = LocationIQPOIListLanguage(lat = latitude, lon = longitude,  category = 'school' ) 
 
 
     #Paragraph Language
-    employment_language                = EmploymentLanguage()
+    # employment_language                = EmploymentLanguage()
     population_age_language            = PopulationAgeLanguage()
     income_language                    = IncomeLanguage()
     household_size_language            = HouseholdSizeLanguage()
@@ -3609,8 +3609,8 @@ def WriteReport():
     HousingSection(           document = document)
     # DevelopmentSection(       document = document)
     # EducationSection(         document = document)
+    # EmploymentSection(        document = document)
     PopulationSection(        document = document)
-    EmploymentSection(        document = document)
     TransportationSection(    document = document)
     OutlookSection(           document = document)
 
