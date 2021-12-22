@@ -2515,7 +2515,7 @@ def TrainLanguage():
 
 def OutlookLanguage():
     print('Creating Outlook Langauge')
-    pop_growth_description = '[negative/modest/moderate/strong]'
+    pop_growth_description = '[negative/modest/moderate/strong/extreme]'
 
     outlook_language = (neighborhood + 
                         ' is a '     + 
