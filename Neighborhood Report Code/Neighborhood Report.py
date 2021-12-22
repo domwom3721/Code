@@ -2685,8 +2685,30 @@ def HousingYearBuiltLanguage():
     return([yrblt_language])
 
 def EmploymentLanguage():
-    print('Creating Employment by Industry angauge')
-    employment_language = ('The majority of working age residents are employed in the ______, ______, and _______ industries. ')
+    print('Creating Employment by Industry langauge')
+
+    try:
+        occupations_categories       =  ['Management and Business','Service','Sales and Office','Natural Resources','Production'] 
+        assert                       len(occupations_categories) == len(neighborhood_top_occupations_data)
+        
+        #We have a list of categories and a list of their respecitive employment shares. Covert to list, then sort from smallest to largest
+        top_occ_dict = {occupations_categories[i]: neighborhood_top_occupations_data[i] for i in range(len(occupations_categories))}
+        
+        #Now sort dict by values
+        top_occ_dict = {k: v for k, v in sorted(top_occ_dict.items(), key=lambda item: item[1])}
+        print(top_occ_dict)
+        
+        industry_list   = list(top_occ_dict.keys())
+        top_industry    = industry_list[len(industry_list) - 1]
+        second_industry = industry_list[len(industry_list) - 2]
+        third_industry  = industry_list[len(industry_list) - 3]
+
+        employment_language = ('The majority of working age residents are employed in the ' + top_industry + ', ' + second_industry + ', and ' + third_industry + ' industries. ')
+    
+    
+    except:
+        employment_language = ('')
+
     return([employment_language])
 
 def HouseholdSizeLanguage():
