@@ -3261,7 +3261,7 @@ def CreateGraphs():
 
 
 
-#Language Functions
+#####################################################Language Related Functions####################################
 def millify(n):
     millnames = ['',' thousand',' million',' billion',' trillion']
     n = float(n)
@@ -5071,7 +5071,9 @@ def AddTable(document,data_for_table): #Function we use to insert our overview t
                     else:
                         font.name  = primary_font
              
-#Report document related functions
+
+             
+#####################################################Report document related functions####################################
 def SetPageMargins(document,margin_size):
     sections = document.sections
     for section in sections:
@@ -5250,23 +5252,25 @@ def AddDocumentPicture(document,image_path,citation):
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,citation)
 
+def AddTableTitle(document,title):
+    table_title_paragraph = document.add_paragraph(title)
+    table_title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    table_title_paragraph.paragraph_format.space_after  = Pt(6)
+    table_title_paragraph.paragraph_format.space_before = Pt(12)
+    for run in table_title_paragraph.runs:
+                    font = run.font
+                    font.name = 'Avenir Next LT Pro Medium'
 
 #Report Section Functions
 def OverviewSection(document):
     print('Writing Overview Section')
     AddHeading(document = document, title = 'Overview',            heading_level = 2)
 
+    #Add Overview langauge
     AddDocumentParagraph(document = document, language_variable = overview_language)
 
-    
     #Overview table title
-    table_title_paragraph = document.add_paragraph('Area Fundamentals')
-    table_title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    table_title_paragraph.paragraph_format.space_after  = Pt(6)
-    table_title_paragraph.paragraph_format.space_before = Pt(12)
-    for run in table_title_paragraph.runs:
-        font = run.font
-        font.name = 'Avenir Next LT Pro Medium'
+    AddTableTitle(document = document,title = 'Area Fundamentals')
 
     #Creating Overview Table
     try:
@@ -5359,16 +5363,8 @@ def InfrastructureSection(document):
     AddHeading(document = document, title = 'Infrastructure',            heading_level = 2)
     AddDocumentParagraph(document = document, language_variable = infrastructure_language)
 
-    table_paragraph = document.add_paragraph('Transportation Methods')
-    table_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    table_paragraph.paragraph_format.space_after  = Pt(6)
-    table_paragraph.paragraph_format.space_before = Pt(12)
-    for run in table_paragraph.runs:
-        font = run.font
-        font.name = 'Avenir Next LT Pro Medium'
-
-
     #Insert the transit graphics(car, bus,plane, train)
+    AddTableTitle(document = document,title = 'Transportation Methods')
     AddTwoColumnTable(document,pic_list      = ['car.png','train.png','bus.png','plane.png'],lang_list =[car_language,train_language,bus_language,plane_language] )
 
 def HousingSection(document):
