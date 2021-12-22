@@ -3722,8 +3722,8 @@ def DecideIfWritingReport():
     global report_creation
     #Give the user 10 seconds to decide if writing reports for metro areas or individual county entries
     try:
-        # report_creation = input_with_timeout('Create new report? y/n', 10).strip()
-        report_creation = 'y'
+        report_creation = input_with_timeout('Create new report? y/n', 10).strip()
+        # report_creation = 'y'
 
     except TimeoutExpired:
         report_creation = ''
@@ -4057,13 +4057,13 @@ def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
         print(f'Deleting temporary CSV: ', csv_path)
         os.remove(csv_path)           
 
-def Main(analysis_type_number):
+def Main():
     DeclareAPIKeys()
     DeclareFormattingParameters()
     DecideIfWritingReport()
    
     if report_creation == 'y':
-        GetUserInputs(analysis_type_number) #user selects if they want to run report and gives input for report subject
+        GetUserInputs( UserSelectsNeighborhoodLevel()) #user selects if they want to run report and gives input for report subject
         print('Preparing report for: ' + neighborhood + ' compared to ' + comparison_area)
         global latitude
         global longitude
@@ -4096,20 +4096,23 @@ def Main(analysis_type_number):
                     dropbox_dir='https://www.dropbox.com/home/Research/Market Analysis/Neighborhood/')
 
 
+Main()
 
-#This is our main function that calls all other functions we will use
-batch_mode = False
-#EXPERIMENT IN PROGRESS BATCH HOOD RERPORTS
-if batch_mode == True:
-    for city,place_fips in zip(['New York'],['36-51000']):
+
+
+# #This is our main function that calls all other functions we will use
+# batch_mode = False
+# #EXPERIMENT IN PROGRESS BATCH HOOD RERPORTS
+# if batch_mode == True:
+#     for city,place_fips in zip(['New York'],['36-51000']):
         
-        for  neighborhood in GetListOfNeighborhoods(city):
-            try:
-                Main(analysis_type_number =     3)
-            except Exception as e:
-                print(e,'REORT CREATION FAILED')
-else:
-    Main(analysis_type_number = UserSelectsNeighborhoodLevel())
+#         for  neighborhood in GetListOfNeighborhoods(city):
+#             try:
+#                 Main()
+#             except Exception as e:
+#                 print(e,'REORT CREATION FAILED')
+# else:
+#     Main()
 
 
 print('Finished!')
