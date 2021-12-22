@@ -65,7 +65,7 @@ data_location                  =  os.path.join(project_location,'Data','Neighbor
 graphics_location              =  os.path.join(project_location,'Data','General Data','Graphics')
 map_location                   =  os.path.join(project_location,'Data','Neighborhood Reports Data','Neighborhood Maps')
 nyc_cd_map_location            =  os.path.join(project_location,'Data','Neighborhood Reports Data','NYC_CD Maps')
-
+salesforce_report              =  os.path.join(project_location,'Data','Neighborhood Reports Data','Salesforce') 
 
 #Data Manipulation functions
 def ConvertListElementsToFractionOfTotal(raw_list):
@@ -419,6 +419,23 @@ def CreateDirectory():
     
     report_path = os.path.join(hood_folder,current_year + ' ' + hood_state + ' - ' + neighborhood  + ' - hood' + '_draft')[:255] 
     report_path = report_path + '.docx'
+
+def GetSalesforceJobLatLong():
+    pass
+
+    # Grab Property Lat Long from Salesforce Report, identify hood and comparison FIPS
+    # Define location of raw Census Places data files
+    #    salesforce_df=os.path.join(salesforce_report,'report.csv')
+    #    salesforce_df['lat_long'] = salesforce_df["Property Latitude"].astype(str) + ',' + salesforce_df["Property Longitude"].astype(str)
+    #    salesforce_df['neighborhod_district'] = salesforce_df["Property: Neighborhood/District"].astype(str) + ', ' + salesforce_df["Property: State"].astype(str)
+
+    #    #iterate through 
+    #    for i in range(len(salesforce_df['neighborhood_district'])):
+
+    #    7digitFIPS     =
+    #    5digitFIPS     =
+
+    #    return([7digitFIPS,5digitFIPS])
 
 def FindZipCodeDictionary(zip_code_data_dictionary_list,zcta,state_fips):
     #This function takes a list of dictionaries, where each zip code gets its own dictionary. Takes a zip code and state fips code and finds and returns just that dictionary.
