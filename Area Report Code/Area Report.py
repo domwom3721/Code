@@ -3578,188 +3578,194 @@ def MSAEmploymentBreakdownLanguage(msa_industry_breakdown):
   
 def UnemploymentLanguage():
     print('Writing Unemployment Langauge')
-    latest_period                  = county_employment['period'].iloc[-1]
-    latest_county_employment       = county_employment['Employment'].iloc[-1]
-    one_year_ago_county_employment = county_employment['Employment'].iloc[-13]
+    try:
+        latest_period                  = county_employment['period'].iloc[-1]
+        latest_county_employment       = county_employment['Employment'].iloc[-1]
+        one_year_ago_county_employment = county_employment['Employment'].iloc[-13]
 
-    one_year_percent_employment_change = ((latest_county_employment/one_year_ago_county_employment) -1 ) * 100
-    if one_year_percent_employment_change > 0:
-        up_or_down = 'up ' + "{:,.0f}%".format(abs(one_year_percent_employment_change))
-        if  one_year_percent_employment_change < 1:
-            up_or_down = 'up ' + "{:,.1f}%".format(abs(one_year_percent_employment_change))
-
-
-    elif one_year_percent_employment_change < 0:
-        up_or_down = 'down ' + "{:,.0f}%".format(abs(one_year_percent_employment_change)) 
-        if one_year_percent_employment_change < -1:
-            up_or_down = 'down ' + "{:,.1f}%".format(abs(one_year_percent_employment_change)) 
+        one_year_percent_employment_change = ((latest_county_employment/one_year_ago_county_employment) -1 ) * 100
+        if one_year_percent_employment_change > 0:
+            up_or_down = 'up ' + "{:,.0f}%".format(abs(one_year_percent_employment_change))
+            if  one_year_percent_employment_change < 1:
+                up_or_down = 'up ' + "{:,.1f}%".format(abs(one_year_percent_employment_change))
 
 
+        elif one_year_percent_employment_change < 0:
+            up_or_down = 'down ' + "{:,.0f}%".format(abs(one_year_percent_employment_change)) 
+            if one_year_percent_employment_change < -1:
+                up_or_down = 'down ' + "{:,.1f}%".format(abs(one_year_percent_employment_change)) 
 
-    elif one_year_percent_employment_change == 0:
-        up_or_down = 'unchanged'
-
-    
 
 
-    
+        elif one_year_percent_employment_change == 0:
+            up_or_down = 'unchanged'
 
-    #Get latest state and county unemployment rate
-    latest_county_unemployment          = county_unemployment_rate['unemployment_rate'].iloc[-1]
-
-    if cbsa != '':
-        latest_msa_unemployment         = msa_unemployment_rate['unemployment_rate'].iloc[-1]
-        #See if county unemployment rate is above or metro  rate
-        if latest_msa_unemployment > latest_county_unemployment:
-            msa_county_unemployment_above_or_below = 'below'
-        elif latest_msa_unemployment < latest_county_unemployment:
-            msa_county_unemployment_above_or_below = 'above'
-        elif latest_msa_unemployment == latest_county_unemployment:
-            msa_county_unemployment_above_or_below = 'equal to'
         
+
+
         
-        #Check how far apart msa and county unemployment rates are
-        if abs(latest_msa_unemployment - latest_county_unemployment) > 1.5:
-            msa_county_unemployment_difference = 'considerably '
-        elif abs(latest_msa_unemployment - latest_county_unemployment) > 0:
-            msa_county_unemployment_difference = 'just slightly '
+
+        #Get latest state and county unemployment rate
+        latest_county_unemployment          = county_unemployment_rate['unemployment_rate'].iloc[-1]
+
+        if cbsa != '':
+            latest_msa_unemployment         = msa_unemployment_rate['unemployment_rate'].iloc[-1]
+            #See if county unemployment rate is above or metro  rate
+            if latest_msa_unemployment > latest_county_unemployment:
+                msa_county_unemployment_above_or_below = 'below'
+            elif latest_msa_unemployment < latest_county_unemployment:
+                msa_county_unemployment_above_or_below = 'above'
+            elif latest_msa_unemployment == latest_county_unemployment:
+                msa_county_unemployment_above_or_below = 'equal to'
+            
+            
+            #Check how far apart msa and county unemployment rates are
+            if abs(latest_msa_unemployment - latest_county_unemployment) > 1.5:
+                msa_county_unemployment_difference = 'considerably '
+            elif abs(latest_msa_unemployment - latest_county_unemployment) > 0:
+                msa_county_unemployment_difference = 'just slightly '
+            else:
+                msa_county_unemployment_difference = ''
+
+
+
+
+        pre_pandemic_unemployment_df        = county_unemployment_rate.loc[(county_unemployment_rate['periodName'] =='February') & (county_unemployment_rate['year'] == '2020')]
+        pre_pandemic_unemployment           = pre_pandemic_unemployment_df['unemployment_rate'].iloc[-1]
+        one_year_ago_county_unemployment    = county_unemployment_rate['unemployment_rate'].iloc[-13]
+        latest_state_unemployment           = state_unemployment_rate['unemployment_rate'].iloc[-1]
+
+        #Change in unemployment rate over past year
+        if latest_county_unemployment == one_year_ago_county_unemployment:
+            unemployment_change = 'remained stable over the past year at '
+        elif latest_county_unemployment > one_year_ago_county_unemployment:
+            unemployment_change = 'expanded over the past year to the current rate of '
+        elif latest_county_unemployment < one_year_ago_county_unemployment:
+            unemployment_change = 'compressed over the past year to the current rate of '
+
+        #See if county unemployment rate is above or below state rate
+        if latest_state_unemployment > latest_county_unemployment:
+            state_county_unemployment_above_or_below = 'below'
+        elif latest_state_unemployment < latest_county_unemployment:
+            state_county_unemployment_above_or_below = 'above'
+        elif latest_state_unemployment == latest_county_unemployment:
+            state_county_unemployment_above_or_below = 'equal to'
+        
+        #See if county unemployment rate is above pre-pandemic levels
+        if pre_pandemic_unemployment > latest_county_unemployment:
+            pre_pandemic_unemp_above_or_below = 'has moved below'
+        elif pre_pandemic_unemployment < latest_county_unemployment:
+            pre_pandemic_unemp_above_or_below = 'remains above'
+        elif pre_pandemic_unemployment == latest_county_unemployment:
+            pre_pandemic_unemp_above_or_below = 'is equal to'
+
+        #Check how far apart state and county unemployment rates are
+        if abs(latest_state_unemployment - latest_county_unemployment) > 1.5:
+            state_county_unemployment_difference = 'considerably '
+        elif abs(latest_state_unemployment - latest_county_unemployment) > 0:
+            state_county_unemployment_difference = 'just slightly '
         else:
-            msa_county_unemployment_difference = ''
+            state_county_unemployment_difference = ''
 
+        #Get unemployment rate and emp level in Feb 2020 and Apirl 2020 
+        february_2020_employment_level = county_employment.loc[(county_employment['year'] == '2020') & (county_employment['periodName'] == 'February')]['Employment'].iloc[-1]
+        april_2020_employment_level    = county_employment.loc[(county_employment['year'] == '2020') & (county_employment['periodName'] == 'April')]['Employment'].iloc[-1]    
 
+        february_2020_unemployment_rate = county_unemployment_rate.loc[(county_unemployment_rate['year'] == '2020') & (county_unemployment_rate['periodName'] == 'February')]['unemployment_rate'].iloc[-1]
+        april_2020_unemployment_rate    = county_unemployment_rate.loc[(county_unemployment_rate['year'] == '2020') & (county_unemployment_rate['periodName'] == 'April')]['unemployment_rate'].iloc[-1]    
 
-
-    pre_pandemic_unemployment_df        = county_unemployment_rate.loc[(county_unemployment_rate['periodName'] =='February') & (county_unemployment_rate['year'] == '2020')]
-    pre_pandemic_unemployment           = pre_pandemic_unemployment_df['unemployment_rate'].iloc[-1]
-    one_year_ago_county_unemployment    = county_unemployment_rate['unemployment_rate'].iloc[-13]
-    latest_state_unemployment           = state_unemployment_rate['unemployment_rate'].iloc[-1]
-
-    #Change in unemployment rate over past year
-    if latest_county_unemployment == one_year_ago_county_unemployment:
-        unemployment_change = 'remained stable over the past year at '
-    elif latest_county_unemployment > one_year_ago_county_unemployment:
-        unemployment_change = 'expanded over the past year to the current rate of '
-    elif latest_county_unemployment < one_year_ago_county_unemployment:
-        unemployment_change = 'compressed over the past year to the current rate of '
-
-    #See if county unemployment rate is above or below state rate
-    if latest_state_unemployment > latest_county_unemployment:
-        state_county_unemployment_above_or_below = 'below'
-    elif latest_state_unemployment < latest_county_unemployment:
-        state_county_unemployment_above_or_below = 'above'
-    elif latest_state_unemployment == latest_county_unemployment:
-        state_county_unemployment_above_or_below = 'equal to'
-    
-    #See if county unemployment rate is above pre-pandemic levels
-    if pre_pandemic_unemployment > latest_county_unemployment:
-        pre_pandemic_unemp_above_or_below = 'has moved below'
-    elif pre_pandemic_unemployment < latest_county_unemployment:
-        pre_pandemic_unemp_above_or_below = 'remains above'
-    elif pre_pandemic_unemployment == latest_county_unemployment:
-        pre_pandemic_unemp_above_or_below = 'is equal to'
-
-    #Check how far apart state and county unemployment rates are
-    if abs(latest_state_unemployment - latest_county_unemployment) > 1.5:
-        state_county_unemployment_difference = 'considerably '
-    elif abs(latest_state_unemployment - latest_county_unemployment) > 0:
-        state_county_unemployment_difference = 'just slightly '
-    else:
-        state_county_unemployment_difference = ''
-
-    #Get unemployment rate and emp level in Feb 2020 and Apirl 2020 
-    february_2020_employment_level = county_employment.loc[(county_employment['year'] == '2020') & (county_employment['periodName'] == 'February')]['Employment'].iloc[-1]
-    april_2020_employment_level    = county_employment.loc[(county_employment['year'] == '2020') & (county_employment['periodName'] == 'April')]['Employment'].iloc[-1]    
-
-    february_2020_unemployment_rate = county_unemployment_rate.loc[(county_unemployment_rate['year'] == '2020') & (county_unemployment_rate['periodName'] == 'February')]['unemployment_rate'].iloc[-1]
-    april_2020_unemployment_rate    = county_unemployment_rate.loc[(county_unemployment_rate['year'] == '2020') & (county_unemployment_rate['periodName'] == 'April')]['unemployment_rate'].iloc[-1]    
-
-    
-    pandemic_job_losses            = february_2020_employment_level - april_2020_employment_level 
-    pandemic_job_losses_pct        = (pandemic_job_losses/february_2020_employment_level) * 100
-    
-    #Format variables
-    latest_county_employment       = "{:,}".format(latest_county_employment)
-    latest_county_unemployment     = "{:,.1f}%".format(latest_county_unemployment)
-    latest_state_unemployment      = "{:,.1f}%".format(latest_state_unemployment)
-
-
-    if cbsa == '':
-
-        return( 
-                #Sentence 1: Discuss covid job losses
-                'At the onset of the pandemic last spring, ' + county + ' area employers shed ' + "{:,.1f}%".format(pandemic_job_losses_pct) + ' of its workforce, expanding the unemployment rate from ' +
-                "{:,.1f}%".format(february_2020_unemployment_rate) + ' in February 2020 to ' + 
-               "{:,.1f}%".format(april_2020_unemployment_rate) + ' just two months later. ' + 
-                
-                
-                #Sentence 2: Discuss current unemployment
-                'The unemployment rate in '+
-                county                     + 
-                ' has '                    +
-            unemployment_change          +
-                latest_county_unemployment +
-                ', '                       +        
-                state_county_unemployment_difference +
-            state_county_unemployment_above_or_below +
-            ' the '    +
-            state_name + 
-            ' rate'   +
-                "{state_unemployment}".format(state_unemployment =(' of '      + latest_state_unemployment ) if (latest_county_unemployment != latest_state_unemployment)  else   ('')) +           
-            '. '                     +
-
-
-            #Sentence 3: Discuss growth in total employment
-                'As of '+
-            latest_period +
-            ', total employment is ' +
-            up_or_down +
-            ' on a year-over-year basis. ' +
-
-            # Is unemployment above or below pre-pandemic levels?
-            'The unemployment rate '          +
-            pre_pandemic_unemp_above_or_below +
-            ' its pre-pandemic level (Feb 2020) of ' +
-            "{:,.1f}%".format(pre_pandemic_unemployment)  +
-            '.'         
-            )
-    else:
-        latest_msa_unemployment        = "{:,.1f}%".format(latest_msa_unemployment)
         
-        return(  #Sentence 1: Discuss covid job losses
-                'At the onset of the pandemic last spring, ' + county + ' area employers shed ' + "{:,.1f}%".format(pandemic_job_losses_pct) + ' of its workforce, expanding the unemployment rate from ' +
-                "{:,.1f}%".format(february_2020_unemployment_rate) + ' in February 2020 to ' + 
-               "{:,.1f}%".format(april_2020_unemployment_rate) + ' just two months later. ' + 
-                
-                #Sentence 2: Discuss current unemployment
-                'The unemployment rate in '+
-                county                     + 
-                ' has '                    +
-            unemployment_change          +
-                latest_county_unemployment +
-                ', '                       +        
-                msa_county_unemployment_difference +
-            msa_county_unemployment_above_or_below +
-            ' the '    +
-            cbsa_name + 
-            ' rate'   +
-                "{msa_unemployment}".format(msa_unemployment =(' of '      + latest_msa_unemployment ) if (latest_county_unemployment != latest_msa_unemployment)  else   ('')) +           
-            '. '                     +
+        pandemic_job_losses            = february_2020_employment_level - april_2020_employment_level 
+        pandemic_job_losses_pct        = (pandemic_job_losses/february_2020_employment_level) * 100
+        
+        #Format variables
+        latest_county_employment       = "{:,}".format(latest_county_employment)
+        latest_county_unemployment     = "{:,.1f}%".format(latest_county_unemployment)
+        latest_state_unemployment      = "{:,.1f}%".format(latest_state_unemployment)
 
 
-            #Sentence 3: Discuss growth in total employment
-                'As of '+
-            latest_period +
-            ', total employment is ' +
-            up_or_down +
-            ' on a year-over-year basis. ' +
+        if cbsa == '':
 
-            # Is unemployment above or below pre-pandemic levels?
-            'The unemployment rate '          +
-            pre_pandemic_unemp_above_or_below +
-            ' its pre-pandemic level (Feb 2020) of ' +
-            "{:,.1f}%".format(pre_pandemic_unemployment)  +
-            '.'         
-            )
+            unemplopyment_language=( 
+                    #Sentence 1: Discuss covid job losses
+                    'At the onset of the pandemic last spring, ' + county + ' area employers shed ' + "{:,.1f}%".format(pandemic_job_losses_pct) + ' of its workforce, expanding the unemployment rate from ' +
+                    "{:,.1f}%".format(february_2020_unemployment_rate) + ' in February 2020 to ' + 
+                "{:,.1f}%".format(april_2020_unemployment_rate) + ' just two months later. ' + 
+                    
+                    
+                    #Sentence 2: Discuss current unemployment
+                    'The unemployment rate in '+
+                    county                     + 
+                    ' has '                    +
+                unemployment_change          +
+                    latest_county_unemployment +
+                    ', '                       +        
+                    state_county_unemployment_difference +
+                state_county_unemployment_above_or_below +
+                ' the '    +
+                state_name + 
+                ' rate'   +
+                    "{state_unemployment}".format(state_unemployment =(' of '      + latest_state_unemployment ) if (latest_county_unemployment != latest_state_unemployment)  else   ('')) +           
+                '. '                     +
+
+
+                #Sentence 3: Discuss growth in total employment
+                    'As of '+
+                latest_period +
+                ', total employment is ' +
+                up_or_down +
+                ' on a year-over-year basis. ' +
+
+                # Is unemployment above or below pre-pandemic levels?
+                'The unemployment rate '          +
+                pre_pandemic_unemp_above_or_below +
+                ' its pre-pandemic level (Feb 2020) of ' +
+                "{:,.1f}%".format(pre_pandemic_unemployment)  +
+                '.'         
+                )
+        else:
+            latest_msa_unemployment        = "{:,.1f}%".format(latest_msa_unemployment)
+            
+            unemplopyment_language = (  #Sentence 1: Discuss covid job losses
+                    'At the onset of the pandemic last spring, ' + county + ' area employers shed ' + "{:,.1f}%".format(pandemic_job_losses_pct) + ' of its workforce, expanding the unemployment rate from ' +
+                    "{:,.1f}%".format(february_2020_unemployment_rate) + ' in February 2020 to ' + 
+                "{:,.1f}%".format(april_2020_unemployment_rate) + ' just two months later. ' + 
+                    
+                    #Sentence 2: Discuss current unemployment
+                    'The unemployment rate in '+
+                    county                     + 
+                    ' has '                    +
+                unemployment_change          +
+                    latest_county_unemployment +
+                    ', '                       +        
+                    msa_county_unemployment_difference +
+                msa_county_unemployment_above_or_below +
+                ' the '    +
+                cbsa_name + 
+                ' rate'   +
+                    "{msa_unemployment}".format(msa_unemployment =(' of '      + latest_msa_unemployment ) if (latest_county_unemployment != latest_msa_unemployment)  else   ('')) +           
+                '. '                     +
+
+
+                #Sentence 3: Discuss growth in total employment
+                    'As of '+
+                latest_period +
+                ', total employment is ' +
+                up_or_down +
+                ' on a year-over-year basis. ' +
+
+                # Is unemployment above or below pre-pandemic levels?
+                'The unemployment rate '          +
+                pre_pandemic_unemp_above_or_below +
+                ' its pre-pandemic level (Feb 2020) of ' +
+                "{:,.1f}%".format(pre_pandemic_unemployment)  +
+                '.'         
+                )
+    except Exception as e:
+        print(e,'unable to create unemployment language')
+        unemplopyment_language = ''
+    
+    return([unemplopyment_language])
 
 def TourismEmploymentLanguage():
     county_industry_breakdown_lang      = county_industry_breakdown.sort_values(by=['month3_emplvl'])
@@ -4336,7 +4342,9 @@ def PopulationLanguage(national_resident_pop):
                     )
     except Exception as e:
         print(e,'unable to create population language')
-
+        population_language = ''
+    
+    return([population_language])
 def EducationLanguage():
     try:
         education_language = ('In ' + county + ', ' + 
@@ -4660,11 +4668,7 @@ def CreateLanguage():
 
 
     #Unemployment language
-    try:
-        unemplopyment_language  = UnemploymentLanguage()
-    except Exception as e:
-        print(e, ' problem with unemployment language')
-        unemplopyment_language = ''
+    unemplopyment_language  = UnemploymentLanguage()
 
     #County Private Employment Growth language
     try:    
