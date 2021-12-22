@@ -2605,7 +2605,7 @@ def HousingTypeTenureLanguage():
                                         ', followed by ' +
                                         second_most_common_category + 
                                         '. ' +
-                                        "{:,.1f}%".format(hood_owner_occupied_fraction)                        +   
+                                        "{:,.0f}%".format(hood_owner_occupied_fraction)                        +   
                                         ' of the housing units in '                                             + 
                                         neighborhood                                                            + 
                                         ' were occupied by their owner. '                                       +
@@ -2614,7 +2614,7 @@ def HousingTypeTenureLanguage():
                                         ' the '                                                                  +
                                         comparison_area                                                          +
                                         ' level of '                                                             +
-                                        "{:,.1f}%".format(comparsion_owner_occupied_fraction)                    +
+                                        "{:,.0f}%".format(comparsion_owner_occupied_fraction)                    +
                                         '.'
                                         )
     except Exception as e:
@@ -2896,7 +2896,7 @@ def TravelMethodLanguage():
     hood_largest_travel_category      = travel_method_categories[neighborhood_method_to_work_distribution.index(max(neighborhood_method_to_work_distribution))] #get the most common income category
     hood_largest_travel_category_frac = neighborhood_method_to_work_distribution[neighborhood_method_to_work_distribution.index(max(neighborhood_method_to_work_distribution))]
 
-    travel_method_language = ('In ' + neighborhood + ', the most common method for traveling to work is ' + hood_largest_travel_category.lower()  + ' with ' +  "{:,.1f}%".format(hood_largest_travel_category_frac) + ' of commuters using it.')
+    travel_method_language = ('In ' + neighborhood + ', the most common method for traveling to work is ' + hood_largest_travel_category.lower()  + ' with ' +  "{:,.0f}%".format(hood_largest_travel_category_frac) + ' of commuters using it.')
     return([travel_method_language])
     
 def TravelTimeLanguage():
