@@ -4151,12 +4151,14 @@ def Main():
         current_year = str(date.today().year)
         SetGraphFormatVariables()
         CreateDirectory()
-        GetWikipediaPage()
-        GetData()
-        CreateGraphs()
-        CreateLanguage()
-        WriteReport()
-        CleanUpPNGs()
+        #Skip places we have already done
+        if os.path.exists(report_path) == False and os.path.exists(report_path.replace('_draft','_FINAL')) == False:
+            GetWikipediaPage()
+            GetData()
+            CreateGraphs()
+            CreateLanguage()
+            WriteReport()
+            CleanUpPNGs()
         print('Report for: ---------' + neighborhood + ' compared to ' + comparison_area + ' Complete ----------------')
 
     
