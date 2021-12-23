@@ -3972,10 +3972,11 @@ def GetUserInputs():
         # neighborhood        = input('Enter the name of the custom neighborhood').strip()
         hood_place_type     = 'neighborhood'
 
-
+def GetComparsionInfo():
     global comparison_area, comparison_tract ,comparison_zip, comparison_place_fips, comparison_suvdiv_fips, comparison_county_fips
     global comparison_state, comparison_state_fips, comparison_state_full_name
     global comparison_place_type
+    global hood_state
 
     #Get user input on comparison area
     if comparison_level == 'county':          #When our comparison area is a county eg Nassau County, New York
@@ -4084,7 +4085,8 @@ def Main():
    
     if report_creation == 'y':
         UserSelectsNeighborhoodLevel(batch_mode)
-        GetUserInputs( ) #user selects if they want to run report and gives input for report subject
+        GetUserInputs() #user selects if they want to run report and gives input for report subject
+        GetComparsionInfo()
         print('Preparing report for: ' + neighborhood + ' compared to ' + comparison_area)
         global latitude
         global longitude
