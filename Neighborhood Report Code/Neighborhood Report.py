@@ -4178,7 +4178,7 @@ DeclareFormattingParameters()
 
 
 batch_mode = True
-# batch_mode = False
+batch_mode = False
 batch_type_number = 1 #controls what report type we are doing batches of
 
 
