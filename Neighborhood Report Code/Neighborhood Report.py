@@ -3790,7 +3790,7 @@ def UserSelectsNeighborhoodLevel(batch_mode):
                                 
                                     # '32.) = Custom vs. Tract'  + '\n' +
                                     # '33.) = Custom vs. County Subdivison' + '\n' +
-                                    # '34.) = Custom vs. County' + '\n' +
+                                    '34.) = Custom vs. County' + '\n' +
                                     # '35.) = Custom vs. Zip'  + '\n' +
                                     # '36.) = Custom  vs. None'  
                                     ''
@@ -3899,9 +3899,9 @@ def UserSelectsNeighborhoodLevel(batch_mode):
     # elif analysis_type_number == 33 : #Custom vs. County Subdivison
         #   neighborhood_level = ''
     #   comparison_level   = ''
-    # elif analysis_type_number == 34 : #Custom vs. County
-        #   neighborhood_level = ''
-    #   comparison_level   = ''
+    elif analysis_type_number == 34 : #Custom vs. County
+          neighborhood_level = 'custom'
+          comparison_level   = 'county'
     # elif analysis_type_number == 35: #Custom vs. Zip
        #   neighborhood_level = ''
     #   comparison_level   = ''
@@ -3989,6 +3989,13 @@ def GetComparsionInfo():
             county_fips_info                      = ProcessCountyFIPS(PlaceFIPSToCountyFIPS(hood_place_fips,hood_state_fips))
         elif neighborhood_level == 'county subdivision':
              county_fips_info                      = ProcessCountyFIPS(county_fips =   hood_state_fips + hood_county_fips)
+        elif neighborhood_level == 'custom':
+            if batch_mode == False:
+                county_fips_info                      = ProcessCountyFIPS(county_fips =   input('Enter the 5 digit county FIPS Code for the hood'))
+            elif batch_mode == True:
+                county_fips_info                      = ProcessCountyFIPS(county_fips =   place_fips)
+
+
         else:
             county_fips_info                      = ProcessCountyFIPS(county_fips =   input('Enter the 5 digit county FIPS Code for the hood'))
 
@@ -4126,7 +4133,7 @@ def Main():
 
 
 
-batch_mode = True
+batch_mode = False
 # batch_mode = False
 batch_type_number = 1
 
