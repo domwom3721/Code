@@ -2834,7 +2834,7 @@ def PopulationAgeLanguage():
         age_ranges = ['0-19','20-24','25-34','35-49','50-66','67']
 
         hood_median_age_range      = FindMedianCategory(frequency_list = neighborhood_age_data, category_list = age_ranges)
-        if hood_median_age_range == 67:
+        if hood_median_age_range != age_ranges[-1]:
             hood_median_age_range      = hood_median_age_range.replace(',','').split('-')
             hood_median_age            = round((int(hood_median_age_range[0]) + int(hood_median_age_range[1]))/2,1)
         else:
@@ -3526,6 +3526,7 @@ def AddPointOfInterestsTable(document,data_for_table): #Function we use to inser
                         font.bold = True
                         font.name = 'Avenir Next LT Pro Demi'
 
+#####################################################Report sections functions####################################
 def IntroSection(document):
     print('Writing Intro Section')
     AddTitle(document = document)
