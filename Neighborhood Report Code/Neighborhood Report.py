@@ -394,11 +394,12 @@ def PlaceNameToPlaceFIPS(place_name,state_code):
 
 
     #Restrict to observations that include the provieded place fips
-    place_county_crosswalk_df            = place_county_crosswalk_df.loc[(place_county_crosswalk_df['Neighborhood_District'] == str(place_name)) & (place_county_crosswalk_df['STATE'] == str(state_code))].reset_index()                 
+    place_county_crosswalk_df            = place_county_crosswalk_df.loc[(place_county_crosswalk_df['Neighborhood_District'] == str(place_name)) & (place_county_crosswalk_df['STATE'] == str(state_code)) & (place_county_crosswalk_df['TYPE'] != 'County Subdivision') ].reset_index()                 
     
     #Return the last row if that's there's only one, otherwise ask user to choose
     if len(place_county_crosswalk_df) == 1:
         county_fips                         = str(place_county_crosswalk_df['State_Place_FP'].iloc[-1])[0:7]
+    
     elif len(place_county_crosswalk_df) > 1:
         print(place_county_crosswalk_df)
         selected_county = int(input('There are more than 1 counties for this city: enter the number of your choice'))  
