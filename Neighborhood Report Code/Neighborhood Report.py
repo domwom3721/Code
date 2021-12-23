@@ -369,7 +369,15 @@ def PlaceFIPSToCountyFIPS(place_fips,state_fips):
     #Return the last row if that's there's only one, otherwise ask user to choose
     if len(place_county_crosswalk_df) == 1:
         county_fips                         = str(place_county_crosswalk_df['County_FIPS'].iloc[-1])[0:5]
-    elif len(place_county_crosswalk_df) > 1:
+    elif len(place_county_crosswalk_df) == 2:
+        print(place_county_crosswalk_df)
+        
+        if (place_county_crosswalk_df['County_FIPS'].iloc[0]) == (place_county_crosswalk_df['County_FIPS'].iloc[1]):
+            county_fips                         = str(place_county_crosswalk_df['County_FIPS'].iloc[0])[0:5]
+        else:
+            selected_county = int(input('There are more than 1 counties for this city: enter the number of your choice'))  
+            county_fips                         = str(place_county_crosswalk_df['County_FIPS'].iloc[selected_county])[0:5]
+    elif len(place_county_crosswalk_df) > 2:
         print(place_county_crosswalk_df)
         selected_county = int(input('There are more than 1 counties for this city: enter the number of your choice'))  
         county_fips                         = str(place_county_crosswalk_df['County_FIPS'].iloc[selected_county])[0:5]
@@ -380,7 +388,7 @@ def PlaceFIPSToCountyFIPS(place_fips,state_fips):
     return(county_fips)
 
 def PlaceNameToPlaceFIPS(place_name,state_code):
-    print('Looking for county fips code')
+    print('Looking for place fips code')
     #Takes place name and returns the 7 digit fips code for a city 
     
     #Open file with place fips code and county fips code
