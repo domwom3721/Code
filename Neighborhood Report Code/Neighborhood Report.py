@@ -3913,6 +3913,8 @@ def GetUserInputs():
 
     #Get User input on neighborhood/subject area
     if neighborhood_level == 'place':        #when our neighborhood is a town or city eg: East Rockaway Village, New York
+       
+
         place_fips_info                 = ProcessPlaceFIPS(input('Enter the 7 digit Census Place FIPS Code'))
         hood_place_fips                 = place_fips_info[0]
         hood_state_fips                 = place_fips_info[1]
@@ -4113,7 +4115,7 @@ Main()
 
 
 # #This is our main function that calls all other functions we will use
-# batch_mode = False
+batch_mode = False
 # #EXPERIMENT IN PROGRESS BATCH HOOD RERPORTS
 # if batch_mode == True:
 #     for city,place_fips in zip(['New York'],['36-51000']):
