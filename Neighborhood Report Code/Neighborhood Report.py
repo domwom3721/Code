@@ -372,9 +372,7 @@ def PlaceFIPSToCountyFIPS(place_fips,state_fips):
     #Return the last row if that's there's only one, otherwise ask user to choose
     if len(place_county_crosswalk_df) == 1:
         county_fips                         = str(place_county_crosswalk_df['County_FIPS'].iloc[-1])[0:5]
-    elif len(place_county_crosswalk_df) == 2:
-        print(place_county_crosswalk_df)
-        
+    elif len(place_county_crosswalk_df) == 2:        
         if (place_county_crosswalk_df['County_FIPS'].iloc[0]) == (place_county_crosswalk_df['County_FIPS'].iloc[1]):
             county_fips                         = str(place_county_crosswalk_df['County_FIPS'].iloc[0])[0:5]
         else:
@@ -1338,7 +1336,7 @@ def GetYelpData(lat,lon,radius):
                 business_name = response['businesses'][i]['name']
                 business_categories[category].append(business_name)
         
-            time.sleep(1)
+            time.sleep(.1)
     except Exception as e:
         print(e)
         
@@ -1460,7 +1458,7 @@ def SearchGreatSchoolDotOrg():
         #Write hood name in box
         Place = browser.find_element_by_class_name("search_form_field")
         Place.send_keys(search_term)
-        time.sleep(1.5)
+        time.sleep(1)
         
         #Submit hood name for search
         Submit = browser.find_element_by_class_name('search_form_button')
@@ -3049,7 +3047,7 @@ def LocationIQPOIListLanguage(lat,lon,category):
             #     if neighborhood == poi_city:
             #         poi_sentence = poi_list + poi_sentence
             # else:
-        time.sleep(.25)
+        time.sleep(.1)
         return(poi_list)
     except Exception as e:
             print(e)
@@ -3199,7 +3197,7 @@ def GetMap():
         #Submit hood name for search
         Submit = browser.find_element_by_class_name('nhb85d-BIqFsb')
         Submit.click()
-        time.sleep(12)
+        time.sleep(6)
 
         # first photo, up close and personal. no zoom needed
         if 'Leahy' in os.environ['USERPROFILE']: #differnet machines have different screen coordinates
@@ -3214,13 +3212,13 @@ def GetMap():
             im2 = pyautogui.screenshot(region=(1089,276, 2405, 1754) ) #left, top, width, and height
         time.sleep(1)
         im2.save(os.path.join(hood_folder_map,'map.png'))
-        time.sleep(3)
+        time.sleep(1)
 
         # second photo, zoomed out
         zoomout = browser.find_element_by_xpath("""//*[@id="widget-zoom-out"]/div""")
         for i in range(3):
             zoomout.click() 
-        time.sleep(3)
+        time.sleep(2.5)
 
 
         if 'Leahy' in os.environ['USERPROFILE']: #differnet machines have different screen coordinates
@@ -3233,7 +3231,7 @@ def GetMap():
         
         else:
             im2 = pyautogui.screenshot(region=(1089,276, 2405, 1754) ) #left, top, width, and height
-        time.sleep(5)
+        time.sleep(1)
 
         im2.save(os.path.join(hood_folder_map,'map2.png'))
         im2.close()
