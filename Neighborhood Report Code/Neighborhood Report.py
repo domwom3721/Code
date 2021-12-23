@@ -24,6 +24,7 @@ from datetime import date, datetime
 import googlemaps
 import mpu
 import numpy as np
+from numpy.lib.function_base import place
 import pandas as pd
 import plotly.graph_objects as go
 import pyautogui
@@ -4135,22 +4136,19 @@ def Main():
 
 batch_mode = False
 # batch_mode = False
-batch_type_number = 1
+batch_type_number = 1 #controls what report type we are doing batches of
 
 
 if batch_mode == True:
     #Loop through list of custom neighborhoods
-    city_name_list  = ['New York']
-    place_fips_list = ['36-51000']
+    if batch_type_number == (3) or batch_type_number == (34):
+        place_fips = '36-51000' #change to city fips for the city with the hoods you want to loop through
+        for  neighborhood in GetListOfNeighborhoods('New York'): #change to city name for the city with the hoods you want to loop through
+            try:
+                Main()
+            except Exception as e:
+                print(e,'REORT CREATION FAILED')
 
-    if batch_type_number == 3:
-        for city,place_fips in zip(city_name_list,place_fips_list):
-            for  neighborhood in GetListOfNeighborhoods(city):
-                try:
-                    Main()
-                except Exception as e:
-                    print(e,'REORT CREATION FAILED')
-    
     
     elif batch_type_number == 1:
         place_fips_list = ['36-63264','48-30464','53-35940']
