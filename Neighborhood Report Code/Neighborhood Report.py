@@ -212,16 +212,19 @@ def DetermineNYCCommunityDistrict(lat,lon):
                                 
                 #Check if lat and lon is inside the communtiy district
                 if polygon.contains(point) == True:
+                    print('The NYC Community District is ',str(communtiy_district_number))
                     return(str(communtiy_district_number))
 
             except Exception as e:
-                print(e)
+                # print(e)
                 continue
         
+        print('Area is not part of any NYC Community District')
         return('x')
 
+
     except Exception as e:
-        print(e)
+        print(e,'Unable to search for NYC communtiy district')
         return('x')
 
 #####################################################User FIPS input proccessing Functions####################################
