@@ -3733,63 +3733,68 @@ def DecideIfWritingReport():
     global report_creation
     #Give the user 10 seconds to decide if writing reports for metro areas or individual county entries
     try:
-        report_creation = input_with_timeout('Create new report? y/n', 10).strip()
-        # report_creation = 'y'
+        if batch_mode == False:
+            report_creation = input_with_timeout('Create new report? y/n', 10).strip()
+        else:
+            report_creation = 'y'
 
     except TimeoutExpired:
         report_creation = ''
 
-def UserSelectsNeighborhoodLevel():
+def UserSelectsNeighborhoodLevel(batch_mode):
     global analysis_type_number
     global neighborhood_level,comparison_level
 
-    analysis_type_number = int(input('What is the geographic level of the neighborhood and comparison area?' + '\n'
-  
-                                '1.) = Place  vs. County'+ '\n' #+
-                                '2.) = County Subdivison vs. County' + '\n' +
-                                '3.) = Custom vs. Place'  + '\n' +
-                                '4.) = Place  vs. County Subdivison'+ '\n' +
-                                # '5.) = Zip    vs. Place'+ '\n' #+
+    if batch_mode == True:
+        analysis_type_number = 3
+    else:
+        analysis_type_number = int(input('What is the geographic level of the neighborhood and comparison area?' + '\n'
+    
+                                    '1.) = Place  vs. County'+ '\n' #+
+                                    '2.) = County Subdivison vs. County' + '\n' +
+                                    '3.) = Custom vs. Place'  + '\n' +
+                                    '4.) = Place  vs. County Subdivison'+ '\n' +
+                                    # '5.) = Zip    vs. Place'+ '\n' #+
 
-                                # '6.) = Tract vs. Place'   + '\n' +
-                                # '7.) = Tract vs. County ' + '\n' +
-                                # '8.) = Tract vs. Zip'     + '\n' +
-                                # '9.) = Tract vs. County Subdivison'+ '\n' +
-                                # '10.) = Tract vs. Custom'+ '\n' +
-                                # '11.) = Tract vs. None'+ '\n' +
+                                    # '6.) = Tract vs. Place'   + '\n' +
+                                    # '7.) = Tract vs. County ' + '\n' +
+                                    # '8.) = Tract vs. Zip'     + '\n' +
+                                    # '9.) = Tract vs. County Subdivison'+ '\n' +
+                                    # '10.) = Tract vs. Custom'+ '\n' +
+                                    # '11.) = Tract vs. None'+ '\n' +
 
-                                # '12.) = Place  vs. Zip'+ '\n' +
-                                # '13.) = Place  vs. Custom'+ '\n' +
-                                # '14.) = Place  vs. Tract'+ '\n' +
-                                # '15.) = Place  vs. None'+ '\n' +
+                                    # '12.) = Place  vs. Zip'+ '\n' +
+                                    # '13.) = Place  vs. Custom'+ '\n' +
+                                    # '14.) = Place  vs. Tract'+ '\n' +
+                                    # '15.) = Place  vs. None'+ '\n' +
 
 
-                                # '16.) = County  vs. Place'+ '\n' +
-                                # '17.) = County  vs. Tract' + '\n' +
-                                # '18.) = County vs. Zip' + '\n' +
-                                # '19.) = County vs. Custom'+ '\n' +
-                                # '20.) = County vs. County Subdivison'+ '\n' +
-                                # '21.) = County  vs. None'+ '\n' +
+                                    # '16.) = County  vs. Place'+ '\n' +
+                                    # '17.) = County  vs. Tract' + '\n' +
+                                    # '18.) = County vs. Zip' + '\n' +
+                                    # '19.) = County vs. Custom'+ '\n' +
+                                    # '20.) = County vs. County Subdivison'+ '\n' +
+                                    # '21.) = County  vs. None'+ '\n' +
 
-                                # '22.) = Zip vs. Tract '+ '\n' +
-                                # '23.) = Zip vs. Custom'+ '\n' +
-                                # '24.) = Zip vs. County Subdivison'+ '\n' +
-                                # '25.) = Zip vs. County'+ '\n' +
-                                # '26.) = Zip vs. None'+ '\n' +
+                                    # '22.) = Zip vs. Tract '+ '\n' +
+                                    # '23.) = Zip vs. Custom'+ '\n' +
+                                    # '24.) = Zip vs. County Subdivison'+ '\n' +
+                                    # '25.) = Zip vs. County'+ '\n' +
+                                    # '26.) = Zip vs. None'+ '\n' +
 
-                                # '27.) = County Subdivison vs. Place'  + '\n' +
-                                # '28.) = County Subdivison vs. Custom' + '\n' +
-                                # '29.) = County Subdivison vs. Zip'+ '\n' +
-                                # '30.) = County Subdivison vs. Tract'+ '\n' +
-                                # '31.) = County Subdivison vs. None'  + '\n' +
-                            
-                                # '32.) = Custom vs. Tract'  + '\n' +
-                                # '33.) = Custom vs. County Subdivison' + '\n' +
-                                # '34.) = Custom vs. County' + '\n' +
-                                # '35.) = Custom vs. Zip'  + '\n' +
-                                # '36.) = Custom  vs. None'  
-                                ''
-                                ))
+                                    # '27.) = County Subdivison vs. Place'  + '\n' +
+                                    # '28.) = County Subdivison vs. Custom' + '\n' +
+                                    # '29.) = County Subdivison vs. Zip'+ '\n' +
+                                    # '30.) = County Subdivison vs. Tract'+ '\n' +
+                                    # '31.) = County Subdivison vs. None'  + '\n' +
+                                
+                                    # '32.) = Custom vs. Tract'  + '\n' +
+                                    # '33.) = Custom vs. County Subdivison' + '\n' +
+                                    # '34.) = Custom vs. County' + '\n' +
+                                    # '35.) = Custom vs. Zip'  + '\n' +
+                                    # '36.) = Custom  vs. None'  
+                                    ''
+                                    ))
 
     
 
@@ -3964,7 +3969,7 @@ def GetUserInputs():
 
     elif neighborhood_level == 'custom': #When our neighborhood is a neighboorhood within a city (eg: Financial District, New York City)
         #Get name of hood
-        neighborhood        = input('Enter the name of the custom neighborhood').strip()
+        # neighborhood        = input('Enter the name of the custom neighborhood').strip()
         hood_place_type     = 'neighborhood'
 
 
@@ -3989,8 +3994,10 @@ def GetUserInputs():
         comparison_place_type                 = 'county'
 
     elif comparison_level == 'place':        #when our comparison area is a town or city eg: East Rockaway Village, New York
-        # place_fips_info                      = ProcessPlaceFIPS(place_fips) #use this for batches of  all the hoods in a city
-        place_fips_info                      = ProcessPlaceFIPS(place_fips = input('Enter the 7 digit Census Place FIPS Code') )
+        if batch_mode == True:
+            place_fips_info                      = ProcessPlaceFIPS(place_fips) #use this for batches of  all the hoods in a city
+        elif batch_mode == False:
+            place_fips_info                      = ProcessPlaceFIPS(place_fips = input('Enter the 7 digit Census Place FIPS Code') )
         comparison_place_fips                = place_fips_info[0]
         comparison_state_fips                = place_fips_info[1]
         comparison_area                      = place_fips_info[2]
@@ -4076,7 +4083,7 @@ def Main():
     DecideIfWritingReport()
    
     if report_creation == 'y':
-        UserSelectsNeighborhoodLevel()
+        UserSelectsNeighborhoodLevel(batch_mode)
         GetUserInputs( ) #user selects if they want to run report and gives input for report subject
         print('Preparing report for: ' + neighborhood + ' compared to ' + comparison_area)
         global latitude
@@ -4110,21 +4117,22 @@ def Main():
                     dropbox_dir='https://www.dropbox.com/home/Research/Market Analysis/Neighborhood/')
 
 
-Main()
+# Main()
 
 
 
 # #This is our main function that calls all other functions we will use
-batch_mode = False
-# #EXPERIMENT IN PROGRESS BATCH HOOD RERPORTS
-# if batch_mode == True:
-#     for city,place_fips in zip(['New York'],['36-51000']):
+batch_mode = True
+# batch_mode = False
+#EXPERIMENT IN PROGRESS BATCH HOOD RERPORTS
+if batch_mode == True:
+    for city,place_fips in zip(['New York'],['36-51000']):
         
-#         for  neighborhood in GetListOfNeighborhoods(city):
-#             try:
-#                 Main()
-#             except Exception as e:
-#                 print(e,'REORT CREATION FAILED')
+        for  neighborhood in GetListOfNeighborhoods(city):
+            try:
+                Main()
+            except Exception as e:
+                print(e,'REORT CREATION FAILED')
 # else:
 #     Main()
 
