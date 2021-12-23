@@ -2830,33 +2830,38 @@ def HouseholdSizeLanguage():
 
 def PopulationAgeLanguage():
     print('Creating Population by Age Langauge')
-    age_ranges = ['0-19','20-24','25-34','35-49','50-66','67+']
+    try:
+        age_ranges = ['0-19','20-24','25-34','35-49','50-66','67']
 
-    hood_median_age_range      = FindMedianCategory(frequency_list = neighborhood_age_data, category_list = age_ranges)
-    hood_median_age_range      = hood_median_age_range.replace(',','').split('-')
-    hood_median_age            = round((int(hood_median_age_range[0]) + int(hood_median_age_range[1]))/2,1)
-    
-    hood_largest_age_category  = age_ranges[neighborhood_age_data.index(max(neighborhood_age_data))] #get the most common income category
-    comp_largest_age_category  = age_ranges[comparison_age_data.index(max(comparison_age_data))]
+        hood_median_age_range      = FindMedianCategory(frequency_list = neighborhood_age_data, category_list = age_ranges)
+        if hood_median_age_range == '67':
+            hood_median_age_range      = hood_median_age_range.replace(',','').split('-')
+            hood_median_age            = round((int(hood_median_age_range[0]) + int(hood_median_age_range[1]))/2,1)
+        else:
+            hood_median_age = 'over 67'
+        hood_largest_age_category  = age_ranges[neighborhood_age_data.index(max(neighborhood_age_data))] #get the most common income category
+        comp_largest_age_category  = age_ranges[comparison_age_data.index(max(comparison_age_data))]
 
-    age_language = ('The median age in '                                                        +
-                       neighborhood                                                         + 
-                       ' is around '                         + 
-                        "{:,.0f}".format(hood_median_age)                                   +
-                       '. '                                   +
-                       
-                       'In '                                                                + 
-                       neighborhood                                                         + 
-                       ', the largest age range is between ' +
-                       hood_largest_age_category                                            +
-                       ', compared to '                                                     +
-                       comp_largest_age_category                                            +
-                       ' for '                                                              +
-                        comparison_area                                                     +
-                        '.'
-                    )
-
-    
+        age_language = ('The median age in '                                                        +
+                        neighborhood                                                         + 
+                        ' is around '                         + 
+                            "{:,.0f}".format(hood_median_age)                                   +
+                        '. '                                   +
+                        
+                        'In '                                                                + 
+                        neighborhood                                                         + 
+                        ', the largest age range is between ' +
+                        hood_largest_age_category                                            +
+                        ', compared to '                                                     +
+                        comp_largest_age_category                                            +
+                        ' for '                                                              +
+                            comparison_area                                                     +
+                            '.'
+                        )
+    except Exception as e:
+        print(e,'unable to create population by age langauge')
+        age_language = ''
+        
     return([age_language])
 
 def IncomeLanguage():
@@ -3197,7 +3202,7 @@ def GetMap():
         #Submit hood name for search
         Submit = browser.find_element_by_class_name('nhb85d-BIqFsb')
         Submit.click()
-        time.sleep(6)
+        time.sleep(7.5)
 
         # first photo, up close and personal. no zoom needed
         if 'Leahy' in os.environ['USERPROFILE']: #differnet machines have different screen coordinates
