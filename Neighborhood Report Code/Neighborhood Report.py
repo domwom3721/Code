@@ -4132,6 +4132,7 @@ batch_type_number = 1
 
 
 if batch_mode == True:
+    #Loop through list of custom neighborhoods
     city_name_list  = ['New York']
     place_fips_list = ['36-51000']
 
@@ -4145,7 +4146,7 @@ if batch_mode == True:
     
     
     elif batch_type_number == 1:
-        place_fips_list = ['36-51000']
+        place_fips_list = ['36-63264','48-30464','53-35940']
 
         for place_fips in place_fips_list:
             try:
