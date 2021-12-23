@@ -364,7 +364,7 @@ def PlaceFIPSToCountyFIPS(place_fips,state_fips):
 
 
     #Restrict to observations that include the provieded place fips
-    place_county_crosswalk_df            = place_county_crosswalk_df.loc[(place_county_crosswalk_df['PLACEFP'] == str(place_fips)) & (place_county_crosswalk_df['STATEFP'] == str(state_fips))]                 
+    place_county_crosswalk_df            = place_county_crosswalk_df.loc[(place_county_crosswalk_df['PLACEFP'] == str(place_fips)) & (place_county_crosswalk_df['STATEFP'] == str(state_fips))].reset_index()                 
     
     #Return the last row if that's there's only one, otherwise ask user to choose
     if len(place_county_crosswalk_df) == 1:
@@ -378,7 +378,37 @@ def PlaceFIPSToCountyFIPS(place_fips,state_fips):
 
 
     return(county_fips)
-         
+
+def PlaceNameToPlaceFIPS(place_name,state_code):
+    print('Looking for county fips code')
+    #Takes place name and returns the 7 digit fips code for a city 
+    
+    #Open file with place fips code and county fips code
+    place_county_crosswalk_df                            = pd.read_csv(os.path.join(data_location,'Census Area Codes','national_places.csv'),encoding='latin-1') #read in crosswalk file
+    
+    place_county_crosswalk_df['PLACEFP']                 = place_county_crosswalk_df['PLACEFP'].astype(str)
+    place_county_crosswalk_df['PLACEFP']                 = place_county_crosswalk_df['PLACEFP'].str.zfill(5)
+
+    place_county_crosswalk_df['State_Place_FP']                 = place_county_crosswalk_df['State_Place_FP'].astype(str)
+    place_county_crosswalk_df['State_Place_FP']                 = place_county_crosswalk_df['State_Place_FP'].str.zfill(7)
+
+
+    #Restrict to observations that include the provieded place fips
+    place_county_crosswalk_df            = place_county_crosswalk_df.loc[(place_county_crosswalk_df['Neighborhood_District'] == str(place_name)) & (place_county_crosswalk_df['STATE'] == str(state_code))].reset_index()                 
+    
+    #Return the last row if that's there's only one, otherwise ask user to choose
+    if len(place_county_crosswalk_df) == 1:
+        county_fips                         = str(place_county_crosswalk_df['State_Place_FP'].iloc[-1])[0:7]
+    elif len(place_county_crosswalk_df) > 1:
+        print(place_county_crosswalk_df)
+        selected_county = int(input('There are more than 1 counties for this city: enter the number of your choice'))  
+        county_fips                         = str(place_county_crosswalk_df['State_Place_FP'].iloc[selected_county])[0:7]
+    else:
+        return(None)
+
+
+    return(county_fips)
+                
 #####################################################Misc Functions####################################
 def CreateDirectory():
     print('Creating Directories and file name')
@@ -4134,7 +4164,7 @@ def Main():
 
 
 
-batch_mode = False
+batch_mode = True
 # batch_mode = False
 batch_type_number = 1 #controls what report type we are doing batches of
 
@@ -4151,7 +4181,16 @@ if batch_mode == True:
 
     
     elif batch_type_number == 1:
-        place_fips_list = ['36-63264','48-30464','53-35940']
+        #Open Salesforce Report
+        salesforce_df              =  pd.read_csv(os.path.join(salesforce_report,'report.csv'))
+    
+        place_fips_list = []
+        city_name_list                 = list(salesforce_df['Property: Neighborhood/District'])
+        state_code_list                = list(salesforce_df['Property: State'])
+        
+        for c,sc in zip(city_name_list,state_code_list):
+            place_fips_list.append(PlaceNameToPlaceFIPS(place_name= c,state_code = sc))
+        
 
         for place_fips in place_fips_list:
             try:
