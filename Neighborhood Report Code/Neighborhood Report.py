@@ -2834,7 +2834,7 @@ def PopulationAgeLanguage():
         age_ranges = ['0-19','20-24','25-34','35-49','50-66','67']
 
         hood_median_age_range      = FindMedianCategory(frequency_list = neighborhood_age_data, category_list = age_ranges)
-        if hood_median_age_range == '67':
+        if hood_median_age_range == 67:
             hood_median_age_range      = hood_median_age_range.replace(',','').split('-')
             hood_median_age            = round((int(hood_median_age_range[0]) + int(hood_median_age_range[1]))/2,1)
         else:
@@ -3202,7 +3202,7 @@ def GetMap():
         #Submit hood name for search
         Submit = browser.find_element_by_class_name('nhb85d-BIqFsb')
         Submit.click()
-        time.sleep(7.5)
+        time.sleep(9.5)
 
         # first photo, up close and personal. no zoom needed
         if 'Leahy' in os.environ['USERPROFILE']: #differnet machines have different screen coordinates
