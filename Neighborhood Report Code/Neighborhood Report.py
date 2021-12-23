@@ -3202,22 +3202,27 @@ def GetMap():
         #Submit hood name for search
         Submit = browser.find_element_by_class_name('nhb85d-BIqFsb')
         Submit.click()
-        time.sleep(9.5)
-
-        # first photo, up close and personal. no zoom needed
-        if 'Leahy' in os.environ['USERPROFILE']: #differnet machines have different screen coordinates
+    
+        if 'Leahy' in os.environ['USERPROFILE']:
+            #Move to the left button "Collapse Side Pannel" 
+            # to make the grey message go away
+            collapse_side_pannel_x = 1048
+            collapse_side_pannel_y = 1292
+            collapse_side_pannel_duration = 0.5
+            pyautogui.moveTo(x=collapse_side_pannel_x,y=collapse_side_pannel_y,duration = collapse_side_pannel_duration)
+            time.sleep(2)
+            pyautogui.moveTo(x=collapse_side_pannel_x - 200,y=collapse_side_pannel_y-100,duration=collapse_side_pannel_duration)
+            time.sleep(1)
             print('Using Mikes coordinates for screenshot')
             im2 = pyautogui.screenshot(region=(1358,465, 2142, 1404) ) #left, top, width, and height
-        
         elif 'Dominic' in os.environ['USERPROFILE']:
+            time.sleep(12)
             print('Using Doms coordinates for screenshot')
             im2 = pyautogui.screenshot(region=(3680,254,1968 ,1231) ) #left, top, width, and height
-        
-        else:
-            im2 = pyautogui.screenshot(region=(1089,276, 2405, 1754) ) #left, top, width, and height
-        time.sleep(1)
+
+        time.sleep(.1)
         im2.save(os.path.join(hood_folder_map,'map.png'))
-        time.sleep(1)
+        time.sleep(.2)
 
         # second photo, zoomed out
         zoomout = browser.find_element_by_xpath("""//*[@id="widget-zoom-out"]/div""")
@@ -4137,8 +4142,6 @@ def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
         os.remove(csv_path)           
 
 def Main():
-    DeclareAPIKeys()
-    DeclareFormattingParameters()
     DecideIfWritingReport()
    
     if report_creation == 'y':
@@ -4150,12 +4153,11 @@ def Main():
         global longitude
         global current_year
         global neighborhood_shape
-        coordinates = GetLatandLon()
-        latitude    = coordinates[0] 
-        longitude   = coordinates[1]
+        coordinates        = GetLatandLon()
+        latitude           = coordinates[0] 
+        longitude          = coordinates[1]
         neighborhood_shape = GetNeighborhoodShape()
-        current_year = str(date.today().year)
-        SetGraphFormatVariables()
+        current_year       = str(date.today().year)
         CreateDirectory()
         #Skip places we have already done
         if os.path.exists(report_path) == False and os.path.exists(report_path.replace('_draft','_FINAL')) == False:
@@ -4168,17 +4170,11 @@ def Main():
         print('Report for: ---------' + neighborhood + ' compared to ' + comparison_area + ' Complete ----------------')
 
     
-    #Crawl through directory and create CSV with all current neighborhood report documents
-    CreateDirectoryCSV()
-
-    #Post an update request to the Market Research Docs Service to update the database
-    if main_output_location == os.path.join(dropbox_root,'Research','Market Analysis','Neighborhood'): 
-        UpdateServiceDb(report_type='neighborhoods', 
-                    csv_name=service_api_csv_name, 
-                    csv_path=os.path.join(main_output_location, service_api_csv_name),
-                    dropbox_dir='https://www.dropbox.com/home/Research/Market Analysis/Neighborhood/')
 
 
+SetGraphFormatVariables()
+DeclareAPIKeys()
+DeclareFormattingParameters()
 
 
 batch_mode = True
@@ -4205,8 +4201,8 @@ if batch_mode == True:
         city_name_list                 = list(salesforce_df['Property: Neighborhood/District'])
         state_code_list                = list(salesforce_df['Property: State'])
         
-        for c,sc in zip(city_name_list,state_code_list):
-            place_fips_list.append(PlaceNameToPlaceFIPS(place_name= c,state_code = sc))
+        for loop_city,sc in zip(city_name_list,state_code_list):
+            place_fips_list.append(PlaceNameToPlaceFIPS(place_name= loop_city,state_code = sc))
         
 
         for place_fips in place_fips_list:
@@ -4221,4 +4217,15 @@ else:
     Main() #This is our main function that calls all other functions we will use
 
 
+
+
+#Crawl through directory and create CSV with all current neighborhood report documents
+CreateDirectoryCSV()
+
+#Post an update request to the Market Research Docs Service to update the database
+if main_output_location == os.path.join(dropbox_root,'Research','Market Analysis','Neighborhood'): 
+    UpdateServiceDb(report_type='neighborhoods', 
+                csv_name=service_api_csv_name, 
+                csv_path=os.path.join(main_output_location, service_api_csv_name),
+                dropbox_dir='https://www.dropbox.com/home/Research/Market Analysis/Neighborhood/')
 print('Finished!')
