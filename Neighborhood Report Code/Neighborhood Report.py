@@ -4207,10 +4207,11 @@ if batch_mode == True:
         
 
         for place_fips in place_fips_list:
-            try:
-                Main() #This is our main function that calls all other functions we will use
-            except Exception as e:
-                print(e,'REORT CREATION FAILED')
+            if place_fips != None:
+                try:
+                    Main() #This is our main function that calls all other functions we will use
+                except Exception as e:
+                    print(e,'REORT CREATION FAILED for',place_fips)
 
 
 else:
