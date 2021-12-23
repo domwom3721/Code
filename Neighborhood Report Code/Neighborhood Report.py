@@ -3746,7 +3746,7 @@ def UserSelectsNeighborhoodLevel(batch_mode):
     global neighborhood_level,comparison_level
 
     if batch_mode == True:
-        analysis_type_number = 3
+        analysis_type_number = batch_type_number
     else:
         analysis_type_number = int(input('What is the geographic level of the neighborhood and comparison area?' + '\n'
     
@@ -3919,8 +3919,12 @@ def GetUserInputs():
     #Get User input on neighborhood/subject area
     if neighborhood_level == 'place':        #when our neighborhood is a town or city eg: East Rockaway Village, New York
        
+        if batch_mode == False:
+            place_fips_info                 = ProcessPlaceFIPS(input('Enter the 7 digit Census Place FIPS Code'))
+        else:
+            place_fips_info                 = ProcessPlaceFIPS(place_fips=place_fips)
 
-        place_fips_info                 = ProcessPlaceFIPS(input('Enter the 7 digit Census Place FIPS Code'))
+
         hood_place_fips                 = place_fips_info[0]
         hood_state_fips                 = place_fips_info[1]
         neighborhood                    = place_fips_info[2]
@@ -3969,8 +3973,9 @@ def GetUserInputs():
 
     elif neighborhood_level == 'custom': #When our neighborhood is a neighboorhood within a city (eg: Financial District, New York City)
         #Get name of hood
-        # neighborhood        = input('Enter the name of the custom neighborhood').strip()
-        hood_place_type     = 'neighborhood'
+        if batch_mode == False:
+            neighborhood        = input('Enter the name of the custom neighborhood').strip()
+        hood_place_type         = 'neighborhood'
 
 def GetComparsionInfo():
     global comparison_area, comparison_tract ,comparison_zip, comparison_place_fips, comparison_suvdiv_fips, comparison_county_fips
@@ -4119,24 +4124,38 @@ def Main():
                     dropbox_dir='https://www.dropbox.com/home/Research/Market Analysis/Neighborhood/')
 
 
-# Main()
 
 
-
-# #This is our main function that calls all other functions we will use
 batch_mode = True
 # batch_mode = False
-#EXPERIMENT IN PROGRESS BATCH HOOD RERPORTS
+batch_type_number = 1
+
+
 if batch_mode == True:
-    for city,place_fips in zip(['New York'],['36-51000']):
-        
-        for  neighborhood in GetListOfNeighborhoods(city):
+    city_name_list  = ['New York']
+    place_fips_list = ['36-51000']
+
+    if batch_type_number == 3:
+        for city,place_fips in zip(city_name_list,place_fips_list):
+            for  neighborhood in GetListOfNeighborhoods(city):
+                try:
+                    Main()
+                except Exception as e:
+                    print(e,'REORT CREATION FAILED')
+    
+    
+    elif batch_type_number == 1:
+        place_fips_list = ['36-51000']
+
+        for place_fips in place_fips_list:
             try:
-                Main()
+                Main() #This is our main function that calls all other functions we will use
             except Exception as e:
                 print(e,'REORT CREATION FAILED')
-# else:
-#     Main()
+
+
+else:
+    Main() #This is our main function that calls all other functions we will use
 
 
 print('Finished!')
