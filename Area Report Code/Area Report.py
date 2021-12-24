@@ -4629,21 +4629,21 @@ def CreateLanguage():
         msa_emplopyment_industry_breakdown_language    = [MSAEmploymentBreakdownLanguage(msa_industry_breakdown = msa_industry_breakdown)]
     except:
         print('problem with MSA employment breakdown language')
-        msa_emplopyment_industry_breakdown_language    = ''
+        msa_emplopyment_industry_breakdown_language    = ['']
 
     #Production language
     try:
         production_language     = ProductionLanguage(county_data_frame = county_gdp ,msa_data_frame = msa_gdp,state_data_frame = state_gdp)
     except Exception as e:
         print('problem with production language: ', e)
-        production_language = ''
+        production_language = ['']
 
     #Infrastructure language
     try:
         infrastructure_language = InfrastructureLanguage()
     except:
         print('problem with infrastructure language')
-        infrastructure_language = ''
+        infrastructure_language = ['']
 
     #Houing langauge
     try:    
@@ -4657,7 +4657,7 @@ def CreateLanguage():
         outlook_language        = OutlookLanguage()
     except Exception as e:
         print(e,' problem with outlook language')
-        outlook_language = ''
+        outlook_language = ['']
    
 
     car_language           = WikipediaTransitLanguage(category = 'car' )
