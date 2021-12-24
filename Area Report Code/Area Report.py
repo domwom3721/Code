@@ -4584,7 +4584,7 @@ def OutlookLanguage():
 
 
     elif  county_5y_growth < 0 and county_1y_growth > 0:
-        county_demographic_sentence = ('Although ' + county + ' has seen its population decline' +   "{:,.1f}%".format(abs(county_5y_growth)) +' over the past five years, growth has returned to postive levels with a most recent one year growth rate of ' +  "{:,.1f}%".format(county_1y_growth) +'.')
+        county_demographic_sentence = ('Although ' + county + ' has seen its population decline ' +   "{:,.1f}%".format(abs(county_5y_growth)) +' over the past five years, growth has returned to postive levels with a most recent one year growth rate of ' +  "{:,.1f}%".format(county_1y_growth) +'.')
         
     elif county_5y_growth > 0 and county_1y_growth < 0:
         county_demographic_sentence = ('Although ' + county + ' has seen its population grow ' + "{:,.1f}%".format(county_5y_growth) +  ' over the past five years, it most recently saw a one year contraction of ' +  "{:,.1f}%".format(county_1y_growth) +'.')
