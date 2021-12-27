@@ -31,6 +31,7 @@ import pyautogui
 import requests
 import shapefile
 import us
+from us.states import PA
 import wikipedia
 from bs4 import BeautifulSoup
 from census import Census
@@ -1266,7 +1267,7 @@ def GetWikipediaPage():
     global page
     print('Getting Wikipedia page')
     if (neighborhood_level == 'place') or (neighborhood_level == 'county subdivision') or (neighborhood_level == 'county'): #Don't bother looking for wikipedia page if zip code
-            wikipedia_page_search_term    = (neighborhood + ', ' + hood_state)
+            wikipedia_page_search_term    = (neighborhood + ', ' + hood_state_full_name)
                        
     elif (neighborhood_level == 'custom'):
             wikipedia_page_search_term    = (neighborhood + ', ' + comparison_area )
@@ -3014,7 +3015,83 @@ def TravelTimeLanguage():
     
     return([time_language])
 
-def LocationIQPOIListLanguage(lat,lon,category):
+def BankLanguage():
+    #This function returns a string we will place in the community assets table in the bank row 
+    #(neighborhood + ' has several ' + category + ' assets including: ')
+    banks_list                         = LocationIQPOIList(lat = latitude, lon = longitude , category = 'bank' ) 
+    
+    bank_language                      = (neighborhood + 
+                                         
+                                         ' has a number of banking options available including ' + 
+
+                                         ', '.join(banks_list) + 
+                                         '.'
+                                         
+                                         )
+    
+    return(bank_language)
+
+def FoodLanguage():
+    #This function returns a string we will place in the community assets table in the food row 
+    food_list                          = LocationIQPOIList(lat = latitude, lon = longitude,  category = 'food' ) 
+    
+    food_language                      = (neighborhood + 
+                                         
+                                         ' has restaurants and other dining available including ' + 
+
+                                         ', '.join(food_list) + 
+                                         '.'
+                                         
+                                         )
+    
+    return(food_language)
+
+def HosptialLanguage():
+    #This function returns a string we will place in the community assets table in the hospital row 
+    hospital_list                      = LocationIQPOIList(lat = latitude, lon = longitude,  category = 'hospital' ) 
+    
+    hospital_language                  = (neighborhood + 
+                                         
+                                         ' has a number of medical facilities including ' + 
+
+                                         ', '.join(hospital_list) + 
+                                         '.'
+                                         
+                                         )
+    
+    return(hospital_language)
+
+def ParkLangauge():
+    #This function returns a string we will place in the community assets table in the park row 
+    park_list                          = LocationIQPOIList(lat = latitude, lon = longitude,  category = 'park' ) 
+    
+    park_language                      = (neighborhood + 
+                                         
+                                         ' has several public parks in the area including ' + 
+
+                                         ', '.join(park_list) + 
+                                         '.'
+                                         
+                                         )
+    
+    return(park_language)
+
+def RetailLanguage():
+    #This function returns a string we will place in the community assets table in the retail row 
+    retail_list                        = LocationIQPOIList(lat = latitude, lon = longitude,  category = 'retail' ) 
+    
+    retail_language                    = (neighborhood + 
+                                         
+                                         ' has many stores for shopping including ' + 
+
+                                         ', '.join(retail_list) + 
+                                         '.'
+                                         
+                                         ) 
+    
+    return(retail_language)
+
+def LocationIQPOIList(lat,lon,category):
     #Searches the Locate IQ API for points of interest
     print('Searching Location IQ API for: ',category)
 
@@ -3031,31 +3108,35 @@ def LocationIQPOIListLanguage(lat,lon,category):
 
     try:
         response = requests.get(url, params=data).json()
-    except Exception as e:
-        return('')
-    
-    try:
-        poi_list = (neighborhood + ' has several ' + category + ' assets including: ')
-        for poi in response:
-            try:
-                poi_name      = poi['name']
-                # print(poi_name)
-                poi_type      = poi['type']
-                poi_city      = poi['address']['city']
-                poi_sentence  = (' ' + poi_name + ', ' )
-                poi_list = poi_list + poi_sentence
-            except:
-                continue
-            #For cities/towns, restrict points of interest to those inside the city limits
-
-            # if neighborhood_level == 'place':
-            #     if neighborhood == poi_city:
-            #         poi_sentence = poi_list + poi_sentence
-            # else:
-        time.sleep(.1)
+        poi_list = [x['name'] for x in response]
+        time.sleep(.25) 
         return(poi_list)
+
     except Exception as e:
-            print(e)
+        print(e,'problem getting Location IQ resuts for ', category)
+        return([])
+    
+    # try:
+    #     for poi in response:
+    #         try:
+    #             poi_name      = poi['name']
+    #             # print(poi_name)
+    #             poi_type      = poi['type']
+    #             poi_city      = poi['address']['city']
+    #             poi_sentence  = (' ' + poi_name + ', ' )
+    #             poi_list = poi_list + poi_sentence
+    #         except:
+    #             continue
+    #         #For cities/towns, restrict points of interest to those inside the city limits
+
+    #         # if neighborhood_level == 'place':
+    #         #     if neighborhood == poi_city:
+    #         #         poi_sentence = poi_list + poi_sentence
+            # else:
+    #     time.sleep(.1)
+    #     return(poi_list)
+    # except Exception as e:
+    #         print(e)
 
 def CreateLanguage():
     
@@ -3083,14 +3164,12 @@ def CreateLanguage():
     housing_value_language             =  HousingValueLanguage()
     year_built_language                =  HousingYearBuiltLanguage()
 
-
     #Communtiy assets langauge variables
-    bank_language                      = LocationIQPOIListLanguage(lat = latitude, lon = longitude , category = 'bank' ) 
-    food_language                      = LocationIQPOIListLanguage(lat = latitude, lon = longitude,  category = 'food' ) 
-    hospital_language                  = LocationIQPOIListLanguage(lat = latitude, lon = longitude,  category = 'hospital' ) 
-    park_language                      = LocationIQPOIListLanguage(lat = latitude, lon = longitude,  category = 'park' ) 
-    retail_language                    = LocationIQPOIListLanguage(lat = latitude, lon = longitude,  category = 'retail' ) 
-
+    bank_language                      = BankLanguage() 
+    food_language                      = FoodLanguage()
+    hospital_language                  = HosptialLanguage()
+    park_language                      = ParkLangauge()
+    retail_language                    = RetailLanguage()
 
     #Paragraph Language
     # employment_language                = EmploymentLanguage()
