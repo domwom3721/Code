@@ -1016,7 +1016,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     total_households_field        = 'H003002'
 
     acs_total_pop_field           = 'B01001_001E'
-    acs_total_households_field    = 'B09005_001E'  
+    acs_total_households_field    = ''  
 
     redistricting_total_pop_field = 'P1_001N'
     redistricting_total_hh_field  = 'H1_002N'
@@ -1077,7 +1077,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
        
         
         for tract_geojson, tract_data, tract_proportion in raw_census_data:
-            print(tract_data,tract_proportion)
+            # print(tract_data,tract_proportion)
             neighborhood_tracts_data.append((tract_data))
 
         #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
@@ -1092,7 +1092,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         raw_census_data = c_area.sf1.geo_tract(total_households_field, neighborhood_shape,year = decennial_census_year)
         
         for tract_geojson, tract_data, tract_proportion in raw_census_data:
-            print(tract_data,tract_proportion)
+            # print(tract_data,tract_proportion)
             neighborhood_tracts_data.append((tract_data))
 
         #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
@@ -1109,7 +1109,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
        
         
         for tract_geojson, tract_data, tract_proportion in raw_census_data:
-            print(tract_data,tract_proportion)
+            # print(tract_data,tract_proportion)
             neighborhood_tracts_data.append((tract_data))
 
         #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
@@ -1118,22 +1118,23 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
 
 
         #2019 HH
-        neighborhood_tracts_data = []
+        current_hood_hh = 'NA'
+        # neighborhood_tracts_data = []
 
-        #Fetch census data for all relevant census tracts within the neighborhood
-        raw_census_data = c_area.acs5.geo_tract(acs_total_households_field, neighborhood_shape,year=acs_5y_year)
+        # #Fetch census data for all relevant census tracts within the neighborhood
+        # raw_census_data = c_area.acs5.geo_tract(acs_total_households_field, neighborhood_shape,year=acs_5y_year)
        
         
-        for tract_geojson, tract_data, tract_proportion in raw_census_data:
-            print(tract_data,tract_proportion)
-            neighborhood_tracts_data.append((tract_data))
+        # for tract_geojson, tract_data, tract_proportion in raw_census_data:
+        #     print(tract_data,tract_proportion)
+        #     neighborhood_tracts_data.append((tract_data))
 
-        #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
-        current_hood_hh_raw_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = [acs_total_households_field])
-        current_hood_hh          = current_hood_hh_raw_data[acs_total_households_field]
+        # #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
+        # current_hood_hh_raw_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = [acs_total_households_field])
+        # current_hood_hh          = current_hood_hh_raw_data[acs_total_households_field]
 
     #Table variables for comparison area
-    print('Getting 2020 or current Population and Total Households for comparison area')
+    print('Getting current Population and Total Households for comparison area')
     if comparison_geographic_level == 'place':
         _2010_comparison_pop = c.sf1.state_place(fields = total_pop_field,                       state_fips = comparison_state_fips, place = comparison_place_fips)[0][total_pop_field]
         _2010_comparison_hh  = c.sf1.state_place(fields = total_households_field,                state_fips = comparison_state_fips, place = comparison_place_fips)[0][total_households_field]
@@ -1181,7 +1182,12 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
 
     #Calculate growth rates
     hood_pop_growth        = ((int(current_hood_pop)/int(_2010_hood_pop)) - 1) * 100
-    hood_hh_growth         = ((int(current_hood_hh)/int(_2010_hood_hh))   - 1) * 100
+    if hood_geographic_level != 'custom':
+        hood_hh_growth         = ((int(current_hood_hh)/int(_2010_hood_hh))   - 1) * 100
+    else:
+        hood_hh_growth         = 'NA'
+
+
     comparsion_pop_growth  =  (int(current_comparison_pop)/int(_2010_comparison_pop) - 1) * 100
     comparsion_hh_growth   =  (int(current_comparison_hh)/int(_2010_comparison_hh)   - 1) * 100
 
