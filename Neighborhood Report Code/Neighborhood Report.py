@@ -3007,7 +3007,7 @@ def TravelTimeLanguage():
 def BankLanguage():
     #This function returns a string we will place in the community assets table in the bank row 
     #(neighborhood + ' has several ' + category + ' assets including: ')
-    banks_list                         = LocationIQPOIList(lat = latitude, lon = longitude , category = 'bank' ) 
+    banks_list                         = LocationIQPOIList(lat = latitude, lon = longitude , category = ['bank'] ) 
     
     bank_language                      = (neighborhood + 
                                          
@@ -3022,7 +3022,7 @@ def BankLanguage():
 
 def FoodLanguage():
     #This function returns a string we will place in the community assets table in the food row 
-    food_list                          = LocationIQPOIList(lat = latitude, lon = longitude,  category = 'food' ) 
+    food_list                          = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['restaurant','pub'] ) 
     
     food_language                      = (neighborhood + 
                                          
@@ -3037,7 +3037,7 @@ def FoodLanguage():
 
 def HosptialLanguage():
     #This function returns a string we will place in the community assets table in the hospital row 
-    hospital_list                      = LocationIQPOIList(lat = latitude, lon = longitude,  category = 'hospital' ) 
+    hospital_list                      = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['hospital','clinic'] ) 
     
     hospital_language                  = (neighborhood + 
                                          
@@ -3052,7 +3052,7 @@ def HosptialLanguage():
 
 def ParkLangauge():
     #This function returns a string we will place in the community assets table in the park row 
-    park_list                          = LocationIQPOIList(lat = latitude, lon = longitude,  category = 'park' ) 
+    park_list                          = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['park','stadium','leisure'] ) 
     
     park_language                      = (neighborhood + 
                                          
@@ -3067,7 +3067,7 @@ def ParkLangauge():
 
 def RetailLanguage():
     #This function returns a string we will place in the community assets table in the retail row 
-    retail_list                        = LocationIQPOIList(lat = latitude, lon = longitude,  category = 'retail' ) 
+    retail_list                        = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['shop'] ) 
     
     retail_language                    = (neighborhood + 
                                          
