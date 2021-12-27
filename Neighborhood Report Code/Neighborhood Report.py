@@ -1575,6 +1575,7 @@ def GetData():
     
 #####################################################Graph Related Functions####################################
 def SetGraphFormatVariables():
+    
     global graph_width, graph_height, scale,tickfont_size,left_margin,right_margin,top_margin,bottom_margin,legend_position,paper_backgroundcolor,title_position
     global fig_width
 
