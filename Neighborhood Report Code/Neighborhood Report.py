@@ -1101,7 +1101,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         neighborhood_tracts_data = []
 
         #Fetch census data for all relevant census tracts within the neighborhood
-        raw_census_data = c_area.acs5.geo_tract(acs_total_pop_field, neighborhood_shape)
+        raw_census_data = c_area.acs5.geo_tract(acs_total_pop_field, neighborhood_shape,year=acs_5y_year)
        
         
         for tract_geojson, tract_data, tract_proportion in raw_census_data:
@@ -1116,7 +1116,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         neighborhood_tracts_data = []
 
         #Fetch census data for all relevant census tracts within the neighborhood
-        raw_census_data = c_area.acs5.geo_tract(acs_total_households_field, neighborhood_shape)
+        raw_census_data = c_area.acs5.geo_tract(acs_total_households_field, neighborhood_shape,year=acs_5y_year)
        
         
         for tract_geojson, tract_data, tract_proportion in raw_census_data:
