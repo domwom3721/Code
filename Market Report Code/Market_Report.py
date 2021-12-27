@@ -558,6 +558,14 @@ def AddMap():
     last_paragraph = document.paragraphs[-1] 
     last_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
 
+def AddDocumentPicture(document,image_path):
+    if os.path.exists(image_path):
+        fig = document.add_picture(os.path.join(image_path),width=Inches(6.5))
+        last_paragraph = document.paragraphs[-1] 
+        last_paragraph.paragraph_format.space_after       = Pt(0)
+
+        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        
 def OverviewSection():
 
     #Overview Heading
@@ -682,7 +690,6 @@ def OverviewSection():
         AddMarketPerformanceTable(document = document,market_data_frame = df_market_cut ,col_width = 1.2,sector=sector)
         document.add_paragraph('')
 
-
 def SupplyDemandSection():
     #Supply and Demand Section
     AddHeading(document,'Supply & Demand',2)
@@ -736,14 +743,7 @@ def SupplyDemandSection():
         supply_demand_paragraph_style.font.name = primary_font
 
     #Absorption rate Graph
-    if os.path.exists(os.path.join(output_directory,'absorption_rate.png')):
-        absorption_figrue = document.add_picture(os.path.join(output_directory,'absorption_rate.png'),width=Inches(6.5))
-        last_paragraph = document.paragraphs[-1] 
-        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        absorption_format = document.styles['Normal'].paragraph_format
-        absorption_format.space_after = Pt(0)
-    
-
+    AddDocumentPicture(document=document,image_path=os.path.join(output_directory,'absorption_rate.png'))
     
 def RentSecton():
     AddHeading(document,'Rents',3)   
@@ -789,13 +789,8 @@ def RentSecton():
         rent_paragraph2.paragraph_format.space_before = Pt(6)
 
     #Insert rent growth graph
-    if os.path.exists(os.path.join(output_directory,'rent_growth.png')):
-        rent_growth_figure = document.add_picture(os.path.join(output_directory,'rent_growth.png'),width=Inches(6.5))
-        last_paragraph = document.paragraphs[-1] 
-        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    AddDocumentPicture(document=document,image_path=os.path.join(output_directory,'rent_growth.png'))
     
-
-
 def ConstructionSection():
     #Construction Section
     AddHeading(document,'Construction & Future Supply',2)
@@ -813,14 +808,8 @@ def ConstructionSection():
         constr_paragraph.paragraph_format.space_before = Pt(0)
 
     #Insert construction graph
-    if os.path.exists(os.path.join(output_directory,'construction_volume.png')):
-        construction_graph = document.add_picture(os.path.join(output_directory,'construction_volume.png'),width=Inches(6.5))
-        last_paragraph = document.paragraphs[-1] 
-        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER  
-    else:
-        pass
-
-
+    AddDocumentPicture(document=document,image_path=os.path.join(output_directory,'construction_volume.png'))
+    
 def CapitalMarketsSection():
     #Captial Markets Section
     AddHeading(document,'Capital Markets',2)
@@ -848,11 +837,7 @@ def CapitalMarketsSection():
         capital_paragraph.paragraph_format.space_before = Pt(0)
 
     #Sales Volume Graphs
-    if os.path.exists(os.path.join(output_directory,'sales_volume.png')):
-        sales_volume_graph = document.add_picture(os.path.join(output_directory,'sales_volume.png'),width=Inches(6.5))
-        last_paragraph = document.paragraphs[-1] 
-        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        document.add_paragraph('')
+    AddDocumentPicture(document=document,image_path=os.path.join(output_directory,'sales_volume.png'))
 
     if type(sale_language) == list:
         pass
@@ -893,10 +878,7 @@ def CapitalMarketsSection():
         # document.add_paragraph('')
     
     #Asset Value  Graph
-    if os.path.exists(os.path.join(output_directory,'asset_values.png')):
-        asset_value_graph = document.add_picture(os.path.join(output_directory,'asset_values.png'),width=Inches(6.5))
-        last_paragraph = document.paragraphs[-1] 
-        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    AddDocumentPicture(document=document,image_path=os.path.join(output_directory,'asset_values.png'))
     
 def OutlookSection():
     #Outlook Section
