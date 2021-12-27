@@ -2,17 +2,6 @@
 #Started 06/30/2021
 #Summary: This script creates reports on neighborhoods/cities for Bowery
 import json
-# import math
-# import re
-# from bls_datasets import oes, qcew
-# from blsconnect import RequestBLS, bls_search
-# from ctypes import addressof
-# import census_area
-# import docx
-# from pprint import pprint
-# from numpy import true_divide
-# from genericpath import exists
-# from us import states
 import msvcrt
 import os
 import re
