@@ -1021,6 +1021,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     redistricting_total_pop_field = 'P1_001N'
     redistricting_total_hh_field  = 'H1_002N'
 
+    print('Getting 2010 Population and Total Households Estimate for Hood')
     #calculate table variables for hood
     if hood_geographic_level == 'place':
         current_estimate_period = '2020 Census'
@@ -1067,7 +1068,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
 
     elif hood_geographic_level == 'custom':
         current_estimate_period = 'Current Estimate'
-        
+        print('Getting 2010 pop and HH for custom hood area')
         #2010 Population
         neighborhood_tracts_data = []
 
@@ -1076,6 +1077,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
        
         
         for tract_geojson, tract_data, tract_proportion in raw_census_data:
+            print(tract_data,tract_proportion)
             neighborhood_tracts_data.append((tract_data))
 
         #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
@@ -1090,6 +1092,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         raw_census_data = c_area.sf1.geo_tract(total_households_field, neighborhood_shape,year = decennial_census_year)
         
         for tract_geojson, tract_data, tract_proportion in raw_census_data:
+            print(tract_data,tract_proportion)
             neighborhood_tracts_data.append((tract_data))
 
         #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
@@ -1098,6 +1101,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
 
 
         #2019 Population
+        print('Getting current pop and HH for custom hood area')
         neighborhood_tracts_data = []
 
         #Fetch census data for all relevant census tracts within the neighborhood
@@ -1105,6 +1109,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
        
         
         for tract_geojson, tract_data, tract_proportion in raw_census_data:
+            print(tract_data,tract_proportion)
             neighborhood_tracts_data.append((tract_data))
 
         #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
@@ -1120,54 +1125,15 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
        
         
         for tract_geojson, tract_data, tract_proportion in raw_census_data:
+            print(tract_data,tract_proportion)
             neighborhood_tracts_data.append((tract_data))
 
         #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
         current_hood_hh_raw_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = [acs_total_households_field])
         current_hood_hh          = current_hood_hh_raw_data[acs_total_households_field]
 
-
-
-
-
-
-
-
-
-
-
-
-
-        # #2020 Population and Households
-
-        # #Start by getting all of the tracts within the custom area
-        # neighborhood_tracts_list          = [] #list for each tract's number
-        # neighborhood_tracts_counties_list = [] #list for each tract's county fips
-
-
-        # raw_tracts_list = c_area.sf1.geo_tract('NAME', neighborhood_shape)
-       
-        # for tract_geojson, tract_data, tract_proportion in raw_tracts_list:
-        #     neighborhood_tracts_list.append((tract_data['tract']))
-        #     neighborhood_tracts_counties_list.append((tract_data['county']))
-
-            
-        # #Now loop through list of tracts and get 20220 redistricting data population for each tract, add that value to the totals
-        # current_hood_pop       = 0
-        # current_hood_hh        = 0
-
-        # for tract,hood_county_fips in zip(neighborhood_tracts_list, neighborhood_tracts_counties_list):
-        #     print(tract)
-        #     tract_pop        = c.pl.state_county_tract(fields = 'NAME',        state_fips = state_fips, county_fips = hood_county_fips, tract = tract) #[0][redistricting_total_pop_field]
-        #     tract_hh         = c.pl.state_county_tract(fields = 'NAME',         state_fips = state_fips, county_fips = hood_county_fips, tract = tract) #[0][redistricting_total_hh_field]
-            
-        #     print(tract_pop)
-        #     print(tract_hh)
-
-        #     current_hood_pop += tract_pop
-        #     current_hood_hh  += tract_hh
-
     #Table variables for comparison area
+    print('Getting 2020 or current Population and Total Households for comparison area')
     if comparison_geographic_level == 'place':
         _2010_comparison_pop = c.sf1.state_place(fields = total_pop_field,                       state_fips = comparison_state_fips, place = comparison_place_fips)[0][total_pop_field]
         _2010_comparison_hh  = c.sf1.state_place(fields = total_households_field,                state_fips = comparison_state_fips, place = comparison_place_fips)[0][total_households_field]
