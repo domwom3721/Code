@@ -3098,7 +3098,7 @@ def LocationIQPOIList(lat,lon,category):
     try:
         response = requests.get(url, params=data).json()
         poi_list = [x['name'] for x in response]
-        time.sleep(.5) 
+        time.sleep(1) 
         return(poi_list)
 
     except Exception as e:
