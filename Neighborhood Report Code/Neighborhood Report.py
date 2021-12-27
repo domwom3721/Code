@@ -1590,7 +1590,7 @@ def SetGraphFormatVariables():
     graph_height = (height_inches  - marginInches) * ppi
 
     #Set scale for resolution 1 = no change, > 1 increases resolution. Very important for run time of main script. 
-    scale = 3
+    scale = 7
 
     #Set tick font size (also controls legend font size)
     tickfont_size = 8 
