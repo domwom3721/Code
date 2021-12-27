@@ -547,6 +547,13 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
     
     #The basic mechanics are this ['men','women'] ----> [30,70] ----> [.30,.70]
 
+    if operator == c.sf1:
+        year = decennial_census_year
+    elif operator == c.acs5:
+        year = acs_5y_year
+    else:
+        assert(False)
+
     #Speicify geographic level specific varaibles
     if geographic_level == 'place':
         try:
@@ -559,7 +566,7 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
                 place_fips = comparison_place_fips
                 state_fips = comparison_state_fips
             
-            neighborhood_household_size_distribution_raw = operator.state_place(fields = fields_list,state_fips = state_fips,place=place_fips)[0]
+            neighborhood_household_size_distribution_raw = operator.state_place(fields = fields_list,state_fips = state_fips,place=place_fips,year= year)[0]
         except Exception as e:
             print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area)
             return()
@@ -575,7 +582,7 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
                 county_fips = comparison_county_fips
                 state_fips  = comparison_state_fips
 
-            neighborhood_household_size_distribution_raw =operator.state_county(fields = fields_list, state_fips = state_fips,county_fips = county_fips)[0]
+            neighborhood_household_size_distribution_raw =operator.state_county(fields = fields_list, state_fips = state_fips,county_fips = county_fips,year= year)[0]
         
         except Exception as e:
             print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
@@ -594,7 +601,7 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
                 subdiv_fips = comparison_suvdiv_fips
                 state_fips = comparison_state_fips
 
-            neighborhood_household_size_distribution_raw = operator.state_county_subdivision(fields=fields_list,state_fips=state_fips,county_fips=county_fips,subdiv_fips=subdiv_fips)[0]
+            neighborhood_household_size_distribution_raw = operator.state_county_subdivision(fields=fields_list,state_fips=state_fips,county_fips=county_fips,subdiv_fips=subdiv_fips,year = year)[0]
         except Exception as e:
             print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
             return()
@@ -609,7 +616,7 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
                 zcta       = comparison_zip
                 state_fips = comparison_state_fips
 
-            neighborhood_household_size_distribution_raw = operator.state_zipcode(fields=fields_list,state_fips=state_fips,zcta=zcta)[0]
+            neighborhood_household_size_distribution_raw = operator.state_zipcode(fields=fields_list,state_fips=state_fips,zcta=zcta,year= year)[0]
         except Exception as e:
             print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
             return()
@@ -626,7 +633,7 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
                 county_fips = comparison_county_fips
                 state_fips  = comparison_state_fips
             
-            neighborhood_household_size_distribution_raw = operator.state_county_tract(fields=fields_list, state_fips = state_fips,county_fips=county_fips,tract=tract)[0]
+            neighborhood_household_size_distribution_raw = operator.state_county_tract(fields=fields_list, state_fips = state_fips,county_fips=county_fips,tract=tract,year= year)[0]
         
         except Exception as e:
             print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
@@ -642,7 +649,7 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
         neighborhood_tracts_data = []
 
         #Fetch census data for all relevant census tracts within the neighborhood
-        raw_census_data = operator.geo_tract(fields_list, neighborhood_shape)
+        raw_census_data = operator.geo_tract(fields_list, neighborhood_shape,year= year)
         
         for tract_geojson, tract_data, tract_proportion in raw_census_data:
             neighborhood_tracts_data.append((tract_data))
@@ -665,7 +672,7 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
 #Households by number of memebrs
 def GetHouseholdSizeData(geographic_level,hood_or_comparison_area):
     print('Getting household size data for: ',hood_or_comparison_area)
-    neighborhood_household_size_distribution       = GetCensusFrequencyDistribution(     geographic_level = geographic_level, hood_or_comparison_area = hood_or_comparison_area,fields_list=['H013002','H013003','H013004','H013005','H013006','H013007','H013008'],operator=c.sf1)          #Neighborhood households by size
+    neighborhood_household_size_distribution       = GetCensusFrequencyDistribution(geographic_level = geographic_level, hood_or_comparison_area = hood_or_comparison_area,fields_list=['H013002','H013003','H013004','H013005','H013006','H013007','H013008'],operator=c.sf1)          #Neighborhood households by size
     return(neighborhood_household_size_distribution)
     
 #Household Tenure (owner-occupied vs renter-occupied)
@@ -688,7 +695,7 @@ def GetHousingValues(geographic_level,hood_or_comparison_area):
 #Year Housing Built Data
 def GetHouseYearBuiltData(geographic_level,hood_or_comparison_area):
     print('Getting year built data for: ',hood_or_comparison_area)
-    year_built_data = GetCensusFrequencyDistribution(    geographic_level = geographic_level, hood_or_comparison_area = hood_or_comparison_area,  fields_list = ["B25034_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,12)],operator= c_area.acs5)
+    year_built_data = GetCensusFrequencyDistribution(    geographic_level = geographic_level, hood_or_comparison_area = hood_or_comparison_area,  fields_list = ["B25034_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,12)],operator= c.acs5)
     year_built_data.reverse()
     return(year_built_data)
 
@@ -1029,8 +1036,8 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     if hood_geographic_level == 'place':
         current_estimate_period = '2020 Census'
 
-        _2010_hood_pop         = c.sf1.state_place(fields = total_pop_field,                                        state_fips = hood_state_fips, place = hood_place_fips)[0][total_pop_field]
-        _2010_hood_hh          = c.sf1.state_place(fields = total_households_field,                                 state_fips = hood_state_fips, place = hood_place_fips)[0][total_households_field]
+        _2010_hood_pop         = c.sf1.state_place(fields = total_pop_field,                                        state_fips = hood_state_fips, place = hood_place_fips,year=decennial_census_year)[0][total_pop_field]
+        _2010_hood_hh          = c.sf1.state_place(fields = total_households_field,                                 state_fips = hood_state_fips, place = hood_place_fips,year=decennial_census_year)[0][total_households_field]
         
         current_hood_pop       = c.pl.state_place(fields = [redistricting_total_pop_field],                          state_fips = hood_state_fips, place = hood_place_fips)[0][redistricting_total_pop_field]
         current_hood_hh        = c.pl.state_place(fields = [redistricting_total_hh_field],                           state_fips = hood_state_fips, place = hood_place_fips)[0][redistricting_total_hh_field]
@@ -1038,16 +1045,16 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     elif hood_geographic_level == 'county':
         current_estimate_period = '2020 Census'
 
-        _2010_hood_pop   = c.sf1.state_county(fields = total_pop_field,                      state_fips = hood_state_fips, county_fips = hood_county_fips)[0][total_pop_field]
-        _2010_hood_hh    = c.sf1.state_county(fields = total_households_field,               state_fips = hood_state_fips, county_fips = hood_county_fips)[0][total_households_field]
+        _2010_hood_pop   = c.sf1.state_county(fields = total_pop_field,                      state_fips = hood_state_fips, county_fips = hood_county_fips,year=decennial_census_year)[0][total_pop_field]
+        _2010_hood_hh    = c.sf1.state_county(fields = total_households_field,               state_fips = hood_state_fips, county_fips = hood_county_fips,year=decennial_census_year)[0][total_households_field]
     
         current_hood_pop =  c.pl.state_county(fields = redistricting_total_pop_field,        state_fips = hood_state_fips, county_fips = hood_county_fips)[0][redistricting_total_pop_field]
         current_hood_hh  =  c.pl.state_county(fields = redistricting_total_hh_field,         state_fips = hood_state_fips, county_fips = hood_county_fips)[0][redistricting_total_hh_field]
         
     elif hood_geographic_level == 'county subdivision':
         current_estimate_period = '2020 Census'
-        _2010_hood_pop         = c.sf1.state_county_subdivision(fields = total_pop_field,                     state_fips = hood_state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips)[0][total_pop_field]
-        _2010_hood_hh          = c.sf1.state_county_subdivision(fields = total_households_field,              state_fips = hood_state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips)[0][total_households_field]
+        _2010_hood_pop         = c.sf1.state_county_subdivision(fields = total_pop_field,                     state_fips = hood_state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips,year=decennial_census_year)[0][total_pop_field]
+        _2010_hood_hh          = c.sf1.state_county_subdivision(fields = total_households_field,              state_fips = hood_state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips,year=decennial_census_year)[0][total_households_field]
 
         current_hood_pop       = c.pl.state_county_subdivision(fields = redistricting_total_pop_field,        state_fips = hood_state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips)[0][redistricting_total_pop_field]
         current_hood_hh        = c.pl.state_county_subdivision(fields = redistricting_total_hh_field,         state_fips = hood_state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips)[0][redistricting_total_hh_field]
@@ -1055,16 +1062,16 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     elif hood_geographic_level == 'zip':
         current_estimate_period = 'Current Estimate'
 
-        _2010_hood_pop         = c.sf1.state_zipcode(fields = total_pop_field,        state_fips = hood_state_fips, zcta = hood_zip)[0][total_pop_field]
-        _2010_hood_hh          = c.sf1.state_zipcode(fields = total_households_field, state_fips = hood_state_fips, zcta = hood_zip)[0][total_households_field]
+        _2010_hood_pop         = c.sf1.state_zipcode(fields = total_pop_field,        state_fips = hood_state_fips, zcta = hood_zip,year=decennial_census_year)[0][total_pop_field]
+        _2010_hood_hh          = c.sf1.state_zipcode(fields = total_households_field, state_fips = hood_state_fips, zcta = hood_zip,year=decennial_census_year)[0][total_households_field]
 
         current_hood_pop       = _2010_hood_pop
         current_hood_hh        = _2010_hood_hh
 
     elif hood_geographic_level == 'tract':
         current_estimate_period = '2020 Census'
-        _2010_hood_pop         = c.sf1.state_county_tract(fields = total_pop_field,              state_fips = hood_state_fips,county_fips=hood_county_fips,tract=hood_tract)[0][total_pop_field]
-        _2010_hood_hh          = c.sf1.state_county_tract(fields = total_households_field,       state_fips = hood_state_fips,county_fips=hood_county_fips,tract=hood_tract)[0][total_households_field]
+        _2010_hood_pop         = c.sf1.state_county_tract(fields = total_pop_field,              state_fips = hood_state_fips,county_fips=hood_county_fips, tract = hood_tract, year = decennial_census_year)[0][total_pop_field]
+        _2010_hood_hh          = c.sf1.state_county_tract(fields = total_households_field,       state_fips = hood_state_fips,county_fips=hood_county_fips, tract = hood_tract, year = decennial_census_year)[0][total_households_field]
 
         current_hood_pop       = c.pl.state_county_tract(fields = redistricting_total_pop_field, state_fips = hood_state_fips,county_fips=hood_county_fips,tract=hood_tract)[0][redistricting_total_pop_field]
         current_hood_hh        = c.pl.state_county_tract(fields = redistricting_total_hh_field,  state_fips = hood_state_fips,county_fips=hood_county_fips,tract=hood_tract)[0][redistricting_total_hh_field]
@@ -1076,7 +1083,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         neighborhood_tracts_data = []
 
         #Fetch census data for all relevant census tracts within the neighborhood
-        raw_census_data = c_area.sf1.geo_tract(total_pop_field, neighborhood_shape)
+        raw_census_data = c_area.sf1.geo_tract(total_pop_field, neighborhood_shape,year = decennial_census_year)
        
         
         for tract_geojson, tract_data, tract_proportion in raw_census_data:
@@ -1091,7 +1098,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         neighborhood_tracts_data = []
 
         #Fetch census data for all relevant census tracts within the neighborhood
-        raw_census_data = c_area.sf1.geo_tract(total_households_field, neighborhood_shape)
+        raw_census_data = c_area.sf1.geo_tract(total_households_field, neighborhood_shape,year = decennial_census_year)
         
         for tract_geojson, tract_data, tract_proportion in raw_census_data:
             neighborhood_tracts_data.append((tract_data))
@@ -1099,11 +1106,6 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
         _2010_hood_hh_raw_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = [total_households_field])
         _2010_hood_hh          = _2010_hood_hh_raw_data[total_households_field]
-
-
-        # current_hood_pop       = _2010_hood_pop
-        # current_hood_hh        = _2010_hood_hh
-
 
 
         #2019 Population
@@ -4236,6 +4238,10 @@ def Main():
 SetGraphFormatVariables()
 DeclareAPIKeys()
 DeclareFormattingParameters()
+
+decennial_census_year = 2010 #The year of the cenus for our variables we pull from sf1 10 year census files
+acs_5y_year           = 2019 #The year of the american community survey for our variables we pull from 5 year acs
+
 
 
 batch_mode = True
