@@ -565,7 +565,18 @@ def AddDocumentPicture(document,image_path):
         last_paragraph.paragraph_format.space_after       = Pt(0)
 
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        
+
+def AddTableTitle(document,title):
+    table_title_paragraph = document.add_paragraph(title)
+    table_title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    table_title_paragraph.paragraph_format.space_after  = Pt(6)
+    table_title_paragraph.paragraph_format.space_before = Pt(12)
+    table_title_paragraph.keep_with_next = True
+    table_title_paragraph.keep_together  = True
+    for run in table_title_paragraph.runs:
+                    font = run.font
+                    font.name = 'Avenir Next LT Pro Medium'
+
 def OverviewSection():
 
     #Overview Heading
@@ -593,16 +604,7 @@ def OverviewSection():
         summary_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
     
     #Overview table title
-    overview_table_title_paragraph = document.add_paragraph('Sector Fundamentals')
-    overview_table_title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    overview_table_title_paragraph.paragraph_format.space_after  = Pt(6)
-    overview_table_title_paragraph.paragraph_format.space_before = Pt(12)
-    overview_table_title_paragraph.keep_with_next = True
-    overview_table_title_paragraph.keep_together  = True
-
-    for run in overview_table_title_paragraph.runs:
-                    font = run.font
-                    font.name = 'Avenir Next LT Pro Medium'
+    AddTableTitle(document = document,title ='Sector Fundamentals')
     
     #Overview table
     if sector == 'Multifamily':
@@ -721,14 +723,8 @@ def SupplyDemandSection():
         supply_demand_paragraph_style.font.name = primary_font
 
     #Vacancy Table
-    vacancy_table_title_paragraph = document.add_paragraph('Vacancy Rates')
-    vacancy_table_title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    vacancy_table_title_paragraph.paragraph_format.space_after  = Pt(6)
-    vacancy_table_title_paragraph.paragraph_format.space_before = Pt(12)
-    for run in vacancy_table_title_paragraph.runs:
-        font = run.font
-        font.name = 'Avenir Next LT Pro Medium'
-     
+    AddTableTitle(document = document,title ='Vacancy Rates')
+
     vacancy_table_width = 1.2
     AddTable(document,data_for_vacancy_table,vacancy_table_width)
     
@@ -771,13 +767,7 @@ def RentSecton():
     
 
     #Rent Table
-    rent_table_title_paragraph = document.add_paragraph('Market Rents')
-    rent_table_title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    rent_table_title_paragraph.paragraph_format.space_after  = Pt(6)
-    rent_table_title_paragraph.paragraph_format.space_before = Pt(12)
-    for run in rent_table_title_paragraph.runs:
-                    font = run.font
-                    font.name = 'Avenir Next LT Pro Medium'
+    AddTableTitle(document = document,title ='Market Rents')
     AddTable(document,data_for_rent_table, col_width = 1.2)
     
     if type(rent_language) == list:
