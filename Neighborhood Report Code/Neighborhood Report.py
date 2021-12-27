@@ -2586,17 +2586,6 @@ def OutlookLanguage():
     #       ' The proximity of the ________ and ________ will ensure the neighborhood will continue ' +
     #       'to attract growth in the long-term.')
     
-def TransportationOverviewLanguage():
-    print('Creating Transporation Overview Langauge')
-
-    try:
-        transportation_language         =  page.section('Transportation')
-    except Exception as e:
-        print(e)
-        transportation_language         = ''
-    
-    return(transportation_language)
-
 def HousingIntroLanguage():
     print('Creating housing intro Langauge')
     try:
@@ -3142,29 +3131,22 @@ def CreateLanguage():
     
     print('Creating Langauge')
 
-    global bus_language,car_language,plane_language,train_language,transportation_language,summary_langauge,conclusion_langauge,community_assets_language
-    global yelp_language
-    global airport_language
-    global apartmentsdotcomlanguage
-    global housing_type_tenure_language
-    # global employment_language
-    global population_age_language
-    global income_language
+    global summary_langauge, conclusion_langauge
+    global bus_language, car_language, plane_language, train_language
+    global population_age_language, income_language
     global travel_method_language, travel_time_language
-    global housing_value_language,year_built_language
-    global household_size_language
-    global bank_language, food_language, hospital_language, park_language, retail_language
-    global housing_intro_language
+    global housing_value_language, year_built_language
+    global household_size_language, housing_intro_language, housing_type_tenure_language
+    global community_assets_language, bank_language, food_language, hospital_language, park_language, retail_language
 
     summary_langauge                   =  SummaryLangauge()
-    transportation_language            =  TransportationOverviewLanguage()
-    community_assets_language          =  CommunityAssetsLanguage()
     housing_type_tenure_language       =  HousingTypeTenureLanguage()
     housing_intro_language             =  HousingIntroLanguage()
     housing_value_language             =  HousingValueLanguage()
     year_built_language                =  HousingYearBuiltLanguage()
 
     #Communtiy assets langauge variables
+    community_assets_language          = CommunityAssetsLanguage()
     bank_language                      = BankLanguage() 
     food_language                      = FoodLanguage()
     hospital_language                  = HosptialLanguage()
@@ -3172,7 +3154,6 @@ def CreateLanguage():
     retail_language                    = RetailLanguage()
 
     #Paragraph Language
-    # employment_language                = EmploymentLanguage()
     population_age_language            = PopulationAgeLanguage()
     income_language                    = IncomeLanguage()
     household_size_language            = HouseholdSizeLanguage()
