@@ -1179,11 +1179,14 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
      #Stand in for current pop estiamtes
     
 
-
     #Calculate growth rates
     hood_pop_growth        = ((int(current_hood_pop)/int(_2010_hood_pop)) - 1) * 100
+    
+    #Total Households not available in american community survey
     if hood_geographic_level != 'custom':
         hood_hh_growth         = ((int(current_hood_hh)/int(_2010_hood_hh))   - 1) * 100
+        hood_hh_growth          = "{:,.1f}%".format(hood_hh_growth)
+        current_hood_hh        = "{:,.0f}".format(int(current_hood_hh))
     else:
         hood_hh_growth         = 'NA'
 
@@ -1197,13 +1200,11 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     _2010_comparison_pop   = "{:,.0f}".format(int(_2010_comparison_pop))
     _2010_comparison_hh    = "{:,.0f}".format(int(_2010_comparison_hh))
     current_hood_pop       = "{:,.0f}".format(int(current_hood_pop))
-    current_hood_hh        = "{:,.0f}".format(int(current_hood_hh))
     current_comparison_pop = "{:,.0f}".format(int(current_comparison_pop))
     current_comparison_hh  = "{:,.0f}".format(int(current_comparison_hh))
 
     #Format growth variables
     hood_pop_growth         = "{:,.1f}%".format(hood_pop_growth)
-    hood_hh_growth          = "{:,.1f}%".format(hood_hh_growth)
     comparsion_pop_growth   = "{:,.1f}%".format(comparsion_pop_growth)
     comparsion_hh_growth    = "{:,.1f}%".format(comparsion_hh_growth)
 
