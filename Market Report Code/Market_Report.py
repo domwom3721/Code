@@ -641,15 +641,7 @@ def OverviewSection():
 
     #Market performance table for primary markets
     if market == primary_market:
-        performance_table_title_paragraph = document.add_paragraph('Historical ' + sector  + ' Performance: ' +  market_title + ' Market' )
-        performance_table_title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        performance_table_title_paragraph.paragraph_format.space_after  = Pt(6)
-        performance_table_title_paragraph.paragraph_format.space_before = Pt(12)
-
-        for run in performance_table_title_paragraph.runs:
-                    font = run.font
-                    font.name = 'Avenir Next LT Pro Medium'
-
+        AddTableTitle(document = document,title =('Historical ' + sector  + ' Performance: ' +  market_title + ' Market' ))
         AddMarketPerformanceTable(document = document,market_data_frame = df_primary_market,col_width = 1.2,sector=sector)
         document.add_paragraph('')
         
@@ -658,37 +650,20 @@ def OverviewSection():
             if len(df_slices) > 0:
                 for slice in df_slices['Slice'].unique():
                     df_slices_temp =df_slices.loc[df_slices['Slice'] == slice]
+
                     if market == primary_market:
-                        performance_table_title_paragraph = document.add_paragraph('Historical ' + slice + ' ' + sector  + ' Performance: ' +  market_title + ' Market' )
+                        AddTableTitle(document = document,title =('Historical ' + slice + ' ' + sector  + ' Performance: ' +  market_title + ' Market' ))
                     else:
-                        performance_table_title_paragraph = document.add_paragraph('Historical ' + slice + ' ' + sector  + ' Performance: ' +  market_title + ' Submarket')
+                        AddTableTitle(document = document,title =('Historical ' + slice + ' ' + sector  + ' Performance: ' +  market_title + ' Submarket'))
 
-                    performance_table_title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                    performance_table_title_paragraph.paragraph_format.space_after  = Pt(6)
-                    performance_table_title_paragraph.paragraph_format.space_before = Pt(12)
-
-                    for run in performance_table_title_paragraph.runs:
-                            font = run.font
-                            font.name = 'Avenir Next LT Pro Medium'
 
                     AddMarketPerformanceTable(document = document,market_data_frame = df_slices_temp,col_width = 1.2,sector=sector)
                     document.add_paragraph('')
 
-
-
     
     #Submarket market performance table
     else:
-        performance_table_title_paragraph = document.add_paragraph('Historical ' + sector  + ' Performance: ' +  market_title + ' Submarket')
-        performance_table_title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-
-        performance_table_title_paragraph.paragraph_format.space_after  = Pt(6)
-        performance_table_title_paragraph.paragraph_format.space_before = Pt(12)
-
-        for run in performance_table_title_paragraph.runs:
-                    font = run.font
-                    font.name = 'Avenir Next LT Pro Medium'
-
+        AddTableTitle(document = document,title =('Historical ' + sector  + ' Performance: ' +  market_title + ' Submarket'))
         AddMarketPerformanceTable(document = document,market_data_frame = df_market_cut ,col_width = 1.2,sector=sector)
         document.add_paragraph('')
 
@@ -909,14 +884,7 @@ def AppendixSection():
             document.add_paragraph('')
             AddHeading(document,'Appendix',2)
             #Add a table with stats on all submarkets in the market
-            submarket_performance_table_title_paragraph = document.add_paragraph(market_title + ' ' + sector + ' Market Overview' )
-            submarket_performance_table_title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            submarket_performance_table_title_paragraph.paragraph_format.space_after  = Pt(6)
-            submarket_performance_table_title_paragraph.paragraph_format.space_before = Pt(12)
-
-            for run in submarket_performance_table_title_paragraph.runs:
-                        font = run.font
-                        font.name = 'Avenir Next LT Pro Medium'
+            AddTableTitle(document = document,title =(market_title + ' ' + sector + ' Market Overview' ))
             AddSubmarketsPerformanceTable(document = document, submarkets_data_frame = df_submarkets, col_width = 1.2, sector=sector)
             document.add_paragraph('')
 
