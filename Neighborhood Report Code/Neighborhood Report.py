@@ -739,8 +739,8 @@ def GetAgeData(geographic_level,hood_or_comparison_area):
                 place_fips = comparison_place_fips
                 state_fips = comparison_state_fips
 
-            male_age_data = c.acs5.state_place(fields=male_fields_list, state_fips=state_fips,place=place_fips)[0]
-            female_age_data = c.acs5.state_place(fields=female_fields_list,state_fips=state_fips,place=place_fips)[0]
+            male_age_data = c.acs5.state_place(fields=male_fields_list, state_fips=state_fips,place=place_fips,year=acs_5y_year)[0]
+            female_age_data = c.acs5.state_place(fields=female_fields_list,state_fips=state_fips,place=place_fips,year=acs_5y_year)[0]
         except Exception as e:
             print(e, 'Problem getting age data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
             return()
@@ -755,8 +755,8 @@ def GetAgeData(geographic_level,hood_or_comparison_area):
                 county_fips = comparison_county_fips
                 state_fips  = comparison_state_fips
 
-            male_age_data   = c.acs5.state_county(fields=male_fields_list,state_fips=state_fips,county_fips=county_fips)[0]
-            female_age_data = c.acs5.state_county(fields=female_fields_list,state_fips=state_fips,county_fips=county_fips)[0]
+            male_age_data   = c.acs5.state_county(fields=male_fields_list,state_fips=state_fips,county_fips=county_fips,year=acs_5y_year)[0]
+            female_age_data = c.acs5.state_county(fields=female_fields_list,state_fips=state_fips,county_fips=county_fips,year=acs_5y_year)[0]
 
         except Exception as e:
             print(e, 'Problem getting age data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
@@ -776,8 +776,8 @@ def GetAgeData(geographic_level,hood_or_comparison_area):
                 state_fips  = comparison_state_fips
 
 
-            male_age_data   = c.acs5.state_county_subdivision(fields=male_fields_list,state_fips=state_fips,county_fips=county_fips,subdiv_fips=subdiv_fips)[0]
-            female_age_data = c.acs5.state_county_subdivision(fields=female_fields_list,state_fips=state_fips,county_fips=county_fips,subdiv_fips=subdiv_fips)[0]
+            male_age_data   = c.acs5.state_county_subdivision(fields=male_fields_list,state_fips=state_fips,county_fips=county_fips,subdiv_fips=subdiv_fips,year=acs_5y_year)[0]
+            female_age_data = c.acs5.state_county_subdivision(fields=female_fields_list,state_fips=state_fips,county_fips=county_fips,subdiv_fips=subdiv_fips,year=acs_5y_year)[0]
         except Exception as e:
             print(e, 'Problem getting age data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
             return()
@@ -790,10 +790,10 @@ def GetAgeData(geographic_level,hood_or_comparison_area):
                 elif hood_or_comparison_area == 'comparison area':
                     zcta = comparison_zip
             
-                male_age_data       = c.acs5.zipcode(fields = male_fields_list, zcta = '*')
+                male_age_data       = c.acs5.zipcode(fields = male_fields_list, zcta = '*',year=acs_5y_year)
                 male_age_data       = FindZipCodeDictionary(zip_code_data_dictionary_list =   male_age_data  , zcta = zcta, state_fips = state_fips )
 
-                female_age_data       = c.acs5.zipcode(fields = female_fields_list, zcta = '*')
+                female_age_data       = c.acs5.zipcode(fields = female_fields_list, zcta = '*',year=acs_5y_year)
                 female_age_data       = FindZipCodeDictionary(zip_code_data_dictionary_list =   female_age_data  , zcta = zcta, state_fips = state_fips )
 
             except Exception as e:
@@ -811,8 +811,8 @@ def GetAgeData(geographic_level,hood_or_comparison_area):
                 tract       = comparison_tract
                 county_fips = comparison_county_fips
 
-            male_age_data = c.acs5.state_county_tract(fields=male_fields_list,state_fips=state_fips,county_fips=county_fips, tract=tract)[0]
-            female_age_data = c.acs5.state_county_tract(fields=female_fields_list,state_fips=state_fips,county_fips=county_fips, tract=tract)[0]
+            male_age_data = c.acs5.state_county_tract(fields=male_fields_list,state_fips=state_fips,county_fips=county_fips, tract=tract,year=acs_5y_year)[0]
+            female_age_data = c.acs5.state_county_tract(fields=female_fields_list,state_fips=state_fips,county_fips=county_fips, tract=tract,year=acs_5y_year)[0]
         except Exception as e:
             print(e, 'Problem getting age data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
             return()
@@ -824,8 +824,8 @@ def GetAgeData(geographic_level,hood_or_comparison_area):
         neighborhood_female_tracts_data = []
 
         #Fetch census data for all relevant census tracts within the neighborhood
-        raw_male_census_data   = c_area.acs5.geo_tract(male_fields_list, neighborhood_shape)
-        raw_female_census_data = c_area.acs5.geo_tract(female_fields_list, neighborhood_shape)
+        raw_male_census_data   = c_area.acs5.geo_tract(male_fields_list, neighborhood_shape,year=acs_5y_year)
+        raw_female_census_data = c_area.acs5.geo_tract(female_fields_list, neighborhood_shape,year=acs_5y_year)
         
 
         for tract_geojson, tract_data, tract_proportion in raw_male_census_data:
@@ -889,8 +889,8 @@ def GetNumberUnitsData(geographic_level,hood_or_comparison_area):
                 place_fips = comparison_place_fips
                 state_fips = comparison_state_fips
         
-            owner_occupied_units_raw_data = c.acs5.state_place(fields = owner_occupied_fields_list,state_fips=state_fips,place=place_fips)[0]
-            renter_occupied_units_raw_data = c.acs5.state_place(fields = renter_occupied_fields_list,state_fips=state_fips,place=place_fips)[0]
+            owner_occupied_units_raw_data = c.acs5.state_place(fields = owner_occupied_fields_list,state_fips=state_fips,place=place_fips,year=acs_5y_year)[0]
+            renter_occupied_units_raw_data = c.acs5.state_place(fields = renter_occupied_fields_list,state_fips=state_fips,place=place_fips,year=acs_5y_year)[0]
         
         except Exception as e:
             print(e, 'Problem getting number units data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
@@ -907,8 +907,8 @@ def GetNumberUnitsData(geographic_level,hood_or_comparison_area):
                 county_fips = comparison_county_fips
                 state_fips = comparison_state_fips
 
-            owner_occupied_units_raw_data  = c.acs5.state_county(fields = owner_occupied_fields_list,  state_fips = state_fips, county_fips = county_fips)[0]
-            renter_occupied_units_raw_data = c.acs5.state_county(fields = renter_occupied_fields_list, state_fips = state_fips, county_fips = county_fips)[0]
+            owner_occupied_units_raw_data  = c.acs5.state_county(fields = owner_occupied_fields_list,  state_fips = state_fips, county_fips = county_fips,year=acs_5y_year)[0]
+            renter_occupied_units_raw_data = c.acs5.state_county(fields = renter_occupied_fields_list, state_fips = state_fips, county_fips = county_fips,year=acs_5y_year)[0]
         except Exception as e:
             print(e, 'Problem getting number units data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
             return()
@@ -927,8 +927,8 @@ def GetNumberUnitsData(geographic_level,hood_or_comparison_area):
                 state_fips = comparison_state_fips
 
         
-            owner_occupied_units_raw_data  = c.acs5.state_county_subdivision(fields = owner_occupied_fields_list, state_fips  = state_fips, county_fips=county_fips,  subdiv_fips=subdiv_fips)[0]
-            renter_occupied_units_raw_data = c.acs5.state_county_subdivision(fields = renter_occupied_fields_list, state_fips = state_fips, county_fips=county_fips,  subdiv_fips=subdiv_fips)[0]
+            owner_occupied_units_raw_data  = c.acs5.state_county_subdivision(fields = owner_occupied_fields_list, state_fips  = state_fips, county_fips=county_fips,  subdiv_fips=subdiv_fips,year=acs_5y_year)[0]
+            renter_occupied_units_raw_data = c.acs5.state_county_subdivision(fields = renter_occupied_fields_list, state_fips = state_fips, county_fips=county_fips,  subdiv_fips=subdiv_fips,year=acs_5y_year)[0]
         except Exception as e:
             print(e, 'Problem getting number units data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
             return()
@@ -941,10 +941,10 @@ def GetNumberUnitsData(geographic_level,hood_or_comparison_area):
             elif hood_or_comparison_area == 'comparison area':
                 zcta = comparison_zip
         
-            owner_occupied_units_raw_data       = c.acs5.zipcode(fields = owner_occupied_fields_list,  zcta = '*' )
+            owner_occupied_units_raw_data       = c.acs5.zipcode(fields = owner_occupied_fields_list,  zcta = '*',year=acs_5y_year )
             owner_occupied_units_raw_data       = FindZipCodeDictionary(zip_code_data_dictionary_list =   owner_occupied_units_raw_data  , zcta = zcta, state_fips = state_fips )
 
-            renter_occupied_units_raw_data      = c.acs5.zipcode(fields = renter_occupied_fields_list, zcta = '*' )
+            renter_occupied_units_raw_data      = c.acs5.zipcode(fields = renter_occupied_fields_list, zcta = '*',year=acs_5y_year )
             renter_occupied_units_raw_data      = FindZipCodeDictionary(zip_code_data_dictionary_list =   renter_occupied_units_raw_data  , zcta = zcta, state_fips = state_fips )
 
 
@@ -962,8 +962,8 @@ def GetNumberUnitsData(geographic_level,hood_or_comparison_area):
                 tract       = comparison_tract
                 county_fips = comparison_county_fips
 
-            owner_occupied_units_raw_data  = c.acs5.state_county_tract(fields = owner_occupied_fields_list, state_fips=state_fips, county_fips=county_fips,  tract=tract)[0]
-            renter_occupied_units_raw_data = c.acs5.state_county_tract(fields = renter_occupied_fields_list, state_fips=state_fips, county_fips=county_fips, tract=tract)[0]
+            owner_occupied_units_raw_data  = c.acs5.state_county_tract(fields = owner_occupied_fields_list, state_fips=state_fips, county_fips=county_fips,  tract=tract,year=acs_5y_year)[0]
+            renter_occupied_units_raw_data = c.acs5.state_county_tract(fields = renter_occupied_fields_list, state_fips=state_fips, county_fips=county_fips, tract=tract,year=acs_5y_year)[0]
         
         except Exception as e:
             print(e, 'Problem getting number units data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
@@ -975,8 +975,8 @@ def GetNumberUnitsData(geographic_level,hood_or_comparison_area):
         neighborhood_ro_tracts_data = []
 
         #Fetch census data for all relevant census tracts within the neighborhood
-        raw_oo_census_data   = c_area.acs5.geo_tract(owner_occupied_fields_list, neighborhood_shape)
-        raw_ro_census_data = c_area.acs5.geo_tract(renter_occupied_fields_list, neighborhood_shape)
+        raw_oo_census_data   = c_area.acs5.geo_tract(owner_occupied_fields_list, neighborhood_shape,year=acs_5y_year)
+        raw_ro_census_data = c_area.acs5.geo_tract(renter_occupied_fields_list, neighborhood_shape,year=acs_5y_year)
         
 
         for tract_geojson, tract_data, tract_proportion in raw_oo_census_data:
