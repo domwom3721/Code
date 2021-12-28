@@ -1365,10 +1365,41 @@ def FindNearestAirport(lat,lon):
     #Find any airports inside the confines of the city
     if neighborhood_shape != None:
         poly = Polygon(neighborhood_shape.points)
+        
+        ####### Write polygon as shapefile
+        from osgeo import ogr
+
+        # Here's an example Shapely geometry
+        # Now convert it to a shapefile with OGR    
+        driver = ogr.GetDriverByName('Esri Shapefile')
+        ds = driver.CreateDataSource(os.path.join(hood_folder,'my.shp'))
+        layer = ds.CreateLayer('', None, ogr.wkbPolygon)
+        # Add one attribute
+        layer.CreateField(ogr.FieldDefn('id', ogr.OFTInteger))
+        defn = layer.GetLayerDefn()
+
+        ## If there are multiple geometries, put the "for" loop here
+
+        # Create a new feature (attribute and geometry)
+        feat = ogr.Feature(defn)
+        feat.SetField('id', 123)
+
+        # Make a geometry, from Shapely object
+        geom = ogr.CreateGeometryFromWkb(poly.wkb)
+        feat.SetGeometry(geom)
+
+        layer.CreateFeature(feat)
+        feat = geom = None  # destroy these
+
+        # Save and close everything
+        ds = layer = feat = geom = None
+        #######
+
         for i in range(len(airport_map)):
             airport_coords        =  Point(airport_map.shape(i).points[0][1],airport_map.shape(i).points[0][0])
-            airport_record        = airport_map.shapeRecord(i)
+            print(airport_coords)
             if poly.contains(airport_coords):
+                airport_record        = airport_map.shapeRecord(i)
                 return(airport_record.record['Fac_Name'])
 
            
@@ -2539,7 +2570,7 @@ def PlaneLanguage():
     #First see if any text available on wikipedia, if so use that, if not, use our geographic data
     print('Searching Wikipedia for Airport Info')
     wikipedia_plane_language = WikipediaTransitLanguage(category='air')
-    if wikipedia_plane_language != '' and (False):
+    if wikipedia_plane_language != '':
         print('Pulled Airport info from Wikipedia')
         return(wikipedia_plane_language)
     else:
