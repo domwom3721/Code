@@ -183,7 +183,7 @@ def GetNeighborhoodShape():
                 else:
                     neighborhood_shape        =  place_map.shape(i)
                     print('Successfully pulled census shape from shapefile')
-                    
+
                     return(neighborhood_shape) 
         except Exception as e:
             print(e,'unable to get shape for census place')
@@ -211,7 +211,7 @@ def DetermineNYCCommunityDistrict(lat,lon):
     try:
         from osgeo import gdal
         #Method 1: Pull geojson from file with city name
-        with open(os.path.join(data_location,'Neighborhood Shapes','NY','nyc_communitydistricts.json')) as infile: #Open a geojson file with the city as the name the name of the file with the neighborhood boundries for that city
+        with open(os.path.join(neighborhood_shapes_location,'Custom Hood Shapes','NY','nyc_communitydistricts.json')) as infile: #Open a geojson file with the city as the name the name of the file with the neighborhood boundries for that city
             my_shape_geojson = json.load(infile)
         
         #Iterate through the features in the file (each feature is a communtiy district) and find the boundry of interest
@@ -1359,36 +1359,47 @@ def FindNearestAirport(lat,lon):
     #Specify the file path to the airports shape file
     airport_map_location = os.path.join(data_location,'Airports','Airports.shp')
     
-    
     #Open the shapefile
     airport_map = shapefile.Reader(airport_map_location)
    
+    #Find any airports inside the confines of the city
+    if neighborhood_shape != None:
+        poly = Polygon(neighborhood_shape.points)
+        for i in range(len(airport_map)):
+            airport_coords        =  Point(airport_map.shape(i).points[0][1],airport_map.shape(i).points[0][0])
+            airport_record        = airport_map.shapeRecord(i)
+            if poly.contains(airport_coords):
+                return(airport_record.record['Fac_Name'])
 
-    #Loop through each feature/point in the shape file
-    
-    for i in range(len(airport_map)):
-        airport        =  airport_map.shape(i)
-        airport_record = airport_map.shapeRecord(i)
+           
+    else:
+        #Find the cloeset airport
+        #Loop through each feature/point in the shape file
+        for i in range(len(airport_map)):
+            airport        =  airport_map.shape(i)
+            airport_record = airport_map.shapeRecord(i)
+            
+            if airport_record.record['Fac_Type'] != 'AIRPORT':
+                continue
+
+
+            airport_coord = airport.points
+            dist = mpu.haversine_distance( (airport_coord[0][1], airport_coord[0][0]), (lat, lon)) #measure distance between airport and subject property   
+            # print(dist)
+
+            if i == 0:
+                min_dist           = dist
+                cloest_airport_num = i
+            elif i > 0 and dist < min_dist:
+                min_dist           = dist
+                cloest_airport_num = i
+
+        closest_airport = airport_map.shapeRecord(cloest_airport_num)
         
-        if airport_record.record['Fac_Type'] != 'AIRPORT':
-            continue
-
-
-        airport_coord = airport.points
-        dist = mpu.haversine_distance( (airport_coord[0][1], airport_coord[0][0]), (lat, lon)) #measure distance between airport and subject property   
-        # print(dist)
-
-        if i == 0:
-            min_dist           = dist
-            cloest_airport_num = i
-        elif i > 0 and dist < min_dist:
-            min_dist           = dist
-            cloest_airport_num = i
-
-    closest_airport = airport_map.shapeRecord(cloest_airport_num)
-    airport_lang = ('The closest airport to the geographic center of ' + neighborhood + ' is ' + closest_airport.record['Fac_Name'].title() + ' which is an ' +  closest_airport.record['Fac_Type'].lower() + ' in ' + closest_airport.record['City'].title() + ', ' + closest_airport.record['State_Name'].title() + '.' )
-    airport_lang = airport_lang.replace('Intl','International')
-    return(airport_lang)
+        
+        airport_lang = ('The closest airport to the geographic center of ' + neighborhood + ' is ' + closest_airport.record['Fac_Name'].title() + ' which is an ' +  closest_airport.record['Fac_Type'].lower() + ' in ' + closest_airport.record['City'].title() + ', ' + closest_airport.record['State_Name'].title() + '.' )
+        airport_lang = airport_lang.replace('Intl','International')
+        return(airport_lang)
 
 def FindNearestHighways(lat,lon):
     
@@ -2457,8 +2468,6 @@ def WikipediaTransitLanguage(category):
         language = [] 
         for search_term in wikipedia_search_terms_df['search term']:
             section = page.section(search_term)
-            # print(search_term)
-            # print(section)
             
             if section != None:
                 language.append(section)
@@ -2476,7 +2485,7 @@ def WikipediaTransitLanguage(category):
 
             elif category == 'air':
                 #If nothing on wikipedia, use this function to look for more information
-                return(FindNearestAirport(lat = latitude, lon = longitude))
+                return('')
               
 
             elif category == 'train':
@@ -2527,13 +2536,20 @@ def CarLanguage():
 def PlaneLanguage():
     print('Creating plane Langauge')
 
-    wikipedia_plane_language     = WikipediaTransitLanguage(category='air')
-    nearest_airport_language     = FindNearestAirport(lat = latitude, lon = longitude)
-
-    if wikipedia_plane_language == '':
-        return(nearest_airport_language)
-    else:
+    #First see if any text available on wikipedia, if so use that, if not, use our geographic data
+    print('Searching Wikipedia for Airport Info')
+    wikipedia_plane_language = WikipediaTransitLanguage(category='air')
+    if wikipedia_plane_language != '' and (False):
+        print('Pulled Airport info from Wikipedia')
         return(wikipedia_plane_language)
+    else:
+        print('No Airport Information on Wikipedia, using airport shapefile to get airport info')
+        nearest_airport_language = FindNearestAirport(lat = latitude, lon = longitude)
+        if (nearest_airport_language != None) and (nearest_airport_language != ''):
+            return(nearest_airport_language)
+        else:
+            print('Unable to find airport using airport shapefile')
+            return(neighborhood + ' is roughly ' + '[---]' + ' miles from ' + '------' + ', a [-------] ' + '.')
 
 def BusLanguage():
     print('Creating bus Langauge')
