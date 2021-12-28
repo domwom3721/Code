@@ -2369,53 +2369,57 @@ def CreateTravelModeHistogram():
 
 def CreateGraphs():
     print('Creating Graphs')
+    #Household Size Graph
     try:
         CreateHouseholdSizeHistogram()
     except Exception as e:
         print(e,'unable to create household size graph')
     
+    #Household Tenure Graph
     try:
         CreateHouseholdTenureHistogram()
     except Exception as e:
         print(e,'unable to create household tenure graph')
     
+    #Household Value graph
     try:
         CreateHouseholdValueHistogram()
     
     except Exception as e:
         print(e,'unable to create housing value graph')
     
+    #House Year Built Graph
     try:
         CreateHouseholdYearBuiltHistogram()
 
     except Exception as e:
         print(e,'unable to create year built graph')
     
+    #Number Units in Building Graph
     try:
         CreateHouseholdNumberUnitsInBuildingHistogram()
     except Exception as e:
         print(e,'unable to create number units graph')
     
+    #Population By Age Histogram
     try:
         CreatePopulationByAgeHistogram()
     except Exception as e:
         print(e,'unable to create population by age graph')
 
+    #Population by Income Graph
     try:
         CreatePopulationByIncomeHistogram()
     except Exception as e:
         print(e,'unable to create population by income graph')
 
-    # try:
-    #     CreateTopOccupationsHistogram()
-    # except Exception as e:
-    #     print(e,'unable to create top occupation graph')
-
+    #Travel time Graph
     try:
         CreateTravelTimeHistogram()
     except Exception as e:
         print(e,'unable to create travel time graph')
 
+    #Travel Mode Graph
     try:
         CreateTravelModeHistogram()
     except Exception as e:
