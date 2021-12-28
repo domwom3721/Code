@@ -5054,10 +5054,15 @@ def AddTable(document,data_for_table): #Function we use to insert our overview t
                 else:
                      paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
 
+                paragraph.paragraph_format.space_after  = Pt(0)
+                paragraph.paragraph_format.space_before = Pt(0)
+
                 for run in paragraph.runs:
                     font = run.font
                     font.size= Pt(8)
                     run.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+                    run.space_after  = Pt(0)
+                    run.space_before  = Pt(0)
                     
                     #make first row bold
                     if current_row == 0: 
