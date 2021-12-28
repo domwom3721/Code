@@ -1365,7 +1365,7 @@ def FindNearestAirport(lat,lon):
     #Find any airports inside the confines of the city
     if neighborhood_shape != None:
         poly = Polygon(neighborhood_shape.points)
-        
+
         ####### Write polygon as shapefile
         from osgeo import ogr
 
@@ -3074,7 +3074,7 @@ def FoodLanguage():
 
 def HosptialLanguage():
     #This function returns a string we will place in the community assets table in the hospital row 
-    hospital_list                      = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['hospital','clinic'] ) 
+    hospital_list                      = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['hospital'] ) 
     
     hospital_language                  = (neighborhood + 
                                          
