@@ -55,6 +55,7 @@ data_location                  =  os.path.join(project_location,'Data','Neighbor
 graphics_location              =  os.path.join(project_location,'Data','General Data','Graphics')
 map_location                   =  os.path.join(project_location,'Data','Neighborhood Reports Data','Neighborhood Maps')
 nyc_cd_map_location            =  os.path.join(project_location,'Data','Neighborhood Reports Data','NYC_CD Maps')
+neighborhood_shapes_location   =  os.path.join(data_location,'Neighborhood Shapes')
 salesforce_report              =  os.path.join(project_location,'Data','Neighborhood Reports Data','Salesforce') 
 
 #Data Manipulation functions
@@ -119,7 +120,7 @@ def GetNeighborhoodShape():
         try:
             from osgeo import gdal
             #Method 1: Pull geojson from file with city name
-            with open(os.path.join(data_location,'Neighborhood Shapes',comparison_area + '.geojson')) as infile: #Open a geojson file with the city as the name the name of the file with the neighborhood boundries for that city
+            with open(os.path.join(neighborhood_shapes_location,'Custom Hood Shapes',comparison_area + '.geojson')) as infile: #Open a geojson file with the city as the name the name of the file with the neighborhood boundries for that city
                 my_shape_geojson = json.load(infile)
             
             print('Successfully opened geojson file for ' + comparison_area)
@@ -163,6 +164,29 @@ def GetNeighborhoodShape():
             neighborhood_custom_name = my_shape_geojson['features'][0]['properties']['Name']
             input('We are using a downloaded file from google for custom bounds for ' + neighborhood_custom_name +  ' --- press enter to confirm!')
             return(neighborhood_shape) 
+
+    elif neighborhood_level == 'place':
+        try:
+            shapefile_location = os.path.join(neighborhood_shapes_location,'Census Place Shapes',('tl_2021_' + hood_state_fips + '_place'),('tl_2021_' + hood_state_fips + '_place.shp'))
+            assert os.path.exists(shapefile_location)
+
+            #Open the shapefile
+            place_map = shapefile.Reader(shapefile_location)
+        
+
+            #Loop through each place in the shape file
+            for i in range(len(place_map)):
+                place_record = place_map.shapeRecord(i)
+                #Look for the record that corresponds to our subject city
+                if place_record.record['PLACEFP'] != hood_place_fips:
+                    continue
+                else:
+                    neighborhood_shape        =  place_map.shape(i)
+                    print('Successfully pulled census shape from shapefile')
+                    
+                    return(neighborhood_shape) 
+        except Exception as e:
+            print(e,'unable to get shape for census place')
 
 def GetListOfNeighborhoods(city):
     try:
