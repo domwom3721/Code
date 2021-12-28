@@ -110,7 +110,9 @@ def AddOverviewTable(document,number_rows,number_cols,row_data,col_width): #Func
                     paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
                 else:
                      paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
-
+                paragraph.paragraph_format.space_after  = Pt(0)
+                paragraph.paragraph_format.space_before = Pt(0)
+                
                 for run in paragraph.runs:
                     font = run.font
                     font.size= Pt(7)
@@ -182,6 +184,10 @@ def AddTable(document,row_data,col_width): #Function we use to insert our wide t
                     paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
                 else:
                      paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                    
+                paragraph.paragraph_format.space_after  = Pt(0)
+                paragraph.paragraph_format.space_before = Pt(0)
+
                 for run in paragraph.runs:
                     font = run.font
                     if current_row == 0:
@@ -869,6 +875,10 @@ def AddMarketPerformanceTable(document,col_width,market_data_frame,sector): #Fun
                     paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
                 else:
                      paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                    
+                paragraph.paragraph_format.space_after  = Pt(0)
+                paragraph.paragraph_format.space_before = Pt(0)
+
                 for run in paragraph.runs:
                     font = run.font
                     if current_row == 0:
@@ -978,6 +988,10 @@ def AddSubmarketsPerformanceTable(document,col_width,submarkets_data_frame,secto
                     paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
                 else:
                      paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                
+                paragraph.paragraph_format.space_after  = Pt(0)
+                paragraph.paragraph_format.space_before = Pt(0)
+
                 for run in paragraph.runs:
                     font = run.font
                     if current_row == 0:
