@@ -2551,7 +2551,7 @@ def SummaryLangauge():
 def CommunityAssetsLanguage():
     print('Creating Community Assets Langauge')
     try:
-        community_assets_language = (neighborhood + ' has a number of community assets. Primary corridors are home to restaurants and cafes, as well as many other small businesses to run errands at.')
+        community_assets_language = (neighborhood + ' offers many community assets throughout. Primary corridors such as ____ are home to restaurants, retailers, and other small businesseses that are sufficient for weekly errands.')
     except Exception as e:
         print(e,'unable to get community assets langauge')
         community_assets_language = ''
@@ -3073,14 +3073,13 @@ def FoodLanguage():
     
     return(food_language)
 
-def HosptialLanguage():
+def HospitalLanguage():
     #This function returns a string we will place in the community assets table in the hospital row 
     hospital_list                      = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['hospital'] ) 
     
-    hospital_language                  = (neighborhood + 
-                                         
-                                         ' has a number of medical facilities including ' + 
+    hospital_language                  = ('For healthcare needs, residents of the community and region have access to a number of ' + 
 
+                                         '  medical facilities including ' +
                                          ', '.join(hospital_list) + 
                                          '.'
                                          
@@ -3187,7 +3186,7 @@ def CreateLanguage():
     community_assets_language          = CommunityAssetsLanguage()
     bank_language                      = BankLanguage() 
     food_language                      = FoodLanguage()
-    hospital_language                  = HosptialLanguage()
+    hospital_language                  = HospitalLanguage()
     park_language                      = ParkLangauge()
     retail_language                    = RetailLanguage()
 
