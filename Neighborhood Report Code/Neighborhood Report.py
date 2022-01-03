@@ -3044,21 +3044,21 @@ def TravelTimeLanguage():
     
     return([time_language])
 
-def BankLanguage():
-    #This function returns a string we will place in the community assets table in the bank row 
+def EducationLanguage():
+    #This function returns a string we will place in the community assets table in the education row 
     #(neighborhood + ' has several ' + category + ' assets including: ')
-    banks_list                         = LocationIQPOIList(lat = latitude, lon = longitude , category = ['bank'] ) 
+    education_list                         = LocationIQPOIList(lat = latitude, lon = longitude , category = ['school','college'] ) 
     
-    bank_language                      = (neighborhood + 
+    education_language                      = (neighborhood + 
                                          
-                                         ' has a number of banking options available including ' + 
+                                         ' has a number of education options available including ' + 
 
-                                         ', '.join(banks_list) + 
+                                         ', '.join(education_list) + 
                                          '.'
                                          
                                          )
     
-    return(bank_language)
+    return(education_language)
 
 def FoodLanguage():
     #This function returns a string we will place in the community assets table in the food row 
@@ -3174,7 +3174,7 @@ def CreateLanguage():
     global travel_method_language, travel_time_language
     global housing_value_language, year_built_language
     global household_size_language, housing_intro_language, housing_type_tenure_language
-    global community_assets_language, bank_language, food_language, hospital_language, park_language, retail_language
+    global community_assets_language, education_language, food_language, hospital_language, park_language, retail_language
 
     summary_langauge                   =  SummaryLangauge()
     housing_type_tenure_language       =  HousingTypeTenureLanguage()
@@ -3184,7 +3184,7 @@ def CreateLanguage():
 
     #Communtiy assets langauge variables
     community_assets_language          = CommunityAssetsLanguage()
-    bank_language                      = BankLanguage() 
+    education_language                 = EducationLanguage() 
     food_language                      = FoodLanguage()
     hospital_language                  = HospitalLanguage()
     park_language                      = ParkLangauge()
@@ -3652,7 +3652,7 @@ def CommunityAssetsSection(document):
     AddTableTitle(document = document, title = 'Community Assets')
 
     #Add Community Assets Table                 
-    AddTwoColumnTable(document,pic_list      = ['bank.png','food.png','medical.png','park.png','retail.png'],lang_list =[bank_language, food_language, hospital_language, park_language, retail_language] )
+    AddTwoColumnTable(document,pic_list      = ['bank.png','food.png','medical.png','park.png','retail.png'],lang_list =[education_language, food_language, hospital_language, park_language, retail_language] )
 
 def HousingSection(document):
     print('Writing Neighborhood Section')
