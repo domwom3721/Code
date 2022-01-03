@@ -3540,8 +3540,8 @@ def AddTwoColumnTable(document,pic_list,lang_list):
         left_paragraph.alignment                                    = WD_ALIGN_PARAGRAPH.JUSTIFY
 
         run            = left_paragraph.add_run()
-        if pic == 'car.png':
-            run.add_text(' ')
+        # if pic == 'car.png':
+        #     run.add_text(' ')
         run.add_picture(pic_path)
 
         right_paragraph = row_cells[1].paragraphs[0]
