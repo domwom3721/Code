@@ -1233,8 +1233,8 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         hh_growth_period  = acs_5y_year - decennial_census_year
         assert pop_growth_period == hh_growth_period == 9
     else:
-        pop_growth_period = 2020 - decennial_census_year
-        hh_growth_period  = 2020 - decennial_census_year
+        pop_growth_period = (decennial_census_year + 10) - decennial_census_year
+        hh_growth_period  = (decennial_census_year + 10) - decennial_census_year
         assert pop_growth_period == hh_growth_period == 10
 
     #Calculate growth rates
