@@ -47,7 +47,7 @@ from wikipedia.wikipedia import random
 from yelpapi import YelpAPI
 
 #Define file paths
-dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
+dropbox_royot                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
 project_location               =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Projects', 'Research Report Automation Project') 
 main_output_location           =  os.path.join(project_location,'Output','Neighborhood')                   #testing
 # main_output_location           =  os.path.join(dropbox_root,'Research','Market Analysis','Neighborhood') #production
@@ -3064,9 +3064,7 @@ def FoodLanguage():
     #This function returns a string we will place in the community assets table in the food row 
     food_list                          = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['restaurant','pub'] ) 
     
-    food_language                      = (neighborhood + 
-                                         
-                                         ' has restaurants and other dining available including ' + 
+    food_language                      = (' For restaurants and other dining options, ' + neighborhood + ' offers a number of options including' 
 
                                          ', '.join(food_list) + 
                                          '.'
