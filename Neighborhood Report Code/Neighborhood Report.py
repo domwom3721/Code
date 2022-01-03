@@ -47,7 +47,7 @@ from wikipedia.wikipedia import random
 from yelpapi import YelpAPI
 
 #Define file paths
-dropbox_royot                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
+dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
 project_location               =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Projects', 'Research Report Automation Project') 
 main_output_location           =  os.path.join(project_location,'Output','Neighborhood')                   #testing
 # main_output_location           =  os.path.join(dropbox_root,'Research','Market Analysis','Neighborhood') #production
