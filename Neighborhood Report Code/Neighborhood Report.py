@@ -3498,10 +3498,9 @@ def AddTable(document,data_for_table): #Function we use to insert our overview t
                     paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
                 else:
                      paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
-                #Make first row flush agaisnt bottom
-                if current_row == 0:
-                    paragraph.paragraph_format.space_after   = Pt(0)
-                    paragraph.paragraph_format.space_before  = Pt(0)
+
+                paragraph.paragraph_format.space_after   = Pt(0)
+                paragraph.paragraph_format.space_before  = Pt(0)
 
 
                 for run in paragraph.runs:
