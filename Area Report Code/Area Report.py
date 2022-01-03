@@ -5642,7 +5642,7 @@ new_england_states      = ['MA','VT','RI','ME','NH','CT']
 
 #Set number of years we want to look back to calculate employment growth
 growth_period           = 5
-end_year                = todays_date.year                      #For BLS
+end_year                = 2021 #todays_date.year                      #For BLS
 start_year              = end_year - growth_period              #For BLS
 
 observation_start       = '01/01/' + str(start_year -1)   #For FRED
