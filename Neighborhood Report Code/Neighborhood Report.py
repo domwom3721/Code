@@ -2512,7 +2512,7 @@ def WikipediaTransitLanguage(category):
 
         else:
             if category == 'car':
-                return(neighborhood + ' is not connected by any major highways or roads.')
+                return(neighborhood + ' does not have immediate access to any major highways or roads. ' + 'Local corridors include . ')
 
             elif category == 'bus':
                 return(neighborhood + ' does not have public bus service.')
@@ -2523,7 +2523,7 @@ def WikipediaTransitLanguage(category):
               
 
             elif category == 'train':
-                return(neighborhood + ' is not served by any commuter or light-rail lines.')
+                return('There is limited use of public transit in ' + neighborhood + '. In fact, it is not served by any commuter or light-rail lines./for public transit options, residents and visitors utilize service in ____. ')
             else:
                 return('')
 
