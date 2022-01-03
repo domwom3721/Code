@@ -2630,7 +2630,7 @@ def HousingIntroLanguage():
     print('Creating housing intro Langauge')
     try:
         housing_intro_language = ('Housing is one of the most identifiable characteristics of an area. Different elements related to housing, such as the property type, ' +
-            ' renter/owner mix, housing age, and household characteristics play crucial roles in how an area is defined. ' +
+            'renter/owner mix, housing age, and household characteristics play crucial roles in how an area is defined. ' +
             'In ' + neighborhood + ', housing is diverse, with a variety of types, tenure status, age, and price points. ')
     except Exception as e:
         print(e,'Unable to create housing intro language')  
@@ -3658,11 +3658,11 @@ def HousingSection(document):
     
     AddDocumentParagraph(document = document,language_variable =  housing_intro_language)
 
-    #Insert household units by units in_structure graph
-    AddDocumentPicture(document = document, image_path = os.path.join(hood_folder,'household_units_in_structure_graph.png'),citation ='U.S. Census Bureau')
-    
     #Add tenure language
     AddDocumentParagraph(document = document,language_variable =  housing_type_tenure_language)
+
+    #Insert household units by units in_structure graph
+    AddDocumentPicture(document = document, image_path = os.path.join(hood_folder,'household_units_in_structure_graph.png'),citation ='U.S. Census Bureau')
 
     #Insert Household Tenure graph
     if os.path.exists(os.path.join(hood_folder,'household_tenure_graph.png')):
