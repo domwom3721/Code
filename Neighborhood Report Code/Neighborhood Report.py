@@ -3025,8 +3025,7 @@ def TravelTimeLanguage():
     hood_largest_time_category = travel_time_categories[neighborhood_time_to_work_distribution.index(max(neighborhood_time_to_work_distribution))] #get the most common income category
     comp_largest_time_category = travel_time_categories[comparison_time_to_work_distribution.index(max(comparison_time_to_work_distribution))]
 
-    time_language = ('Commuters in '                                        +
-                       neighborhood                                           + 
+    time_language = ('The time it takes to commute to work from ' + neighborhood + ' varies considerably. Commuters in ' + neighborhood + 
                        ' have a median commute time of about '                      + 
                         "{:,.0f} minutes".format(hood_median_time)                   +
                        '. '                     +
@@ -3046,7 +3045,6 @@ def TravelTimeLanguage():
 
 def EducationLanguage():
     #This function returns a string we will place in the community assets table in the education row 
-    #(neighborhood + ' has several ' + category + ' assets including: ')
     education_list                         = LocationIQPOIList(lat = latitude, lon = longitude , category = ['school','college'] ) 
     
     education_language                      = (neighborhood + 
@@ -3064,7 +3062,7 @@ def FoodLanguage():
     #This function returns a string we will place in the community assets table in the food row 
     food_list                          = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['restaurant','pub'] ) 
     
-    food_language                      = (' For restaurants and other dining options, ' + neighborhood + ' offers a number of options including' 
+    food_language                      = (' For restaurants and other dining options, ' + neighborhood + ' offers a number of options including' +
 
                                          ', '.join(food_list) + 
                                          '.'
@@ -3079,7 +3077,7 @@ def HospitalLanguage():
     
     hospital_language                  = ('For healthcare needs, residents of the community and region have access to a number of ' + 
 
-                                         '  medical facilities including ' +
+                                         'medical facilities including ' +
                                          ', '.join(hospital_list) + 
                                          '.'
                                          
@@ -3093,7 +3091,7 @@ def ParkLangauge():
     
     park_language                      = (neighborhood + 
                                          
-                                         ' has several public parks in the area including ' + 
+                                         ' has access to outdoor recreational acitivites and several public parks in the area including ' + 
 
                                          ', '.join(park_list) + 
                                          '.'
@@ -3652,7 +3650,7 @@ def CommunityAssetsSection(document):
     AddTableTitle(document = document, title = 'Community Assets')
 
     #Add Community Assets Table                 
-    AddTwoColumnTable(document,pic_list      = ['bank.png','food.png','medical.png','park.png','retail.png'],lang_list =[education_language, food_language, hospital_language, park_language, retail_language] )
+    AddTwoColumnTable(document,pic_list      = ['education.png','food.png','medical.png','park.png','retail.png'],lang_list =[education_language, food_language, hospital_language, park_language, retail_language] )
 
 def HousingSection(document):
     print('Writing Neighborhood Section')
