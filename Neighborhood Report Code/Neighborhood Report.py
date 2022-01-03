@@ -2551,7 +2551,7 @@ def SummaryLangauge():
 def CommunityAssetsLanguage():
     print('Creating Community Assets Langauge')
     try:
-        community_assets_language = (neighborhood + ' offers many community assets throughout. Primary corridors such as ____ are home to restaurants, retailers, and other small businesseses that are sufficient for weekly errands.')
+        community_assets_language = (neighborhood + ' offers many community assets throughout. Corridors such as ____ have commercial zoning, providing access to restaurants, retailers, and other small businesseses that are sufficient for weekly errands.')
     except Exception as e:
         print(e,'unable to get community assets langauge')
         community_assets_language = ''
