@@ -4,7 +4,6 @@
 import json
 import msvcrt
 import os
-import re
 import shutil
 import sys
 import time
@@ -41,12 +40,12 @@ from requests.packages.urllib3.util.retry import Retry
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from shapely.geometry import LineString, MultiPoint, Point, shape,Polygon
+from shapely.geometry import LineString, MultiPoint, Point, shape,Polygon,mapping
 from shapely.ops import nearest_points
 from walkscore import WalkScoreAPI
 from wikipedia.wikipedia import random
 from yelpapi import YelpAPI
-#from osgeo import gdal,ogr #gdal can open the kml file from google maps 
+# from osgeo import gdal,ogr #gdal can open the kml file from google maps 
 # import cartoframes
 # import fiona
 
@@ -559,6 +558,32 @@ def SalesforceSubdivisionFIPSList():
         subdiv_fips_list.append(SubdivsionNameToFIPS(subdivision_name= loop_subdiv,state_code = sc))  
 
     return(subdiv_fips_list)
+
+def CountyInputPlaceFIPSList(county_fips):
+    #Takes a county fips code and returns a list of place fips code in that county
+    print('Getting list of place fips within ' + county_fips)
+
+    #Open file with place fips code and county fips code
+    place_county_crosswalk_df                                   = pd.read_csv(os.path.join(data_location,'Census Area Codes','national_places.csv'),encoding='latin-1',dtype={'County_FIPS':str,'State_Place_FP':str}) #read in crosswalk file
+    
+    place_county_crosswalk_df['State_Place_FP']                 = place_county_crosswalk_df['State_Place_FP'].astype(str)
+    place_county_crosswalk_df['State_Place_FP']                 = place_county_crosswalk_df['State_Place_FP'].str.zfill(7)
+    
+    place_county_crosswalk_df['County_FIPS']                    = place_county_crosswalk_df['County_FIPS'].astype(str)
+    place_county_crosswalk_df['County_FIPS']                    = place_county_crosswalk_df['County_FIPS'].str.zfill(5)
+  
+    #Restrict to observations that fall within the county fips provided
+    place_county_crosswalk_df                                   = place_county_crosswalk_df.loc[(place_county_crosswalk_df['County_FIPS'] == str(county_fips)) ].reset_index()                 
+
+    return(list(place_county_crosswalk_df['State_Place_FP']))
+  
+
+def CountyInputSubdivisionFIPSList(county_fips):
+    #Takes a county fips code and returns a list of subdivision fips code in that county
+    print('Getting list of subdivision fips within ' + county_fips)
+
+
+
 
 #####################################################Misc Functions####################################
 def CreateDirectory():
@@ -4430,8 +4455,10 @@ if batch_mode == True:
 
     #When we are doing a batch of different cities
     elif batch_type_number == 1:
-        place_fips_list             = SalesforcePlaceFIPSList() #Retrieve a list of place fips based on the place names in our salesforce export
-
+        # place_fips_list             = SalesforcePlaceFIPSList() #Retrieve a list of place fips based on the place names in our salesforce export
+        place_fips_list             = CountyInputPlaceFIPSList(county_fips = '36059' ) #input('Enter the 5 digit county fips code')
+        print(place_fips_list)
+        fish
         for place_fips in place_fips_list:
             if place_fips != None:
                 try:
