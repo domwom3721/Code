@@ -3754,7 +3754,10 @@ def IntroSection(document):
    
     #Add neighborhood overview language
     AddDocumentParagraph(document = document,language_variable =  summary_langauge)
-    AddTableTitle(document = document, title = 'Population and Household Growth')
+    if neighborhood_level == 'custom':
+        AddTableTitle(document = document, title = 'Population Growth')
+    else:
+        AddTableTitle(document = document, title = 'Population and Household Growth')
     
     try:
         #Add Overview Table
