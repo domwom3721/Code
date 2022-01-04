@@ -4375,12 +4375,12 @@ def Main():
         global longitude
         global current_year
         global neighborhood_shape
+        current_year       = str(date.today().year)
         CreateDirectory()
         coordinates        = GetLatandLon()
         latitude           = coordinates[0] 
         longitude          = coordinates[1]
         neighborhood_shape = GetNeighborhoodShape()
-        current_year       = str(date.today().year)
         #Skip places we have already done
         if os.path.exists(report_path) == False and os.path.exists(report_path.replace('_draft','_FINAL')) == False:
             GetWikipediaPage()
