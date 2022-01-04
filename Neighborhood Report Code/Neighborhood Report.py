@@ -4,6 +4,7 @@
 import json
 import msvcrt
 import os
+import re
 import shutil
 import sys
 import time
@@ -481,27 +482,45 @@ def SubdivsionNameToFIPS(subdivision_name,state_code):
 
     place_county_crosswalk_df['COUSUBNAME']               = place_county_crosswalk_df['COUSUBNAME'].astype(str)
     place_county_crosswalk_df['COUSUBNAME']               = place_county_crosswalk_df['COUSUBNAME'].str.strip()
-    place_county_crosswalk_df['COUSUBNAME']               = place_county_crosswalk_df['COUSUBNAME'].str.split(' ')
+    place_county_crosswalk_df['COUSUBNAME']               = place_county_crosswalk_df['COUSUBNAME'].str.split(' ',-1)
     place_county_crosswalk_df['COUSUBNAMELEN']            = place_county_crosswalk_df['COUSUBNAME'].str.len()
 
+    # print(place_county_crosswalk_df[0:20])
+    
     #Cut off the last word in each county subdivision name
-    for i in range(len( place_county_crosswalk_df)):
-        place_county_crosswalk_df['COUSUBNAME'].iloc[i]   = place_county_crosswalk_df['COUSUBNAME'].iloc[i][0: (place_county_crosswalk_df['COUSUBNAMELEN'].iloc[i] - 1)]
-    place_county_crosswalk_df['COUSUBNAME']               = place_county_crosswalk_df['COUSUBNAME'].str.join(' ')
+    def drop_last_item(item):
+        if len(item) > 1:
+            return( ' '.join(item[0:(int(len(item))-1)]))
+        else:
+            return(item)
+        
+    place_county_crosswalk_df['COUSUBNAME'] = place_county_crosswalk_df['COUSUBNAME'].apply(drop_last_item)
+    
+
+    # print(place_county_crosswalk_df[0:20])
+ 
 
 
     #Restrict to observations that include the provieded place fips
     place_county_crosswalk_df            = place_county_crosswalk_df.loc[(place_county_crosswalk_df['COUSUBNAME'] == str(subdivision_name)) & (place_county_crosswalk_df['STATE'] == str(state_code))  ].reset_index()                 
     
     #Return the last row if that's there's only one, otherwise ask user to choose
-    if len(place_county_crosswalk_df) == 1:
+    if len(place_county_crosswalk_df['COUNTYFP'].unique()) == 1:
         subdiv_fips                         = str(place_county_crosswalk_df['STATEFP'].iloc[-1])  +  str(place_county_crosswalk_df['COUNTYFP'].iloc[-1])   +  str(place_county_crosswalk_df['COUSUBFP'].iloc[-1])  
     
-    elif len(place_county_crosswalk_df) > 1:
+    #If there's more than one unique county, let user choose
+    elif  len(place_county_crosswalk_df['COUNTYFP'].unique()) > 1:
         print(place_county_crosswalk_df)
-        selected_county = int(input('There are more than 1 counties for this subdivision: enter the number of your choice'))  
-        subdiv_fips                         = str(place_county_crosswalk_df['STATEFP'].iloc[selected_county])  +  str(place_county_crosswalk_df['COUNTYFP'].iloc[selected_county])   +  str(place_county_crosswalk_df['COUSUBFP'].iloc[selected_county])  
     
+        try:
+            selected_county = int(input_with_timeout('There are more than 1 counties for this subdivision: enter the number of your choice',1))  
+        
+        except TimeoutExpired:
+            selected_county = 0
+
+        subdiv_fips                         = str(place_county_crosswalk_df['STATEFP'].iloc[selected_county])  +  str(place_county_crosswalk_df['COUNTYFP'].iloc[selected_county])   +  str(place_county_crosswalk_df['COUSUBFP'].iloc[selected_county])  
+
+
     else:
         return(None)
 	
