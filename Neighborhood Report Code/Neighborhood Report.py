@@ -2716,7 +2716,6 @@ def TrainLanguage():
     else:
         return('There is limited use of public transit in ' + neighborhood + '. In fact, it is not served by any commuter or light-rail lines. For public transit options, residents and visitors utilize service in ____. ')
 
-
 def OutlookLanguage():
     print('Creating Outlook Langauge')
     pop_growth_description = '[negative/modest/moderate/strong/extreme]'
@@ -4401,9 +4400,15 @@ DeclareFormattingParameters()
 decennial_census_year = 2010 #The year of the cenus for our variables we pull from sf1 10 year census files
 acs_5y_year           = 2019 #The year of the american community survey for our variables we pull from 5 year acs
 
-
-batch_mode = True
-# batch_mode = False
+#Let User Decide (on timer) if they want to use batch mode or not
+try:
+    batch_mode_input = int(input_with_timeout('Batch Mode: True (1) or False (0)',5))
+    if batch_mode_input == 1:
+        batch_mode = True
+    elif batch_mode_input == 0:
+        batch_mode = False
+except:
+    batch_mode = True
 
 
 if batch_mode == True:
