@@ -2613,7 +2613,6 @@ def WikipediaTransitLanguage(category):
         wikipedia_search_terms_df = pd.read_csv(os.path.join(project_location,'Data','General Data','Wikipedia Transit Related Search Terms.csv'))
         wikipedia_search_terms_df = wikipedia_search_terms_df.loc[wikipedia_search_terms_df['category'] == category]
         
-
         language = [] 
         for search_term in wikipedia_search_terms_df['search term']:
             section = page.section(search_term)
@@ -2621,26 +2620,11 @@ def WikipediaTransitLanguage(category):
             if section != None:
                 language.append(section)
       
-        # print(language)
         if language != []:
             return(' '.join(language))
 
         else:
-            if category == 'car':
-                return(neighborhood + ' does not have immediate access to any major highways or roads. ' + 'Local corridors include . ')
-
-            elif category == 'bus':
-                return(neighborhood + ' does not have public bus service.')
-
-            elif category == 'air':
-                #If nothing on wikipedia, use this function to look for more information
-                return('')
-              
-
-            elif category == 'train':
-                return('There is limited use of public transit in ' + neighborhood + '. In fact, it is not served by any commuter or light-rail lines./for public transit options, residents and visitors utilize service in ____. ')
-            else:
-                return('')
+            return('')
 
     except Exception as e:
         print(e,'problem getting wikipedia language for ' + category)
@@ -2677,10 +2661,15 @@ def CarLanguage():
     print('Creating auto Langauge')
     wikipedia_car_language     = WikipediaTransitLanguage(category='car')
     
-    if wikipedia_car_language == '':
-        return(FindNearestHighways(lat = latitude, lon = longitude))
-    else:
+    if wikipedia_car_language != '':
         return(wikipedia_car_language)
+    else:
+        print('No major highway information on wikipedia, using geographic data')
+        nearest_highway_language = FindNearestHighways(lat = latitude, lon = longitude)
+        if nearest_highway_language != '':
+            return(nearest_highway_language)
+        else:
+            return(neighborhood + ' does not have immediate access to any major highways or roads. ' + 'Local corridors include . ')
 
 def PlaneLanguage():
     print('Creating plane Langauge')
@@ -2713,12 +2702,20 @@ def BusLanguage():
     print('Creating bus Langauge')
 
     wikipedia_bus_language = WikipediaTransitLanguage(category='bus')
-    return(wikipedia_bus_language)
+    if wikipedia_bus_language != '':
+        return(wikipedia_bus_language)
+    
+    else:
+        return(neighborhood + ' does not have public bus service.')
 
 def TrainLanguage():
     print('Creating train Langauge')
     wikipedia_train_language = WikipediaTransitLanguage(category='train')
-    return(wikipedia_train_language)
+    if wikipedia_train_language != '':
+        return(wikipedia_train_language)
+    else:
+        return('There is limited use of public transit in ' + neighborhood + '. In fact, it is not served by any commuter or light-rail lines. For public transit options, residents and visitors utilize service in ____. ')
+
 
 def OutlookLanguage():
     print('Creating Outlook Langauge')
