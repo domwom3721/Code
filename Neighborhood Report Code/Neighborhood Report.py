@@ -4412,8 +4412,13 @@ except:
 
 
 if batch_mode == True:
-    batch_type_number = 3 #controls what report type we are doing batches of
-    
+
+    #Let user select batch number
+    try:
+        batch_type_number =  int(input_with_timeout('Select batch type (1 = places, 2 = subdivisions, 3 = neighborhoods',5))  #controls what report type we are doing batches of
+    except:
+        batch_type_number = 1 #controls what report type we are doing batches of
+
     #When we are doing a batch of different custom neighborhoods within a single city
     if batch_type_number == (3) or batch_type_number == (34):
         place_fips = input('Enter the 7 digit fips code of the city you want to do all the neighborhoods of')
