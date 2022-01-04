@@ -244,7 +244,6 @@ def GetListOfNeighborhoods(city):
 def DetermineNYCCommunityDistrict(lat,lon):
     print('Determining NYC Community District')
     try:
-        from osgeo import gdal
         #Method 1: Pull geojson from file with city name
         with open(os.path.join(neighborhood_shapes_location,'Custom Hood Shapes','NY','nyc_communitydistricts.json')) as infile: #Open a geojson file with the city as the name the name of the file with the neighborhood boundries for that city
             my_shape_geojson = json.load(infile)
@@ -3224,7 +3223,7 @@ def FoodLanguage():
     #This function returns a string we will place in the community assets table in the food row 
     food_list                          = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['restaurant','pub'] ) 
     
-    food_language                      = (' For restaurants and other dining options, ' + neighborhood + ' offers a number of options including' +
+    food_language                      = (' For restaurants and other dining options, ' + neighborhood + ' offers a number of options including ' +
 
                                          ', '.join(food_list) + 
                                          '.'
