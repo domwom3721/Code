@@ -577,13 +577,30 @@ def CountyInputPlaceFIPSList(county_fips):
 
     return(list(place_county_crosswalk_df['State_Place_FP']))
   
-
 def CountyInputSubdivisionFIPSList(county_fips):
     #Takes a county fips code and returns a list of subdivision fips code in that county
     print('Getting list of subdivision fips within ' + county_fips)
 
+    #Open file with place fips code and county fips code
+    place_county_crosswalk_df                                   = pd.read_csv(os.path.join(data_location,'Census Area Codes','national_cousub.csv'),encoding='latin-1',dtype={'STATEFP':str,'COUNTYFP':str,'COUSUBFP':str}) #read in crosswalk file
+    
+    place_county_crosswalk_df['STATEFP']                 = place_county_crosswalk_df['STATEFP'].astype(str)
+    place_county_crosswalk_df['STATEFP']                 = place_county_crosswalk_df['STATEFP'].str.zfill(2)
+    
+    place_county_crosswalk_df['COUNTYFP']                 = place_county_crosswalk_df['COUNTYFP'].astype(str)
+    place_county_crosswalk_df['COUNTYFP']                 = place_county_crosswalk_df['COUNTYFP'].str.zfill(3)
+    place_county_crosswalk_df['COUNTYFP']                 = place_county_crosswalk_df['STATEFP'] + place_county_crosswalk_df['COUNTYFP']
 
+    place_county_crosswalk_df['COUSUBFP']                 = place_county_crosswalk_df['COUSUBFP'].astype(str)
+    place_county_crosswalk_df['COUSUBFP']                 = place_county_crosswalk_df['COUSUBFP'].str.zfill(5)
 
+    place_county_crosswalk_df['SUBDIVFIPS']               = place_county_crosswalk_df['COUNTYFP'] + place_county_crosswalk_df['COUSUBFP'] 
+
+    #Restrict to observations that fall within the county fips provided
+    place_county_crosswalk_df                                   = place_county_crosswalk_df.loc[(place_county_crosswalk_df['COUNTYFP'] == str(county_fips)) ].reset_index()                 
+
+    # print(place_county_crosswalk_df)
+    return(list(place_county_crosswalk_df['SUBDIVFIPS']))
 
 #####################################################Misc Functions####################################
 def CreateDirectory():
@@ -4437,12 +4454,25 @@ except:
 
 
 if batch_mode == True:
-
+    
     #Let user select batch number
     try:
         batch_type_number =  int(input_with_timeout('Select batch type (1 = places, 2 = subdivisions, 3 = neighborhoods',5))  #controls what report type we are doing batches of
     except:
         batch_type_number = 1 #controls what report type we are doing batches of
+    
+    #Let user select if doing batches from salesforce or user inputs
+    try:
+        salesforce_batch_mode =  int(input_with_timeout('Select batch type (1 = salesforce list, 2 = user proivded county fips',5))  
+    except:
+        salesforce_batch_mode = 1 #controls what report type we are doing batches of
+    
+    if salesforce_batch_mode == 1:
+        salesforce_batch_mode = True
+    else:
+        salesforce_batch_mode = False
+
+
 
     #When we are doing a batch of different custom neighborhoods within a single city
     if batch_type_number == (3) or batch_type_number == (34):
@@ -4455,10 +4485,12 @@ if batch_mode == True:
 
     #When we are doing a batch of different cities
     elif batch_type_number == 1:
-        # place_fips_list             = SalesforcePlaceFIPSList() #Retrieve a list of place fips based on the place names in our salesforce export
-        place_fips_list             = CountyInputPlaceFIPSList(county_fips = '36059' ) #input('Enter the 5 digit county fips code')
-        print(place_fips_list)
-        fish
+        if salesforce_batch_mode == True:
+            place_fips_list             = SalesforcePlaceFIPSList() #Retrieve a list of place fips based on the place names in our salesforce export
+        else:
+            place_fips_list             = CountyInputPlaceFIPSList(county_fips = input('Enter the 5 digit county fips code')) 
+        
+        
         for place_fips in place_fips_list:
             if place_fips != None:
                 try:
@@ -4466,9 +4498,15 @@ if batch_mode == True:
                 except Exception as e:
                     print(e,'REORT CREATION FAILED for',place_fips)
                 
+    
+    
+    
     #When we are doing a batch of different county subdivisions
     elif batch_type_number == 2:
-        subdiv_fips_list             = SalesforceSubdivisionFIPSList() #Retrieve a list of place fips based on the place names in our salesforce export
+        if salesforce_batch_mode == True:
+            subdiv_fips_list             = SalesforceSubdivisionFIPSList() #Retrieve a list of place fips based on the place names in our salesforce export
+        else:
+            subdiv_fips_list             = CountyInputSubdivisionFIPSList(county_fips = input('Enter the 5 digit county fips code'))         
         
         for subdiv_fips in subdiv_fips_list:
             try:
