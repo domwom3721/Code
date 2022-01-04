@@ -223,7 +223,7 @@ def GetListOfNeighborhoods(city):
     try:
         from osgeo import gdal
             #Method 1: Pull geojson from file with city name
-        with open(os.path.join(data_location,'Neighborhood Shapes',city + '.geojson')) as infile: #Open a geojson file with the city as the name the name of the file with the neighborhood boundries for that city
+        with open(os.path.join(data_location,'Neighborhood Shapes','Custom Hood Shapes',city + '.geojson')) as infile: #Open a geojson file with the city as the name the name of the file with the neighborhood boundries for that city
                     my_shape_geojson = json.load(infile)
                 
         #Iterate through the features in the file (each feature is a negihborhood) and find the boundry of interest
@@ -4390,7 +4390,7 @@ batch_mode = True
 
 
 if batch_mode == True:
-    batch_type_number = 2 #controls what report type we are doing batches of
+    batch_type_number = 3 #controls what report type we are doing batches of
     
     #When we are doing a batch of different custom neighborhoods within a single city
     if batch_type_number == (3) or batch_type_number == (34):
