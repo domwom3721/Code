@@ -47,6 +47,8 @@ from walkscore import WalkScoreAPI
 from wikipedia.wikipedia import random
 from yelpapi import YelpAPI
 
+from osgeo import gdal,ogr
+
 #Define file paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
 project_location               =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Projects', 'Research Report Automation Project') 
@@ -120,7 +122,6 @@ def GetNeighborhoodShape():
     global neighborhood_shape_polygon
     if neighborhood_level == 'custom':
         try:
-            from osgeo import gdal
             #Method 1: Pull geojson from file with city name
             with open(os.path.join(neighborhood_shapes_location,'Custom Hood Shapes',comparison_area + '.geojson')) as infile: #Open a geojson file with the city as the name the name of the file with the neighborhood boundries for that city
                 my_shape_geojson = json.load(infile)
@@ -194,7 +195,6 @@ def GetNeighborhoodShape():
 
 def PolygonToShapeFile(poly):
         ####### Write polygon as shapefile
-        from osgeo import ogr
 
         # Here's an example Shapely geometry
         # Now convert it to a shapefile with OGR    
