@@ -1490,17 +1490,16 @@ def GetYelpData(lat,lon,radius):
     
     # number_restaurant_search_results = restaurants_response['total']
     # print('There are ' + str(number_restaurant_search_results) + ' restaurants within ' + str(radius) + ' meters of the subjet property based on a search of Yelp.com')
-    
-def FindNearestAirport(lat,lon):
-    
+
+def FindAirport():
     #Specify the file path to the airports shape file
     airport_map_location = os.path.join(data_location,'Airports','Airports.shp')
     
     #Open the shapefile
     airport_map = shapefile.Reader(airport_map_location)
-   
-    #Find any airports inside the confines of the city
-    if neighborhood_shape != None:
+    
+    try:
+        #Find any airports inside the confines of the city
         poly = Polygon(neighborhood_shape.points)
 
         PolygonToShapeFile(poly = poly)
@@ -1511,36 +1510,45 @@ def FindNearestAirport(lat,lon):
             if poly.contains(airport_coords):
                 airport_record        = airport_map.shapeRecord(i)
                 return(airport_record.record['Fac_Name'])
+    except Exception as e:
+        print(e,'Unable to locate airport inside the neighborhood area')
+        return(None)
 
-           
-    else:
-        #Find the cloeset airport
-        #Loop through each feature/point in the shape file
-        for i in range(len(airport_map)):
-            airport        =  airport_map.shape(i)
-            airport_record = airport_map.shapeRecord(i)
-            
-            if airport_record.record['Fac_Type'] != 'AIRPORT':
-                continue
-
-
-            airport_coord = airport.points
-            dist = mpu.haversine_distance( (airport_coord[0][1], airport_coord[0][0]), (lat, lon)) #measure distance between airport and subject property   
-            # print(dist)
-
-            if i == 0:
-                min_dist           = dist
-                cloest_airport_num = i
-            elif i > 0 and dist < min_dist:
-                min_dist           = dist
-                cloest_airport_num = i
-
-        closest_airport = airport_map.shapeRecord(cloest_airport_num)
+def FindNearestAirport(lat,lon):
+    
+    #Specify the file path to the airports shape file
+    airport_map_location = os.path.join(data_location,'Airports','Airports.shp')
+    
+    #Open the shapefile
+    airport_map = shapefile.Reader(airport_map_location)
+       
+    #Find the cloeset airport
+    #Loop through each feature/point in the shape file
+    for i in range(len(airport_map)):
+        airport        =  airport_map.shape(i)
+        airport_record = airport_map.shapeRecord(i)
         
-        
-        airport_lang = ('The closest airport to the geographic center of ' + neighborhood + ' is ' + closest_airport.record['Fac_Name'].title() + ' which is an ' +  closest_airport.record['Fac_Type'].lower() + ' in ' + closest_airport.record['City'].title() + ', ' + closest_airport.record['State_Name'].title() + '.' )
-        airport_lang = airport_lang.replace('Intl','International')
-        return(airport_lang)
+        if airport_record.record['Fac_Type'] != 'AIRPORT':
+            continue
+
+
+        airport_coord = airport.points
+        dist = mpu.haversine_distance( (airport_coord[0][1], airport_coord[0][0]), (lat, lon)) #measure distance between airport and subject property   
+        # print(dist)
+
+        if i == 0:
+            min_dist           = dist
+            cloest_airport_num = i
+        elif i > 0 and dist < min_dist:
+            min_dist           = dist
+            cloest_airport_num = i
+
+    closest_airport = airport_map.shapeRecord(cloest_airport_num)
+    
+    
+    airport_lang = ('The closest airport to the geographic center of ' + neighborhood + ' is ' + closest_airport.record['Fac_Name'].title() + ' which is an ' +  closest_airport.record['Fac_Type'].lower() + ' in ' + closest_airport.record['City'].title() + ', ' + closest_airport.record['State_Name'].title() + '.' )
+    airport_lang = airport_lang.replace('Intl','International')
+    return(airport_lang)
 
 def FindNearestHighways(lat,lon):
     
@@ -2683,14 +2691,23 @@ def PlaneLanguage():
     if wikipedia_plane_language != '':
         print('Pulled Airport info from Wikipedia')
         return(wikipedia_plane_language)
+    
     else:
-        print('No Airport Information on Wikipedia, using airport shapefile to get airport info')
-        nearest_airport_language = FindNearestAirport(lat = latitude, lon = longitude)
-        if (nearest_airport_language != None) and (nearest_airport_language != ''):
-            return(nearest_airport_language)
+        #Check to see if there are any airports within the area    
+        print('No Airport Information on Wikipedia, using airport shapefile to see if there are any airports within the area')
+        airport_language = FindAirport()
+
+        if airport_language != None:
+            return(airport_language)
+
         else:
-            print('Unable to find airport using airport shapefile')
-            return(neighborhood + ' is roughly ' + '[---]' + ' miles from ' + '------' + ', a [-------] ' + '.')
+            print('No Airport Information on Wikipedia or inside the area, using airport shapefile to get closest airport')
+            nearest_airport_language = FindNearestAirport(lat = latitude, lon = longitude)
+            if (nearest_airport_language != None) and (nearest_airport_language != ''):
+                return(nearest_airport_language)
+            else:
+                print('Unable to find airport using airport shapefile')
+                return(neighborhood + ' is roughly ' + '[---]' + ' miles from ' + '------' + ', a [-------] ' + '.')
 
 def BusLanguage():
     print('Creating bus Langauge')
