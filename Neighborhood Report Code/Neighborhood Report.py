@@ -45,7 +45,8 @@ from shapely.ops import nearest_points
 from walkscore import WalkScoreAPI
 from wikipedia.wikipedia import random
 from yelpapi import YelpAPI
-from osgeo import gdal,ogr #gdal can open the kml file from google maps 
+import kml2geojson
+# from osgeo import gdal,ogr #gdal can open the kml file from google maps 
 # import cartoframes
 # import fiona
 
@@ -146,8 +147,8 @@ def GetNeighborhoodShape():
             
             #Define file locations
             kml_file_download_location         = os.path.join(os.environ['USERPROFILE'],'Downloads', 'Untitled layer.kml')
-            kml_file_location                  = os.path.join(data_location,'Neighborhood Shapes',   'Untitled layer.kml')
-            new_geojson_file_location          = os.path.join(data_location,'Neighborhood Shapes',   'custom_neighborhood_shape.geojson')
+            kml_file_location                  = os.path.join(data_location,'Neighborhood Shapes','Custom Hood Shapes',   'Untitled layer.kml')
+            new_geojson_file_location          = os.path.join(data_location,'Neighborhood Shapes','Custom Hood Shapes', 'custom_neighborhood_shape.geojson')
             
             #Step 1: Move the exported kml file from downloads to data folder 
             if os.path.exists(kml_file_download_location) == True:
@@ -155,19 +156,26 @@ def GetNeighborhoodShape():
                 shutil.move(kml_file_download_location,kml_file_location)
 
             #Step 2: Convert the exported google maps kmz file to geojson
-            if os.path.exists(new_geojson_file_location) == False:
-                print('Converting custom kml file into a geojson file')
-                srcDS                              = gdal.OpenEx(kml_file_location)
-                ds                                 = gdal.VectorTranslate(new_geojson_file_location, srcDS, format='GeoJSON')
+            print('Converting custom kml file into a geojson file')
+            my_shape_geojson = kml2geojson.main.convert(kml_file_location)
 
-            with open(new_geojson_file_location) as infile: 
-                print('Opened geojson file with custom boundraries')
-                my_shape_geojson = json.load(infile)
-            
-            neighborhood_shape       = my_shape_geojson['features'][0]['geometry']
-            neighborhood_custom_name = my_shape_geojson['features'][0]['properties']['Name']
+            neighborhood_shape       = my_shape_geojson[0]['features'][0]['geometry']
+            neighborhood_custom_name = my_shape_geojson[0]['features'][0]['properties']['name']
             input('We are using a downloaded file from google for custom bounds for ' + neighborhood_custom_name +  ' --- press enter to confirm!')
             return(neighborhood_shape) 
+
+
+            # # srcDS                              = gdal.OpenEx(kml_file_location)
+            # # ds                                 = gdal.VectorTranslate(new_geojson_file_location, srcDS, format='GeoJSON')
+
+            # with open(new_geojson_file_location) as infile: 
+            #     print('Opened geojson file with custom boundraries')
+            #     my_shape_geojson = json.load(infile)
+            
+            # neighborhood_shape       = my_shape_geojson['features'][0]['geometry']
+            # neighborhood_custom_name = my_shape_geojson['features'][0]['properties']['Name']
+            # input('We are using a downloaded file from google for custom bounds for ' + neighborhood_custom_name +  ' --- press enter to confirm!')
+            # return(neighborhood_shape) 
 
     elif neighborhood_level == 'place':
         try:
