@@ -4387,10 +4387,11 @@ acs_5y_year           = 2019 #The year of the american community survey for our 
 
 batch_mode = True
 # batch_mode = False
-batch_type_number = 2 #controls what report type we are doing batches of
 
 
 if batch_mode == True:
+    batch_type_number = 2 #controls what report type we are doing batches of
+    
     #When we are doing a batch of different custom neighborhoods within a single city
     if batch_type_number == (3) or batch_type_number == (34):
         place_fips = input('Enter the 7 digit fips code of the city you want to do all the neighborhoods of')
