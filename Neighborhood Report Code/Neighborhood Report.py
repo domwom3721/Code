@@ -46,8 +46,10 @@ from shapely.ops import nearest_points
 from walkscore import WalkScoreAPI
 from wikipedia.wikipedia import random
 from yelpapi import YelpAPI
-
-from osgeo import gdal,ogr
+import fiona
+# import gdal
+# import ogr
+from osgeo import gdal,ogr #gdal can open the kml file from google maps 
 
 #Define file paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
