@@ -432,7 +432,7 @@ def PlaceFIPSToCountyFIPS(place_fips,state_fips):
     return(county_fips)
 
 def PlaceNameToPlaceFIPS(place_name,state_code):
-    print('Looking for place fips code')
+    # print('Looking for place fips code')
     #Takes place name and returns the 7 digit fips code for a city 
     
     #Open file with place fips code and county fips code
@@ -461,7 +461,83 @@ def PlaceNameToPlaceFIPS(place_name,state_code):
 
 
     return(county_fips)
-                
+
+def SubdivsionNameToFIPS(subdivision_name,state_code):
+    # print('Looking for place fips code')
+    #Takes subdivision name and returns the 10 digit fips code for it
+    
+    #Open file with place fips code and county fips code
+    place_county_crosswalk_df                            = pd.read_csv(os.path.join(data_location,'Census Area Codes','national_cousub.csv'),encoding='latin-1') #read in crosswalk file
+    
+
+    place_county_crosswalk_df['COUSUBFP']                 = place_county_crosswalk_df['COUSUBFP'].astype(str)
+    place_county_crosswalk_df['COUSUBFP']                 = place_county_crosswalk_df['COUSUBFP'].str.zfill(5)
+
+    place_county_crosswalk_df['COUNTYFP']                 = place_county_crosswalk_df['COUNTYFP'].astype(str)
+    place_county_crosswalk_df['COUNTYFP']                 = place_county_crosswalk_df['COUNTYFP'].str.zfill(3)
+
+    place_county_crosswalk_df['STATEFP']                  = place_county_crosswalk_df['STATEFP'].astype(str)
+    place_county_crosswalk_df['STATEFP']                  = place_county_crosswalk_df['STATEFP'].str.zfill(2)
+
+    place_county_crosswalk_df['COUSUBNAME']               = place_county_crosswalk_df['COUSUBNAME'].astype(str)
+    place_county_crosswalk_df['COUSUBNAME']               = place_county_crosswalk_df['COUSUBNAME'].str.strip()
+    place_county_crosswalk_df['COUSUBNAME']               = place_county_crosswalk_df['COUSUBNAME'].str.split(' ')
+    place_county_crosswalk_df['COUSUBNAMELEN']            = place_county_crosswalk_df['COUSUBNAME'].str.len()
+
+    #Cut off the last word in each county subdivision name
+    for i in range(len( place_county_crosswalk_df)):
+        place_county_crosswalk_df['COUSUBNAME'].iloc[i]   = place_county_crosswalk_df['COUSUBNAME'].iloc[i][0: (place_county_crosswalk_df['COUSUBNAMELEN'].iloc[i] - 1)]
+    place_county_crosswalk_df['COUSUBNAME']               = place_county_crosswalk_df['COUSUBNAME'].str.join(' ')
+
+
+    #Restrict to observations that include the provieded place fips
+    place_county_crosswalk_df            = place_county_crosswalk_df.loc[(place_county_crosswalk_df['COUSUBNAME'] == str(subdivision_name)) & (place_county_crosswalk_df['STATE'] == str(state_code))  ].reset_index()                 
+    
+    #Return the last row if that's there's only one, otherwise ask user to choose
+    if len(place_county_crosswalk_df) == 1:
+        subdiv_fips                         = str(place_county_crosswalk_df['STATEFP'].iloc[-1])  +  str(place_county_crosswalk_df['COUNTYFP'].iloc[-1])   +  str(place_county_crosswalk_df['COUSUBFP'].iloc[-1])  
+    
+    elif len(place_county_crosswalk_df) > 1:
+        print(place_county_crosswalk_df)
+        selected_county = int(input('There are more than 1 counties for this subdivision: enter the number of your choice'))  
+        subdiv_fips                         = str(place_county_crosswalk_df['STATEFP'].iloc[selected_county])  +  str(place_county_crosswalk_df['COUNTYFP'].iloc[selected_county])   +  str(place_county_crosswalk_df['COUSUBFP'].iloc[selected_county])  
+    
+    else:
+        return(None)
+	
+
+
+    return(subdiv_fips)
+
+def SalesforcePlaceFIPSList():
+    print('Getting list of Place Fips from our salesforce export')
+    #Open Salesforce Report
+    salesforce_df              =  pd.read_csv(os.path.join(salesforce_report,'report.csv'))
+    
+    place_fips_list = []
+    city_name_list                 = list(salesforce_df['Property: Neighborhood/District'])
+    state_code_list                = list(salesforce_df['Property: State'])
+        
+    for loop_city,sc in zip(city_name_list,state_code_list):
+        place_fips_list.append(PlaceNameToPlaceFIPS(place_name= loop_city,state_code = sc))  
+
+    return(place_fips_list)     
+
+def SalesforceSubdivisionFIPSList():
+    print('Getting list of subdivision Fips from our salesforce export')
+
+    #Open Salesforce Report
+    salesforce_df              =  pd.read_csv(os.path.join(salesforce_report,'report.csv'))
+    
+    subdiv_fips_list           = []
+    subdiv_name_list           = list(salesforce_df['Property: Neighborhood/District']) 
+    state_code_list            = list(salesforce_df['Property: State'])
+        
+    for loop_subdiv,sc in zip(subdiv_name_list,state_code_list):
+        subdiv_fips_list.append(SubdivsionNameToFIPS(subdivision_name= loop_subdiv,state_code = sc))  
+
+    return(subdiv_fips_list)
+
 #####################################################Misc Functions####################################
 def CreateDirectory():
     print('Creating Directories and file name')
@@ -4287,32 +4363,23 @@ acs_5y_year           = 2019 #The year of the american community survey for our 
 
 
 batch_mode = True
-batch_mode = False
-batch_type_number = 1 #controls what report type we are doing batches of
+# batch_mode = False
+batch_type_number = 2 #controls what report type we are doing batches of
 
 
 if batch_mode == True:
-    #Loop through list of custom neighborhoods
+    #When we are doing a batch of different custom neighborhoods within a single city
     if batch_type_number == (3) or batch_type_number == (34):
-        place_fips = '36-51000' #change to city fips for the city with the hoods you want to loop through
-        for  neighborhood in GetListOfNeighborhoods('New York'): #change to city name for the city with the hoods you want to loop through
+        place_fips = input('Enter the 7 digit fips code of the city you want to do all the neighborhoods of')
+        for  neighborhood in GetListOfNeighborhoods(input('Enter the name of the city you want to do all the neighborhoods of (Must match with geojson file name')):
             try:
                 Main()
             except Exception as e:
                 print(e,'REORT CREATION FAILED')
 
-    
+    #When we are doing a batch of different cities
     elif batch_type_number == 1:
-        #Open Salesforce Report
-        salesforce_df              =  pd.read_csv(os.path.join(salesforce_report,'report.csv'))
-    
-        place_fips_list = []
-        city_name_list                 = list(salesforce_df['Property: Neighborhood/District'])
-        state_code_list                = list(salesforce_df['Property: State'])
-        
-        for loop_city,sc in zip(city_name_list,state_code_list):
-            place_fips_list.append(PlaceNameToPlaceFIPS(place_name= loop_city,state_code = sc))
-        
+        place_fips_list             = SalesforcePlaceFIPSList() #Retrieve a list of place fips based on the place names in our salesforce export
 
         for place_fips in place_fips_list:
             if place_fips != None:
@@ -4320,8 +4387,21 @@ if batch_mode == True:
                     Main() #This is our main function that calls all other functions we will use
                 except Exception as e:
                     print(e,'REORT CREATION FAILED for',place_fips)
+                
+    #When we are doing a batch of different county subdivisions
+    elif batch_type_number == 2:
+        subdiv_fips_list             = SalesforceSubdivisionFIPSList() #Retrieve a list of place fips based on the place names in our salesforce export
+        print(subdiv_fips_list)
+        fish
+        for subdiv_fips in subdiv_fips_list:
+            try:
+                print(subdiv_fips)
+                # Main() #This is our main function that calls all other functions we will use
+            except Exception as e:
+                print(e,'REORT CREATION FAILED for',subdiv_fips)
 
 
+#When we are doing single reports
 else:
     Main() #This is our main function that calls all other functions we will use
 
