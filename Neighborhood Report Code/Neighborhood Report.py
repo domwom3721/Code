@@ -499,8 +499,6 @@ def SubdivsionNameToFIPS(subdivision_name,state_code):
 
     # print(place_county_crosswalk_df[0:20])
  
-
-
     #Restrict to observations that include the provieded place fips
     place_county_crosswalk_df            = place_county_crosswalk_df.loc[(place_county_crosswalk_df['COUSUBNAME'] == str(subdivision_name)) & (place_county_crosswalk_df['STATE'] == str(state_code))  ].reset_index()                 
     
@@ -513,7 +511,7 @@ def SubdivsionNameToFIPS(subdivision_name,state_code):
         print(place_county_crosswalk_df)
     
         try:
-            selected_county = int(input_with_timeout('There are more than 1 counties for this subdivision: enter the number of your choice',1))  
+            selected_county = int(input_with_timeout('There are more than 1 counties for this subdivision: enter the number of your choice',0))  
         
         except TimeoutExpired:
             selected_county = 0
@@ -4188,7 +4186,13 @@ def GetUserInputs():
         hood_place_type                 = place_fips_info[5]
 
     elif neighborhood_level == 'county subdivision':     #when our neighborhood is county subdivison eg: Town of Hempstead, New York (A large town in Nassau County with several villages within it)
-        subdivision_fips_info           = ProcessCountySubdivisionFIPS(county_subdivision_fips=input('Enter the 10 digit county subdivision FIPS Code'))
+        
+        if batch_mode == False:
+            subdivision_fips_info           = ProcessCountySubdivisionFIPS(county_subdivision_fips=input('Enter the 10 digit county subdivision FIPS Code'))
+
+        else:
+            subdivision_fips_info           = ProcessCountySubdivisionFIPS(county_subdivision_fips=subdiv_fips)
+
         hood_suvdiv_fips                = subdivision_fips_info[0]
         hood_county_fips                = subdivision_fips_info[1]
         neighborhood                    = subdivision_fips_info[2]
@@ -4410,12 +4414,10 @@ if batch_mode == True:
     #When we are doing a batch of different county subdivisions
     elif batch_type_number == 2:
         subdiv_fips_list             = SalesforceSubdivisionFIPSList() #Retrieve a list of place fips based on the place names in our salesforce export
-        print(subdiv_fips_list)
-        fish
+        
         for subdiv_fips in subdiv_fips_list:
             try:
-                print(subdiv_fips)
-                # Main() #This is our main function that calls all other functions we will use
+                Main() #This is our main function that calls all other functions we will use
             except Exception as e:
                 print(e,'REORT CREATION FAILED for',subdiv_fips)
 
