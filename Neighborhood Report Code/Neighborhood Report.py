@@ -135,10 +135,10 @@ def GetNeighborhoodShape():
                 feature_hood_name = my_shape_geojson['features'][i]['properties']['name']
                 if feature_hood_name == neighborhood:
                     neighborhood_shape = my_shape_geojson['features'][i]['geometry']
-
-            print('Successfully pulled hood shape from stored geojson file')
-            return(neighborhood_shape) 
-                
+                    print(neighborhood_shape)
+                    print('Successfully pulled hood shape from stored geojson file')
+                    return(neighborhood_shape) 
+            assert(False)    
         
         except Exception as e:
             print(e,'problem getting shape from ' + comparison_area + ' geojson file')
@@ -160,6 +160,7 @@ def GetNeighborhoodShape():
             my_shape_geojson = kml2geojson.main.convert(kml_file_location)
 
             neighborhood_shape       = my_shape_geojson[0]['features'][0]['geometry']
+            print(neighborhood_shape)
             neighborhood_custom_name = my_shape_geojson[0]['features'][0]['properties']['name']
             input('We are using a downloaded file from google for custom bounds for ' + neighborhood_custom_name +  ' --- press enter to confirm!')
             return(neighborhood_shape) 
@@ -4432,6 +4433,7 @@ def Main():
         latitude           = coordinates[0] 
         longitude          = coordinates[1]
         neighborhood_shape = GetNeighborhoodShape()
+    
         #Skip places we have already done
         if os.path.exists(report_path) == False and os.path.exists(report_path.replace('_draft','_FINAL')) == False:
             GetWikipediaPage()
