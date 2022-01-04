@@ -117,6 +117,7 @@ def GetLatandLon():
     return([latitude,longitude]) 
 
 def GetNeighborhoodShape():
+    global neighborhood_shape_polygon
     if neighborhood_level == 'custom':
         try:
             from osgeo import gdal
@@ -184,6 +185,8 @@ def GetNeighborhoodShape():
                 else:
                     neighborhood_shape        =  place_map.shape(i)
                     print('Successfully pulled census shape from shapefile')
+                    neighborhood_shape_polygon = Polygon(neighborhood_shape.points)
+                    PolygonToShapeFile(poly = neighborhood_shape_polygon)
 
                     return(neighborhood_shape) 
         except Exception as e:
@@ -1500,14 +1503,9 @@ def FindAirport():
     
     try:
         #Find any airports inside the confines of the city
-        poly = Polygon(neighborhood_shape.points)
-
-        PolygonToShapeFile(poly = poly)
-
-
         for i in range(len(airport_map)):
             airport_coords        =  Point(airport_map.shape(i).points[0][1],airport_map.shape(i).points[0][0])
-            if poly.contains(airport_coords):
+            if neighborhood_shape_polygon.contains(airport_coords):
                 airport_record        = airport_map.shapeRecord(i)
                 return(airport_record.record['Fac_Name'])
     except Exception as e:
