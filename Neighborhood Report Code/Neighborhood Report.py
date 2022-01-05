@@ -135,8 +135,16 @@ def GetNeighborhoodShape():
                 feature_hood_name = my_shape_geojson['features'][i]['properties']['name']
                 if feature_hood_name == neighborhood:
                     neighborhood_shape = my_shape_geojson['features'][i]['geometry']
-                    print(neighborhood_shape)
+                    # print(neighborhood_shape)
                     print('Successfully pulled hood shape from stored geojson file')
+                    
+                    #Now that we have grabbed the coordinates for the area, export it as shapefile
+                    try:
+                        coord_tuple_list = [tuple(l) for l in neighborhood_shape['coordinates'][0][0]]
+                        neighborhood_shape_polygon = Polygon(coord_tuple_list)
+                        PolygonToShapeFile(poly = neighborhood_shape_polygon)
+                    except Exception as e:
+                        print(e,'unable to export city polygon as shape')
                     return(neighborhood_shape) 
             assert(False)    
         
@@ -209,17 +217,15 @@ def GetNeighborhoodShape():
             print(e,'unable to get shape for census place')
 
 def PolygonToShapeFile(poly):
-
-
         # WRITE TO SHAPEFILE USING PYSHP
         target_file_path = os.path.join(hood_folder,'my.shp')
         shapewriter = shapefile.Writer(target=target_file_path)
         shapewriter.field("field1")
-        print('created writer object')
+        # print('created writer object')
 
         # step1: convert shapely to pyshp using the function above
         converted_shape = shapely_to_pyshp(poly)
-        print('created converted shape')
+        # print('created converted shape')
         # step2: tell the writer to add the converted shape
         
         shapewriter.shape(converted_shape)
@@ -227,14 +233,7 @@ def PolygonToShapeFile(poly):
         shapewriter.record(["empty record"])
         # save it
         shapewriter.close()
-        print('saved file')
-
-
-   
-
-
-
-
+        # print('saved file')
 
 
 
