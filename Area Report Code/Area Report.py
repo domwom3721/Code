@@ -4421,9 +4421,9 @@ def WikipediaTransitLanguage(category):
 
 def HousingLanguage():
     print('Writing Housing Langauge')
-
+    
     if isinstance(county_mlp, pd.DataFrame) == False:
-        return('' )
+        return([''])
     else:
         current_county_mlp        = county_mlp['Median List Price'].iloc[-1]
         current_county_mlp_period = str(county_mlp['Period'].iloc[-1])[0:7]
