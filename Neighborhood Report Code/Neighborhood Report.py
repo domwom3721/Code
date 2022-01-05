@@ -1636,12 +1636,29 @@ def FindAirport():
     airport_map = shapefile.Reader(airport_map_location)
     
     try:
+        airports_in_city_index_list = [] #Create empty list that we will fill with numbers that correspond to airports within the subject area
+        
         #Find any airports inside the confines of the city
         for i in range(len(airport_map)):
-            airport_coords        =  Point(airport_map.shape(i).points[0][1],airport_map.shape(i).points[0][0])
+            airport_coords        =  Point(airport_map.shape(i).points[0][0],airport_map.shape(i).points[0][1])
+            
             if neighborhood_shape_polygon.contains(airport_coords):
-                airport_record        = airport_map.shapeRecord(i)
-                return(airport_record.record['Fac_Name'])
+                airports_in_city_index_list.append(i)
+
+        airport_info_list = []    
+        for airport_index in airports_in_city_index_list:     
+            airport_record        = airport_map.shapeRecord(airport_index)
+            airport_name          = airport_record.record['Fac_Name']
+            airport_type          = airport_record.record['Fac_Type']
+            airport_dict          = {'name':airport_name,'type':airport_type}
+            airport_info_list.append(airport_dict)
+
+        airport_sentence = (neighborhood + ' is served by the following airports: ')
+
+        for airport in airport_info_list:
+            airport_sentence = airport_sentence + (airport['name'].title()) + ' ('  + (airport['type'].title())   + '),' 
+        
+        airport_sentence = airport_sentence + '.'
     except Exception as e:
         print(e,'Unable to locate airport inside the neighborhood area')
         return(None)
@@ -4518,7 +4535,7 @@ def Main():
     
         #Skip places we have already done
         if os.path.exists(report_path) == False and os.path.exists(report_path.replace('_draft','_FINAL')) == False:
-            GetWikipediaPage()
+            # GetWikipediaPage()
             GetData()
             CreateGraphs()
             CreateLanguage()
