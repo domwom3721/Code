@@ -1743,8 +1743,7 @@ def FindNearestHighways(lat,lon):
     except Exception as e:
         print(e,'Unable to locate airport inside the neighborhood area')
         return(None)
-
-    
+ 
 def SearchGreatSchoolDotOrg():
     print('Getting education data')
     if os.path.exists(os.path.join(hood_folder_map,'education_map.png')): #If we already have a map for this area skip it 
@@ -4547,7 +4546,7 @@ def Main():
     
         #Skip places we have already done
         if os.path.exists(report_path) == False and os.path.exists(report_path.replace('_draft','_FINAL')) == False:
-            # GetWikipediaPage()
+            GetWikipediaPage()
             GetData()
             CreateGraphs()
             CreateLanguage()
