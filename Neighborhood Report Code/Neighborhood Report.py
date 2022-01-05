@@ -195,46 +195,129 @@ def GetNeighborhoodShape():
                     continue
                 else:
                     neighborhood_shape        =  place_map.shape(i)
-                    print('Successfully pulled census shape from shapefile')
                     neighborhood_shape_polygon = Polygon(neighborhood_shape.points)
-                    PolygonToShapeFile(poly = neighborhood_shape_polygon)
+                    print('Successfully pulled census shape from shapefile')
+                    try:
+                        PolygonToShapeFile(poly = neighborhood_shape_polygon)
+                    except Exception as e:
+                        print(e,'unable to export city polygon as shape')
+
+                    print('Successfully created polygon object from census shape')
 
                     return(neighborhood_shape) 
         except Exception as e:
             print(e,'unable to get shape for census place')
 
 def PolygonToShapeFile(poly):
-        ####### Write polygon as shapefile
 
-        # Here's an example Shapely geometry
-        # Now convert it to a shapefile with OGR    
-        driver = ogr.GetDriverByName('Esri Shapefile')
-        ds = driver.CreateDataSource(os.path.join(hood_folder,'my.shp'))
-        layer = ds.CreateLayer('', None, ogr.wkbPolygon)
-        # Add one attribute
-        layer.CreateField(ogr.FieldDefn('id', ogr.OFTInteger))
-        defn = layer.GetLayerDefn()
 
-        ## If there are multiple geometries, put the "for" loop here
+        # WRITE TO SHAPEFILE USING PYSHP
+        target_file_path = os.path.join(hood_folder,'my.shp')
+        shapewriter = shapefile.Writer(target=target_file_path)
+        shapewriter.field("field1")
+        print('created writer object')
 
-        # Create a new feature (attribute and geometry)
-        feat = ogr.Feature(defn)
-        feat.SetField('id', 123)
+        # step1: convert shapely to pyshp using the function above
+        converted_shape = shapely_to_pyshp(poly)
+        print('created converted shape')
+        # step2: tell the writer to add the converted shape
+        
+        shapewriter.shape(converted_shape)
+        # add a list of attributes to go along with the shape
+        shapewriter.record(["empty record"])
+        # save it
+        shapewriter.close()
+        print('saved file')
 
-        # Make a geometry, from Shapely object
-        geom = ogr.CreateGeometryFromWkb(poly.wkb)
-        feat.SetGeometry(geom)
 
-        layer.CreateFeature(feat)
-        feat = geom = None  # destroy these
+   
 
-        # Save and close everything
-        ds = layer = feat = geom = None
-        #######
+
+
+
+
+
+
+
+
+        # ####### Write polygon as shapefile
+
+        # # Here's an example Shapely geometry
+        # # Now convert it to a shapefile with OGR    
+        # driver = ogr.GetDriverByName('Esri Shapefile')
+        # ds = driver.CreateDataSource(os.path.join(hood_folder,'my.shp'))
+        # layer = ds.CreateLayer('', None, ogr.wkbPolygon)
+        # # Add one attribute
+        # layer.CreateField(ogr.FieldDefn('id', ogr.OFTInteger))
+        # defn = layer.GetLayerDefn()
+
+        # ## If there are multiple geometries, put the "for" loop here
+
+        # # Create a new feature (attribute and geometry)
+        # feat = ogr.Feature(defn)
+        # feat.SetField('id', 123)
+
+        # # Make a geometry, from Shapely object
+        # geom = ogr.CreateGeometryFromWkb(poly.wkb)
+        # feat.SetGeometry(geom)
+
+        # layer.CreateFeature(feat)
+        # feat = geom = None  # destroy these
+
+        # # Save and close everything
+        # ds = layer = feat = geom = None
+        # #######
+
+def shapely_to_pyshp(shapelygeom):
+    # first convert shapely to geojson
+    try:
+        shapelytogeojson = shapely.geometry.mapping
+    except:
+        import shapely.geometry
+        shapelytogeojson = shapely.geometry.mapping
+    geoj = shapelytogeojson(shapelygeom)
+    # create empty pyshp shape
+    record = shapefile.Shape()
+    # set shapetype
+    if geoj["type"] == "Null":
+        pyshptype = 0
+    elif geoj["type"] == "Point":
+        pyshptype = 1
+    elif geoj["type"] == "LineString":
+        pyshptype = 3
+    elif geoj["type"] == "Polygon":
+        pyshptype = 5
+    elif geoj["type"] == "MultiPoint":
+        pyshptype = 8
+    elif geoj["type"] == "MultiLineString":
+        pyshptype = 3
+    elif geoj["type"] == "MultiPolygon":
+        pyshptype = 5
+    record.shapeType = pyshptype
+    # set points and parts
+    if geoj["type"] == "Point":
+        record.points = geoj["coordinates"]
+        record.parts = [0]
+    elif geoj["type"] in ("MultiPoint","Linestring"):
+        record.points = geoj["coordinates"]
+        record.parts = [0]
+    elif geoj["type"] in ("Polygon"):
+        record.points = geoj["coordinates"][0]
+        record.parts = [0]
+    elif geoj["type"] in ("MultiPolygon","MultiLineString"):
+        index = 0
+        points = []
+        parts = []
+        for eachmulti in geoj["coordinates"]:
+            points.extend(eachmulti[0])
+            parts.append(index)
+            index += len(eachmulti[0])
+        record.points = points
+        record.parts = parts
+    return (record)
 
 def GetListOfNeighborhoods(city):
     try:
-        from osgeo import gdal
             #Method 1: Pull geojson from file with city name
         with open(os.path.join(data_location,'Neighborhood Shapes','Custom Hood Shapes',city + '.geojson')) as infile: #Open a geojson file with the city as the name the name of the file with the neighborhood boundries for that city
                     my_shape_geojson = json.load(infile)
