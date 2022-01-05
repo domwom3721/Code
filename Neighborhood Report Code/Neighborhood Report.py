@@ -1655,10 +1655,14 @@ def FindAirport():
 
         airport_sentence = (neighborhood + ' is served by the following airports: ')
 
-        for airport in airport_info_list:
-            airport_sentence = airport_sentence + (airport['name'].title()) + ' ('  + (airport['type'].title())   + '),' 
-        
+        for count,airport in enumerate(airport_info_list):
+            if count < len(airport_info_list):
+                airport_sentence = airport_sentence + (airport['name'].title()) + ' ('  + (airport['type'].title())   + '), ' 
+            else:
+                airport_sentence = airport_sentence + ' and' + (airport['name'].title()) + ' ('  + (airport['type'].title())   + ').' 
+
         airport_sentence = airport_sentence + '.'
+        return(airport_sentence)
     except Exception as e:
         print(e,'Unable to locate airport inside the neighborhood area')
         return(None)
