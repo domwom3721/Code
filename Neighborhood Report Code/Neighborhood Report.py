@@ -1653,15 +1653,14 @@ def FindAirport():
             airport_dict          = {'name':airport_name,'type':airport_type}
             airport_info_list.append(airport_dict)
 
-        airport_sentence = (neighborhood + ' is served by the following airports: ')
+        airport_sentence = (neighborhood + ' is served by the following facilities: ')
 
         for count,airport in enumerate(airport_info_list):
-            if count < len(airport_info_list):
+            if count < len(airport_info_list) -1 :
                 airport_sentence = airport_sentence + (airport['name'].title()) + ' ('  + (airport['type'].title())   + '), ' 
             else:
-                airport_sentence = airport_sentence + ' and' + (airport['name'].title()) + ' ('  + (airport['type'].title())   + ').' 
+                airport_sentence = airport_sentence + 'and ' + (airport['name'].title()) + ' ('  + (airport['type'].title())   + ').' 
 
-        airport_sentence = airport_sentence + '.'
         return(airport_sentence)
     except Exception as e:
         print(e,'Unable to locate airport inside the neighborhood area')
@@ -1705,38 +1704,47 @@ def FindNearestAirport(lat,lon):
 
 def FindNearestHighways(lat,lon):
     
-    #Specify the file path to the airports shape file
+    #Specify the file path to the  shape file
     road_map_location = os.path.join(data_location,'North_American_Roads','North_American_Roads.shp')
-    
+
     #Open the shapefile
-    road_map    = shapefile.Reader(road_map_location)
-    # print(road_map.bbox)
-
-    #Loop through each feature in the shape file
-    for i in range(len(road_map)):
-        road        =  road_map.shape(i)
-        road_record = road_map.shapeRecord(i)
+    road_map = shapefile.Reader(road_map_location)
+    
+    try:
+        highways_in_city_index_list = [] #Create empty list that we will fill with numbers that correspond to airports within the subject area
         
+        #Find any airports inside the confines of the city
+        for i in range(len(road_map)):
+            highway_coords        =  LineString(road_map.shape(i).points)
+            # Point(road_map.shape(i).points[0][0],road_map.shape(i).points[0][1])
+           
+            if neighborhood_shape_polygon.contains(highway_coords):
+                highways_in_city_index_list.append(i)
 
-        road_coord = road.points
-        # print(road_coord)
-        # fish
-        try:
-            dist = mpu.haversine_distance( (road_coord[0][1], road_coord[0][0]), (lat, lon)) #measure distance between airport and subject property   
-        except:
-            dist = dist
-        # print(dist)
+        highway_info_list = []    
+        for highway_index in highways_in_city_index_list:     
+            highway_record        = road_map.shapeRecord(highway_index)
+            highway_name          = highway_record.record['ROADNAME']
+            if highway_name == '':
+                continue
+            highway_type          = highway_record.record['ADMIN']
+            highway_dict          = {'name':highway_name,'type':highway_type}
+            highway_info_list.append(highway_dict)
 
-        if i == 0:
-            min_dist           = dist
-            cloest_road_num = i
-        elif i > 0 and dist < min_dist:
-            min_dist           = dist
-            cloest_road_num = i
+        sentence = (neighborhood + ' is served by the following roads: ')
 
-    closest_road = road_map.shapeRecord(cloest_road_num)
-    return('The closest road to the geographic center of ' + neighborhood + ' is '+  closest_road.record['ROADNAME'].title() + ' which is a ' +  str(closest_road.record['LANES']) + ' lane ' +  closest_road.record['ADMIN'].lower() + ' highway' + ' with a speed limit of ' + str(closest_road.record['SPEEDLIM']) + '.'  )
+        for count,highway in enumerate(highway_info_list):
+            if count < len(highway_info_list) -1 :
+                sentence = sentence + (highway['name'].title()) + ' ('  + (highway['type'].title())   + '), ' 
+            else:
+                sentence = sentence + 'and ' + (highway['name'].title()) + ' ('  + (highway['type'].title())   + ').' 
 
+        return(sentence)
+    except Exception as e:
+        print(e,'Unable to locate airport inside the neighborhood area')
+        return(None)
+
+    
 def SearchGreatSchoolDotOrg():
     print('Getting education data')
     if os.path.exists(os.path.join(hood_folder_map,'education_map.png')): #If we already have a map for this area skip it 
