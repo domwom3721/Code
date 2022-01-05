@@ -1,6 +1,7 @@
 #By Mike Leahy
 #Started 06/30/2021
 #Summary: This script creates reports on neighborhoods/cities for Bowery
+from genericpath import exists
 import json
 import msvcrt
 import os
@@ -123,55 +124,116 @@ def GetLatandLon():
 def GetNeighborhoodShape():
     global neighborhood_shape_polygon
     if neighborhood_level == 'custom':
-        try:
+        city_geo_json_file_path = os.path.join(neighborhood_shapes_location,'Custom Hood Shapes',comparison_area + '.geojson')
+        
+        #If we have the geojson file downloaded for the comparison city
+        if os.path.exists(city_geo_json_file_path):
             #Method 1: Pull geojson from file with city name
-            with open(os.path.join(neighborhood_shapes_location,'Custom Hood Shapes',comparison_area + '.geojson')) as infile: #Open a geojson file with the city as the name the name of the file with the neighborhood boundries for that city
+            with open(city_geo_json_file_path) as infile: #Open a geojson file with the city as the name the name of the file with the neighborhood boundries for that city
                 my_shape_geojson = json.load(infile)
             
             print('Successfully opened geojson file for ' + comparison_area)
+
+            try:    
+                #Iterate through the features in the file (each feature is a negihborhood) and find the boundry of interest
+                for i in range(len(my_shape_geojson['features'])):
+                    feature_hood_name = my_shape_geojson['features'][i]['properties']['name']
+                    if feature_hood_name == neighborhood:
+                        neighborhood_shape = my_shape_geojson['features'][i]['geometry']
+                        # print(neighborhood_shape)
+                        print('Successfully pulled hood shape from stored geojson file')
+                        
+                        #Now that we have grabbed the coordinates for the area, export it as shapefile
+                        try:
+                            coord_tuple_list = [tuple(l) for l in neighborhood_shape['coordinates'][0][0]]
+                            neighborhood_shape_polygon = Polygon(coord_tuple_list)
+                            PolygonToShapeFile(poly = neighborhood_shape_polygon)
+                        except Exception as e:
+                            print(e,'unable to export neighborhood polygon as shape')
+                        return(neighborhood_shape) 
                 
-            #Iterate through the features in the file (each feature is a negihborhood) and find the boundry of interest
-            for i in range(len(my_shape_geojson['features'])):
-                feature_hood_name = my_shape_geojson['features'][i]['properties']['name']
-                if feature_hood_name == neighborhood:
-                    neighborhood_shape = my_shape_geojson['features'][i]['geometry']
-                    # print(neighborhood_shape)
-                    print('Successfully pulled hood shape from stored geojson file')
-                    
-                    #Now that we have grabbed the coordinates for the area, export it as shapefile
-                    try:
-                        coord_tuple_list = [tuple(l) for l in neighborhood_shape['coordinates'][0][0]]
-                        neighborhood_shape_polygon = Polygon(coord_tuple_list)
-                        PolygonToShapeFile(poly = neighborhood_shape_polygon)
-                    except Exception as e:
-                        print(e,'unable to export city polygon as shape')
-                    return(neighborhood_shape) 
-            assert(False)    
+            except Exception as e:
+                print(e,'unable to get geography from the city geojson file even tho it exists')
         
+        
+        
+        
+        
+        
+        
+        #If we don't have the geojson file downloaded for the comparison city        
+        print('Unable to find geography from the ' + comparison_area + ' geojson file') 
+
+        #Define file locations
+        file_download_location             = os.path.join(os.environ['USERPROFILE'],'Downloads', 'map.geojson') #download from here: http://geojson.io/#map=5/34.071/-72.817
+        new_geojson_file_location          = os.path.join(data_location,'Neighborhood Shapes','Custom Hood Shapes', 'map.geojson')
+
+
+        #Step 1: Move the exported geojson file from downloads to data folder 
+        if os.path.exists(file_download_location):
+            print('Moving custom geojson file from downloads folder into data folder') 
+            shutil.move(file_download_location, new_geojson_file_location)
+
+        with open(new_geojson_file_location) as infile: #Open a geojson file with the city as the name the name of the file with the neighborhood boundries for that city
+                my_shape_geojson = json.load(infile)
+
+
+        neighborhood_shape = my_shape_geojson['features'][0]['geometry']
+        print(neighborhood_shape)
+        print('Successfully pulled hood shape from downloaded custom geojson file')
+
+         #Now that we have grabbed the coordinates for the area, export it as shapefile
+        try:
+            coord_tuple_list = [tuple(l) for l in neighborhood_shape['coordinates'][0]]
+            neighborhood_shape_polygon = Polygon(coord_tuple_list)
+            PolygonToShapeFile(poly = neighborhood_shape_polygon)
         except Exception as e:
-            print(e,'problem getting shape from ' + comparison_area + ' geojson file')
-            print('Looking for exported kml file from my google maps')
-            #Method 2: Get bounds from my google maps custom layer export
-            
-            #Define file locations
-            kml_file_download_location         = os.path.join(os.environ['USERPROFILE'],'Downloads', 'Untitled layer.kml')
-            kml_file_location                  = os.path.join(data_location,'Neighborhood Shapes','Custom Hood Shapes',   'Untitled layer.kml')
-            new_geojson_file_location          = os.path.join(data_location,'Neighborhood Shapes','Custom Hood Shapes', 'custom_neighborhood_shape.geojson')
-            
-            #Step 1: Move the exported kml file from downloads to data folder 
-            if os.path.exists(kml_file_download_location) == True:
-                print('Moving KML file from downloads folder into data folder')
-                shutil.move(kml_file_download_location,kml_file_location)
+                print(e,'unable to export neighborhood polygon as shape')
+        return(neighborhood_shape) 
 
-            #Step 2: Convert the exported google maps kmz file to geojson
-            print('Converting custom kml file into a geojson file')
-            my_shape_geojson = kml2geojson.main.convert(kml_file_location)
 
-            neighborhood_shape       = my_shape_geojson[0]['features'][0]['geometry']
-            print(neighborhood_shape)
-            neighborhood_custom_name = my_shape_geojson[0]['features'][0]['properties']['name']
-            input('We are using a downloaded file from google for custom bounds for ' + neighborhood_custom_name +  ' --- press enter to confirm!')
-            return(neighborhood_shape) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        #     except Exception as e:
+        #         print(e,'problem getting shape from ' + comparison_area + ' geojson file')
+        #         print('Looking for exported kml file from my google maps')
+        #         #Method 2: Get bounds from my google maps custom layer export
+                
+        #         #Define file locations
+        #         kml_file_download_location         = os.path.join(os.environ['USERPROFILE'],'Downloads', 'Untitled layer.kml')
+        #         kml_file_location                  = os.path.join(data_location,'Neighborhood Shapes','Custom Hood Shapes',   'Untitled layer.kml')
+        #         new_geojson_file_location          = os.path.join(data_location,'Neighborhood Shapes','Custom Hood Shapes', 'custom_neighborhood_shape.geojson')
+                
+        #         #Step 1: Move the exported kml file from downloads to data folder 
+        #         if os.path.exists(kml_file_download_location) == True:
+        #             print('Moving KML file from downloads folder into data folder')
+        #             shutil.move(kml_file_download_location,kml_file_location)
+
+        #         #Step 2: Convert the exported google maps kmz file to geojson
+        #         print('Converting custom kml file into a geojson file')
+        #         my_shape_geojson = kml2geojson.main.convert(kml_file_location)
+
+        #         neighborhood_shape       = my_shape_geojson[0]['features'][0]['geometry']
+        #         print(neighborhood_shape)
+        #         neighborhood_custom_name = my_shape_geojson[0]['features'][0]['properties']['name']
+        #         input('We are using a downloaded file from google for custom bounds for ' + neighborhood_custom_name +  ' --- press enter to confirm!')
+        #         return(neighborhood_shape) 
 
 
             # # srcDS                              = gdal.OpenEx(kml_file_location)
@@ -218,7 +280,7 @@ def GetNeighborhoodShape():
 
 def PolygonToShapeFile(poly):
         # WRITE TO SHAPEFILE USING PYSHP
-        target_file_path = os.path.join(hood_folder,'my.shp')
+        target_file_path = os.path.join(hood_folder_map,'my.shp')
         shapewriter = shapefile.Writer(target=target_file_path)
         shapewriter.field("field1")
         # print('created writer object')
