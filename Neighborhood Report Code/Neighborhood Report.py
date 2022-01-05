@@ -1715,6 +1715,8 @@ def FindAirport():
             airport_dict          = {'name':airport_name,'type':airport_type}
             airport_info_list.append(airport_dict)
 
+        if airport_info_list == []:
+            return(None)
         airport_sentence = (neighborhood + ' is served by the following facilities: ')
 
         for count,airport in enumerate(airport_info_list):
