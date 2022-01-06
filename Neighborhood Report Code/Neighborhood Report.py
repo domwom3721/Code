@@ -9,7 +9,7 @@ import shutil
 import sys
 import time
 from datetime import date, datetime
-
+from statistics import mean
 import googlemaps
 import mpu
 import numpy as np
@@ -1003,6 +1003,126 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
     except Exception as e:
         print(e)
 
+def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator):
+    #A general function that takes a single census variable (eg: median home value)
+    #It pulls the value for that variable from census API and returns it
+
+    if operator == c.sf1:
+        year = decennial_census_year
+    elif operator == c.acs5:
+        year = acs_5y_year
+    else:
+        assert(False)
+
+    #Speicify geographic level specific varaibles
+    if geographic_level == 'place':
+        try:
+
+            if hood_or_comparison_area == 'hood':
+                place_fips = hood_place_fips
+                state_fips = hood_state_fips
+            
+            elif hood_or_comparison_area == 'comparison area':
+                place_fips = comparison_place_fips
+                state_fips = comparison_state_fips
+            
+            value = operator.state_place(fields = field,state_fips = state_fips,place=place_fips,year= year)[0][field]
+            return(value)
+        except Exception as e:
+            print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area)
+    
+    elif geographic_level == 'county':
+        
+        try:
+            if hood_or_comparison_area == 'hood':
+                county_fips = hood_county_fips
+                state_fips  = hood_state_fips
+
+            elif hood_or_comparison_area == 'comparison area':
+                county_fips = comparison_county_fips
+                state_fips  = comparison_state_fips
+
+            value = operator.state_county(fields = field, state_fips = state_fips,county_fips = county_fips,year= year)[0][field]
+            return(value)
+
+        except Exception as e:
+            print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+
+    elif geographic_level == 'county subdivision':
+        try:
+            if hood_or_comparison_area == 'hood':
+                county_fips = hood_county_fips
+                subdiv_fips = hood_suvdiv_fips
+                state_fips  = hood_state_fips
+
+
+            elif hood_or_comparison_area == 'comparison area':
+                county_fips = comparison_county_fips
+                subdiv_fips = comparison_suvdiv_fips
+                state_fips = comparison_state_fips
+
+            value = operator.state_county_subdivision(fields=field,state_fips=state_fips,county_fips=county_fips,subdiv_fips=subdiv_fips,year = year)[0][field]
+            return(value)
+
+        except Exception as e:
+            print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+
+    elif geographic_level == 'zip':
+        try:
+            if hood_or_comparison_area == 'hood':
+                zcta = hood_zip
+                state_fips  = hood_state_fips
+
+            elif hood_or_comparison_area == 'comparison area':
+                zcta       = comparison_zip
+                state_fips = comparison_state_fips
+
+            value = operator.state_zipcode(fields=field,state_fips=state_fips,zcta=zcta,year= year)[0][field]
+            return(value)
+
+        except Exception as e:
+            print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+
+    elif geographic_level == 'tract':
+        try:
+            if hood_or_comparison_area == 'hood':
+                tract       = hood_tract 
+                county_fips = hood_county_fips
+                state_fips  = hood_state_fips
+
+            elif hood_or_comparison_area == 'comparison area':
+                tract       = comparison_tract
+                county_fips = comparison_county_fips
+                state_fips  = comparison_state_fips
+            
+            value = operator.state_county_tract(fields=field, state_fips = state_fips,county_fips=county_fips,tract=tract,year= year)[0][field]
+            return(value)
+
+        
+        except Exception as e:
+            print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+
+    elif geographic_level == 'custom':
+        if operator == c.acs5:
+            operator = c_area.acs5
+        elif operator == c.sf1:
+            operator = c_area.sf1
+
+        #Create empty list we will fill with values (one for each census tract within the custom shape/neighborhood)
+        neighborhood_tracts_data = []
+
+        #Fetch census data for all relevant census tracts within the neighborhood
+        raw_census_data = operator.geo_tract(field, neighborhood_shape,year= year)
+        for tract_geojson, tract_data, tract_proportion in raw_census_data:
+            tract_value = tract_data[field]
+            if tract_value >= 0:
+                neighborhood_tracts_data.append((tract_value))
+        
+        #We take the simple mean of the census tracts in the area
+        value = mean(neighborhood_tracts_data)
+
+        return(value)
+
 #Households by number of memebrs
 def GetHouseholdSizeData(geographic_level,hood_or_comparison_area):
     print('Getting household size data for: ',hood_or_comparison_area)
@@ -1947,9 +2067,11 @@ def GetData():
     global neighborhood_year_built_data, comparison_year_built_data   
     global walk_score_data
     global nyc_community_district
+    global neighborhood_median_home_value, comparison_median_home_value
 
     print('Getting Data for ' + neighborhood)
 
+    #Start by getting our distributions for our graphs
     neighborhood_household_size_distribution          = GetHouseholdSizeData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Neighborhood households by size
     neighborhood_tenure_distribution                  = GetHousingTenureData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Tenure (owner occupied/renter)
     neighborhood_housing_value_data                   = GetHousingValues(         geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Owner Occupied housing units by value
@@ -1960,6 +2082,13 @@ def GetData():
     neighborhood_number_units_data                    = GetNumberUnitsData(       geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by units in building
     neighborhood_age_data                             = GetAgeData(               geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Population by age data
     
+
+
+    #Now grab single values for our language
+    neighborhood_median_home_value                    = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'B25077_001E',operator = c.acs5)
+    comparison_median_home_value                      = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'comparison area',field = 'B25077_001E',operator = c.acs5)
+
+
     print('Getting Data For ' + comparison_area)
     comparison_household_size_distribution            = GetHouseholdSizeData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
     comparison_tenure_distribution                    = GetHousingTenureData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
