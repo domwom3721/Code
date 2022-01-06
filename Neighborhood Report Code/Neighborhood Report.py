@@ -3176,17 +3176,17 @@ def HousingValueLanguage():
     try:
         housing_value_categories = ['$10,000 <','$10,000-14,999','$15,000-19,999','$20,000-24,999','$25,000-29,999','$30,000-34,000','$35,000-39,999','$40,000-49,000','$50,000-59,9999','$60,000-69,999','$70,000-79,999','$80,000-89,999','$90,000-99,999','$100,000-124,999','$125,000-149,999','$150,000-174,999','$175,000-199,999','$200,000-249,999','$250,000-299,999','$300,000-399,999','$400,000-499,999','$500,000-749,999','$750,000-999,999','$1,000,000-1,499,999','$1,500,000-1,999,999','$2,000,000 >=']
         assert len(neighborhood_housing_value_data) == len(housing_value_categories) == len(comparison_housing_value_data)
-        #Estimate a median household income from a category freqeuncy distribution
-        hood_median_value_range     = FindMedianCategory(frequency_list = neighborhood_housing_value_data, category_list = housing_value_categories)
-        hood_median_value_range     = hood_median_value_range.replace('$','')
-        hood_median_value_range     = hood_median_value_range.replace(',','').split('-')
-        hood_median_value           = round((int(hood_median_value_range[0]) + int(hood_median_value_range[1]))/2,1)
+        # #Estimate a median household income from a category freqeuncy distribution
+        # hood_median_value_range     = FindMedianCategory(frequency_list = neighborhood_housing_value_data, category_list = housing_value_categories)
+        # hood_median_value_range     = hood_median_value_range.replace('$','')
+        # hood_median_value_range     = hood_median_value_range.replace(',','').split('-')
+        # hood_median_value           = round((int(hood_median_value_range[0]) + int(hood_median_value_range[1]))/2,1)
 
         #Estimate a median household income from a category freqeuncy distribution
-        comp_median_value_range     = FindMedianCategory(frequency_list = comparison_housing_value_data, category_list = housing_value_categories)
-        comp_median_value_range     = comp_median_value_range.replace('$','')
-        comp_median_value_range     = comp_median_value_range.replace(',','').split('-')
-        comp_median_value           = round((int(comp_median_value_range[0]) + int(comp_median_value_range[1]))/2,1)
+        # comp_median_value_range     = FindMedianCategory(frequency_list = comparison_housing_value_data, category_list = housing_value_categories)
+        # comp_median_value_range     = comp_median_value_range.replace('$','')
+        # comp_median_value_range     = comp_median_value_range.replace(',','').split('-')
+        # comp_median_value           = round((int(comp_median_value_range[0]) + int(comp_median_value_range[1]))/2,1)
         
         hood_largest_value_category = housing_value_categories[neighborhood_housing_value_data.index(max(neighborhood_housing_value_data))] #get the most common income category
         comp_largest_value_category = housing_value_categories[comparison_housing_value_data.index(max(comparison_housing_value_data))]
@@ -3194,9 +3194,9 @@ def HousingValueLanguage():
         value_language = (  'Homes in '                                        +
                         neighborhood                                           + 
                         ' have a median value of about '                       + 
-                            "${:,.0f}".format(hood_median_value)               +
+                            "${:,.0f}".format(neighborhood_median_home_value)  +
                         ', compared to '                                       +
-                        "${:,.0f}".format(comp_median_value)                   +
+                        "${:,.0f}".format(comparison_median_home_value)        +
                         ' for '                                                +  
                         comparison_area                                        +
                         '. In '                                                + 
