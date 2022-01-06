@@ -4573,18 +4573,18 @@ def OutlookLanguage():
     county_resident_pop['Resident Population_10year_growth'] =  (((county_resident_pop['Resident Population']/county_resident_pop['Resident Population'].shift(10)) - 1) * 100)/10
 
     county_1y_growth  = county_resident_pop.iloc[-1]['Resident Population_1year_growth'] 
-    county_5y_growth  = county_resident_pop.iloc[-1]['Resident Population_5year_growth'] 
-    county_10y_growth = county_resident_pop.iloc[-1]['Resident Population_10year_growth']
+    county_5y_growth  = county_resident_pop.iloc[-1]['Resident Population_5year_growth']  
+    county_10y_growth = county_resident_pop.iloc[-1]['Resident Population_10year_growth'] 
 
     if county_5y_growth < 0 and county_1y_growth < 0:
-        county_demographic_sentence = (county + ' continues to experience population loss with one and five year growth rates of ' +  "{:,.1f}%".format(county_1y_growth) + ' and ' + "{:,.1f}%".format(county_5y_growth) + '.'  )
+        county_demographic_sentence = (county + ' continues to experience population loss with one and five year annual growth rates of ' +  "{:,.1f}%".format(county_1y_growth) + ' and ' + "{:,.1f}%".format(county_5y_growth) + '.'  )
     
     elif county_5y_growth > 0 and county_1y_growth > 0:
-        county_demographic_sentence = (county + ' continues to experience population gains with one and five year growth rates of ' +  "{:,.1f}%".format(county_1y_growth) + ' and ' + "{:,.1f}%".format(county_5y_growth) + '.'  )
+        county_demographic_sentence = (county + ' continues to experience population gains with one and five year annual growth rates of ' +  "{:,.1f}%".format(county_1y_growth) + ' and ' + "{:,.1f}%".format(county_5y_growth) + '.'  )
 
 
     elif  county_5y_growth < 0 and county_1y_growth > 0:
-        county_demographic_sentence = ('Although ' + county + ' has seen its population decline ' +   "{:,.1f}%".format(abs(county_5y_growth)) +' over the past five years, growth has returned to postive levels with a most recent one year growth rate of ' +  "{:,.1f}%".format(county_1y_growth) +'.')
+        county_demographic_sentence = ('Although ' + county + ' has seen its population decline ' +   "{:,.1f}%".format(abs(county_5y_growth)) +' annually over the past five years, growth has returned to postive levels with a most recent one year growth rate of ' +  "{:,.1f}%".format(county_1y_growth) +'.')
         
     elif county_5y_growth > 0 and county_1y_growth < 0:
         county_demographic_sentence = ('Although ' + county + ' has seen its population grow ' + "{:,.1f}%".format(county_5y_growth) +  ' over the past five years, it most recently saw a one year contraction of ' +  "{:,.1f}%".format(county_1y_growth) +'.')
