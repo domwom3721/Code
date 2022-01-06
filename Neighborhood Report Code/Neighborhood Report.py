@@ -2068,6 +2068,7 @@ def GetData():
     global walk_score_data
     global nyc_community_district
     global neighborhood_median_home_value, comparison_median_home_value
+    global neighborhood_median_year_built, comparison_median_year_built
     print('Getting Data for ' + neighborhood)
 
     #Start by getting our distributions for our graphs
@@ -2083,6 +2084,8 @@ def GetData():
     
     #Now grab single values for our language
     neighborhood_median_home_value                    = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'B25077_001E',operator = c.acs5)
+    neighborhood_median_year_built                    = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'B25035_001E',operator = c.acs5)
+
 
     print('Getting Data For ' + comparison_area)
     #Start by getting our distributions for our graphs
@@ -2097,6 +2100,7 @@ def GetData():
     
     #Now grab single values for our language
     comparison_median_home_value                      = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'B25077_001E',operator = c.acs5)
+    comparison_median_year_built                      = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'B25035_001E',operator = c.acs5)
     
     #Walk score
     walk_score_data                                   = GetWalkScore(            lat = latitude, lon = longitude                                                    )
@@ -3219,24 +3223,24 @@ def HousingYearBuiltLanguage():
         year_built_categories       = ['2014','2010-2013','2000-2009','1990-1999','1980-1989','1970-1979','1960-1969','1950-1959','1940-1949','1939']
         year_built_categories.reverse()
 
-        #Median Year Built for hoodS
-        hood_median_yrblt_range     =  FindMedianCategory(frequency_list = neighborhood_year_built_data, category_list = year_built_categories)
+        # #Median Year Built for hoodS
+        # hood_median_yrblt_range     =  FindMedianCategory(frequency_list = neighborhood_year_built_data, category_list = year_built_categories)
         
-        if len(hood_median_yrblt_range) == 4:
-            hood_median_yrblt = int(hood_median_yrblt_range)
-        else:
-            hood_median_yrblt_range     = hood_median_yrblt_range.split('-')
-            hood_median_yrblt           = round((int(hood_median_yrblt_range[0]) + int(hood_median_yrblt_range[1]))/2,1)
+        # if len(hood_median_yrblt_range) == 4:
+        #     hood_median_yrblt = int(hood_median_yrblt_range)
+        # else:
+        #     hood_median_yrblt_range     = hood_median_yrblt_range.split('-')
+        #     hood_median_yrblt           = round((int(hood_median_yrblt_range[0]) + int(hood_median_yrblt_range[1]))/2,1)
         
 
-        #Median Year Built for comparison area
-        comp_median_yrblt_range     =  FindMedianCategory(frequency_list = comparison_year_built_data, category_list = year_built_categories)
+        # #Median Year Built for comparison area
+        # comp_median_yrblt_range     =  FindMedianCategory(frequency_list = comparison_year_built_data, category_list = year_built_categories)
         
-        if len(comp_median_yrblt_range) == 4:
-            comp_median_yrblt = int(comp_median_yrblt_range)
-        else:
-            comp_median_yrblt_range     = comp_median_yrblt_range.split('-')
-            comp_median_yrblt           = round((int(comp_median_yrblt_range[0]) + int(comp_median_yrblt_range[1]))/2,1)
+        # if len(comp_median_yrblt_range) == 4:
+        #     comp_median_yrblt = int(comp_median_yrblt_range)
+        # else:
+        #     comp_median_yrblt_range     = comp_median_yrblt_range.split('-')
+        #     comp_median_yrblt           = round((int(comp_median_yrblt_range[0]) + int(comp_median_yrblt_range[1]))/2,1)
         
 
         #Largest cateorgies for hood and comparison area
@@ -3245,14 +3249,14 @@ def HousingYearBuiltLanguage():
 
 
         yrblt_language = (  'Homes in '                                         +
-                        neighborhood                                         + 
-                        ' have a median year built of about '                + 
-                            "{:.0f}".format(hood_median_yrblt)                  +
-                        ', compared to '                                     +
-                            "{:.0f}".format(comp_median_yrblt)                  +
+                        neighborhood                                            + 
+                        ' have a median year built of '                         + 
+                           neighborhood_median_year_built                       +
+                        ', compared to '                                        +
+                            comparison_median_year_built                        +
                             ' for '                                             +
                             comparison_area                                     +
-                        '. '                                                 +
+                        '. '                                                    +
                         
                         'In '                                                + 
                         neighborhood                                         + 
