@@ -2086,19 +2086,23 @@ def GetData():
 
     #Now grab single values for our language
     neighborhood_median_home_value                    = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'B25077_001E',operator = c.acs5)
-    comparison_median_home_value                      = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'comparison area',field = 'B25077_001E',operator = c.acs5)
 
 
     print('Getting Data For ' + comparison_area)
+    #Start by getting our distributions for our graphs
     comparison_household_size_distribution            = GetHouseholdSizeData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
     comparison_tenure_distribution                    = GetHousingTenureData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
     comparison_housing_value_data                     = GetHousingValues(        geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
     comparison_year_built_data                        = GetHouseYearBuiltData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
     comparison_household_income_data                  = GetHouseholdIncomeValues(geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')   
     comparison_time_to_work_distribution              = GetTravelTimeData(       geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
-    
     comparison_age_data                               = GetAgeData(              geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
     comparison_number_units_data                      = GetNumberUnitsData(      geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
+    
+    #Now grab single values for our language
+    comparison_median_home_value                      = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'B25077_001E',operator = c.acs5)
+    
+    
     
     #Walk score
     walk_score_data                                   = GetWalkScore(            lat = latitude, lon = longitude                                                    )
