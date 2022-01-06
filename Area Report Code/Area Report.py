@@ -5210,8 +5210,7 @@ def AddTwoColumnTable(document,pic_list,lang_list):
         
         left_paragraph = row_cells[0].paragraphs[0]
         run            = left_paragraph.add_run()
-        if pic == 'car.png':
-            run.add_text(' ')
+
         run.add_picture(os.path.join(graphics_location,pic),width=Inches(0.2),height =Inches(0.2))
 
         right_paragraph = row_cells[1].paragraphs[0]
