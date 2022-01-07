@@ -1915,6 +1915,11 @@ def FindNearestHighways(lat,lon):
             highway_record        = road_map.shapeRecord(highway_index)
             highway_name          = highway_record.record['ROADNAME']
             
+            #Clean up abbreviations
+            highway_name          = highway_name.replace('Hwy','Highway',1)
+            highway_name          = highway_name.replace('Pkwy','Parkway',1) 
+
+
             #Don't add unnamed highways to our list
             if highway_name == '':
                 continue
