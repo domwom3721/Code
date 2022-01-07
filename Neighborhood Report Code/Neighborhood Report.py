@@ -1896,32 +1896,48 @@ def FindNearestAirport(lat,lon):
 
 def FindNearestHighways(lat,lon):
     
-    #Specify the file path to the  shape file
-    road_map_location = os.path.join(data_location,'North_American_Roads','North_American_Roads.shp')
-
-    #Open the shapefile
-    road_map = shapefile.Reader(road_map_location)
-    
     try:
+        #Specify the file path to the  shape file
+        road_map_location = os.path.join(data_location,'North_American_Roads','North_American_Roads.shp')
+
+        #Open the shapefile
+        road_map = shapefile.Reader(road_map_location)
         highways_in_city_index_list = [] #Create empty list that we will fill with numbers that correspond to airports within the subject area
         
         #Find any airports inside the confines of the city
         for i in range(len(road_map)):
-            highway_coords        =  LineString(road_map.shape(i).points)
-            # Point(road_map.shape(i).points[0][0],road_map.shape(i).points[0][1])
-           
+            highway_coords        =  LineString(road_map.shape(i).points)           
             if neighborhood_shape_polygon.contains(highway_coords):
                 highways_in_city_index_list.append(i)
-
+        i = 0
         highway_info_list = []    
         for highway_index in highways_in_city_index_list:     
             highway_record        = road_map.shapeRecord(highway_index)
             highway_name          = highway_record.record['ROADNAME']
+            
+            #Don't add unnamed highways to our list
             if highway_name == '':
                 continue
+            #If not the first highway
+            if i > 0:
+                #Check against the existing highways and make sure it's not a duplicate
+                for d in highway_info_list:
+                    existingname = d['name']
+                    if highway_name == existingname:
+                        repeat = 1
+                        break
+                    repeat = 0
+            if repeat == 1:
+                continue
+                    
+           
+            
             highway_type          = highway_record.record['ADMIN']
             highway_dict          = {'name':highway_name,'type':highway_type}
             highway_info_list.append(highway_dict)
+            i+=1
+
+
 
         sentence = (neighborhood + ' is served by the following roads: ')
 
@@ -1933,7 +1949,7 @@ def FindNearestHighways(lat,lon):
 
         return(sentence)
     except Exception as e:
-        print(e,'Unable to locate airport inside the neighborhood area')
+        print(e,'Unable to locate major roads inside the neighborhood area')
         return(None)
  
 def SearchGreatSchoolDotOrg():
@@ -2983,7 +2999,6 @@ def WikipediaTransitLanguage(category):
         language = [] 
         for search_term in wikipedia_search_terms_df['search term']:
             section = page.section(search_term)
-            
             if section != None:
                 language.append(section)
       
