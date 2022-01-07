@@ -3356,7 +3356,7 @@ def PopulationAgeLanguage():
 
 def IncomeLanguage():
     print('Creating HH Income Langauge')
-    income_categories = ['< $10,000',
+    income_categories = ['under $10,000',
                          '$10,000-14,999',
                          '$15,000-19,999',
                          '$20,000-24,999',
@@ -3371,48 +3371,27 @@ def IncomeLanguage():
                          '$100,000-124,999',
                          '$125,000-149,999',
                          '$150,000-199,999',
-                         '> $200,000']
+                         'over $200,000']
 
     #Estimate a median household income from a category freqeuncy distribution
     hood_median_income_range   = FindMedianCategory(frequency_list=neighborhood_household_income_data, category_list=income_categories)
-    hood_median_income_range   = hood_median_income_range.replace('$','')
-    hood_median_income_range   = hood_median_income_range.replace(',','').split('-')
-    hood_median_income         = round((int(hood_median_income_range[0]) + int(hood_median_income_range[1]))/2,1)
-    
+    if (hood_median_income_range == 'under $10,000') or (hood_median_income_range == 'over $200,000'):
+        hood_median_income     = hood_median_income_range
+    else: 
+        hood_median_income_range   = hood_median_income_range.replace('$','')
+        hood_median_income_range   = hood_median_income_range.replace(',','').split('-')
+        hood_median_income         = round((int(hood_median_income_range[0]) + int(hood_median_income_range[1]))/2,1)
+        hood_median_income         = "around ${:,.0f}".format(hood_median_income)  
 
     hood_largest_income_category = income_categories[neighborhood_household_income_data.index(max(neighborhood_household_income_data))] #get the most common income category
-    
-
-    #If not the last or first category
-    if (hood_largest_income_category != income_categories[len(income_categories)-1]) and (hood_largest_income_category != income_categories[0]) :
-        hood_largest_income_category = 'between ' + hood_largest_income_category
-
-    elif (hood_largest_income_category == income_categories[0]):
-        hood_largest_income_category = 'under ' + hood_largest_income_category.replace('<','')
-    
-    elif (hood_largest_income_category == income_categories[len(income_categories)-1]):
-        hood_largest_income_category = 'over ' + hood_largest_income_category.replace('>','')
-
-
-
     comp_largest_income_category = income_categories[comparison_household_income_data.index(max(comparison_household_income_data))]
-
-    #If not the last or first category
-    if (comp_largest_income_category != income_categories[len(income_categories)-1]) and (comp_largest_income_category != income_categories[0]) :
-        comp_largest_income_category = 'between ' + comp_largest_income_category
-
-    elif (comp_largest_income_category == income_categories[0]):
-        comp_largest_income_category = 'under ' + comp_largest_income_category.replace('>','')
-    
-    elif (comp_largest_income_category == income_categories[len(income_categories)-1]):
-        comp_largest_income_category = 'over ' + comp_largest_income_category.replace('>','')
 
 
     income_language = ('Households in '                                      +
                        neighborhood                                          + 
-                       ' have a median household income of around '          + 
-                        "${:,.0f}".format(hood_median_income)                 +
-                       '. '                    +
+                       ' have a median household income of '                 + 
+                        hood_median_income                                   +
+                       '. '                                                  +
                        
                        'In '                                                 + 
                        neighborhood                                          + 
