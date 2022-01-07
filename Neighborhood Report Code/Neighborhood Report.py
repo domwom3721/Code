@@ -46,7 +46,7 @@ from shapely.ops import nearest_points
 from walkscore import WalkScoreAPI
 from wikipedia.wikipedia import random
 from yelpapi import YelpAPI
-import kml2geojson
+# import kml2geojson
 # from osgeo import gdal,ogr #gdal can open the kml file from google maps 
 # import cartoframes
 # import fiona
