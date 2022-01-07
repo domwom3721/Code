@@ -23,6 +23,7 @@ import us
 from us.states import PA
 import wikipedia
 from bs4 import BeautifulSoup
+import re
 from census import Census
 from census_area import Census as CensusArea
 from docx import Document
@@ -2998,30 +2999,42 @@ def CreateGraphs():
 def WikipediaTransitLanguage(category):
     #Searches through a wikipedia page for a number of section titles and returns the text from them (if any)
     try:
-
+        #Open a file that holds a list of search terms for different transit categories
         wikipedia_search_terms_df = pd.read_csv(os.path.join(project_location,'Data','General Data','Wikipedia Transit Related Search Terms.csv'))
+        
+        #Restrict to only rows (search terms) that are relevant to the current cateogry we are looking for (eg: roads)
         wikipedia_search_terms_df = wikipedia_search_terms_df.loc[wikipedia_search_terms_df['category'] == category]
+        search_term_list = wikipedia_search_terms_df['search term']
         
-        # wikipedia_page_sections = page.sections
-        # wikipedia_page_title    = page.title
-        
-        # print(wikipedia_page_sections)
-        # print(wikipedia_page_title)
+        #Create a bs4 html object from the wikipedia page
+        soup = BeautifulSoup(page.html(),'html.parser')
 
-        
-        language = [] 
-        for search_term in wikipedia_search_terms_df['search term']:
-            print('The Search Term is: ', search_term)
+        #Loop throuhg each search term looking for text, if we find any, return it as a list
+        for search_term in search_term_list:
+            langauge_paragraphs = []
+
+            #Loop through every heading in the wikipedia page looking for the section we want
+            for heading in soup.find_all(re.compile('^h[1-6]$')):
+
+                #If we find the section we're looking for, pull all the text from the paragraphs
+                if search_term in heading.text:
+                    print(heading.name + ' ' + heading.text.strip())
+                    para = heading.find_next_sibling('p')
+                    langauge_paragraphs.append(para.text) #Once we have found the relevant section, add all the paragraphs into the list of paragraphs
+
+                    #We found the first paragraph and added it to our list with text paragraphs, now keep looking in case there are multiple paragraphs in the section we wanted
+                    while True:
+                        para = para.find_next_sibling(['p','h1','h2','h3','h4','h5','h6'])            
+                        if para == None:
+                            break
+                        elif para.name != 'p':
+                            break
+                        else:
+                            langauge_paragraphs.append(para.text)
             
-            section = page.section(search_term)
-            if section != None:
-                language.append(section)
-      
-        if language != []:
-            return(' '.join(language))
+            if langauge_paragraphs != []:
+                return(langauge_paragraphs)
 
-        else:
-            return('')
 
     except Exception as e:
         print(e,'problem getting wikipedia language for ' + category)
@@ -4002,8 +4015,15 @@ def AddTwoColumnTable(document,pic_list,lang_list):
 
         right_paragraph = row_cells[1].paragraphs[0]
         right_paragraph.alignment                                    = WD_ALIGN_PARAGRAPH.JUSTIFY
-        run             = right_paragraph.add_run()
-        run.add_text(str(lang))
+        
+        if type(lang) == list:
+            for p in lang:
+                run             = right_paragraph.add_run()
+                run.add_text(str(p))
+
+        else:
+            run             = right_paragraph.add_run()
+            run.add_text(str(lang))
 
     #We have now defined our table object,loop through all rows then all cells in each current row
     for row in tab.rows:
