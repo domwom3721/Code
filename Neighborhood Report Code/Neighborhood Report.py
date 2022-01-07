@@ -3029,7 +3029,7 @@ def CarLanguage():
     else:
         print('No major highway information on wikipedia, using geographic data')
         nearest_highway_language = FindNearestHighways(lat = latitude, lon = longitude)
-        if nearest_highway_language != '':
+        if nearest_highway_language != None:
             return(nearest_highway_language)
         else:
             return(neighborhood + ' does not have immediate access to any major highways or roads. ' + 'Local corridors include . ')
