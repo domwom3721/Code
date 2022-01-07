@@ -2998,11 +2998,21 @@ def CreateGraphs():
 def WikipediaTransitLanguage(category):
     #Searches through a wikipedia page for a number of section titles and returns the text from them (if any)
     try:
+
         wikipedia_search_terms_df = pd.read_csv(os.path.join(project_location,'Data','General Data','Wikipedia Transit Related Search Terms.csv'))
         wikipedia_search_terms_df = wikipedia_search_terms_df.loc[wikipedia_search_terms_df['category'] == category]
         
+        # wikipedia_page_sections = page.sections
+        # wikipedia_page_title    = page.title
+        
+        # print(wikipedia_page_sections)
+        # print(wikipedia_page_title)
+
+        
         language = [] 
         for search_term in wikipedia_search_terms_df['search term']:
+            print('The Search Term is: ', search_term)
+            
             section = page.section(search_term)
             if section != None:
                 language.append(section)
@@ -4243,12 +4253,12 @@ def WriteReport():
     SetPageMargins(           document  = document, margin_size=1)
     SetDocumentStyle(         document = document)
     IntroSection(             document = document)
+    PopulationSection(        document = document)
     CommunityAssetsSection(   document = document)
     HousingSection(           document = document)
     # DevelopmentSection(       document = document)
     # EducationSection(         document = document)
     # EmploymentSection(        document = document)
-    PopulationSection(        document = document)
     TransportationSection(    document = document)
     OutlookSection(           document = document)
 
