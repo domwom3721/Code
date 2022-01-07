@@ -3038,7 +3038,6 @@ def WikipediaTransitLanguage(category):
 
     except Exception as e:
         print(e,'problem getting wikipedia language for ' + category)
-        return('')
 
 def SummaryLangauge():
     print('Creating Summary Langauge')
@@ -3071,7 +3070,7 @@ def CarLanguage():
     print('Creating auto Langauge')
     wikipedia_car_language     = WikipediaTransitLanguage(category='car')
     
-    if wikipedia_car_language != '':
+    if wikipedia_car_language != None:
         return(wikipedia_car_language)
     else:
         print('No major highway information on wikipedia, using geographic data')
@@ -3087,7 +3086,7 @@ def PlaneLanguage():
     #First see if any text available on wikipedia, if so use that, if not, use our geographic data
     print('Searching Wikipedia for Airport Info')
     wikipedia_plane_language = WikipediaTransitLanguage(category='air')
-    if wikipedia_plane_language != '':
+    if wikipedia_plane_language != None:
         print('Pulled Airport info from Wikipedia')
         return(wikipedia_plane_language)
     
@@ -3112,7 +3111,7 @@ def BusLanguage():
     print('Creating bus Langauge')
 
     wikipedia_bus_language = WikipediaTransitLanguage(category='bus')
-    if wikipedia_bus_language != '':
+    if wikipedia_bus_language != None:
         return(wikipedia_bus_language)
     
     else:
@@ -3121,7 +3120,7 @@ def BusLanguage():
 def TrainLanguage():
     print('Creating train Langauge')
     wikipedia_train_language = WikipediaTransitLanguage(category='train')
-    if wikipedia_train_language != '':
+    if wikipedia_train_language != None:
         return(wikipedia_train_language)
     else:
         return('There is limited use of public transit in ' + neighborhood + '. In fact, it is not served by any commuter or light-rail lines. For public transit options, residents and visitors utilize service in ____. ')
