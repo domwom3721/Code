@@ -3321,7 +3321,7 @@ def HouseholdSizeLanguage():
 def PopulationAgeLanguage():
     print('Creating Population by Age Langauge')
     try:
-        age_ranges = ['0-19','20-24','25-34','35-49','50-66','67']
+        age_ranges = ['between 0-19','between 20-24','between 25-34','between 35-49','between 50-66','over 67']
 
         hood_largest_age_category  = age_ranges[neighborhood_age_data.index(max(neighborhood_age_data))] #get the most common income category
         comp_largest_age_category  = age_ranges[comparison_age_data.index(max(comparison_age_data))]
@@ -3337,7 +3337,7 @@ def PopulationAgeLanguage():
                         '. '                                                                        +
                         'In '                                                                       + 
                         neighborhood                                                                + 
-                        ', the largest age range is between '                                       +
+                        ', the largest age range is '                                       +
                         hood_largest_age_category                                                   +
                         ', compared to '                                                            +
                         comp_largest_age_category                                                   +
