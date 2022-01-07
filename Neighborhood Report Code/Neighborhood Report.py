@@ -3226,27 +3226,7 @@ def HousingYearBuiltLanguage():
     try:
         year_built_categories       = ['2014','2010-2013','2000-2009','1990-1999','1980-1989','1970-1979','1960-1969','1950-1959','1940-1949','1939']
         year_built_categories.reverse()
-
-        # #Median Year Built for hoodS
-        # hood_median_yrblt_range     =  FindMedianCategory(frequency_list = neighborhood_year_built_data, category_list = year_built_categories)
         
-        # if len(hood_median_yrblt_range) == 4:
-        #     hood_median_yrblt = int(hood_median_yrblt_range)
-        # else:
-        #     hood_median_yrblt_range     = hood_median_yrblt_range.split('-')
-        #     hood_median_yrblt           = round((int(hood_median_yrblt_range[0]) + int(hood_median_yrblt_range[1]))/2,1)
-        
-
-        # #Median Year Built for comparison area
-        # comp_median_yrblt_range     =  FindMedianCategory(frequency_list = comparison_year_built_data, category_list = year_built_categories)
-        
-        # if len(comp_median_yrblt_range) == 4:
-        #     comp_median_yrblt = int(comp_median_yrblt_range)
-        # else:
-        #     comp_median_yrblt_range     = comp_median_yrblt_range.split('-')
-        #     comp_median_yrblt           = round((int(comp_median_yrblt_range[0]) + int(comp_median_yrblt_range[1]))/2,1)
-        
-
         #Largest cateorgies for hood and comparison area
         hood_largest_yrblt_category = year_built_categories[neighborhood_year_built_data.index(max(neighborhood_year_built_data))] #get the most common income category
         comp_largest_yrblt_category = year_built_categories[comparison_year_built_data.index(max(comparison_year_built_data))]
