@@ -3239,9 +3239,9 @@ def HousingYearBuiltLanguage():
         yrblt_language = (  'Homes in '                                         +
                         neighborhood                                            + 
                         ' have a median year built of '                         + 
-                           str(neighborhood_median_year_built)                       +
+                           str(neighborhood_median_year_built)[0:4]             +
                         ', compared to '                                        +
-                            str(comparison_median_year_built)                        +
+                            str(comparison_median_year_built)                   +
                             ' for '                                             +
                             comparison_area                                     +
                         '. '                                                    +
