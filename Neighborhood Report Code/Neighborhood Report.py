@@ -1886,7 +1886,7 @@ def FindNearestAirport(lat,lon):
             cloest_airport_num = i
 
     closest_airport = airport_map.shapeRecord(cloest_airport_num)
-    airport_distance = dist * 0.621371 #convert from KM to miles
+    airport_distance = dist * 0.000621371 #convert from meters to miles
     airport_distance = "{:,.1f} miles".format(airport_distance)     
                                                        
     airport_lang = (neighborhood + ' is roughly ' + airport_distance + ' from ' + closest_airport.record['Fac_Name'].title() + ', a public ' +  closest_airport.record['Fac_Type'].lower() + ' in ' + closest_airport.record['City'].title() + ', ' + closest_airport.record['State_Name'].title() + '.' )
