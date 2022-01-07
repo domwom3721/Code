@@ -1927,8 +1927,8 @@ def FindNearestHighways(lat,lon):
                         repeat = 1
                         break
                     repeat = 0
-            if repeat == 1:
-                continue
+                if repeat == 1:
+                    continue
                     
            
             
