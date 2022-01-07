@@ -10,6 +10,7 @@ from datetime import date
 from pprint import pprint
 from random import randrange,choice
 import random
+from bs4 import BeautifulSoup
 
 import requests
 from requests.exceptions import HTTPError 
@@ -4345,6 +4346,7 @@ def PopulationLanguage(national_resident_pop):
         population_language = ''
     
     return([population_language])
+
 def EducationLanguage():
     try:
         education_language = ('In ' + county + ', ' + 
@@ -4387,37 +4389,55 @@ def WikipediaTransitLanguage(category):
     try:
         wikipedia_search_terms_df = pd.read_csv(os.path.join(project_location,'Data','General Data','Wikipedia Transit Related Search Terms.csv'))
         wikipedia_search_terms_df = wikipedia_search_terms_df.loc[wikipedia_search_terms_df['category'] == category]
+        search_term_list = wikipedia_search_terms_df['search term']
         
         page                          =  wikipedia.page((county + ',' + state))
 
-        language = [] 
-        for search_term in wikipedia_search_terms_df['search term']:
-            section = page.section(search_term)
-            if section != None:
-                language.append(section)
-      
-        
-        if language != []:
-            return(' '.join(language))
+        #Create a bs4 html object from the wikipedia page
+        soup = BeautifulSoup(page.html(),'html.parser')
 
-        else:
-            if category == 'car':
-                return('Major roads serving ' + county  + ' include .')
+        #Loop throuhg each search term looking for text, if we find any, return it as a list
+        for search_term in search_term_list:
+            langauge_paragraphs = []
 
-            elif category == 'bus':
-                return(county + ' does not have public bus service.')
+            #Loop through every heading in the wikipedia page looking for the section we want
+            for heading in soup.find_all(re.compile('^h[1-6]$')):
 
-            elif category == 'air':
-                return(county + ' is served by  .')
+                #If we find the section we're looking for, pull all the text from the paragraphs
+                if search_term in heading.text:
+                    print(heading.name + ' ' + heading.text.strip())
+                    para = heading.find_next_sibling('p')
+                    langauge_paragraphs.append(para.text) #Once we have found the relevant section, add all the paragraphs into the list of paragraphs
 
-            elif category == 'train':
-                return(county + ' is not served by any commuter or light rail lines.')
-            else:
-                return('')
+                    #We found the first paragraph and added it to our list with text paragraphs, now keep looking in case there are multiple paragraphs in the section we wanted
+                    while True:
+                        para = para.find_next_sibling(['p','h1','h2','h3','h4','h5','h6'])            
+                        if para == None:
+                            break
+                        elif para.name != 'p':
+                            break
+                        else:
+                            langauge_paragraphs.append(para.text)
+            
+            if langauge_paragraphs != []:
+                return(langauge_paragraphs)
+
+        #If we don't find anything
+        if category == 'car':
+            return('Major roads serving ' + county  + ' include .')
+
+        elif category == 'bus':
+            return(county + ' does not have public bus service.')
+
+        elif category == 'air':
+            return(county + ' is served by  .')
+
+        elif category == 'train':
+            return(county + ' is not served by any commuter or light rail lines.')
 
     except Exception as e:
         print(e)
-        return('')
+        return(None)
 
 def HousingLanguage():
     print('Writing Housing Langauge')
@@ -5214,9 +5234,16 @@ def AddTwoColumnTable(document,pic_list,lang_list):
         run.add_picture(os.path.join(graphics_location,pic),width=Inches(0.2),height =Inches(0.2))
 
         right_paragraph = row_cells[1].paragraphs[0]
-        run             = right_paragraph.add_run()
-        run.add_text(str(lang))
+         
+        if type(lang) == list:
+            for p in lang:
+                run             = right_paragraph.add_run()
+                run.add_text(str(p))
 
+        else:
+            run             = right_paragraph.add_run()
+            run.add_text(str(lang))
+     
     #We have now defined our table object,loop through all rows then all cells in each current row
     for row in tab.rows:
         for current_column,cell in enumerate(row.cells):
