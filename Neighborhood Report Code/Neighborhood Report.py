@@ -4743,7 +4743,7 @@ acs_5y_year           = 2019 #The year of the american community survey for our 
 
 #Let User Decide (on timer) if they want to use batch mode or not
 try:
-    batch_mode_input = int(input_with_timeout('Batch Mode: True (1) or False (0)',5))
+    batch_mode_input = int(input_with_timeout('Batch Mode: True (1) or False (0)',10))
     if batch_mode_input == 1:
         batch_mode = True
     elif batch_mode_input == 0:
@@ -4756,7 +4756,7 @@ if batch_mode == True:
     
     #Let user select batch number
     try:
-        batch_type_number =  int(input_with_timeout('Select batch type (1 = places, 2 = subdivisions, 3 = neighborhoods',5))  #controls what report type we are doing batches of
+        batch_type_number =  int(input_with_timeout('Select batch type (1 = places, 2 = subdivisions, 3 = neighborhoods',10))  #controls what report type we are doing batches of
     except:
         batch_type_number = 1 #controls what report type we are doing batches of
     
