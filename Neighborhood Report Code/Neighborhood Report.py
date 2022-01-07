@@ -2069,6 +2069,7 @@ def GetData():
     global nyc_community_district
     global neighborhood_median_home_value, comparison_median_home_value
     global neighborhood_median_year_built, comparison_median_year_built
+    global neighborhood_median_age, comparison_median_age
     print('Getting Data for ' + neighborhood)
 
     #Start by getting our distributions for our graphs
@@ -2085,7 +2086,9 @@ def GetData():
     #Now grab single values for our language
     neighborhood_median_home_value                    = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'B25077_001E',operator = c.acs5)
     neighborhood_median_year_built                    = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'B25035_001E',operator = c.acs5)
+    neighborhood_median_age                           = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'B01002_001E',operator = c.acs5)
 
+    
 
     print('Getting Data For ' + comparison_area)
     #Start by getting our distributions for our graphs
@@ -2101,6 +2104,7 @@ def GetData():
     #Now grab single values for our language
     comparison_median_home_value                      = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'B25077_001E',operator = c.acs5)
     comparison_median_year_built                      = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'B25035_001E',operator = c.acs5)
+    comparison_median_age                             = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'B01002_001E',operator = c.acs5)
     
     #Walk score
     walk_score_data                                   = GetWalkScore(            lat = latitude, lon = longitude                                                    )
@@ -3338,29 +3342,26 @@ def PopulationAgeLanguage():
     try:
         age_ranges = ['0-19','20-24','25-34','35-49','50-66','67']
 
-        hood_median_age_range      = FindMedianCategory(frequency_list = neighborhood_age_data, category_list = age_ranges)
-        if hood_median_age_range != age_ranges[-1]:
-            hood_median_age_range      = hood_median_age_range.replace(',','').split('-')
-            hood_median_age            = round((int(hood_median_age_range[0]) + int(hood_median_age_range[1]))/2,1)
-        else:
-            hood_median_age = 'over 67'
         hood_largest_age_category  = age_ranges[neighborhood_age_data.index(max(neighborhood_age_data))] #get the most common income category
         comp_largest_age_category  = age_ranges[comparison_age_data.index(max(comparison_age_data))]
 
         age_language = ('The median age in '                                                        +
-                        neighborhood                                                         + 
-                        ' is around '                         + 
-                            "{:,.0f}".format(hood_median_age)                                   +
-                        '. '                                   +
-                        
-                        'In '                                                                + 
-                        neighborhood                                                         + 
-                        ', the largest age range is between ' +
-                        hood_largest_age_category                                            +
-                        ', compared to '                                                     +
-                        comp_largest_age_category                                            +
-                        ' for '                                                              +
-                            comparison_area                                                     +
+                        neighborhood                                                                + 
+                        ' is '                                                               + 
+                        "{:,.1f}".format(neighborhood_median_age)                                   +
+                        ', compared to '                                                            +
+                        "{:,.1f}".format(comparison_median_age)                                     +
+                        ' in '                                                                      +
+                        comparison_area                                                             +
+                        '. '                                                                        +
+                        'In '                                                                       + 
+                        neighborhood                                                                + 
+                        ', the largest age range is between '                                       +
+                        hood_largest_age_category                                                   +
+                        ', compared to '                                                            +
+                        comp_largest_age_category                                                   +
+                        ' for '                                                                     +
+                            comparison_area                                                         +
                             '.'
                         )
     except Exception as e:
