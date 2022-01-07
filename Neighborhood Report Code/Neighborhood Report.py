@@ -1114,7 +1114,7 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator):
         #Fetch census data for all relevant census tracts within the neighborhood
         raw_census_data = operator.geo_tract(field, neighborhood_shape,year= year)
         for tract_geojson, tract_data, tract_proportion in raw_census_data:
-            tract_value = tract_data[field]
+            tract_value = int(tract_data[field])
             if tract_value >= 0:
                 neighborhood_tracts_data.append((tract_value))
         
@@ -3239,9 +3239,9 @@ def HousingYearBuiltLanguage():
         yrblt_language = (  'Homes in '                                         +
                         neighborhood                                            + 
                         ' have a median year built of '                         + 
-                           neighborhood_median_year_built                       +
+                           str(neighborhood_median_year_built)                       +
                         ', compared to '                                        +
-                            comparison_median_year_built                        +
+                            str(comparison_median_year_built)                        +
                             ' for '                                             +
                             comparison_area                                     +
                         '. '                                                    +
