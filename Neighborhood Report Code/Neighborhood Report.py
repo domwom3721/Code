@@ -1833,6 +1833,10 @@ def FindAirport():
             airport_name          = airport_record.record['Fac_Name']
             airport_type          = airport_record.record['Fac_Type']
             airport_dict          = {'name':airport_name,'type':airport_type}
+            
+            if airport_type =='HELIPORT':
+                continue
+
             airport_info_list.append(airport_dict)
 
         if airport_info_list == []:
