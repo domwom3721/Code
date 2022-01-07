@@ -3199,7 +3199,7 @@ def HousingValueLanguage():
 
         value_language = (  'Homes in '                                        +
                         neighborhood                                           + 
-                        ' have a median value of about '                       + 
+                        ' have a median value of '                       + 
                             "${:,.0f}".format(neighborhood_median_home_value)  +
                         ', compared to '                                       +
                         "${:,.0f}".format(comparison_median_home_value)        +
@@ -3226,7 +3226,7 @@ def HousingYearBuiltLanguage():
     try:
         year_built_categories       = ['2014','2010-2013','2000-2009','1990-1999','1980-1989','1970-1979','1960-1969','1950-1959','1940-1949','1939']
         year_built_categories.reverse()
-        
+
         #Largest cateorgies for hood and comparison area
         hood_largest_yrblt_category = year_built_categories[neighborhood_year_built_data.index(max(neighborhood_year_built_data))] #get the most common income category
         comp_largest_yrblt_category = year_built_categories[comparison_year_built_data.index(max(comparison_year_built_data))]
