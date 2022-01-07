@@ -1835,7 +1835,8 @@ def FindAirport():
             airport_type          = airport_record.record['Fac_Type']
             airport_dict          = {'name':airport_name,'type':airport_type}
             
-            if airport_type =='HELIPORT':
+        #Don't consider heliports, seaplane bases etc
+            if airport_record.record['Fac_Type'] != 'AIRPORT':
                 continue
 
             airport_info_list.append(airport_dict)
