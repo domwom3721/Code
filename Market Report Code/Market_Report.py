@@ -1327,7 +1327,7 @@ def CreateDirectoryCSV():
                                 'Document Name': dropbox_document_names})
 
         #Merge the dataframe with a list of states and the inital of who is assigned to complete them
-        assigned_to_df                          = pd.read_excel(os.path.join(general_data_location,'Assigned To States.xlsx')) 
+        assigned_to_df                          = pd.read_excel(os.path.join(general_data_location,'Administrative Data','Assigned To States.xlsx')) 
         dropbox_df                              = pd.merge(dropbox_df,assigned_to_df, on=['State'],how = 'left') 
         
 

@@ -59,6 +59,7 @@ project_location               =  os.path.join(os.environ['USERPROFILE'], 'Dropb
 main_output_location           =  os.path.join(project_location,'Output','Neighborhood')                   #testing
 # main_output_location           =  os.path.join(dropbox_root,'Research','Market Analysis','Neighborhood') #production
 data_location                  =  os.path.join(project_location,'Data','Neighborhood Reports Data')
+general_data_location          =  os.path.join(project_location,'Data','General Data')
 graphics_location              =  os.path.join(project_location,'Data','General Data','Graphics')
 map_location                   =  os.path.join(project_location,'Data','Neighborhood Reports Data','Neighborhood Maps')
 nyc_cd_map_location            =  os.path.join(project_location,'Data','Neighborhood Reports Data','NYC_CD Maps')
@@ -1813,7 +1814,7 @@ def GetYelpData(lat,lon,radius):
 
 def FindAirport():
     #Specify the file path to the airports shape file
-    airport_map_location = os.path.join(data_location,'Airports','Airports.shp')
+    airport_map_location = os.path.join(general_data_location,'Geographic Data','Airports','Airports.shp')
     
     #Open the shapefile
     airport_map = shapefile.Reader(airport_map_location)
@@ -1859,7 +1860,7 @@ def FindAirport():
 def FindNearestAirport(lat,lon):
     
     #Specify the file path to the airports shape file
-    airport_map_location = os.path.join(data_location,'Airports','Airports.shp')
+    airport_map_location = os.path.join(general_data_location,'Geographic Data','Airports','Airports.shp')
     
     #Open the shapefile
     airport_map = shapefile.Reader(airport_map_location)
@@ -1900,7 +1901,7 @@ def FindNearestHighways(lat,lon):
     
     try:
         #Specify the file path to the  shape file
-        road_map_location = os.path.join(data_location,'North_American_Roads','North_American_Roads.shp')
+        road_map_location = os.path.join(general_data_location,'Geographic Data','North_American_Roads','North_American_Roads.shp')
 
         #Open the shapefile
         road_map = shapefile.Reader(road_map_location)

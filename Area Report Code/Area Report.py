@@ -625,6 +625,7 @@ def shapely_to_pyshp(shapelygeom):
     return (record)
 
 def GetCountyShape(fips):
+    global county_shape_polygon
     try:
         shapefile_location = os.path.join(data_location,'cb_2018_us_county_500k','cb_2018_us_county_500k.shp')
         assert os.path.exists(shapefile_location)
@@ -654,6 +655,114 @@ def GetCountyShape(fips):
     except Exception as e:
         print(e,'unable to get county shape')
 
+def FindAirport():
+    #Specify the file path to the airports shape file
+    airport_map_location = os.path.join(general_data_location,'Geographic Data','Airports','Airports.shp')
+    
+    #Open the shapefile
+    airport_map = shapefile.Reader(airport_map_location)
+    
+    try:
+        airports_in_city_index_list = [] #Create empty list that we will fill with numbers that correspond to airports within the subject area
+        
+        #Find any airports inside the confines of the city
+        for i in range(len(airport_map)):
+            airport_coords        =  Point(airport_map.shape(i).points[0][0],airport_map.shape(i).points[0][1])
+            
+            if county_shape_polygon.contains(airport_coords):
+                airports_in_city_index_list.append(i)
+
+        airport_info_list = []    
+        for airport_index in airports_in_city_index_list:     
+            airport_record        = airport_map.shapeRecord(airport_index)
+            airport_name          = airport_record.record['Fac_Name']
+            airport_type          = airport_record.record['Fac_Type']
+            airport_dict          = {'name':airport_name,'type':airport_type}
+            
+        #Don't consider heliports, seaplane bases etc
+            if airport_record.record['Fac_Type'] != 'AIRPORT':
+                continue
+
+            airport_info_list.append(airport_dict)
+
+        if airport_info_list == []:
+            return(None)
+        airport_sentence = (county + ' is served by the following facilities: ')
+
+        for count,airport in enumerate(airport_info_list):
+            if count < len(airport_info_list) -1 :
+                airport_sentence = airport_sentence + (airport['name'].title()) + ' ('  + (airport['type'].title())   + '), ' 
+            else:
+                airport_sentence = airport_sentence + 'and ' + (airport['name'].title()) + ' ('  + (airport['type'].title())   + ').' 
+
+        return(airport_sentence)
+    except Exception as e:
+        print(e,'Unable to locate airport inside the neighborhood area')
+        return(None)
+
+def FindNearestHighways():
+    
+    try:
+        #Specify the file path to the  shape file
+        road_map_location = os.path.join(general_data_location,'Geographic Data','North_American_Roads','North_American_Roads.shp')
+
+        #Open the shapefile
+        road_map = shapefile.Reader(road_map_location)
+        highways_in_city_index_list = [] #Create empty list that we will fill with numbers that correspond to airports within the subject area
+        
+        #Find any airports inside the confines of the city
+        for i in range(len(road_map)):
+            highway_coords        =  LineString(road_map.shape(i).points)           
+            if county_shape_polygon.contains(highway_coords):
+                highways_in_city_index_list.append(i)
+        i = 0
+        highway_info_list = []    
+        for highway_index in highways_in_city_index_list:     
+            highway_record        = road_map.shapeRecord(highway_index)
+            highway_name          = highway_record.record['ROADNAME']
+            
+            #Clean up abbreviations
+            highway_name          = highway_name.replace('Hwy','Highway',1)
+            highway_name          = highway_name.replace('Pkwy','Parkway',1) 
+
+
+            #Don't add unnamed highways to our list
+            if highway_name == '':
+                continue
+            #If not the first highway
+            if i > 0:
+                #Check against the existing highways and make sure it's not a duplicate
+                for d in highway_info_list:
+                    existingname = d['name']
+                    if highway_name == existingname:
+                        repeat = 1
+                        break
+                    repeat = 0
+                if repeat == 1:
+                    continue
+                    
+           
+            
+            highway_type          = highway_record.record['ADMIN']
+            highway_dict          = {'name':highway_name,'type':highway_type}
+            highway_info_list.append(highway_dict)
+            i+=1
+
+
+
+        sentence = (neighborhood + ' is served by the following roads: ')
+
+        for count,highway in enumerate(highway_info_list):
+            if count < len(highway_info_list) -1 :
+                sentence = sentence + (highway['name'].title()) + ' ('  + (highway['type'].title())   + '), ' 
+            else:
+                sentence = sentence + 'and ' + (highway['name'].title()) + ' ('  + (highway['type'].title())   + ').' 
+
+        return(sentence)
+    except Exception as e:
+        print(e,'Unable to locate major roads inside the neighborhood area')
+        return(None)
+ 
 def GetCountyData():
     print('Getting County Data')
     global county_gdp, county_pci
@@ -4524,19 +4633,6 @@ def WikipediaTransitLanguage(category):
             if langauge_paragraphs != []:
                 return(langauge_paragraphs)
 
-        #If we don't find anything
-        if category == 'car':
-            return('Major roads serving ' + county  + ' include .')
-
-        elif category == 'bus':
-            return(county + ' does not have public bus service.')
-
-        elif category == 'air':
-            return(county + ' is served by  .')
-
-        elif category == 'train':
-            return(county + ' is not served by any commuter or light rail lines.')
-
     except Exception as e:
         print(e)
         return(None)
@@ -4619,6 +4715,59 @@ def HousingLanguage():
                             ' across the Nation over the past year.'
                             )
         return([boiler_plate_housing_language,housing_langage])
+
+def CarLanguage():
+    print('Creating auto Langauge')
+    wikipedia_car_language     = WikipediaTransitLanguage(category='car')
+    
+    if wikipedia_car_language != None:
+        return(wikipedia_car_language)
+    else:
+        print('No major highway information on wikipedia, using geographic data')
+        nearest_highway_language = FindNearestHighways()
+        if nearest_highway_language != None:
+            return(nearest_highway_language)
+        else:
+            return('Major roads serving ' + county  + ' include .')
+
+def PlaneLanguage():
+    print('Creating plane Langauge')
+
+    #First see if any text available on wikipedia, if so use that, if not, use our geographic data
+    print('Searching Wikipedia for Airport Info')
+    wikipedia_plane_language = WikipediaTransitLanguage(category='air')
+    if wikipedia_plane_language != None:
+        print('Pulled Airport info from Wikipedia')
+        return(wikipedia_plane_language)
+    
+    else:
+        #Check to see if there are any airports within the area    
+        print('No Airport Information on Wikipedia, using airport shapefile to see if there are any airports within the area')
+        airport_language = FindAirport()
+
+        if airport_language != None:
+            return(airport_language)
+
+        else:
+             return(county + ' is served by  .')
+
+def BusLanguage():
+    print('Creating bus Langauge')
+
+    wikipedia_bus_language = WikipediaTransitLanguage(category='bus')
+    if wikipedia_bus_language != None:
+        return(wikipedia_bus_language)
+    
+    else:
+        return(county + ' does not have public bus service.')
+
+def TrainLanguage():
+    print('Creating train Langauge')
+    wikipedia_train_language = WikipediaTransitLanguage(category='train')
+    if wikipedia_train_language != None:
+        return(wikipedia_train_language)
+    else:
+        return(county + ' is not served by any commuter or light rail lines.')
 
 def OutlookLanguage():
     print('Writing Outlook Langauge')
@@ -4726,7 +4875,7 @@ def OutlookLanguage():
                             )
 
     return([national_economy_summary,county_economy_summary])
-            
+
 def CreateLanguage():
     global overview_language
     global county_emplopyment_industry_breakdown_language, msa_emplopyment_industry_breakdown_language ,county_emplopyment_growth_language,msa_emplopyment_growth_language,unemplopyment_language,tourism_employment_language
@@ -4782,11 +4931,10 @@ def CreateLanguage():
         outlook_language = ['']
    
 
-    car_language           = WikipediaTransitLanguage(category = 'car' )
-    train_language         = WikipediaTransitLanguage(category = 'train' ) 
-    bus_language           = WikipediaTransitLanguage(category = 'bus' )
-    plane_language         = WikipediaTransitLanguage(category = 'air' )
- 
+    bus_language                       = BusLanguage() 
+    train_language                     = TrainLanguage()
+    car_language                       = CarLanguage()
+    plane_language                     = PlaneLanguage()
 
 
     #Unemployment language
@@ -5596,7 +5744,7 @@ def CreateDirectoryCSV():
                            'Document Name': dropbox_document_names})
     dropbox_df = dropbox_df.sort_values(by=['State','Market Research Name'])
     
-    assigned_to_df                          = pd.read_excel(os.path.join(general_data_location,'Assigned To States.xlsx')) 
+    assigned_to_df                          = pd.read_excel(os.path.join(general_data_location,'Administrative Data','Assigned To States.xlsx')) 
     dropbox_df                              = pd.merge(dropbox_df,assigned_to_df, on=['State'],how = 'left') 
     
     csv_name = 'Dropbox Areas.csv'
