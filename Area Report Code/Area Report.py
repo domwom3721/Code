@@ -48,6 +48,8 @@ from selenium.webdriver.common.keys import Keys
 #from pybea.client import BureauEconomicAnalysisClient
 from us import states
 from wikipedia.wikipedia import random
+import shapefile
+from shapely.geometry import LineString, MultiPoint, Point, shape,Polygon,mapping
 
 #Define file paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
@@ -556,12 +558,109 @@ def GetCountyEducationLevels(fips,observation_start):
     
     return([fraction_hs,fraction_ass,fraction_bachelor])
 
+def PolygonToShapeFile(poly):
+        # WRITE TO SHAPEFILE USING PYSHP
+        target_file_path = os.path.join(county_folder_map,'my.shp')
+        shapewriter = shapefile.Writer(target=target_file_path)
+        shapewriter.field("field1")
+        # print('created writer object')
+
+        # step1: convert shapely to pyshp using the function above
+        converted_shape = shapely_to_pyshp(poly)
+        # print('created converted shape')
+        # step2: tell the writer to add the converted shape
+        
+        shapewriter.shape(converted_shape)
+        # add a list of attributes to go along with the shape
+        shapewriter.record(["empty record"])
+        # save it
+        shapewriter.close()
+
+def shapely_to_pyshp(shapelygeom):
+    # first convert shapely to geojson
+    try:
+        shapelytogeojson = shapely.geometry.mapping
+    except:
+        import shapely.geometry
+        shapelytogeojson = shapely.geometry.mapping
+    geoj = shapelytogeojson(shapelygeom)
+    # create empty pyshp shape
+    record = shapefile.Shape()
+    # set shapetype
+    if geoj["type"] == "Null":
+        pyshptype = 0
+    elif geoj["type"] == "Point":
+        pyshptype = 1
+    elif geoj["type"] == "LineString":
+        pyshptype = 3
+    elif geoj["type"] == "Polygon":
+        pyshptype = 5
+    elif geoj["type"] == "MultiPoint":
+        pyshptype = 8
+    elif geoj["type"] == "MultiLineString":
+        pyshptype = 3
+    elif geoj["type"] == "MultiPolygon":
+        pyshptype = 5
+    record.shapeType = pyshptype
+    # set points and parts
+    if geoj["type"] == "Point":
+        record.points = geoj["coordinates"]
+        record.parts = [0]
+    elif geoj["type"] in ("MultiPoint","Linestring"):
+        record.points = geoj["coordinates"]
+        record.parts = [0]
+    elif geoj["type"] in ("Polygon"):
+        record.points = geoj["coordinates"][0]
+        record.parts = [0]
+    elif geoj["type"] in ("MultiPolygon","MultiLineString"):
+        index = 0
+        points = []
+        parts = []
+        for eachmulti in geoj["coordinates"]:
+            points.extend(eachmulti[0])
+            parts.append(index)
+            index += len(eachmulti[0])
+        record.points = points
+        record.parts = parts
+    return (record)
+
+def GetCountyShape(fips):
+    try:
+        shapefile_location = os.path.join(data_location,'cb_2018_us_county_500k','cb_2018_us_county_500k.shp')
+        assert os.path.exists(shapefile_location)
+
+        #Open the shapefile
+        county_map = shapefile.Reader(shapefile_location)
+        
+        #Loop through each place in the shape file
+        for i in range(len(county_map)):
+            county_record = county_map.shapeRecord(i)
+            #Look for the record that corresponds to our subject city
+            if (county_record.record['STATEFP']) + (county_record.record['COUNTYFP'])  != fips:
+                continue
+            
+            else:
+                county_shape        =  county_map.shape(i)
+                county_shape_polygon = Polygon(county_shape.points)
+                print('Successfully pulled county shape from shapefile')
+                try:
+                    PolygonToShapeFile(poly = county_shape_polygon)
+                except Exception as e:
+                    print(e,'unable to export county polygon as shape')
+
+                print('Successfully created polygon object from county shape')
+
+                return(county_shape) 
+    except Exception as e:
+        print(e,'unable to get county shape')
+
 def GetCountyData():
     print('Getting County Data')
     global county_gdp, county_pci
     global county_unemployment_rate,county_employment,county_unemployment
     global county_resident_pop,county_industry_breakdown,county_industry_growth_breakdown
     global county_mlp, county_edu
+    global county_shape
 
     #County GDP
     try:
@@ -626,6 +725,9 @@ def GetCountyData():
     except Exception as e: 
         print(e,' Problem getting education levels for county')
         county_edu                    = ''
+
+    #Get County Shape
+    county_shape = GetCountyShape(fips = fips)
 
 #MSA Data
 def GetMSAGDP(cbsa,observation_start):
