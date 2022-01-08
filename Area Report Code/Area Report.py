@@ -697,7 +697,7 @@ def FindAirport():
 
         return(airport_sentence)
     except Exception as e:
-        print(e,'Unable to locate airport inside the neighborhood area')
+        print(e,'Unable to locate airport inside the county area')
         return(None)
 
 def FindNearestHighways():
@@ -750,7 +750,7 @@ def FindNearestHighways():
 
 
 
-        sentence = (neighborhood + ' is served by the following roads: ')
+        sentence = (county + ' is served by the following roads: ')
 
         for count,highway in enumerate(highway_info_list):
             if count < len(highway_info_list) -1 :
@@ -760,7 +760,7 @@ def FindNearestHighways():
 
         return(sentence)
     except Exception as e:
-        print(e,'Unable to locate major roads inside the neighborhood area')
+        print(e,'Unable to locate major roads inside the county area')
         return(None)
  
 def GetCountyData():
