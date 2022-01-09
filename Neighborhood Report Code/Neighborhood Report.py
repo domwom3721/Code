@@ -4146,7 +4146,7 @@ def CommunityAssetsSection(document):
     AddTwoColumnTable(document,pic_list      = ['education.png','food.png','medical.png','park.png','retail.png'],lang_list =[education_language, food_language, hospital_language, park_language, retail_language] )
 
 def HousingSection(document):
-    print('Writing Neighborhood Section')
+    print('Writing Housing Section')
     AddHeading(document = document, title = 'Housing',                  heading_level = 1,heading_number='Heading 3',font_size=11)
     
     AddDocumentParagraph(document = document,language_variable =  housing_intro_language)
