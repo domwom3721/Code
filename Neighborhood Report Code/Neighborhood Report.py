@@ -1945,21 +1945,6 @@ def FindNearestHighways():
             highway_dict          = {'name':highway_name,'type':highway_type}
             highway_info_list.append(highway_dict)
             i+=1
-        
-
-
-
-
-
-
-
-        print(highway_info_list)
-
-
-
-
-
-
 
         #When there are more than 1 roads
         if len(highway_info_list) > 1:
