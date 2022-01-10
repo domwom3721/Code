@@ -2119,6 +2119,9 @@ def GetData():
     neighborhood_median_year_built                    = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'B25035_001E',operator = c.acs5)
     neighborhood_median_age                           = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'B01002_001E',operator = c.acs5)
 
+    #Handle missing values 
+    if neighborhood_median_year_built == '0':
+        neighborhood_median_year_built = 'NA'
     
 
     print('Getting Data For ' + comparison_area)
@@ -2137,6 +2140,11 @@ def GetData():
     comparison_median_year_built                      = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'B25035_001E',operator = c.acs5)
     comparison_median_age                             = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'B01002_001E',operator = c.acs5)
     
+    
+    #Handle missing values 
+    if comparison_median_year_built == '0':
+        comparison_median_year_built = 'NA'
+
     #Walk score
     walk_score_data                                   = GetWalkScore(            lat = latitude, lon = longitude                                                    )
 
