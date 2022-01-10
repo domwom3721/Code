@@ -1881,7 +1881,7 @@ def FindNearestAirport(lat,lon):
         airport_coord = airport.points
         airport_lat_lon = (airport_coord[0][1], airport_coord[0][0])
         dist = mpu.haversine_distance(airport_lat_lon, (lat, lon)) * 0.621371 #measure distance between airport and subject property   
-        
+
         if i == 0:
             min_dist           = dist
             cloest_airport_num = i
@@ -3116,7 +3116,9 @@ def BusLanguage():
         return(wikipedia_bus_language)
     
     else:
-        return(neighborhood + ' does not have public bus service.')
+        return( '[' + neighborhood + ' does not have public bus service.]' +
+                ' [---- provides public bus service within ' + neighborhood + '.]'
+                )
 
 def TrainLanguage():
     print('Creating train Langauge')
@@ -3124,7 +3126,10 @@ def TrainLanguage():
     if wikipedia_train_language != None:
         return(wikipedia_train_language)
     else:
-        return('There is limited use of public transit in ' + neighborhood + '. In fact, it is not served by any commuter or light-rail lines. For public transit options, residents and visitors utilize service in ____. ')
+        return('[There is limited use of public transit in ' + neighborhood + '. In fact, it is not served by any commuter or light-rail lines. For public transit options, residents and visitors utilize service in ____.]' +     
+              ' [---- provides public train service within ' + neighborhood + '.]'
+
+                 )
 
 def OutlookLanguage():
     print('Creating Outlook Langauge')
