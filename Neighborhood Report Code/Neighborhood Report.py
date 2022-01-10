@@ -157,18 +157,13 @@ def GetNeighborhoodShape():
             except Exception as e:
                 print(e,'unable to get geography from the city geojson file even tho it exists')
         
-        
-        
-        
-        
-        
-        
         #If we don't have the geojson file downloaded for the comparison city        
         print('Unable to find geography from the ' + comparison_area + ' geojson file') 
-
+        confirmation = input('Press enter to confirm you are using a hand drawn geography downloaded from online')
         #Define file locations
         file_download_location             = os.path.join(os.environ['USERPROFILE'],'Downloads', 'map.geojson') #download from here: http://geojson.io/#map=5/34.071/-72.817
         new_geojson_file_location          = os.path.join(data_location,'Neighborhood Shapes','Custom Hood Shapes', 'map.geojson')
+        final_geojson_file_location        = os.path.join(hood_folder_map,'map.geojson')
 
 
         #Step 1: Move the exported geojson file from downloads to data folder 
@@ -191,6 +186,10 @@ def GetNeighborhoodShape():
             PolygonToShapeFile(poly = neighborhood_shape_polygon)
         except Exception as e:
                 print(e,'unable to export neighborhood polygon as shape')
+        
+        #Move the geojson file from the data folder into the subject hoods map folder
+        shutil.move(file_download_location, new_geojson_file_location)
+
         return(neighborhood_shape) 
 
 
@@ -986,9 +985,11 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
 
         #Fetch census data for all relevant census tracts within the neighborhood
         raw_census_data = operator.geo_tract(fields_list, neighborhood_shape,year= year)
-        
         for tract_geojson, tract_data, tract_proportion in raw_census_data:
             neighborhood_tracts_data.append((tract_data))
+            # print(tract_geojson)
+            # print(tract_data)
+            # print(tract_proportion)
 
         #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
         neighborhood_household_size_distribution_raw = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = fields_list )
@@ -1544,7 +1545,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
        
         
         for tract_geojson, tract_data, tract_proportion in raw_census_data:
-            # print(tract_data,tract_proportion)
+            print(tract_data,tract_proportion)
             neighborhood_tracts_data.append((tract_data))
 
         #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
@@ -3205,7 +3206,7 @@ def HousingIntroLanguage():
     print('Creating housing intro Langauge')
     try:
         housing_mix_description = ('[diverse, with a variety of types, tenure status, age, and price points] [largely homogeneous with the majority of housing stock being owner-occupied single-family homes]')
-        
+
         housing_intro_language = ('Housing is one of the most identifiable characteristics of an area. Different elements related to housing, such as the property type, ' +
             'renter/owner mix, housing age, and household characteristics play crucial roles in how an area is defined. ' +
             'In ' + neighborhood + ', housing is ' + housing_mix_description +  '. ')
