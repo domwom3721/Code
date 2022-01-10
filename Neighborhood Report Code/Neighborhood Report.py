@@ -1896,38 +1896,40 @@ def FindNearestAirport(lat,lon):
     airport_lang = airport_lang.replace('Intl','International')
     return(airport_lang)
 
-def FindNearestHighways(lat,lon):
+def FindNearestHighways():
     
     try:
-        #Specify the file path to the  shape file
+        #Specify the file path to the shape file
         road_map_location = os.path.join(general_data_location,'Geographic Data','North_American_Roads','North_American_Roads.shp')
 
         #Open the shapefile
         road_map = shapefile.Reader(road_map_location)
-        highways_in_city_index_list = [] #Create empty list that we will fill with numbers that correspond to airports within the subject area
+        highways_in_city_index_list = [] #Create empty list that we will fill with numbers that correspond to roads within the subject area
         
-        #Find any airports inside the confines of the city
+        #Loop through the road map and find any roads inside the confines of the city. Once we identify one, add the index number to our list of highways (indexes)
         for i in range(len(road_map)):
             highway_coords        =  LineString(road_map.shape(i).points)           
             if neighborhood_shape_polygon.contains(highway_coords):
                 highways_in_city_index_list.append(i)
+        
+        #Now loop through our list of index numbers, for each index number, create a dictionary with key info (name, etc), append that dictionary to empty list
         i = 0
         highway_info_list = []    
         for highway_index in highways_in_city_index_list:     
             highway_record        = road_map.shapeRecord(highway_index)
-            highway_name          = highway_record.record['ROADNAME']
             
+
+            highway_name          = highway_record.record['ROADNAME'].title()
             #Clean up abbreviations
-            highway_name          = highway_name.replace('Hwy','Highway',1)
-            highway_name          = highway_name.replace('Pkwy','Parkway',1) 
+            highway_name          = highway_name.replace('Hwy','Highway')
+            highway_name          = highway_name.replace('Pkwy','Parkway') 
 
 
             #Don't add unnamed highways to our list
-            if highway_name == '':
+            if highway_name == '' or highway_name == 'Unknown':
                 continue
-            #If not the first highway
-            if i > 0:
-                #Check against the existing highways and make sure it's not a duplicate
+           
+            if i > 0:  #If not the first highway check against the existing highways and make sure it's not a duplicate
                 for d in highway_info_list:
                     existingname = d['name']
                     if highway_name == existingname:
@@ -1939,20 +1941,44 @@ def FindNearestHighways(lat,lon):
                     
            
             
-            highway_type          = highway_record.record['ADMIN']
+            highway_type          = highway_record.record['ADMIN'].title()
             highway_dict          = {'name':highway_name,'type':highway_type}
             highway_info_list.append(highway_dict)
             i+=1
+        
 
 
 
-        sentence = (neighborhood + ' is served by the following roads: ')
 
-        for count,highway in enumerate(highway_info_list):
-            if count < len(highway_info_list) -1 :
-                sentence = sentence + (highway['name'].title()) + ' ('  + (highway['type'].title())   + '), ' 
-            else:
-                sentence = sentence + 'and ' + (highway['name'].title()) + ' ('  + (highway['type'].title())   + ').' 
+
+
+
+        print(highway_info_list)
+
+
+
+
+
+
+
+        #When there are more than 1 roads
+        if len(highway_info_list) > 1:
+            sentence = (neighborhood + ' is served by the following roads: ')
+
+            for count,highway in enumerate(highway_info_list):
+               
+
+                if count < len(highway_info_list) -1 :
+                    sentence = sentence + (highway['name']) + ' ('  + (highway['type'])   + '), ' 
+                else:
+                    sentence = sentence + 'and ' + (highway['name']) + ' ('  + (highway['type'])   + ').' 
+        
+        
+        
+        #When we only have 1 major road in our list
+        elif len(highway_info_list) == 1:
+            sentence = (highway_info_list[0]['name'] + ' is the main road connecting ' + neighborhood + '.')
+
 
         return(sentence)
     except Exception as e:
@@ -3083,7 +3109,7 @@ def CarLanguage():
         return(wikipedia_car_language)
     else:
         print('No major highway information on wikipedia, using geographic data')
-        nearest_highway_language = FindNearestHighways(lat = latitude, lon = longitude)
+        nearest_highway_language = FindNearestHighways()
         if nearest_highway_language != None:
             return(nearest_highway_language)
         else:
