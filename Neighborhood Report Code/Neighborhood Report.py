@@ -1844,13 +1844,25 @@ def FindAirport():
 
         if airport_info_list == []:
             return(None)
-        airport_sentence = (neighborhood + ' is served by the following facilities: ')
+        
+        
+        
+        if len(airport_info_list) > 1:
+            airport_sentence = (neighborhood + ' is served by the following facilities: ')
 
-        for count,airport in enumerate(airport_info_list):
-            if count < len(airport_info_list) -1 :
-                airport_sentence = airport_sentence + (airport['name'].title()) + ' ('  + (airport['type'].title())   + '), ' 
-            else:
-                airport_sentence = airport_sentence + 'and ' + (airport['name'].title()) + ' ('  + (airport['type'].title())   + ').' 
+            for count,airport in enumerate(airport_info_list):
+                if count < len(airport_info_list) -1 :
+                    airport_sentence = airport_sentence + (airport['name'].title()) + ' ('  + (airport['type'].title())   + '), ' 
+                else:
+                    airport_sentence = airport_sentence + 'and ' + (airport['name'].title()) + ' ('  + (airport['type'].title())   + ').' 
+
+        elif len(airport_info_list) == 1:
+            airport_sentence = (neighborhood + ' is served by ' + (airport_info_list[0]['name'].title()) + ' '  + (airport_info_list[0]['type'].title()) +'.')
+
+
+
+
+
 
         return(airport_sentence)
     except Exception as e:
