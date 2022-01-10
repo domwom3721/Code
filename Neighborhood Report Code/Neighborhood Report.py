@@ -1906,6 +1906,8 @@ def FindNearestAirport(lat,lon):
     airport_lang = (neighborhood + ' is roughly ' + airport_distance + ' from ' + closest_airport.record['Fac_Name'].title() + ', a public ' +  closest_airport.record['Fac_Type'].lower() + '.' )
     
     airport_lang = airport_lang.replace('Intl','International')
+    airport_lang = airport_lang.replace('Rgnl','Regional')
+
     return(airport_lang)
 
 def FindNearestHighways():
