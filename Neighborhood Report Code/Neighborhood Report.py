@@ -1879,8 +1879,9 @@ def FindNearestAirport(lat,lon):
             continue
 
         airport_coord = airport.points
-        dist = mpu.haversine_distance( (airport_coord[0][1], airport_coord[0][0]), (lat, lon)) #measure distance between airport and subject property   
-
+        airport_lat_lon = (airport_coord[0][1], airport_coord[0][0])
+        dist = mpu.haversine_distance(airport_lat_lon, (lat, lon)) * 0.621371 #measure distance between airport and subject property   
+        
         if i == 0:
             min_dist           = dist
             cloest_airport_num = i
@@ -1889,9 +1890,7 @@ def FindNearestAirport(lat,lon):
             cloest_airport_num = i
 
     closest_airport = airport_map.shapeRecord(cloest_airport_num)
-    airport_distance = dist * 0.000621371 #convert from meters to miles
-    airport_distance = "{:,.1f} miles".format(airport_distance)     
-                                                       
+    airport_distance = "{:,.1f} miles".format(min_dist)   
     airport_lang = (neighborhood + ' is roughly ' + airport_distance + ' from ' + closest_airport.record['Fac_Name'].title() + ', a public ' +  closest_airport.record['Fac_Type'].lower() + '.' )
     
     airport_lang = airport_lang.replace('Intl','International')
