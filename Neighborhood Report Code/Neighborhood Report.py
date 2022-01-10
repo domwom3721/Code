@@ -176,7 +176,7 @@ def GetNeighborhoodShape():
 
 
         neighborhood_shape = my_shape_geojson['features'][0]['geometry']
-        print(neighborhood_shape)
+        # print(neighborhood_shape)
         print('Successfully pulled hood shape from downloaded custom geojson file')
 
          #Now that we have grabbed the coordinates for the area, export it as shapefile
@@ -188,7 +188,7 @@ def GetNeighborhoodShape():
                 print(e,'unable to export neighborhood polygon as shape')
         
         #Move the geojson file from the data folder into the subject hoods map folder
-        shutil.move(file_download_location, new_geojson_file_location)
+        shutil.move(new_geojson_file_location, final_geojson_file_location)
 
         return(neighborhood_shape) 
 
