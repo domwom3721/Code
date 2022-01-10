@@ -4794,7 +4794,7 @@ if batch_mode == True:
     
     #Let user select if doing batches from salesforce or user inputs
     try:
-        salesforce_batch_mode =  int(input_with_timeout('Select batch type (1 = salesforce list, 2 = user proivded county fips',5))  
+        salesforce_batch_mode =  int(input_with_timeout('Select batch type (1 = salesforce list, 2 = user proivded county fips',10))  
     except:
         salesforce_batch_mode = 1 #controls what report type we are doing batches of
     
