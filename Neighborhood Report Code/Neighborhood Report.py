@@ -3528,18 +3528,18 @@ def TravelMethodLanguage():
     
 def TravelTimeLanguage():
     print('Creating Travel Time Langauge')
-    travel_time_categories = ['< 5 Minutes','5-9 Minutes','10-14 Minutes','15-19 Minutes','20-24 Minutes','25-29 Minutes','30-34 Minutes','35-39 Minutes','40-44 Minutes','45-59 Minutes','60-89 Minutes','> 90 Minutes']
+    travel_time_categories = ['< 5 minutes','5-9 minutes','10-14 minutes','15-19 minutes','20-24 minutes','25-29 minutes','30-34 minutes','35-39 minutes','40-44 minutes','45-59 minutes','60-89 minutes','> 90 minutes']
 
 
     #Estimate a median household income from a category freqeuncy distribution
     hood_median_time_range   = FindMedianCategory(frequency_list=neighborhood_time_to_work_distribution, category_list = travel_time_categories) 
-    hood_median_time_range   = hood_median_time_range.replace(' Minutes','')
+    hood_median_time_range   = hood_median_time_range.replace(' minutes','')
     hood_median_time_range   = hood_median_time_range.replace(',','').split('-')
     hood_median_time         = (int(hood_median_time_range[0]) + int(hood_median_time_range[1]))/2
 
     #Estimate a median household income from a category freqeuncy distribution
     comp_median_time_range   = FindMedianCategory(frequency_list=comparison_time_to_work_distribution, category_list = travel_time_categories) 
-    comp_median_time_range   = comp_median_time_range.replace(' Minutes','')
+    comp_median_time_range   = comp_median_time_range.replace(' minutes','')
     comp_median_time_range   = comp_median_time_range.replace(',','').split('-')
     comp_median_time         = (int(comp_median_time_range[0]) + int(comp_median_time_range[1]))/2
     
