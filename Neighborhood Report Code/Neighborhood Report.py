@@ -1961,7 +1961,7 @@ def FindNearestHighways():
             i+=1
 
         #When there are more than 1 roads
-        if len(highway_info_list) > 1:
+        if len(highway_info_list) > 2:
             sentence = (neighborhood + ' is served by the following roads: ')
 
             for count,highway in enumerate(highway_info_list):
@@ -1977,6 +1977,12 @@ def FindNearestHighways():
         #When we only have 1 major road in our list
         elif len(highway_info_list) == 1:
             sentence = (highway_info_list[0]['name'] + ' is the main road connecting ' + neighborhood + '.')
+        
+        elif len(highway_info_list) == 2:
+           
+            sentence = ((highway_info_list[0]['name']) + ' ('  + (highway_info_list[0]['type'])   + ') ' + 'and '  + 
+                        (highway_info_list[1]['name']) + ' ('  + (highway_info_list[1]['type'])   + ') '
+                        + ' are the main roads connecting ' + neighborhood + '.')
 
 
         return(sentence)
