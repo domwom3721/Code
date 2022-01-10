@@ -3438,20 +3438,20 @@ def PopulationAgeLanguage():
 def IncomeLanguage():
     print('Creating HH Income Langauge')
     income_categories = ['under $10,000',
-                         '$10,000-14,999',
-                         '$15,000-19,999',
-                         '$20,000-24,999',
-                         '$25,000-29,999',
-                         '$30,000-34,999',
-                         '$35,000-39,999',
-                         '$40,000-44,999',
-                         '$45,000-49,999',
-                         '$50,000-59,999',
-                         '$60,000-74,999',
-                         '$75,000-99,999',
-                         '$100,000-124,999',
-                         '$125,000-149,999',
-                         '$150,000-199,999',
+                         'between $10,000-14,999',
+                         'between $15,000-19,999',
+                         'between $20,000-24,999',
+                         'between $25,000-29,999',
+                         'between $30,000-34,999',
+                         'between $35,000-39,999',
+                         'between $40,000-44,999',
+                         'between $45,000-49,999',
+                         'between $50,000-59,999',
+                         'between $60,000-74,999',
+                         'between $75,000-99,999',
+                         'between $100,000-124,999',
+                         'between $125,000-149,999',
+                         'between $150,000-199,999',
                          'over $200,000']
 
     #Estimate a median household income from a category freqeuncy distribution
@@ -3460,6 +3460,7 @@ def IncomeLanguage():
         hood_median_income     = hood_median_income_range
     else: 
         hood_median_income_range   = hood_median_income_range.replace('$','')
+        hood_median_income_range   = hood_median_income_range.replace('between ','')
         hood_median_income_range   = hood_median_income_range.replace(',','').split('-')
         hood_median_income         = round((int(hood_median_income_range[0]) + int(hood_median_income_range[1]))/2,1)
         hood_median_income         = "around ${:,.0f}".format(hood_median_income)  
