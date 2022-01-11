@@ -1555,12 +1555,14 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
 
     total_pop_field               = 'P001001'
     total_households_field        = 'H003002'
+    total_families_field          = 'P035001'
 
     acs_total_pop_field           = 'B01001_001E'
     acs_total_households_field    = ''  
 
     redistricting_total_pop_field = 'P1_001N'
     redistricting_total_hh_field  = 'H1_002N'
+    redistricting_total_f_field   = 'P1_035N'
 
     print('Getting 2010 Population and Total Households Estimate for Hood')
     #calculate table variables for hood
@@ -1755,6 +1757,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     comparsion_pop_growth   = "{:,.1f}%".format(comparsion_pop_growth)
     comparsion_hh_growth    = "{:,.1f}%".format(comparsion_hh_growth)
 
+    pop_language            = ('The following demographic profile, created with data from the U.S. Census Bureau, reflects the subjects minucipality and market. ')
 
     #each row represents a row of data for overview table
     row1 = [''          , 'Area',             '2010 Census',            current_estimate_period,                                      'Annualized % Change']
@@ -1764,7 +1767,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     row5 = [''          , comparison_area,     _2010_comparison_hh,     current_comparison_hh,                        comparsion_hh_growth ]
     
     if neighborhood_level != 'custom': #Don't include household rows for custom neighborhoods
-        return(    
+        return(    pop_language + '\n' + 
                 [ 
                 row1,
                 row2,
@@ -3726,7 +3729,7 @@ def RetailLanguage():
     
     retail_language                    = ('Transit linkages that contribute to the appeal of ' +
                                          neighborhood + 
-                                         ' offer access to shopping options such as ' + 
+                                         ' offer access to shopping options such as' + 
                                          ', '.join(retail_list) + 
                                          '.'
                                          
