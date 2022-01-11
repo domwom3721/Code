@@ -4245,6 +4245,7 @@ def AddPointOfInterestsTable(document,data_for_table): #Function we use to inser
 #####################################################Report sections functions####################################
 def IntroSection(document):
     print('Writing Intro Section')
+    # PageBreak(document)
     AddTitle(document = document)
     AddMap(document = document)
     Citation(document,'Google Maps')
