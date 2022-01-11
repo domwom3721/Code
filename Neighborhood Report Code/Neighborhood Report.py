@@ -979,21 +979,38 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
             operator = c_area.acs5
         elif operator == c.sf1:
             operator = c_area.sf1
+        
+        #First try using the smaller geographic level, if that fails use a larger one
+        try:
+            #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
+            neighborhood_tracts_data = []
 
-        #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
-        neighborhood_tracts_data = []
+            #Fetch census data for all relevant census tracts within the neighborhood
+            # raw_census_data = operator.geo_tract(fields_list, neighborhood_shape,year= year)
+            raw_census_data = operator.geo_blockgroup(fields_list, neighborhood_shape,year= year)
+            for tract_geojson, tract_data, tract_proportion in raw_census_data:
+                neighborhood_tracts_data.append((tract_data))
+                # print(tract_geojson)
+                print(tract_data)
+                print(tract_proportion)
 
-        #Fetch census data for all relevant census tracts within the neighborhood
-        raw_census_data = operator.geo_tract(fields_list, neighborhood_shape,year= year)
-        for tract_geojson, tract_data, tract_proportion in raw_census_data:
-            neighborhood_tracts_data.append((tract_data))
-            # print(tract_geojson)
-            # print(tract_data)
-            # print(tract_proportion)
+            #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
+            neighborhood_household_size_distribution_raw = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = fields_list )
+        except Exception as e:
+            print(e,'Data not available for blockgroup level, trying tract')
+             #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
+            neighborhood_tracts_data = []
 
-        #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
-        neighborhood_household_size_distribution_raw = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = fields_list )
-    
+            #Fetch census data for all relevant census tracts within the neighborhood
+            raw_census_data = operator.geo_tract(fields_list, neighborhood_shape,year= year)
+            for tract_geojson, tract_data, tract_proportion in raw_census_data:
+                neighborhood_tracts_data.append((tract_data))
+                # print(tract_geojson)
+                print(tract_data)
+                print(tract_proportion)
+
+            #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
+            neighborhood_household_size_distribution_raw = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = fields_list )
     
     #General data manipulation (same for all geographic levels)
     distribution = []
@@ -1111,21 +1128,38 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator):
         elif operator == c.sf1:
             operator = c_area.sf1
 
-        #Create empty list we will fill with values (one for each census tract within the custom shape/neighborhood)
-        neighborhood_tracts_data = []
+        try:
+            #Create empty list we will fill with values (one for each census tract within the custom shape/neighborhood)
+            neighborhood_tracts_data = []
 
-        #Fetch census data for all relevant census tracts within the neighborhood
-        raw_census_data = operator.geo_tract(field, neighborhood_shape,year= year)
-        for tract_geojson, tract_data, tract_proportion in raw_census_data:
-            tract_value = int(tract_data[field])
-            if tract_value >= 0:
-                neighborhood_tracts_data.append((tract_value))
-        
-        #We take the simple mean of the census tracts in the area
-        value = mean(neighborhood_tracts_data)
+            #Fetch census data for all relevant census tracts within the neighborhood
+            raw_census_data = operator.geo_blockgroup(field, neighborhood_shape,year= year)
+            for tract_geojson, tract_data, tract_proportion in raw_census_data:
+                tract_value = int(tract_data[field])
+                if tract_value >= 0:
+                    neighborhood_tracts_data.append((tract_value))
+            
+            #We take the simple mean of the census tracts in the area
+            value = mean(neighborhood_tracts_data)
 
-        return(value)
+            return(value)
+        except Exception as e:
+            print('Data not avilable for blockgroup, using tract level')
+                        #Create empty list we will fill with values (one for each census tract within the custom shape/neighborhood)
+            neighborhood_tracts_data = []
 
+            #Fetch census data for all relevant census tracts within the neighborhood
+            raw_census_data = operator.geo_tract(field, neighborhood_shape,year= year)
+            for tract_geojson, tract_data, tract_proportion in raw_census_data:
+                tract_value = int(tract_data[field])
+                if tract_value >= 0:
+                    neighborhood_tracts_data.append((tract_value))
+            
+            #We take the simple mean of the census tracts in the area
+            value = mean(neighborhood_tracts_data)
+
+            return(value)
+            
 #Households by number of memebrs
 def GetHouseholdSizeData(geographic_level,hood_or_comparison_area):
     print('Getting household size data for: ',hood_or_comparison_area)
@@ -1276,24 +1310,45 @@ def GetAgeData(geographic_level,hood_or_comparison_area):
         
     elif geographic_level == 'custom':
         
-        #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
-        neighborhood_male_tracts_data   = []
-        neighborhood_female_tracts_data = []
+        try:
+            #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
+            neighborhood_male_tracts_data   = []
+            neighborhood_female_tracts_data = []
 
-        #Fetch census data for all relevant census tracts within the neighborhood
-        raw_male_census_data   = c_area.acs5.geo_tract(male_fields_list, neighborhood_shape,year=acs_5y_year)
-        raw_female_census_data = c_area.acs5.geo_tract(female_fields_list, neighborhood_shape,year=acs_5y_year)
-        
+            #Fetch census data for all relevant census tracts within the neighborhood
+            raw_male_census_data   = c_area.acs5.geo_blockgroup(male_fields_list, neighborhood_shape,year=acs_5y_year)
+            raw_female_census_data = c_area.acs5.geo_blockgroup(female_fields_list, neighborhood_shape,year=acs_5y_year)
+            
 
-        for tract_geojson, tract_data, tract_proportion in raw_male_census_data:
-            neighborhood_male_tracts_data.append((tract_data))
-        
-        for tract_geojson, tract_data, tract_proportion in raw_female_census_data:
-            neighborhood_female_tracts_data.append((tract_data))
+            for tract_geojson, tract_data, tract_proportion in raw_male_census_data:
+                neighborhood_male_tracts_data.append((tract_data))
+            
+            for tract_geojson, tract_data, tract_proportion in raw_female_census_data:
+                neighborhood_female_tracts_data.append((tract_data))
 
-        #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
-        male_age_data   = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_male_tracts_data, fields_list   = male_fields_list )
-        female_age_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_female_tracts_data, fields_list = female_fields_list )
+            #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
+            male_age_data   = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_male_tracts_data, fields_list   = male_fields_list )
+            female_age_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_female_tracts_data, fields_list = female_fields_list )
+        except Exception as e:
+            print(e,'unable to use blockgroup level, using tract')
+            #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
+            neighborhood_male_tracts_data   = []
+            neighborhood_female_tracts_data = []
+
+            #Fetch census data for all relevant census tracts within the neighborhood
+            raw_male_census_data   = c_area.acs5.geo_tract(male_fields_list, neighborhood_shape,year=acs_5y_year)
+            raw_female_census_data = c_area.acs5.geo_tract(female_fields_list, neighborhood_shape,year=acs_5y_year)
+            
+
+            for tract_geojson, tract_data, tract_proportion in raw_male_census_data:
+                neighborhood_male_tracts_data.append((tract_data))
+            
+            for tract_geojson, tract_data, tract_proportion in raw_female_census_data:
+                neighborhood_female_tracts_data.append((tract_data))
+
+            #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
+            male_age_data   = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_male_tracts_data, fields_list   = male_fields_list )
+            female_age_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_female_tracts_data, fields_list = female_fields_list )
 
     #Create an empty list and place the age values from the dictionary inside of it
     male_age_breakdown = []
@@ -1427,29 +1482,47 @@ def GetNumberUnitsData(geographic_level,hood_or_comparison_area):
             return()
 
     elif geographic_level == 'custom':
-        #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
-        neighborhood_oo_tracts_data   = []
-        neighborhood_ro_tracts_data = []
+        try:
+            #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
+            neighborhood_oo_tracts_data   = []
+            neighborhood_ro_tracts_data = []
 
-        #Fetch census data for all relevant census tracts within the neighborhood
-        raw_oo_census_data   = c_area.acs5.geo_tract(owner_occupied_fields_list, neighborhood_shape,year=acs_5y_year)
-        raw_ro_census_data = c_area.acs5.geo_tract(renter_occupied_fields_list, neighborhood_shape,year=acs_5y_year)
+            #Fetch census data for all relevant census tracts within the neighborhood
+            raw_oo_census_data   = c_area.acs5.geo_blockgroup(owner_occupied_fields_list, neighborhood_shape,year=acs_5y_year)
+            raw_ro_census_data = c_area.acs5.geo_blockgroup(renter_occupied_fields_list, neighborhood_shape,year=acs_5y_year)
+            
+
+            for tract_geojson, tract_data, tract_proportion in raw_oo_census_data:
+                neighborhood_oo_tracts_data.append((tract_data))
+            
+            for tract_geojson, tract_data, tract_proportion in raw_ro_census_data:
+                neighborhood_ro_tracts_data.append((tract_data))
+
+            #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
+            owner_occupied_units_raw_data   = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_oo_tracts_data, fields_list   = owner_occupied_fields_list )
+            renter_occupied_units_raw_data  = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_ro_tracts_data, fields_list = renter_occupied_fields_list )
+        except Exception as e:
+            print(e,'unable to block group level, using tracts instead')
+            #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
+            neighborhood_oo_tracts_data   = []
+            neighborhood_ro_tracts_data = []
+
+            #Fetch census data for all relevant census tracts within the neighborhood
+            raw_oo_census_data   = c_area.acs5.geo_tract(owner_occupied_fields_list, neighborhood_shape,year=acs_5y_year)
+            raw_ro_census_data = c_area.acs5.geo_tract(renter_occupied_fields_list, neighborhood_shape,year=acs_5y_year)
+            
+
+            for tract_geojson, tract_data, tract_proportion in raw_oo_census_data:
+                neighborhood_oo_tracts_data.append((tract_data))
+            
+            for tract_geojson, tract_data, tract_proportion in raw_ro_census_data:
+                neighborhood_ro_tracts_data.append((tract_data))
+
+            #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
+            owner_occupied_units_raw_data   = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_oo_tracts_data, fields_list   = owner_occupied_fields_list )
+            renter_occupied_units_raw_data  = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_ro_tracts_data, fields_list = renter_occupied_fields_list )
         
-
-        for tract_geojson, tract_data, tract_proportion in raw_oo_census_data:
-            neighborhood_oo_tracts_data.append((tract_data))
         
-        for tract_geojson, tract_data, tract_proportion in raw_ro_census_data:
-            neighborhood_ro_tracts_data.append((tract_data))
-
-        #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
-        owner_occupied_units_raw_data   = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_oo_tracts_data, fields_list   = owner_occupied_fields_list )
-        renter_occupied_units_raw_data  = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_ro_tracts_data, fields_list = renter_occupied_fields_list )
-
-    
-    
-
-
     #Create an empty list and place the values from the dictionary inside of it
     owner_occupied_units_data = []
     for field in owner_occupied_fields_list:
@@ -1541,7 +1614,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         neighborhood_tracts_data = []
 
         #Fetch census data for all relevant census tracts within the neighborhood
-        raw_census_data = c_area.sf1.geo_tract(total_pop_field, neighborhood_shape,year = decennial_census_year)
+        raw_census_data = c_area.sf1.geo_blockgroup(total_pop_field, neighborhood_shape,year = decennial_census_year)
        
         
         for tract_geojson, tract_data, tract_proportion in raw_census_data:
@@ -1557,7 +1630,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         neighborhood_tracts_data = []
 
         #Fetch census data for all relevant census tracts within the neighborhood
-        raw_census_data = c_area.sf1.geo_tract(total_households_field, neighborhood_shape,year = decennial_census_year)
+        raw_census_data = c_area.sf1.geo_blockgroup(total_households_field, neighborhood_shape,year = decennial_census_year)
         
         for tract_geojson, tract_data, tract_proportion in raw_census_data:
             # print(tract_data,tract_proportion)
@@ -1573,7 +1646,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         neighborhood_tracts_data = []
 
         #Fetch census data for all relevant census tracts within the neighborhood
-        raw_census_data = c_area.acs5.geo_tract(acs_total_pop_field, neighborhood_shape,year=acs_5y_year)
+        raw_census_data = c_area.acs5.geo_blockgroup(acs_total_pop_field, neighborhood_shape,year=acs_5y_year)
        
         
         for tract_geojson, tract_data, tract_proportion in raw_census_data:
