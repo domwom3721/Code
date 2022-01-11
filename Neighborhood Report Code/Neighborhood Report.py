@@ -3792,7 +3792,7 @@ def CreateLanguage():
 
     global summary_langauge, conclusion_langauge
     global bus_language, car_language, plane_language, train_language
-    global population_age_language, income_language
+    global population_age_language, income_language, pop_language
     global travel_method_language, travel_time_language
     global housing_value_language, year_built_language
     global household_size_language, housing_intro_language, housing_type_tenure_language
@@ -3813,6 +3813,7 @@ def CreateLanguage():
     retail_language                    = RetailLanguage()
 
     #Paragraph Language
+    population_language                = PopulationLanguage()
     population_age_language            = PopulationAgeLanguage()
     income_language                    = IncomeLanguage()
     household_size_language            = HouseholdSizeLanguage()
@@ -4262,16 +4263,16 @@ def IntroSection(document):
    
     #Add neighborhood overview language
     AddDocumentParagraph(document = document,language_variable =  summary_langauge)
-    if neighborhood_level == 'custom':
-        AddTableTitle(document = document, title = 'Population Growth')
-    else:
-        AddTableTitle(document = document, title = 'Population and Household Growth')
-    
-    try:
+    #if neighborhood_level == 'custom':
+    #    AddTableTitle(document = document, title = 'Population Growth')
+    #else:
+    #    AddTableTitle(document = document, title = 'Population and Household Growth')
+    #
+    #try:
         #Add Overview Table
-        AddTable(document = document,data_for_table = overview_table_data )
-    except Exception as e:
-        print(e,'Unable to add overview table')
+    #    AddTable(document = document,data_for_table = overview_table_data )
+    #except Exception as e:
+    #    print(e,'Unable to add overview table')
 
 def CommunityAssetsSection(document):
     print('Writing Community Assets Section')
@@ -4346,7 +4347,18 @@ def PopulationSection(document):
     print('Writing Population Section')
     
     AddHeading(document = document, title = 'Population',                                     heading_level = 1,heading_number='Heading 3',font_size=11)
+    AddDocumentParagraph(document = document,language_variable =  pop_langauge)
+    if neighborhood_level == 'custom':
+        AddTableTitle(document = document, title = 'Population Growth')
+    else:
+        AddTableTitle(document = document, title = 'Population and Household Growth')
     
+    try:
+        #Add Overview Table
+        AddTable(document = document,data_for_table = overview_table_data )
+    except Exception as e:
+        print(e,'Unable to add overview table')
+
     #household size langauge
     AddDocumentParagraph(document = document,language_variable =  household_size_language)
 
