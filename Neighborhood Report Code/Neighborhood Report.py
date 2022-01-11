@@ -3331,9 +3331,9 @@ def HousingTypeTenureLanguage():
         single_family_fraction    = float(neighborhood_number_units_data[0])
         fifty_plus_units_fraction = float(neighborhood_number_units_data[len(neighborhood_number_units_data) -1])
         if  single_family_fraction > 0 and fifty_plus_units_fraction > 0:
-            available_housing_types_list = ('single family homes, some smaller multifamily properties, along with larger garden style properties, and even some buildings with 50+ units')
+            available_housing_types_list = ('single-family homes, some smaller multifamily properties, along with larger garden style properties, and even some buildings with 50+ units')
         else:
-            available_housing_types_list = ('single family homes, some smaller multifamily properties, and some larger garden style properties')
+            available_housing_types_list = ('single-family homes, some smaller multifamily properties, and some larger garden style properties')
 
 
         housing_type_tenure_langugage = ('Data from the the most recent American Community Survey indicates a presence of ' + 
