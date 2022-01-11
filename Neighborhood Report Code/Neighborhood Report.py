@@ -991,8 +991,8 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
             for tract_geojson, tract_data, tract_proportion in raw_census_data:
                 neighborhood_tracts_data.append((tract_data))
                 # print(tract_geojson)
-                print(tract_data)
-                print(tract_proportion)
+                # print(tract_data)
+                # print(tract_proportion)
 
             #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
             neighborhood_household_size_distribution_raw = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = fields_list )
@@ -1006,8 +1006,8 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
             for tract_geojson, tract_data, tract_proportion in raw_census_data:
                 neighborhood_tracts_data.append((tract_data))
                 # print(tract_geojson)
-                print(tract_data)
-                print(tract_proportion)
+                # print(tract_data)
+                # print(tract_proportion)
 
             #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
             neighborhood_household_size_distribution_raw = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = fields_list )
@@ -1618,7 +1618,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
        
         
         for tract_geojson, tract_data, tract_proportion in raw_census_data:
-            print(tract_data,tract_proportion)
+            # print(tract_data,tract_proportion)
             neighborhood_tracts_data.append((tract_data))
 
         #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
@@ -1659,7 +1659,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
 
 
         #2020 HH
-        print('Getting current households for custom hood area')
+        # print('Getting current households for custom hood area')
         current_hood_hh = 'NA'
         # neighborhood_tracts_data = []
 
@@ -3328,17 +3328,27 @@ def HousingTypeTenureLanguage():
         else:
             hood_owner_ouccupied_higher_lower   =  '[lower than/higher than/equal to]'
         
-        housing_type_tenure_langugage = ('Data from the the most recent American Community Survey indicates a presence of single family homes, some smaller multifamily properties, along with larger garden style properties, and even some buildings with 50+ units. ' +
-                                        most_common_category + 
-                                        ' are the most common form of housing in ' +
-                                        neighborhood +
-                                        ', followed by ' +
-                                        second_most_common_category + 
-                                        '. ' +
-                                        "{:,.0f}%".format(hood_owner_occupied_fraction)                        +   
-                                        ' of the housing units in '                                             + 
-                                        neighborhood                                                            + 
-                                        ' were occupied by their owner. '                                       +
+        single_family_fraction    = number_units_categories[0]
+        fifty_plus_units_fraction = number_units_categories[len(number_units_categories) -1]
+        if  single_family_fraction > 0 and fifty_plus_units_fraction > 0:
+            available_housing_types_list = ('single family homes, some smaller multifamily properties, along with larger garden style properties, and even some buildings with 50+ units')
+        else:
+            available_housing_types_list = ('single family homes, some smaller multifamily properties, and some larger garden style properties')
+
+
+        housing_type_tenure_langugage = ('Data from the the most recent American Community Survey indicates a presence of ' + 
+                                        available_housing_types_list                                             + 
+                                        '. '                                                                     +
+                                        most_common_category                                                     +  
+                                        ' are the most common form of housing in '                               +
+                                        neighborhood                                                             +
+                                        ', followed by '                                                         +
+                                        second_most_common_category                                              + 
+                                        '. '                                                                     +
+                                        "{:,.0f}%".format(hood_owner_occupied_fraction)                          +   
+                                        ' of the housing units in '                                              + 
+                                        neighborhood                                                             + 
+                                        ' were occupied by their owner. '                                        +
                                         'This percentage of owner-occupation is '                                +
                                         hood_owner_ouccupied_higher_lower                                        + 
                                         ' the '                                                                  +
