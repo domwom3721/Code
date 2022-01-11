@@ -3667,8 +3667,9 @@ def LocationIQPOIList(lat,lon,category):
     'lat': lat,
     'lon': lon,
     'tag': category,
-    'radius': 5000,
-    'format': 'json'
+    'radius': 10000,
+    'format': 'json',
+    'limit': 10
         }
 
     try:
