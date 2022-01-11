@@ -3691,7 +3691,7 @@ def FoodLanguage():
     #This function returns a string we will place in the community assets table in the food row 
     food_list                          = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['restaurant','pub'] ) 
     
-    food_language                      = (' For restaurants and other dining options, ' + neighborhood + ' offers a number of options including ' +
+    food_language                      = ('For restaurants and other eating locations, ' + neighborhood + ' offers options such as ' +
 
                                          ', '.join(food_list) + 
                                          '.'
@@ -3716,7 +3716,7 @@ def HospitalLanguage():
 
 def ParkLangauge():
     #This function returns a string we will place in the community assets table in the park row 
-    park_list                          = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['park','stadium','leisure'] ) 
+    park_list                          = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['park','stadium','leisure'], limit = 3 ) 
     
     park_language                      = (neighborhood + 
                                          
