@@ -1136,7 +1136,7 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator):
             raw_census_data = operator.geo_blockgroup(field, neighborhood_shape,year= year)
             for tract_geojson, tract_data, tract_proportion in raw_census_data:
                 tract_value = int(tract_data[field])
-                if tract_value >= 0:
+                if tract_value > 0:
                     neighborhood_tracts_data.append((tract_value))
             
             #We take the simple mean of the census tracts in the area
@@ -1152,7 +1152,7 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator):
             raw_census_data = operator.geo_tract(field, neighborhood_shape,year= year)
             for tract_geojson, tract_data, tract_proportion in raw_census_data:
                 tract_value = int(tract_data[field])
-                if tract_value >= 0:
+                if tract_value > 0:
                     neighborhood_tracts_data.append((tract_value))
             
             #We take the simple mean of the census tracts in the area
