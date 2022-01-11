@@ -1757,7 +1757,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     comparsion_pop_growth   = "{:,.1f}%".format(comparsion_pop_growth)
     comparsion_hh_growth    = "{:,.1f}%".format(comparsion_hh_growth)
 
-    pop_language            = ('The following demographic profile, created with data from the U.S. Census Bureau, reflects the subjects minucipality and market. ')
+    #global pop_language: ('The following demographic profile, created with data from the U.S. Census Bureau, reflects the subjects minucipality and market. ')
 
     #each row represents a row of data for overview table
     row1 = [''          , 'Area',             '2010 Census',            current_estimate_period,                                      'Annualized % Change']
@@ -3813,7 +3813,7 @@ def CreateLanguage():
     retail_language                    = RetailLanguage()
 
     #Paragraph Language
-    population_language                = PopulationLanguage()
+    pop_language                       = Pop_Language()
     population_age_language            = PopulationAgeLanguage()
     income_language                    = IncomeLanguage()
     household_size_language            = HouseholdSizeLanguage()
