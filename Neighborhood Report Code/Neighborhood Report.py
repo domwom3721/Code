@@ -2135,6 +2135,7 @@ def GetData():
     global neighborhood_median_year_built, comparison_median_year_built
     global neighborhood_median_age, comparison_median_age
     global neighborhood_average_hh_size,comparison_average_hh_size
+    global neighborhood_median_hh_inc,comparison_median_hh_inc
     print('Getting Data for ' + neighborhood)
 
     #Start by getting our distributions for our graphs
@@ -2152,6 +2153,7 @@ def GetData():
     neighborhood_median_home_value                    = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'B25077_001E',operator = c.acs5)
     neighborhood_median_year_built                    = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'B25035_001E',operator = c.acs5)
     neighborhood_median_age                           = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'B01002_001E',operator = c.acs5)
+    neighborhood_median_hh_inc                        = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'B19013_001E',operator = c.acs5)
     neighborhood_average_hh_size                      = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'H012001',operator = c.sf1)
 
     #Handle missing values 
@@ -2174,6 +2176,7 @@ def GetData():
     comparison_median_home_value                      = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'B25077_001E',operator = c.acs5)
     comparison_median_year_built                      = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'B25035_001E',operator = c.acs5)
     comparison_median_age                             = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'B01002_001E',operator = c.acs5)
+    comparison_median_hh_inc                          = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'B19013_001E',operator = c.acs5)
     comparison_average_hh_size                        = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'H012001',    operator = c.sf1)
     
     
@@ -3470,15 +3473,15 @@ def IncomeLanguage():
                          'over $200,000']
 
     #Estimate a median household income from a category freqeuncy distribution
-    hood_median_income_range   = FindMedianCategory(frequency_list=neighborhood_household_income_data, category_list=income_categories)
-    if (hood_median_income_range == 'under $10,000') or (hood_median_income_range == 'over $200,000'):
-        hood_median_income     = hood_median_income_range
-    else: 
-        hood_median_income_range   = hood_median_income_range.replace('$','')
-        hood_median_income_range   = hood_median_income_range.replace('between ','')
-        hood_median_income_range   = hood_median_income_range.replace(',','').split('-')
-        hood_median_income         = round((int(hood_median_income_range[0]) + int(hood_median_income_range[1]))/2,1)
-        hood_median_income         = "around ${:,.0f}".format(hood_median_income)  
+    # hood_median_income_range   = FindMedianCategory(frequency_list=neighborhood_household_income_data, category_list=income_categories)
+    # if (hood_median_income_range == 'under $10,000') or (hood_median_income_range == 'over $200,000'):
+    #     hood_median_income     = hood_median_income_range
+    # else: 
+    #     hood_median_income_range   = hood_median_income_range.replace('$','')
+    #     hood_median_income_range   = hood_median_income_range.replace('between ','')
+    #     hood_median_income_range   = hood_median_income_range.replace(',','').split('-')
+    #     hood_median_income         = round((int(hood_median_income_range[0]) + int(hood_median_income_range[1]))/2,1)
+    #     hood_median_income         = "around ${:,.0f}".format(hood_median_income)  
 
     hood_largest_income_category = income_categories[neighborhood_household_income_data.index(max(neighborhood_household_income_data))] #get the most common income category
     comp_largest_income_category = income_categories[comparison_household_income_data.index(max(comparison_household_income_data))]
@@ -3487,7 +3490,7 @@ def IncomeLanguage():
     income_language = ('Households in '                                      +
                        neighborhood                                          + 
                        ' have a median household income of '                 + 
-                        hood_median_income                                   +
+                        "${:,.1f}".format(neighborhood_median_age)           +
                        '. '                                                  +
                        
                        'In '                                                 + 
