@@ -1757,8 +1757,6 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     comparsion_pop_growth   = "{:,.1f}%".format(comparsion_pop_growth)
     comparsion_hh_growth    = "{:,.1f}%".format(comparsion_hh_growth)
 
-    #pop_language: ('The following demographic profile, created with data from the U.S. Census Bureau, reflects the subjects minucipality and market. ')
-
     #each row represents a row of data for overview table
     row1 = [''          , 'Area',             '2010 Census',            current_estimate_period,                                      'Annualized % Change']
     row2 = ['Population', neighborhood,        _2010_hood_pop,          current_hood_pop ,                                 hood_pop_growth ]
@@ -3508,7 +3506,7 @@ def HouseholdSizeLanguage():
 def PopLanguage():
     print('Creating Population intro Langauge')
 
-    pop_disclaimer = ('The following demographic profile, created with data from the U.S. Census Bureau, reflects the subjects municipality and market. ')
+    population_language = ('The following demographic profile, created with data from the U.S. Census Bureau, reflects the subjects municipality and market. ')
 	
     return([population_language])
 
@@ -4354,7 +4352,7 @@ def PopulationSection(document):
     print('Writing Population Section')
     
     AddHeading(document = document, title = 'Population',                                     heading_level = 1,heading_number='Heading 3',font_size=11)
-    AddDocumentParagraph(document = document,language_variable =  population_langauge)
+    AddDocumentParagraph(document = document,language_variable =  population_language)
     if neighborhood_level == 'custom':
         AddTableTitle(document = document, title = 'Population Growth')
     else:
