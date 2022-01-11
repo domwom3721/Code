@@ -1767,7 +1767,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     row5 = [''          , comparison_area,     _2010_comparison_hh,     current_comparison_hh,                        comparsion_hh_growth ]
     
     if neighborhood_level != 'custom': #Don't include household rows for custom neighborhoods
-        return(    pop_language + '\n' + 
+        return(pop_language + '\n' +  
                 [ 
                 row1,
                 row2,
