@@ -3211,7 +3211,7 @@ def OutlookLanguage():
 def HousingIntroLanguage():
     print('Creating housing intro Langauge')
     try:
-        housing_mix_description = ('[diverse, with a variety of types, tenure status, age, and price points] [largely homogeneous with the majority of housing stock being owner-occupied single-family homes]')
+        housing_mix_description = ('[diverse, with a variety of types, tenure status, age, and price points] [largely homogeneous with the majority of the housing stock being owner-occupied single-family homes]')
 
         housing_intro_language = ('Housing is one of the most identifiable characteristics of an area. Different elements related to housing, such as the property type, ' +
             'renter/owner mix, housing age, and household characteristics play crucial roles in how an area is defined. ' +
