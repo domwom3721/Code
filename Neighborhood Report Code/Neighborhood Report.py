@@ -3328,8 +3328,8 @@ def HousingTypeTenureLanguage():
         else:
             hood_owner_ouccupied_higher_lower   =  '[lower than/higher than/equal to]'
         
-        single_family_fraction    = number_units_categories[0]
-        fifty_plus_units_fraction = number_units_categories[len(number_units_categories) -1]
+        single_family_fraction    = float(number_units_categories[0])
+        fifty_plus_units_fraction = float(number_units_categories[len(number_units_categories) -1])
         if  single_family_fraction > 0 and fifty_plus_units_fraction > 0:
             available_housing_types_list = ('single family homes, some smaller multifamily properties, along with larger garden style properties, and even some buildings with 50+ units')
         else:
