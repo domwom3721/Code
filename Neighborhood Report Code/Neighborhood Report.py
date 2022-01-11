@@ -3912,7 +3912,7 @@ def OverlayMapImages():
         assert (os.path.exists(map_path)) and (os.path.exists(map2_path))
     except:
         print('Unable to make overlayed map')
-        return()
+        return('\n')
 
     #Open zommed out map
     img1 = Image.open(map2_path)
