@@ -3505,6 +3505,13 @@ def HouseholdSizeLanguage():
     
     return([household_size_language])
 
+def PopLanguage():
+    print('Creating Population intro Langauge')
+
+    pop_disclaimer = ('The following demographic profile, created with data from the U.S. Census Bureau, reflects the subjects municipality and market. ')
+	
+    return([population_language])
+
 def PopulationAgeLanguage():
     print('Creating Population by Age Langauge')
     try:
@@ -3792,7 +3799,7 @@ def CreateLanguage():
 
     global summary_langauge, conclusion_langauge
     global bus_language, car_language, plane_language, train_language
-    global population_age_language, income_language
+    global population_age_language, income_language, population_language
     global travel_method_language, travel_time_language
     global housing_value_language, year_built_language
     global household_size_language, housing_intro_language, housing_type_tenure_language
@@ -3803,6 +3810,7 @@ def CreateLanguage():
     housing_intro_language             =  HousingIntroLanguage()
     housing_value_language             =  HousingValueLanguage()
     year_built_language                =  HousingYearBuiltLanguage()
+    population_language                =  PopLanguage()
 
     #Communtiy assets langauge variables
     community_assets_language          = CommunityAssetsLanguage()
@@ -3813,7 +3821,6 @@ def CreateLanguage():
     retail_language                    = RetailLanguage()
 
     #Paragraph Language
-    #pop_language                       = Pop_Language()
     population_age_language            = PopulationAgeLanguage()
     income_language                    = IncomeLanguage()
     household_size_language            = HouseholdSizeLanguage()
@@ -4347,7 +4354,7 @@ def PopulationSection(document):
     print('Writing Population Section')
     
     AddHeading(document = document, title = 'Population',                                     heading_level = 1,heading_number='Heading 3',font_size=11)
-    AddDocumentParagraph(document = document,language_variable =  pop_langauge)
+    AddDocumentParagraph(document = document,language_variable =  population_langauge)
     if neighborhood_level == 'custom':
         AddTableTitle(document = document, title = 'Population Growth')
     else:
