@@ -3464,12 +3464,8 @@ def EmploymentLanguage():
 def HouseholdSizeLanguage():
     print('Creating Household by Size Langauge')
 
-    household_size_categories = ['1','2','3','4','5','6','7+']
+    household_size_categories = ['1 person','2 people','3 people','4 people','5 people','6 people','7 or more people']
 
-    #Median Household size for hood
-    hood_median_size   = int(FindMedianCategory(frequency_list = neighborhood_household_size_distribution, category_list = household_size_categories).replace('+',''))
-    comp_median_size   = int(FindMedianCategory(frequency_list = comparison_household_size_distribution,   category_list = household_size_categories).replace('+',''))
-    
     #Largest cateogy for hood and comparsion area
     hood_largest_time_category = household_size_categories[neighborhood_household_size_distribution.index(max(neighborhood_household_size_distribution))] #get the most common household size category
     comp_largest_time_category = household_size_categories[comparison_household_size_distribution.index(max(comparison_household_size_distribution))]
@@ -3486,7 +3482,7 @@ def HouseholdSizeLanguage():
                               neighborhood                                             + 
                               ', the largest share of households have '                +
                               hood_largest_time_category                               +
-                              ' people, compared to '                                  +
+                              ', compared to '                                  +
                               comp_largest_time_category                               +
                               ' for '                                                  +
                               comparison_area                                          +
