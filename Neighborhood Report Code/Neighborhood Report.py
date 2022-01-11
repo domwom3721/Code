@@ -3406,7 +3406,7 @@ def HouseholdSizeLanguage():
                               ' have an average size of '                              + 
                               "{:,.1f} people".format(neighborhood_average_hh_size)    +
                               ', compared to '                                         +
-                              comparison_average_hh_size                               +
+                              "{:,.1f} people".format(comparison_average_hh_size)      +
                               ' in '                                                   +   
                               comparison_area                                          +
                               '. In '                                                  + 
