@@ -1122,10 +1122,7 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator):
                 neighborhood_tracts_data.append((tract_value))
         
         #We take the simple mean of the census tracts in the area
-        if field == 'H013001': #for HH field, don't take mean, return total
-            value = sum(neighborhood_tracts_data)
-        else:
-            value = mean(neighborhood_tracts_data)
+        value = mean(neighborhood_tracts_data)
 
         return(value)
 
