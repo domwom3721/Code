@@ -3490,7 +3490,7 @@ def IncomeLanguage():
     income_language = ('Households in '                                      +
                        neighborhood                                          + 
                        ' have a median household income of '                 + 
-                        "${:,.1f}".format(neighborhood_median_age)           +
+                        "${:,.1f}".format(neighborhood_median_hh_inc)           +
                        '. '                                                  +
                        
                        'In '                                                 + 
