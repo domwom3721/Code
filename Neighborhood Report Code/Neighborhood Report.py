@@ -3724,10 +3724,9 @@ def RetailLanguage():
     #This function returns a string we will place in the community assets table in the retail row 
     retail_list                        = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['shop'] ) 
     
-    retail_language                    = (neighborhood + 
-                                         
-                                         ' has many stores for shopping including ' + 
-
+    retail_language                    = ('Transit linkages that contribute to the appeal of ' +
+                                         neighborhood + 
+                                         ' offer access to shopping options such as' + 
                                          ', '.join(retail_list) + 
                                          '.'
                                          
