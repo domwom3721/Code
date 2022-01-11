@@ -2137,7 +2137,7 @@ def GetData():
     global neighborhood_median_home_value, comparison_median_home_value
     global neighborhood_median_year_built, comparison_median_year_built
     global neighborhood_median_age, comparison_median_age
-    global neighborhood_total_hh,comparison_total_hh
+    global neighborhood_average_hh_size,comparison_average_hh_size
     print('Getting Data for ' + neighborhood)
 
     #Start by getting our distributions for our graphs
@@ -2155,7 +2155,7 @@ def GetData():
     neighborhood_median_home_value                    = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'B25077_001E',operator = c.acs5)
     neighborhood_median_year_built                    = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'B25035_001E',operator = c.acs5)
     neighborhood_median_age                           = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'B01002_001E',operator = c.acs5)
-    neighborhood_total_hh                             = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'H013001',operator = c.sf1)
+    neighborhood_average_hh_size                      = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'H012001',operator = c.sf1)
 
     #Handle missing values 
     if neighborhood_median_year_built == '0':
@@ -2177,7 +2177,7 @@ def GetData():
     comparison_median_home_value                      = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'B25077_001E',operator = c.acs5)
     comparison_median_year_built                      = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'B25035_001E',operator = c.acs5)
     comparison_median_age                             = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'B01002_001E',operator = c.acs5)
-    comparison_total_hh                               = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'H013001',    operator = c.sf1)
+    comparison_average_hh_size                        = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'H012001',    operator = c.sf1)
     
     
     #Handle missing values 
@@ -3392,16 +3392,6 @@ def HouseholdSizeLanguage():
     print('Creating Household by Size Langauge')
 
     household_size_categories = ['1','2','3','4','5','6','7+']
-    
-    hood_average_size = ( 
-        ((neighborhood_total_hh * neighborhood_household_size_distribution[0]) * 1 ) + 
-        ((neighborhood_total_hh * neighborhood_household_size_distribution[1]) * 2 ) + 
-        ((neighborhood_total_hh * neighborhood_household_size_distribution[2]) * 3 ) + 
-        ((neighborhood_total_hh * neighborhood_household_size_distribution[3]) * 4 ) + 
-        ((neighborhood_total_hh * neighborhood_household_size_distribution[4]) * 5 ) + 
-        ((neighborhood_total_hh * neighborhood_household_size_distribution[5]) * 6 ) + 
-        ((neighborhood_total_hh * neighborhood_household_size_distribution[6]) * 7 )   
-        )/neighborhood_total_hh
 
     #Median Household size for hood
     hood_median_size   = int(FindMedianCategory(frequency_list = neighborhood_household_size_distribution, category_list = household_size_categories).replace('+',''))
@@ -3414,7 +3404,7 @@ def HouseholdSizeLanguage():
     household_size_language = ('Households in '                                        +
                                neighborhood                                            + 
                               ' have an average size of '                              + 
-                              "{:,.1f} people".format(hood_average_size)               +
+                              "{:,.1f} people".format(neighborhood_average_hh_size)    +
                               '. '                                                     +
 
                               'In '                                                    + 
