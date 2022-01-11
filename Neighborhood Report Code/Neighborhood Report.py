@@ -3405,9 +3405,11 @@ def HouseholdSizeLanguage():
                                neighborhood                                            + 
                               ' have an average size of '                              + 
                               "{:,.1f} people".format(neighborhood_average_hh_size)    +
-                              '. '                                                     +
-
-                              'In '                                                    + 
+                              ', compared to '                                         +
+                              comparison_average_hh_size                               +
+                              ' in '                                                   +   
+                              comparison_area                                          +
+                              '. In '                                                  + 
                               neighborhood                                             + 
                               ', the largest share of households have '                +
                               hood_largest_time_category                               +
