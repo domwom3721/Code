@@ -2098,6 +2098,7 @@ def FindTrainLines():
 
         # print('Created Train Route Index List')
         #Now loop through our list of index numbers, for each index number, create a dictionary with key info (name, etc), append that dictionary to empty list
+        i = 0
         info_list = []    
         for index in index_list:     
             highway_record        = map.shapeRecord(index)
@@ -2107,7 +2108,17 @@ def FindTrainLines():
             agency        = highway_record.record['agency_id'].title()
             info_dict     = {'name':name,'type':type,'agency':agency}
             
+            if i > 0:  #If not the first highway check against the existing highways and make sure it's not a duplicate
+                for d in info_list:
+                    existingname = d['name']
+                    if info_list == existingname:
+                        repeat = 1
+                        break
+                    repeat = 0
+                if repeat == 1:
+                    continue
             info_list.append(info_dict)
+            i+=1
             
         # print('Created Train Route Info Dict List')
         #When there are more than 1 routes
