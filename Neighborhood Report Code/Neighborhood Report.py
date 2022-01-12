@@ -2111,7 +2111,7 @@ def FindTrainLines():
             if i > 0:  #If not the first highway check against the existing highways and make sure it's not a duplicate
                 for d in info_list:
                     existingname = d['name']
-                    if info_list == existingname:
+                    if name == existingname:
                         repeat = 1
                         break
                     repeat = 0
