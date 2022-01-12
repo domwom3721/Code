@@ -4398,6 +4398,12 @@ def AddPointOfInterestsTable(document,data_for_table): #Function we use to inser
 def IntroSection(document):
     print('Writing Intro Section')
     AddTitle(document = document)
+    #Add Map Marker
+    fig = document.add_picture(os.path.join(graphics_location,'marker.png'))
+    last_paragraph = document.paragraphs[-1] 
+    last_paragraph.paragraph_format.space_after       = Pt(0)
+    last_paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+
     AddMap(document = document)
     Citation(document,'Google Maps')
     AddHeading(document = document, title =  (neighborhood + ' at a Glance'),            heading_level = 1,heading_number='Heading 3',font_size=11)
