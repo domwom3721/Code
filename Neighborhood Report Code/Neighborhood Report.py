@@ -2230,7 +2230,20 @@ def ApartmentDotComSearchTerm():
         search_term = 'https://www.apartments.com/' + '-'.join(neighborhood.lower().split(' ')) + '-' + hood_state.lower() + '/'
     elif neighborhood_level == 'custom':
         search_term = 'https://www.apartments.com/' + '-'.join(neighborhood.lower().split(' ')) + '-' + '-'.join(comparison_area.lower().split(' ')) +  '-' + hood_state.lower() + '/'
+    #elif County FIPS = Manhattan
+    #    search_term = 'https://www.apartments.com/' + '-'.join(neighborhood.lower().split(' ')) + '-' + 'new-york-ny' + '/'
 
+    #elif name == Brooklyn
+    #    search_term = 'https://www.apartments.com/' + '-'.join(neighborhood.lower().split(' ')) + '-' + 'brooklyn-ny' + '/'
+
+    #elif name == Queens
+    #    search_term = 'https://www.apartments.com/' + '-'.join(neighborhood.lower().split(' ')) + '-' + 'ny' + '/'
+
+    #elif name == The Bronx
+    #    search_term = 'https://www.apartments.com/' + '-'.join(neighborhood.lower().split(' ')) + '-' + 'bronx-ny' + '/'
+
+    #else name == Staten Island
+    #    search_term = 'https://www.apartments.com/' + '-'.join(neighborhood.lower().split(' ')) + '-' + 'staten-island-ny' + '/'
 
     return(search_term)
 
