@@ -4153,12 +4153,6 @@ def AddDocumentParagraph(document,language_variable):
         par                                               = document.add_paragraph(paragraph)
         par.alignment                                     = WD_ALIGN_PARAGRAPH.JUSTIFY
         par.paragraph_format.space_after                  = Pt(primary_space_after_paragraph)
-        
-        #Do this to get a nice offset after the table
-        if language_variable == 'household_size_language':
-            par.paragraph_format.space_before                 = Pt(12)
-        
-        
         summary_format                                    = document.styles['Normal'].paragraph_format
         summary_format.line_spacing_rule                  = WD_LINE_SPACING.SINGLE
         style = document.styles['Normal']
@@ -4463,9 +4457,18 @@ def PopulationSection(document):
         AddTable(document = document,data_for_table = overview_table_data )
     except Exception as e:
         print(e,'Unable to add overview table')
-
+    
     #household size langauge
-    AddDocumentParagraph(document = document,language_variable =  household_size_language)
+    for paragraph in household_size_language:
+        if paragraph == '':
+            continue
+        par                                               = document.add_paragraph(paragraph)
+        par.alignment                                     = WD_ALIGN_PARAGRAPH.JUSTIFY
+        par.paragraph_format.space_after                  = Pt(primary_space_after_paragraph)
+        par.paragraph_format.space_before                 = Pt(12)
+        summary_format                                    = document.styles['Normal'].paragraph_format
+        summary_format.line_spacing_rule                  = WD_LINE_SPACING.SINGLE
+    # AddDocumentParagraph(document = document,language_variable =  household_size_language)
 
     #Insert Household size graph
     AddDocumentPicture(document = document, image_path = os.path.join(hood_folder,'household_size_graph.png'),citation ='U.S. Census Bureau')
