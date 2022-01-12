@@ -2083,7 +2083,7 @@ def FindTrainLines():
     
     try:
         #Specify the file path to the shape file
-        map_location = os.path.join(general_data_location,'Geographic Data','GTFS_NTM_Shapes (Non Bus)','GTFS_NTM_Shapes.shp.shp')
+        map_location = os.path.join(general_data_location,'Geographic Data','GTFS_NTM_Shapes (Non Bus)','GTFS_NTM_Shapes.shp')
 
         #Open the shapefile
         map = shapefile.Reader(map_location)
@@ -3331,14 +3331,16 @@ def TrainLanguage():
     wikipedia_train_language = WikipediaTransitLanguage(category='train')
     if wikipedia_train_language != None:
         return(wikipedia_train_language)
+    print('No train language on wikipedia, using geographic data')
     train_lang = FindTrainLines()
     if train_lang != None:
         return(train_lang)
+    
+    
     else:
+        print('Unable to use geographic data to find train routes')
         return('[There is limited use of public transit in ' + neighborhood + '. In fact, it is not served by any commuter or light-rail lines. For public transit options, residents and visitors utilize service in ____.]' +     
-              ' [---- provides public train service within ' + neighborhood + '.]'
-
-                 )
+              ' [---- provides public train service within ' + neighborhood + '.]' )
 
 def OutlookLanguage():
     print('Creating Outlook Langauge')
