@@ -3619,7 +3619,15 @@ def HouseholdSizeLanguage():
     hood_largest_time_category = household_size_categories[neighborhood_household_size_distribution.index(max(neighborhood_household_size_distribution))] #get the most common household size category
     comp_largest_time_category = household_size_categories[comparison_household_size_distribution.index(max(comparison_household_size_distribution))]
 
-    household_size_language = ('Households in '                                        +
+    if neighborhood_average_hh_size > comparison_average_hh_size:
+        avg_hh_size_comparison  = 'Households in ' + neighborhood + ' are larger than those in ' + comparison_area + '. '            
+    elif neighborhood_average_hh_size < comparison_average_hh_size:
+        avg_hh_size_comparisonn  = 'Households in ' + neighborhood + ' are smaller than those in ' + comparison_area + '. '
+    else:
+        avg_hh_size_comparison  = 'The average size of a ' + neighborhood + ' household is fairly similar to those in ' + comparison_area + '. '
+
+
+    household_size_language = (avg_hh_size_comparison + 'Households in '               +
                                neighborhood                                            + 
                               ' have an average size of '                              + 
                               "{:,.1f} people".format(neighborhood_average_hh_size)    +
