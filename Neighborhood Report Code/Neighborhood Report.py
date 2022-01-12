@@ -467,6 +467,18 @@ def ProcessCountyFIPS(county_fips):
     state_full_name          = name.split(',')[1].strip()
     name                     = name.split(',')[0].strip().title()
 
+    #Change county name for NYC counties
+    if county_fips == '061' and name == 'New York County':
+        name = 'Manhattan'
+    elif county_fips == '081' and name == 'Queens County':
+        name = 'Queens'
+    elif county_fips == '047' and name == 'Kings County':
+        name = 'Brooklyn'
+    elif county_fips == '085' and name == 'Richmond County':
+        name = 'Staten Island'
+    elif county_fips == '005' and name == 'Bronx County':
+        name = 'The Bronx'
+
     #Name of State
     state                   = us.states.lookup(state_full_name) #convert the full state name to the 2 letter abbreviation
     state                   = state.abbr
@@ -2007,6 +2019,87 @@ def FindNearestHighways():
         highway_info_list = []    
         for highway_index in highways_in_city_index_list:     
             highway_record        = road_map.shapeRecord(highway_index)
+            
+
+            highway_name          = highway_record.record['ROADNAME'].title()
+            #Clean up abbreviations
+            highway_name          = highway_name.replace('Hwy','Highway')
+            highway_name          = highway_name.replace('Pkwy','Parkway') 
+
+
+            #Don't add unnamed highways to our list
+            if highway_name == '' or highway_name == 'Unknown':
+                continue
+           
+            if i > 0:  #If not the first highway check against the existing highways and make sure it's not a duplicate
+                for d in highway_info_list:
+                    existingname = d['name']
+                    if highway_name == existingname:
+                        repeat = 1
+                        break
+                    repeat = 0
+                if repeat == 1:
+                    continue
+                    
+           
+            
+            highway_type          = highway_record.record['ADMIN'].title()
+            highway_dict          = {'name':highway_name,'type':highway_type}
+            highway_info_list.append(highway_dict)
+            i+=1
+
+        #When there are more than 1 roads
+        if len(highway_info_list) > 2:
+            sentence = (neighborhood + ' is served by the following roads: ')
+
+            for count,highway in enumerate(highway_info_list):
+               
+
+                if count < len(highway_info_list) -1 :
+                    sentence = sentence + (highway['name']) + ' ('  + (highway['type'])   + '), ' 
+                else:
+                    sentence = sentence + 'and ' + (highway['name']) + ' ('  + (highway['type'])   + ').' 
+        
+        
+        
+        #When we only have 1 major road in our list
+        elif len(highway_info_list) == 1:
+            sentence = (highway_info_list[0]['name'] + ' is the main road connecting ' + neighborhood + '.')
+        
+        elif len(highway_info_list) == 2:
+           
+            sentence = ((highway_info_list[0]['name']) + ' ('  + (highway_info_list[0]['type'])   + ') ' + 'and '  + 
+                        (highway_info_list[1]['name']) + ' ('  + (highway_info_list[1]['type'])   + ') '
+                        + ' are the main roads connecting ' + neighborhood + '.')
+        elif len(highway_info_list) == 0:
+            sentence = None
+
+        return(sentence)
+    except Exception as e:
+        print(e,'Unable to locate major roads inside the neighborhood area')
+        return(None)
+
+def FindTrainLines():
+    
+    try:
+        #Specify the file path to the shape file
+        map_location = os.path.join(general_data_location,'Geographic Data','GTFS_NTM_Shapes (Non Bus)','GTFS_NTM_Shapes.shp.shp')
+
+        #Open the shapefile
+        map = shapefile.Reader(map_location)
+        highways_in_city_index_list = [] #Create empty list that we will fill with numbers that correspond to roads within the subject area
+        
+        #Loop through the road map and find any roads inside the confines of the city. Once we identify one, add the index number to our list of highways (indexes)
+        for i in range(len(map)):
+            highway_coords        =  LineString(map.shape(i).points)           
+            if neighborhood_shape_polygon.contains(highway_coords):
+                highways_in_city_index_list.append(i)
+        
+        #Now loop through our list of index numbers, for each index number, create a dictionary with key info (name, etc), append that dictionary to empty list
+        i = 0
+        highway_info_list = []    
+        for highway_index in highways_in_city_index_list:     
+            highway_record        = map.shapeRecord(highway_index)
             
 
             highway_name          = highway_record.record['ROADNAME'].title()
@@ -3674,7 +3767,7 @@ def TravelTimeLanguage():
 
 def EducationLanguage():
     #This function returns a string we will place in the community assets table in the education row 
-    education_list                         = LocationIQPOIList(lat = latitude, lon = longitude , category = ['school','college'] ) 
+    education_list                         = LocationIQPOIList(lat = latitude, lon = longitude , category = ['school','college'],radius=10000, limit = 5 ) 
     
     education_language                      = (neighborhood + 
                                          
@@ -3689,7 +3782,7 @@ def EducationLanguage():
 
 def FoodLanguage():
     #This function returns a string we will place in the community assets table in the food row 
-    food_list                          = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['restaurant','pub'] ) 
+    food_list                          = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['restaurant','pub'],radius=10000, limit = 5 ) 
     
     food_language                      = ('For restaurants and other eating locations, ' + neighborhood + ' offers options such as ' +
 
@@ -3702,7 +3795,7 @@ def FoodLanguage():
 
 def HospitalLanguage():
     #This function returns a string we will place in the community assets table in the hospital row 
-    hospital_list                      = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['hospital'] ) 
+    hospital_list                      = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['hospital'],radius=10000, limit = 5 ) 
     
     hospital_language                  = ('For healthcare needs, residents of the community and region have access to a number of ' + 
 
@@ -3716,7 +3809,7 @@ def HospitalLanguage():
 
 def ParkLangauge():
     #This function returns a string we will place in the community assets table in the park row 
-    park_list                          = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['park','stadium','leisure']) 
+    park_list                          = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['park','stadium','leisure'],radius=10000, limit = 5) 
     
     park_language                      = (neighborhood + 
                                          
@@ -3731,7 +3824,7 @@ def ParkLangauge():
 
 def RetailLanguage():
     #This function returns a string we will place in the community assets table in the retail row 
-    retail_list                        = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['shop'] ) 
+    retail_list                        = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['shop'],radius=10000, limit = 5 ) 
     
     retail_language                    = ('Transit linkages that contribute to the appeal of ' +
                                          neighborhood + 
@@ -3743,7 +3836,11 @@ def RetailLanguage():
     
     return(retail_language)
 
-def LocationIQPOIList(lat,lon,category):
+def LandUseLanguage():
+    lul = (neighborhood + ' is in NYC community district ' + nyc_community_district + '.')
+    return([lul])
+
+def LocationIQPOIList(lat,lon,category,radius,limit):
     #Searches the Locate IQ API for points of interest
     print('Searching Location IQ API for: ',category)
 
@@ -3754,9 +3851,9 @@ def LocationIQPOIList(lat,lon,category):
     'lat': lat,
     'lon': lon,
     'tag': category,
-    'radius': 10000,
+    'radius': radius,
     'format': 'json',
-    'limit': 10
+    'limit': limit
         }
 
     try:
@@ -3802,6 +3899,7 @@ def CreateLanguage():
     global housing_value_language, year_built_language
     global household_size_language, housing_intro_language, housing_type_tenure_language
     global community_assets_language, education_language, food_language, hospital_language, park_language, retail_language
+    global land_use_language
 
     summary_langauge                   =  SummaryLangauge()
     housing_type_tenure_language       =  HousingTypeTenureLanguage()
@@ -3831,6 +3929,7 @@ def CreateLanguage():
     car_language                       = CarLanguage()
     plane_language                     = PlaneLanguage()
 
+    land_use_language                  = LandUseLanguage()
     conclusion_langauge                = OutlookLanguage()
 
 #####################################################Report document related functions####################################
@@ -4028,7 +4127,6 @@ def AddMap(document):
     map_path        = os.path.join(hood_folder_map,'map.png')
     map2_path       = os.path.join(hood_folder_map,'map2.png')
     map3_path       = os.path.join(hood_folder_map,'map3.png')
-    nyc_cd_map_path = os.path.join(nyc_cd_map_location,nyc_community_district,'map.png')
     
     if (os.path.exists(map_path) == False) or (os.path.exists(map2_path) == False): #If we don't have a zommed in map image or a zoomed out map, create one
         GetMap()    
@@ -4041,11 +4139,6 @@ def AddMap(document):
         paragraph.add_run().add_picture(map3_path,width=Inches(6.5))
         paragraph.paragraph_format.space_after         = Pt(0)
         
-    
-    if os.path.exists(nyc_cd_map_path):
-        print('Adding NYC Community District Map') 
-        nyc_map = document.add_picture(nyc_cd_map_path,width=Inches(6.5))
-
 def PageBreak(document):
     #Add page break
     page_break_paragraph = document.add_paragraph('')
@@ -4060,6 +4153,12 @@ def AddDocumentParagraph(document,language_variable):
         par                                               = document.add_paragraph(paragraph)
         par.alignment                                     = WD_ALIGN_PARAGRAPH.JUSTIFY
         par.paragraph_format.space_after                  = Pt(primary_space_after_paragraph)
+        
+        #Do this to get a nice offset after the table
+        if language_variable == 'household_size_language':
+            par.paragraph_format.space_before                 = Pt(12)
+        
+        
         summary_format                                    = document.styles['Normal'].paragraph_format
         summary_format.line_spacing_rule                  = WD_LINE_SPACING.SINGLE
         style = document.styles['Normal']
@@ -4260,7 +4359,6 @@ def AddPointOfInterestsTable(document,data_for_table): #Function we use to inser
 #####################################################Report sections functions####################################
 def IntroSection(document):
     print('Writing Intro Section')
-    # PageBreak(document)
     AddTitle(document = document)
     AddMap(document = document)
     Citation(document,'Google Maps')
@@ -4268,16 +4366,18 @@ def IntroSection(document):
    
     #Add neighborhood overview language
     AddDocumentParagraph(document = document,language_variable =  summary_langauge)
-    #if neighborhood_level == 'custom':
-    #    AddTableTitle(document = document, title = 'Population Growth')
-    #else:
-    #    AddTableTitle(document = document, title = 'Population and Household Growth')
-    #
-    #try:
-        #Add Overview Table
-    #    AddTable(document = document,data_for_table = overview_table_data )
-    #except Exception as e:
-    #    print(e,'Unable to add overview table')
+
+def LandUseandZoningSection(document):
+    nyc_cd_map_path = os.path.join(nyc_cd_map_location,nyc_community_district,'map.png')
+    if os.path.exists(nyc_cd_map_path):
+        print('Writing Land Use Section')
+        AddHeading(document = document, title =  ('Land Use and Zoning'),            heading_level = 1,heading_number='Heading 3',font_size=11)
+        print('Adding NYC Community District Map') 
+        nyc_map = document.add_picture(nyc_cd_map_path,width=Inches(6.5))
+        Citation(document,'NYC Zola')
+   
+        #Add neighborhood overview language
+        AddDocumentParagraph(document = document,language_variable =  land_use_language)
 
 def CommunityAssetsSection(document):
     print('Writing Community Assets Section')
@@ -4432,12 +4532,10 @@ def WriteReport():
     SetPageMargins(           document  = document, margin_size=1)
     SetDocumentStyle(         document = document)
     IntroSection(             document = document)
+    LandUseandZoningSection(  document = document)
     PopulationSection(        document = document)
     CommunityAssetsSection(   document = document)
     HousingSection(           document = document)
-    # DevelopmentSection(       document = document)
-    # EducationSection(         document = document)
-    # EmploymentSection(        document = document)
     TransportationSection(    document = document)
     OutlookSection(           document = document)
 
