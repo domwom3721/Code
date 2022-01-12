@@ -3716,7 +3716,7 @@ def HospitalLanguage():
 
 def ParkLangauge():
     #This function returns a string we will place in the community assets table in the park row 
-    park_list                          = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['park','stadium','leisure'], limit = 3 ) 
+    park_list                          = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['park','stadium','leisure'], limit = [3] ) 
     
     park_language                      = (neighborhood + 
                                          
