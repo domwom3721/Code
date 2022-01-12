@@ -2085,6 +2085,7 @@ def FindTrainLines():
         #Specify the file path to the shape file
         map_location = os.path.join(general_data_location,'Geographic Data','GTFS_NTM_Shapes (Non Bus)','GTFS_NTM_Shapes.shp')
 
+        # print('Opened Trasnit File')
         #Open the shapefile
         map = shapefile.Reader(map_location)
         index_list = [] #Create empty list that we will fill with numbers that correspond to routes within the subject area
@@ -2092,9 +2093,10 @@ def FindTrainLines():
         #Loop through the road map and find any roads inside the confines of the city. Once we identify one, add the index number to our list of highways (indexes)
         for i in range(len(map)):
             highway_coords        =  LineString(map.shape(i).points)           
-            if neighborhood_shape_polygon.contains(highway_coords):
+            if neighborhood_shape_polygon.intersects(highway_coords):
                 index_list.append(i)
-        
+
+        # print('Created Train Route Index List')
         #Now loop through our list of index numbers, for each index number, create a dictionary with key info (name, etc), append that dictionary to empty list
         info_list = []    
         for index in index_list:     
@@ -2107,7 +2109,7 @@ def FindTrainLines():
             
             info_list.append(info_dict)
             
-
+        # print('Created Train Route Info Dict List')
         #When there are more than 1 routes
         if len(info_list) > 2:
             sentence = (neighborhood + ' is served by the following transit routes: ')
@@ -2119,20 +2121,20 @@ def FindTrainLines():
                 else:
                     sentence = sentence + 'and ' + (route['name']) + ' ('  + (route['type'])   + ').' 
         
-        
-        
         #When we only have 1 major road in our list
         elif len(info_list) == 1:
-            sentence = (info_list[0]['name'] + ' is the main' + info_list[0]['name'] + ' route connecting ' + neighborhood + '.')
+            sentence = (info_list[0]['agency'] + """'s""" + info_list[0]['name'] + ' line is the main' + info_list[0]['type'] + ' route connecting ' + neighborhood + '.')
         
         elif len(info_list) == 2:
            
             sentence = ((info_list[0]['name']) + ' ('  + (info_list[0]['type'])   + ') ' + 'and '  + 
                         (info_list[1]['name']) + ' ('  + (info_list[1]['type'])   + ') '
                         + ' are the main transit routes connecting ' + neighborhood + '.')
+
         elif len(info_list) == 0:
             sentence = None
-
+        
+        # print('Created Train sentence')
         return(sentence)
     except Exception as e:
         print(e,'Unable to locate transit routes inside the neighborhood area')
@@ -3338,7 +3340,7 @@ def TrainLanguage():
     
     
     else:
-        print('Unable to use geographic data to find train routes')
+        print('Did not identify any train routes from  geographic data')
         return('[There is limited use of public transit in ' + neighborhood + '. In fact, it is not served by any commuter or light-rail lines. For public transit options, residents and visitors utilize service in ____.]' +     
               ' [---- provides public train service within ' + neighborhood + '.]' )
 
