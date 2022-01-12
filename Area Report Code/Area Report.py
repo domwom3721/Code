@@ -4419,7 +4419,7 @@ def IncomeLanguage():
 
         income_language = ('Going back five years, '    +
                 county                                  +
-            ' residents' + per capita personal income   +
+            ' residents per capita personal income '    +
             'has expanded ' + 
                 "{:,.1f}%".format(county_5y_growth)     + 
                 ' per annum to the '                    +
