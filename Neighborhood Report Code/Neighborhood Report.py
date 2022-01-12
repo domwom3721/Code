@@ -2134,8 +2134,12 @@ def FindTrainLines():
         
         #When we only have 1 major road in our list
         elif len(info_list) == 1:
-            sentence = (info_list[0]['agency'] + """'s""" + info_list[0]['name'] + ' line is the main' + info_list[0]['type'] + ' route connecting ' + neighborhood + '.')
-        
+            if agency != '':
+                sentence = (info_list[0]['agency'] + """'s""" + info_list[0]['name'] + ' line is the main ' + info_list[0]['type'] + ' route connecting ' + neighborhood + '.')
+            else:
+                sentence = ('The ' + info_list[0]['name'] + ' line is the main ' + info_list[0]['type'] + ' route connecting ' + neighborhood + '.')
+
+
         elif len(info_list) == 2:
            
             sentence = ((info_list[0]['name']) + ' ('  + (info_list[0]['type'])   + ') ' + 'and '  + 
