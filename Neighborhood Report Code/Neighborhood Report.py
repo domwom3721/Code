@@ -2087,77 +2087,55 @@ def FindTrainLines():
 
         #Open the shapefile
         map = shapefile.Reader(map_location)
-        highways_in_city_index_list = [] #Create empty list that we will fill with numbers that correspond to roads within the subject area
+        index_list = [] #Create empty list that we will fill with numbers that correspond to routes within the subject area
         
         #Loop through the road map and find any roads inside the confines of the city. Once we identify one, add the index number to our list of highways (indexes)
         for i in range(len(map)):
             highway_coords        =  LineString(map.shape(i).points)           
             if neighborhood_shape_polygon.contains(highway_coords):
-                highways_in_city_index_list.append(i)
+                index_list.append(i)
         
         #Now loop through our list of index numbers, for each index number, create a dictionary with key info (name, etc), append that dictionary to empty list
-        i = 0
-        highway_info_list = []    
-        for highway_index in highways_in_city_index_list:     
-            highway_record        = map.shapeRecord(highway_index)
+        info_list = []    
+        for index in index_list:     
+            highway_record        = map.shapeRecord(index)
+            
+            name          = highway_record.record['route_long'].title()
+            type          = highway_record.record['route_ty_1'].title()
+            agency        = highway_record.record['agency_id'].title()
+            info_dict     = {'name':name,'type':type,'agency':agency}
+            
+            info_list.append(info_dict)
             
 
-            highway_name          = highway_record.record['ROADNAME'].title()
-            #Clean up abbreviations
-            highway_name          = highway_name.replace('Hwy','Highway')
-            highway_name          = highway_name.replace('Pkwy','Parkway') 
+        #When there are more than 1 routes
+        if len(info_list) > 2:
+            sentence = (neighborhood + ' is served by the following transit routes: ')
 
-
-            #Don't add unnamed highways to our list
-            if highway_name == '' or highway_name == 'Unknown':
-                continue
-           
-            if i > 0:  #If not the first highway check against the existing highways and make sure it's not a duplicate
-                for d in highway_info_list:
-                    existingname = d['name']
-                    if highway_name == existingname:
-                        repeat = 1
-                        break
-                    repeat = 0
-                if repeat == 1:
-                    continue
-                    
-           
-            
-            highway_type          = highway_record.record['ADMIN'].title()
-            highway_dict          = {'name':highway_name,'type':highway_type}
-            highway_info_list.append(highway_dict)
-            i+=1
-
-        #When there are more than 1 roads
-        if len(highway_info_list) > 2:
-            sentence = (neighborhood + ' is served by the following roads: ')
-
-            for count,highway in enumerate(highway_info_list):
+            for count,route in enumerate(info_list):
                
-
-                if count < len(highway_info_list) -1 :
-                    sentence = sentence + (highway['name']) + ' ('  + (highway['type'])   + '), ' 
+                if count < len(info_list) -1 :
+                    sentence = sentence + (route['name']) + ' ('  + (route['type'])   + '), ' 
                 else:
-                    sentence = sentence + 'and ' + (highway['name']) + ' ('  + (highway['type'])   + ').' 
+                    sentence = sentence + 'and ' + (route['name']) + ' ('  + (route['type'])   + ').' 
         
         
         
         #When we only have 1 major road in our list
-        elif len(highway_info_list) == 1:
-            sentence = (highway_info_list[0]['name'] + ' is the main road connecting ' + neighborhood + '.')
+        elif len(info_list) == 1:
+            sentence = (info_list[0]['name'] + ' is the main' + info_list[0]['name'] + ' route connecting ' + neighborhood + '.')
         
-        elif len(highway_info_list) == 2:
+        elif len(info_list) == 2:
            
-            sentence = ((highway_info_list[0]['name']) + ' ('  + (highway_info_list[0]['type'])   + ') ' + 'and '  + 
-                        (highway_info_list[1]['name']) + ' ('  + (highway_info_list[1]['type'])   + ') '
-                        + ' are the main roads connecting ' + neighborhood + '.')
-        elif len(highway_info_list) == 0:
+            sentence = ((info_list[0]['name']) + ' ('  + (info_list[0]['type'])   + ') ' + 'and '  + 
+                        (info_list[1]['name']) + ' ('  + (info_list[1]['type'])   + ') '
+                        + ' are the main transit routes connecting ' + neighborhood + '.')
+        elif len(info_list) == 0:
             sentence = None
 
         return(sentence)
     except Exception as e:
-        print(e,'Unable to locate major roads inside the neighborhood area')
+        print(e,'Unable to locate transit routes inside the neighborhood area')
         return(None)
  
 def SearchGreatSchoolDotOrg():
@@ -3353,6 +3331,9 @@ def TrainLanguage():
     wikipedia_train_language = WikipediaTransitLanguage(category='train')
     if wikipedia_train_language != None:
         return(wikipedia_train_language)
+    train_lang = FindTrainLines()
+    if train_lang != None:
+        return(train_lang)
     else:
         return('[There is limited use of public transit in ' + neighborhood + '. In fact, it is not served by any commuter or light-rail lines. For public transit options, residents and visitors utilize service in ____.]' +     
               ' [---- provides public train service within ' + neighborhood + '.]'
