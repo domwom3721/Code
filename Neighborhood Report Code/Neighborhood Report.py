@@ -459,6 +459,21 @@ def DetermineNYCCommunityDistrict(lat,lon):
         print(e,'Unable to search for NYC communtiy district')
         return('x')
 
+def TransitAgencyIdToName(id):
+    #Takes a National Transit Database agency ID number and returns the name of the transit agency
+    #Open the ID to name crosswalk file with agency info
+    
+    try:
+        df = pd.read_excel(os.path.join(general_data_location,'Geographic Data','GTFS_NTM_Stops','2020 Agency Information.xlsx')) #from here: https://www.transit.dot.gov/ntd/data-product/2020-annual-database-agency-information
+        print(df)
+        df = df.loc[df['NTD ID'] == id]
+        print(df)
+        agency_name = df['Agency Name'].iloc[0]    
+        print(df)
+        return(agency_name)
+    except Exception as e:
+        print(e,'Couldnt find Transit Agency name from ID number')
+        return('----------')
 #####################################################User FIPS input proccessing Functions####################################
 
 def ProcessPlaceFIPS(place_fips):
@@ -2185,7 +2200,82 @@ def FindTrainLines():
     except Exception as e:
         print(e,'Unable to locate transit routes inside the neighborhood area')
         return(None)
- 
+
+def FindBusLines():
+    try:
+        #Specify the file path to the shape file
+        map_location = os.path.join(general_data_location,'Geographic Data','GTFS_NTM_Stops','GTFS_NTM_Stops.shp')
+
+        print('Opened Transit Stops File')
+        #Open the shapefile
+        map = shapefile.Reader(map_location)
+        index_list = [] #Create empty list that we will fill with numbers that correspond to routes within the subject area
+        
+        #Loop through the road map and find any roads inside the confines of the city. Once we identify one, add the index number to our list of highways (indexes)
+        for i in range(len(map)):
+            points = map.shape(i).points
+            coords        =  Point(points[0])     
+            if neighborhood_shape_polygon.contains(coords):
+                index_list.append(i)
+
+        print('Created Transit Stop Index List')
+        #Now loop through our list of index numbers, for each index number, create a dictionary with key info (name, etc), append that dictionary to empty list
+        i = 0
+        info_list = []    
+        for index in index_list:     
+            highway_record        = map.shapeRecord(index)
+            
+            name          = highway_record.record['stop_name']
+            agency_id     = highway_record.record['ntd_id']
+            info_dict     = {'name':name,'type':type,'agency_id':agency_id}
+            
+            if i > 0:  #If not the first highway check against the existing highways and make sure it's not a duplicate
+                for d in info_list:
+                    existingname = d['name']
+                    if name == existingname:
+                        repeat = 1
+                        break
+                    repeat = 0
+                if repeat == 1:
+                    continue
+            info_list.append(info_dict)
+            i+=1
+            
+        print('Created Transit Stop Info Dict List')
+        #When there are more than 1 routes
+        if len(info_list) > 0:
+            agency_id = info_list[0]['agency_id']
+            print(agency_id)
+            agency_name = TransitAgencyIdToName(id = agency_id)
+            sentence = (agency_name + ' provides public bus service within ' + neighborhood)
+
+            
+
+
+
+        # #When we only have 1 major road in our list
+        # elif len(info_list) == 1:
+        #     if agency != '':
+        #         sentence = (info_list[0]['agency'] + """'s""" + info_list[0]['name'] + ' line is the main ' + info_list[0]['type'] + ' route connecting ' + neighborhood + '.')
+        #     else:
+        #         sentence = ('The ' + info_list[0]['name'] + ' line is the main ' + info_list[0]['type'].lower() + ' route connecting ' + neighborhood + '.')
+
+
+        # elif len(info_list) == 2:
+           
+        #     sentence = ((info_list[0]['name']) + ' ('  + (info_list[0]['type'])   + ') ' + 'and '  + 
+        #                 (info_list[1]['name']) + ' ('  + (info_list[1]['type'])   + ') '
+        #                 + ' are the main transit routes connecting ' + neighborhood + '.')
+
+        elif len(info_list) == 0:
+            sentence = None
+        
+        # print('Created Train sentence')
+        return(sentence)
+    except Exception as e:
+        print(e,'Unable to locate bus Stop inside the neighborhood area')
+        return(None)
+
 def SearchGreatSchoolDotOrg():
     print('Getting education data')
     if os.path.exists(os.path.join(hood_folder_map,'education_map.png')): #If we already have a map for this area skip it 
@@ -3369,9 +3459,13 @@ def BusLanguage():
     if wikipedia_bus_language != None:
         return(wikipedia_bus_language)
     
+    bus_lang = FindBusLines()
+    if bus_lang != None:
+        return(bus_lang)
     else:
-        return( '[' + neighborhood + ' does not have public bus service.]' +
-                ' [---- provides public bus service within ' + neighborhood + '.]'
+        return( neighborhood + ' does not have public bus service.' 
+                # +
+                # ' [---- provides public bus service within ' + neighborhood + '.]'
                 )
 
 def TrainLanguage():
@@ -3620,9 +3714,9 @@ def HouseholdSizeLanguage():
     comp_largest_time_category = household_size_categories[comparison_household_size_distribution.index(max(comparison_household_size_distribution))]
 
     if neighborhood_average_hh_size > comparison_average_hh_size:
-        avg_hh_size_comparison  = 'Households in ' + neighborhood + ' are larger than those in ' + comparison_area + '. '            
+        avg_hh_size_comparison  = 'Households in ' + neighborhood + ' tend to be larger than those in ' + comparison_area + '. Given the average age, family size, and age distribution, the majority of households consist of families.'            
     elif neighborhood_average_hh_size < comparison_average_hh_size:
-        avg_hh_size_comparisonn  = 'Households in ' + neighborhood + ' are smaller than those in ' + comparison_area + '. '
+        avg_hh_size_comparison  = 'Households in ' + neighborhood + ' are smaller than those in ' + comparison_area + '. Given the average age, family size, and age distribution, the majority of households consist of individuals or couples. '
     else:
         avg_hh_size_comparison  = 'The average size of a ' + neighborhood + ' household is fairly similar to those in ' + comparison_area + '. '
 
