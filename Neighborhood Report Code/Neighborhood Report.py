@@ -464,8 +464,11 @@ def TransitAgencyIdToName(id):
     #Open the ID to name crosswalk file with agency info
     
     try:
+        print('The ID is: ', id)
         df = pd.read_excel(os.path.join(general_data_location,'Geographic Data','GTFS_NTM_Stops','2020 Agency Information.xlsx')) #from here: https://www.transit.dot.gov/ntd/data-product/2020-annual-database-agency-information
         print(df)
+        df['NTD ID'] = df['NTD ID'].astype(str)
+        # df['NTD ID'] = df['NTD ID'].zfill(6)
         df = df.loc[df['NTD ID'] == id]
         print(df)
         agency_name = df['Agency Name'].iloc[0]    
@@ -2244,7 +2247,7 @@ def FindBusLines():
         print('Created Transit Stop Info Dict List')
         #When there are more than 1 routes
         if len(info_list) > 0:
-            agency_id = info_list[0]['agency_id']
+            agency_id = str(info_list[0]['agency_id'])
             print(agency_id)
             agency_name = TransitAgencyIdToName(id = agency_id)
             sentence = (agency_name + ' provides public bus service within ' + neighborhood)
