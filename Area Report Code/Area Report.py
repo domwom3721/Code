@@ -4106,7 +4106,7 @@ def CountyEmploymentGrowthLanguage(county_industry_breakdown):
             qcew_year +
             ' Quarterly Census of Employment and Wages, ' +
             county +
-            ' has seen private employment '+
+            ' has experienced private employment '+
             five_year_county_employment_expand_or_contract +
             ' ' +
             five_year_county_employment_growth_pct +
@@ -4129,7 +4129,7 @@ def CountyEmploymentGrowthLanguage(county_industry_breakdown):
             ', respectively.'+
             ' Meanwhile, the ' +
             slowest_growing_industry_5y +
-            ' Industry has seen employment '+
+            ' Industry has experienced employment '+
             slowest_growth_industry_5y_description +
             ' ' +
             slowest_growth_industry_5y +
@@ -4256,7 +4256,7 @@ def MSAEmploymentGrowthLanguage(msa_industry_breakdown):
                 qcew_year +
                 ' Quarterly Census of Employment and Wages, ' +
                 cbsa_name + ' Metro ' +
-                'has seen private employment '+
+                'has experienced private employment '+
                 five_year_msa_employment_expand_or_contract +
                 ' ' +
                 five_year_msa_employment_growth_pct +
@@ -4279,7 +4279,7 @@ def MSAEmploymentGrowthLanguage(msa_industry_breakdown):
                 ', respectively.'+
                 ' Meanwhile, the ' +
                 slowest_growing_industry_5y +
-                ' Industry has seen employment '+
+                ' Industry has experienced employment '+
                 slowest_growth_industry_5y_description +
                 ' ' +
                 slowest_growth_industry_5y +
@@ -4589,7 +4589,7 @@ def InfrastructureLanguage():
             infrastructure_language.append(wikipedia_section)
 
     #Section 2: Create basic phrase we can insert if there is nothing from Wikipedia
-    infrastructure_boiler_plate = 'The '  + county + ' region has many transportation assets, including the X, X, X, and X. With access to multiple interstate systems, travel time to work is about average both within the state and nationally.'    
+    infrastructure_boiler_plate = 'The '  + county + ' offers a variety of raodways and public transportation infrastructure. With access to multiple interstate systems, travel time to work is about average both within the state and nationally.'    
     if infrastructure_language == []:
         infrastructure_language.append(infrastructure_boiler_plate)
 
@@ -4855,13 +4855,13 @@ def OutlookLanguage():
 
 
     elif  county_5y_growth < 0 and county_1y_growth > 0:
-        county_demographic_sentence = ('Although ' + county + ' has seen its population decline ' +   "{:,.1f}%".format(abs(county_5y_growth)) +' annually over the past five years, growth has returned to postive levels with a most recent one-year growth rate of ' +  "{:,.1f}%".format(county_1y_growth) +'.')
+        county_demographic_sentence = ('Although ' + county + ' has experienced population decline of ' +   "{:,.1f}%".format(abs(county_5y_growth)) +' annually over the past five years, growth has returned to postive levels with a most recent one-year growth rate of ' +  "{:,.1f}%".format(county_1y_growth) +'.')
         
     elif county_5y_growth > 0 and county_1y_growth < 0:
-        county_demographic_sentence = ('Although ' + county + ' has seen its population grow ' + "{:,.1f}%".format(county_5y_growth) +  ' over the past five years, it most recently saw a one year contraction of ' +  "{:,.1f}%".format(county_1y_growth) +'.')
+        county_demographic_sentence = ('Although ' + county + ' has experienced population growth of ' + "{:,.1f}%".format(county_5y_growth) +  ' over the past five years, it most recently saw a one year contraction of ' +  "{:,.1f}%".format(county_1y_growth) +'.')
 
     elif county_5y_growth == 0 and county_1y_growth == 0:
-        county_demographic_sentence = (county + """'s""" + ' population has seen no change over the past five years.') 
+        county_demographic_sentence = (county + """'s""" + ' population has experienced no change over the past five years.') 
 
     else:
         county_demographic_sentence = ('')
