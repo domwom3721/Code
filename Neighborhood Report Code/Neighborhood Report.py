@@ -3735,7 +3735,7 @@ def RetailLanguage():
     
     retail_language                    = ('Transit linkages that contribute to the appeal of ' +
                                          neighborhood + 
-                                         ' offer access to shopping options such as' + 
+                                         ' offer access to shopping options such as ' + 
                                          ', '.join(retail_list) + 
                                          '.'
                                          
