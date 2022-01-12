@@ -2011,7 +2011,7 @@ def FindNearestHighways():
         #Loop through the road map and find any roads inside the confines of the city. Once we identify one, add the index number to our list of highways (indexes)
         for i in range(len(road_map)):
             highway_coords        =  LineString(road_map.shape(i).points)           
-            if neighborhood_shape_polygon.contains(highway_coords):
+            if neighborhood_shape_polygon.intersects(highway_coords):
                 highways_in_city_index_list.append(i)
         
         #Now loop through our list of index numbers, for each index number, create a dictionary with key info (name, etc), append that dictionary to empty list
