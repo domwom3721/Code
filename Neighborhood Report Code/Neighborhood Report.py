@@ -2137,7 +2137,7 @@ def FindTrainLines():
             if agency != '':
                 sentence = (info_list[0]['agency'] + """'s""" + info_list[0]['name'] + ' line is the main ' + info_list[0]['type'] + ' route connecting ' + neighborhood + '.')
             else:
-                sentence = ('The ' + info_list[0]['name'] + ' line is the main ' + info_list[0]['type'] + ' route connecting ' + neighborhood + '.')
+                sentence = ('The ' + info_list[0]['name'] + ' line is the main ' + info_list[0]['type'].lower() + ' route connecting ' + neighborhood + '.')
 
 
         elif len(info_list) == 2:
