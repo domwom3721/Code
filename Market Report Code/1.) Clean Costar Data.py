@@ -161,6 +161,18 @@ def DropClusters(df): #drops rows that report data on the cluster geography type
     df = df.loc[df['Geography Type'] != 'Cluster']
     return(df)
 
+def DropUrban(df): #drops rows that report data on the urban geography type
+    df = df.loc[df['Geography Type'] != 'Location Type:Urban']
+    return(df)
+
+def DropSuburban(df): #drops rows that report data on the suburban geography type
+    df = df.loc[df['Geography Type'] != 'Location Type:Suburban']
+    return(df)
+
+def DropCBD(df): #drops rows that report data on the cbd geography type
+    df = df.loc[df['Geography Type'] != 'Location Type:CBD']
+    return(df)
+
 def KeepLast10Years(df,groupbylist): #Cut down to last 10 years
     df = df.groupby(groupbylist).tail(41)
     return(df)
