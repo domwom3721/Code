@@ -278,6 +278,37 @@ def GetNeighborhoodShape():
                     return(neighborhood_shape) 
         except Exception as e:
             print(e,'unable to get shape for census place')
+    
+    elif neighborhood_level == 'county subdivision':
+        try:
+            shapefile_location = os.path.join(neighborhood_shapes_location,'Census County Subdivision Shapes',('tl_2021_' + hood_state_fips + '_cousub'),('tl_2021_' + hood_state_fips + '_cousub.shp'))
+            assert os.path.exists(shapefile_location)
+
+            #Open the shapefile
+            place_map = shapefile.Reader(shapefile_location)
+
+        
+
+            #Loop through each subdivision in the shape file
+            for i in range(len(place_map)):
+                place_record = place_map.shapeRecord(i)
+                #Look for the record that corresponds to our subject city
+                if place_record.record['COUNTYFP'] != hood_county_fips or  place_record.record['COUSUBFP'] != hood_suvdiv_fips:
+                    continue
+                else:
+                    neighborhood_shape        =  place_map.shape(i)
+                    neighborhood_shape_polygon = Polygon(neighborhood_shape.points)
+                    print('Successfully pulled census shape from shapefile')
+                    try:
+                        PolygonToShapeFile(poly = neighborhood_shape_polygon)
+                    except Exception as e:
+                        print(e,'unable to export subdivision polygon as shape')
+
+                    print('Successfully created polygon object from census shape')
+
+                    return(neighborhood_shape) 
+        except Exception as e:
+            print(e,'unable to get shape for census place')
 
 def PolygonToShapeFile(poly):
         # WRITE TO SHAPEFILE USING PYSHP
