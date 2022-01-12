@@ -4417,30 +4417,30 @@ def IncomeLanguage():
 
 
 
-        income_language = ('Going back five years, ' +
-                county                   +
-            ' residents have seen its per capita personal income '+
-            'expand ' + 
+        income_language = ('Going back five years, '    +
+                county                                  +
+            ' residents' + per capita personal income   +
+            'has expanded ' + 
                 "{:,.1f}%".format(county_5y_growth)     + 
                 ' per annum to the '                    +
                 latest_county_year                      + 
                 ' level of '                            +
                 "${:,}".format(latest_county_income)    +
-                '. '                                   +
-            'Over the past three years, growth has ' +
-            three_five_year_county_declined_or_expanded  +
-            ', growing '                             +
+                '. '                                    +
+            'Over the past three years, growth has '    +
+            three_five_year_county_declined_or_expanded +
+            ', growing '                                +
                 "{:,.1f}%".format(county_3y_growth)     + 
                 ' per annum since '                     + 
                 str(int(latest_county_year) - 3)        + 
                 '. '                                    +
-            'This growth rate '                      + 
-            county_vs_nation_3y_exceeds_lags          +
+            'This growth rate '                         + 
+            county_vs_nation_3y_exceeds_lags            +
                 ' the Nation, which has '               +
-                'expanded'                             +     
-                ' '                                    +   
-                "{:,.1f}%".format(national_3y_growth)  + 
-                ' per year over the last three years.'
+                'expanded'                              +     
+                ' '                                     +   
+                "{:,.1f}%".format(national_3y_growth)   + 
+                ' per year over the last three years. ' 
                 )
     except Exception as e:
         print(e,'unable to get income language') 
@@ -4467,11 +4467,11 @@ def PopulationLanguage(national_resident_pop):
 
             #Determine how to describe 10 year county population growth
             if county_10y_growth > 0:
-                county_10y_expand_or_compress =  'expand'
+                county_10y_expand_or_compress =  'expanded'
             elif county_10y_growth < 0:
-                county_10y_expand_or_compress =  'compress'
+                county_10y_expand_or_compress =  'compressed'
             else:
-                county_10y_expand_or_compress =  '[expand/compress]'
+                county_10y_expand_or_compress =  '[remained stagnant with limited growth of ]'
             
             #Determine how to describe 5 year county population growth
             if county_5y_growth > 0:
@@ -4523,7 +4523,7 @@ def PopulationLanguage(national_resident_pop):
 
             population_language = ('Going back ten years, ' +
                     county +
-                ' has seen its population '+
+                's population has '+
                 county_10y_expand_or_compress +
                 ' ' +
                     county_10y_growth +
