@@ -3709,7 +3709,7 @@ def PopulationAgeLanguage():
                         comp_largest_age_category                                                   +
                         ' for '                                                                     +
                             comparison_area                                                         +
-                            '.'                                                                     +
+                            '. '                                                                     +
                         median_age_comparison2
                         )
     except Exception as e:
