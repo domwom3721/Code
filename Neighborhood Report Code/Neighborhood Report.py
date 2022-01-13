@@ -3715,7 +3715,7 @@ def HouseholdSizeLanguage():
     comp_largest_time_category = household_size_categories[comparison_household_size_distribution.index(max(comparison_household_size_distribution))]
 
     if neighborhood_average_hh_size > comparison_average_hh_size:
-        avg_hh_size_comparison  = 'Households in ' + neighborhood + ' tend to be larger than those in ' + comparison_area + '. Given the average age, family size, and age distribution, the majority of households consist of families.'            
+        avg_hh_size_comparison  = 'Households in ' + neighborhood + ' tend to be larger than those in ' + comparison_area + '. Given the average age, family size, and age distribution, the majority of households consist of families. '            
     elif neighborhood_average_hh_size < comparison_average_hh_size:
         avg_hh_size_comparison  = 'Households in ' + neighborhood + ' are smaller than those in ' + comparison_area + '. Given the average age, family size, and age distribution, the majority of households consist of individuals or couples. '
     else:
