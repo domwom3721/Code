@@ -1,6 +1,7 @@
 #By Mike Leahy
 #Started 06/30/2021
 #Summary: This script creates reports on neighborhoods/cities for Bowery
+
 import json
 import msvcrt
 import os
@@ -320,8 +321,8 @@ def PolygonToShapeFile(poly):
         # add a list of attributes to go along with the shape
         shapewriter.record(["empty record"])
         # save it
-        shapewriter.close()
         # print('saved file')
+        shapewriter.close()
 
 def shapely_to_pyshp(shapelygeom):
     # first convert shapely to geojson
