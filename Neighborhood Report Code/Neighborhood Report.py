@@ -1614,14 +1614,14 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
 
     total_pop_field               = 'P001001'
     total_households_field        = 'H003002'
-    total_families_field          = 'P035001'
+    #total_families_field          = 'P035001'
 
     acs_total_pop_field           = 'B01001_001E'
     acs_total_households_field    = ''  
 
     redistricting_total_pop_field = 'P1_001N'
     redistricting_total_hh_field  = 'H1_002N'
-    redistricting_total_f_field   = 'P1_035N'
+    #redistricting_total_f_field   = 'P1_035N'
 
     print('Getting 2010 Population and Total Households Estimate for Hood')
     #calculate table variables for hood
@@ -1630,43 +1630,53 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
 
         _2010_hood_pop         = c.sf1.state_place(fields = total_pop_field,                                        state_fips = hood_state_fips, place = hood_place_fips,year=decennial_census_year)[0][total_pop_field]
         _2010_hood_hh          = c.sf1.state_place(fields = total_households_field,                                 state_fips = hood_state_fips, place = hood_place_fips,year=decennial_census_year)[0][total_households_field]
-        
-        current_hood_pop       = c.pl.state_place(fields = [redistricting_total_pop_field],                          state_fips = hood_state_fips, place = hood_place_fips)[0][redistricting_total_pop_field]
-        current_hood_hh        = c.pl.state_place(fields = [redistricting_total_hh_field],                           state_fips = hood_state_fips, place = hood_place_fips)[0][redistricting_total_hh_field]
-        
+        #_2010_hood_fam         = c.sf1.state_place(fields = total_families_field,                                   state_fips = hood_state_fips, place = hood_place_fips,year=decennial_census_year)[0][total_families_field]
+
+        current_hood_pop       = c.pl.state_place(fields = [redistricting_total_pop_field],                         state_fips = hood_state_fips, place = hood_place_fips)[0][redistricting_total_pop_field]
+        current_hood_hh        = c.pl.state_place(fields = [redistricting_total_hh_field],                          state_fips = hood_state_fips, place = hood_place_fips)[0][redistricting_total_hh_field]
+        #current_hood_fam       = c.pl.state_place(fields = [redistricting_total_f_field],                           state_fips = hood_state_fips, place = hood_place_fips)[0][redistricting_total_f_field]
+
     elif hood_geographic_level == 'county':
         current_estimate_period = '2020 Census'
 
         _2010_hood_pop   = c.sf1.state_county(fields = total_pop_field,                      state_fips = hood_state_fips, county_fips = hood_county_fips,year=decennial_census_year)[0][total_pop_field]
         _2010_hood_hh    = c.sf1.state_county(fields = total_households_field,               state_fips = hood_state_fips, county_fips = hood_county_fips,year=decennial_census_year)[0][total_households_field]
-    
+        #_2010_hood_fam   = c.sf1.state_county(fields = total_families_field,                state_fips = hood_state_fips, county_fips = hood_county_fips,year=decennial_census_year)[0][total_families_field]
+
         current_hood_pop =  c.pl.state_county(fields = redistricting_total_pop_field,        state_fips = hood_state_fips, county_fips = hood_county_fips)[0][redistricting_total_pop_field]
         current_hood_hh  =  c.pl.state_county(fields = redistricting_total_hh_field,         state_fips = hood_state_fips, county_fips = hood_county_fips)[0][redistricting_total_hh_field]
-        
+        #current_hood_fam =  c.pl.state_county(fields = redistricting_total_f_field,         state_fips = hood_state_fips, county_fips = hood_county_fips)[0][redistricting_total_f_field]
+
     elif hood_geographic_level == 'county subdivision':
         current_estimate_period = '2020 Census'
         _2010_hood_pop         = c.sf1.state_county_subdivision(fields = total_pop_field,                     state_fips = hood_state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips,year=decennial_census_year)[0][total_pop_field]
         _2010_hood_hh          = c.sf1.state_county_subdivision(fields = total_households_field,              state_fips = hood_state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips,year=decennial_census_year)[0][total_households_field]
+        #_2010_hood_fam          = c.sf1.state_county_subdivision(fields = total_families_field,                state_fips = hood_state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips,year=decennial_census_year)[0][total_families_field]
 
         current_hood_pop       = c.pl.state_county_subdivision(fields = redistricting_total_pop_field,        state_fips = hood_state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips)[0][redistricting_total_pop_field]
         current_hood_hh        = c.pl.state_county_subdivision(fields = redistricting_total_hh_field,         state_fips = hood_state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips)[0][redistricting_total_hh_field]
+        #current_hood_fam       = c.pl.state_county_subdivision(fields = redistricting_total_f_field,          state_fips = hood_state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips)[0][redistricting_total_f_field]
 
     elif hood_geographic_level == 'zip':
         current_estimate_period = 'Current Estimate'
 
         _2010_hood_pop         = c.sf1.state_zipcode(fields = total_pop_field,        state_fips = hood_state_fips, zcta = hood_zip,year=decennial_census_year)[0][total_pop_field]
         _2010_hood_hh          = c.sf1.state_zipcode(fields = total_households_field, state_fips = hood_state_fips, zcta = hood_zip,year=decennial_census_year)[0][total_households_field]
+        #_2010_hood_fam         = c.sf1.state_zipcode(fields = total_families_field,   state_fips = hood_state_fips, zcta = hood_zip,year=decennial_census_year)[0][total_families_field]
 
         current_hood_pop       = _2010_hood_pop
         current_hood_hh        = _2010_hood_hh
+        #current_hood_fam       = _2010_hood_fam
 
     elif hood_geographic_level == 'tract':
         current_estimate_period = '2020 Census'
         _2010_hood_pop         = c.sf1.state_county_tract(fields = total_pop_field,              state_fips = hood_state_fips,county_fips=hood_county_fips, tract = hood_tract, year = decennial_census_year)[0][total_pop_field]
         _2010_hood_hh          = c.sf1.state_county_tract(fields = total_households_field,       state_fips = hood_state_fips,county_fips=hood_county_fips, tract = hood_tract, year = decennial_census_year)[0][total_households_field]
+        #_2010_hood_fam         = c.sf1.state_county_tract(fields = total_families_field,         state_fips = hood_state_fips,county_fips=hood_county_fips, tract = hood_tract, year = decennial_census_year)[0][total_families_field]
 
         current_hood_pop       = c.pl.state_county_tract(fields = redistricting_total_pop_field, state_fips = hood_state_fips,county_fips=hood_county_fips,tract=hood_tract)[0][redistricting_total_pop_field]
         current_hood_hh        = c.pl.state_county_tract(fields = redistricting_total_hh_field,  state_fips = hood_state_fips,county_fips=hood_county_fips,tract=hood_tract)[0][redistricting_total_hh_field]
+        #current_hood_fam       = c.pl.state_county_tract(fields = redistricting_total_f_field,   state_fips = hood_state_fips,county_fips=hood_county_fips,tract=hood_tract)[0][redistricting_total_f_field]
 
     elif hood_geographic_level == 'custom':
         current_estimate_period = 'Current Estimate'
@@ -3762,7 +3772,17 @@ def PopulationAgeLanguage():
         hood_largest_age_category  = age_ranges[neighborhood_age_data.index(max(neighborhood_age_data))] #get the most common income category
         comp_largest_age_category  = age_ranges[comparison_age_data.index(max(comparison_age_data))]
 
-        age_language = ('The median age in '                                                        +
+        if "{:,.1f}".format(neighborhood_median_age) > "{:,.1f}".format(comparison_median_age):
+            median_age_comparison  = 'Households in ' + neighborhood + ' tend to be larger than those in ' + comparison_area + '. '             
+            median_age_comparison2  = 'Given the average age, family size, and age distribution, the majority of households consist of families.'
+        elif "{:,.1f}".format(neighborhood_median_age) < "{:,.1f}".format(comparison_median_age):
+            median_age_comparison  = 'The majority of Households in ' + neighborhood + ' tend to be smaller than those in ' + comparison_area + '. '
+            median_age_comparison2  ='Given the average age, family size, and age distribution, the majority of households consist of individuals, couples, and young families, compared to slightly larger families in ' + neighborhood + '. '
+        else:
+            median_age_comparison  = 'The average size of a ' + neighborhood + ' household is fairly similar to those in ' + comparison_area + '. In fact, '
+            median_age_comparison2 = ''
+
+        age_language = (median_age_comparison + 'The median age in '                          +
                         neighborhood                                                                + 
                         ' is '                                                               + 
                         "{:,.1f}".format(neighborhood_median_age)                                   +
@@ -3779,7 +3799,8 @@ def PopulationAgeLanguage():
                         comp_largest_age_category                                                   +
                         ' for '                                                                     +
                             comparison_area                                                         +
-                            '.'
+                            '.'                                                                     +
+                        median_age_comparison2
                         )
     except Exception as e:
         print(e,'unable to create population by age langauge')
