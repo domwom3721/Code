@@ -1,7 +1,6 @@
 #By Mike Leahy
 #Started 06/30/2021
 #Summary: This script creates reports on neighborhoods/cities for Bowery
-from genericpath import exists
 import json
 import msvcrt
 import os
@@ -12,15 +11,12 @@ from datetime import date, datetime
 from statistics import mean
 import googlemaps
 import mpu
-import numpy as np
-from numpy.lib.function_base import place
 import pandas as pd
 import plotly.graph_objects as go
 import pyautogui
 import requests
 import shapefile
 import us
-from us.states import PA
 import wikipedia
 from bs4 import BeautifulSoup
 import re
@@ -33,7 +29,6 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.oxml.table import CT_Row, CT_Tc
 from docx.shared import Inches, Pt, RGBColor
-from fredapi import Fred
 from PIL import Image, ImageOps
 from plotly.subplots import make_subplots
 from requests.adapters import HTTPAdapter
@@ -45,7 +40,6 @@ from selenium.webdriver.common.keys import Keys
 from shapely.geometry import LineString, MultiPoint, Point, shape,Polygon,mapping
 from shapely.ops import nearest_points
 from walkscore import WalkScoreAPI
-from wikipedia.wikipedia import random
 from yelpapi import YelpAPI
 # import kml2geojson
 # from osgeo import gdal,ogr #gdal can open the kml file from google maps 
@@ -328,38 +322,6 @@ def PolygonToShapeFile(poly):
         # save it
         shapewriter.close()
         # print('saved file')
-
-
-
-
-
-        # ####### Write polygon as shapefile
-
-        # # Here's an example Shapely geometry
-        # # Now convert it to a shapefile with OGR    
-        # driver = ogr.GetDriverByName('Esri Shapefile')
-        # ds = driver.CreateDataSource(os.path.join(hood_folder,'my.shp'))
-        # layer = ds.CreateLayer('', None, ogr.wkbPolygon)
-        # # Add one attribute
-        # layer.CreateField(ogr.FieldDefn('id', ogr.OFTInteger))
-        # defn = layer.GetLayerDefn()
-
-        # ## If there are multiple geometries, put the "for" loop here
-
-        # # Create a new feature (attribute and geometry)
-        # feat = ogr.Feature(defn)
-        # feat.SetField('id', 123)
-
-        # # Make a geometry, from Shapely object
-        # geom = ogr.CreateGeometryFromWkb(poly.wkb)
-        # feat.SetGeometry(geom)
-
-        # layer.CreateFeature(feat)
-        # feat = geom = None  # destroy these
-
-        # # Save and close everything
-        # ds = layer = feat = geom = None
-        # #######
 
 def shapely_to_pyshp(shapelygeom):
     # first convert shapely to geojson
@@ -860,23 +822,6 @@ def CreateDirectory():
     
     report_path = os.path.join(hood_folder,current_year + ' ' + hood_state + ' - ' + neighborhood  + ' - hood' + '_draft')[:255] 
     report_path = report_path + '.docx'
-
-def GetSalesforceJobLatLong():
-    pass
-
-    # Grab Property Lat Long from Salesforce Report, identify hood and comparison FIPS
-    # Define location of raw Census Places data files
-    #    salesforce_df=os.path.join(salesforce_report,'report.csv')
-    #    salesforce_df['lat_long'] = salesforce_df["Property Latitude"].astype(str) + ',' + salesforce_df["Property Longitude"].astype(str)
-    #    salesforce_df['neighborhod_district'] = salesforce_df["Property: Neighborhood/District"].astype(str) + ', ' + salesforce_df["Property: State"].astype(str)
-
-    #    #iterate through 
-    #    for i in range(len(salesforce_df['neighborhood_district'])):
-
-    #    7digitFIPS     =
-    #    5digitFIPS     =
-
-    #    return([7digitFIPS,5digitFIPS])
 
 def FindZipCodeDictionary(zip_code_data_dictionary_list,zcta,state_fips):
     #This function takes a list of dictionaries, where each zip code gets its own dictionary. Takes a zip code and state fips code and finds and returns just that dictionary.
@@ -1841,17 +1786,14 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
                 row3,
                 row4,
                 row5
-                    ]
-            )
+                    ])
     else:
         return(    
                 [ 
                 row1,
                 row2,
                 row3,
-                    ]
-            )
-
+                    ])
 
 #####################################################Non Census Sources Data Functions####################################
 def GetWikipediaPage():
@@ -1934,28 +1876,6 @@ def GetYelpData(lat,lon,radius):
         
         
     return(business_categories)
-    
-
-    # bar_response              = yelp_api.search_query(categories='bars', longitude=lon, latitude=lat, radius = radius,sort_by = 'distance') # , limit=5)
-    # closest_bar               = bar_response['businesses'][0]['name']
-    # closest_bar_distance      = bar_response['businesses'][0]['distance']
-    # pprint(bar_response)
-    # print('The closest bar from the subject property on Yelp.com is ' + str(closest_bar) + ' which is ' + str(closest_bar_distance) + ' meters from the subjet property.')
-    
-
-    # number_bar_search_results = bar_response['total']
-    # print('There are ' + str(number_bar_search_results) + ' bars within ' + str(radius) + ' meters of the subjet property based on a search of Yelp.com')
-    
-
-    
-    # restaurants_response             = yelp_api.search_query(categories='restaurant', longitude=lon, latitude=lat, radius = radius,sort_by = 'distance') # , limit=5)
-    # # pprint(restaurants_response)
-    # closest_restaurant               = restaurants_response['businesses'][0]['name']
-    # closest_restaurant_distance      = restaurants_response['businesses'][0]['distance']
-    # print('The closest restaurant from the subject property on Yelp.com is ' + str(closest_restaurant) + ' which is ' + str(closest_restaurant_distance) + ' meters from the subjet property.')
-    
-    # number_restaurant_search_results = restaurants_response['total']
-    # print('There are ' + str(number_restaurant_search_results) + ' restaurants within ' + str(radius) + ' meters of the subjet property based on a search of Yelp.com')
 
 def FindAirport():
     #Specify the file path to the airports shape file
@@ -2411,16 +2331,16 @@ def Zoneomics(address):
     print('Getting Zoneomics Zoning Map')
     url = 'https://www.zoneomics.com/api/get_zone_screen_shot?address=address&api_key=api_key&map_zoom_level=17'
 
-    #    data = {
-    #    'key': zoneomics_api_key,
-    #    'address': address
-    #        }
+    data = {
+    'key': zoneomics_api_key,
+    'address': address
+        }
 
-    #     try:
-    #         response = requests.get(url, params=data).json()
-    #     except Exception as e:
-    #         print(e)
-    #         response = [{}]
+    try:
+        response = requests.get(url, params=data).json()
+    except Exception as e:
+        print(e)
+        response = [{}]
 
 #Main data function
 def GetData():
@@ -3516,14 +3436,6 @@ def OutlookLanguage():
     
     return([outlook_language])
 
-    # return('Neighborhood analysis can best be summarized by referring to neighborhood life cycles. ' +
-    #       'Neighborhoods are perceived to go through four cycles, the first being growth, the second being stability, the third decline, and the fourth revitalization. ' +
-    #       'It is our observation that the subject’s neighborhood is exhibiting several stages of the economic life, with an overall predominance of stability and both limited decline and limited revitalization in some sectors. ' +
-    #       'The immediate area surrounding the subject, has had a historically low vacancy level and is located just to the south of the ------ submarket,' +
-    #       """ which has multiple office and retail projects completed within the past two years and more development in the subject’s immediate vicinity either under construction or preparing to break ground."""+
-    #       ' The proximity of the ________ and ________ will ensure the neighborhood will continue ' +
-    #       'to attract growth in the long-term.')
-    
 def HousingIntroLanguage():
     print('Creating housing intro Langauge')
     try:
@@ -3757,7 +3669,7 @@ def HouseholdSizeLanguage():
 def PopLanguage():
     print('Creating Population intro Langauge')
 
-    population_language = ('The following demographic profile, created with data from the U.S. Census Bureau, reflects the subjects municipality and market. ')
+    population_language = ("""The following demographic profile, created with data from the U.S. Census Bureau, reflects the subject's municipality and market. """)
 	
     return([population_language])
 
@@ -4036,28 +3948,6 @@ def LocationIQPOIList(lat,lon,category,radius,limit):
     except Exception as e:
         print(e,'problem getting Location IQ resuts for ', category)
         return([])
-    
-    # try:
-    #     for poi in response:
-    #         try:
-    #             poi_name      = poi['name']
-    #             # print(poi_name)
-    #             poi_type      = poi['type']
-    #             poi_city      = poi['address']['city']
-    #             poi_sentence  = (' ' + poi_name + ', ' )
-    #             poi_list = poi_list + poi_sentence
-    #         except:
-    #             continue
-    #         #For cities/towns, restrict points of interest to those inside the city limits
-
-    #         # if neighborhood_level == 'place':
-    #         #     if neighborhood == poi_city:
-    #         #         poi_sentence = poi_list + poi_sentence
-            # else:
-    #     time.sleep(.1)
-    #     return(poi_list)
-    # except Exception as e:
-    #         print(e)
 
 def CreateLanguage():
     
@@ -4131,10 +4021,6 @@ def AddTitle(document):
     main_title_style.element.xml
     rFonts = main_title_style.element.rPr.rFonts
     rFonts.set(qn("w:asciiTheme"), "Avenir Next LT Pro Light")
-
-    # glance_paragraph                               = document.add_paragraph(neighborhood + ' at a Glance')
-    # glance_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
-    # glance_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
 
 def AddHeading(document,title,heading_level,heading_number,font_size): #Function we use to insert the headers other than the title header
             heading = document.add_heading(title,level=heading_level)
