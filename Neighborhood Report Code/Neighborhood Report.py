@@ -3476,11 +3476,8 @@ def BusLanguage():
     if bus_lang != None:
         return(bus_lang)
     else:
-        return( neighborhood + ' does not have public bus service.' 
-                # +
-                # ' [---- provides public bus service within ' + neighborhood + '.]'
-                )
-
+        return( neighborhood + ' does not have public bus service.' )  # ' [---- provides public bus service within ' + neighborhood + '.]'
+                
 def TrainLanguage():
     print('Creating train Langauge')
     wikipedia_train_language = WikipediaTransitLanguage(category='train')
@@ -3848,7 +3845,7 @@ def IncomeLanguage():
                         "${:,.0f}".format(neighborhood_median_hh_inc)        +
                        ', compared to '                                      +
                        "${:,.0f}".format(comparison_median_hh_inc)           +
-                       'for households in '                                  + 
+                       ' for households in '                                  + 
                        comparison_area                                       +
                        '. The chart below indicates the share of households by income brackets. In ' +                                
                        neighborhood                                          + 
