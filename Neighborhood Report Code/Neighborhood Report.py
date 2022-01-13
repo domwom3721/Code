@@ -466,13 +466,11 @@ def TransitAgencyIdToName(id):
     try:
         print('The ID is: ', id)
         df = pd.read_excel(os.path.join(general_data_location,'Geographic Data','GTFS_NTM_Stops','2020 Agency Information.xlsx')) #from here: https://www.transit.dot.gov/ntd/data-product/2020-annual-database-agency-information
-        print(df)
         df['NTD ID'] = df['NTD ID'].astype(str)
         # df['NTD ID'] = df['NTD ID'].zfill(6)
         df = df.loc[df['NTD ID'] == id]
         print(df)
         agency_name = df['Agency Name'].iloc[0]    
-        print(df)
         return(agency_name)
     except Exception as e:
         print(e,'Couldnt find Transit Agency name from ID number')
@@ -2209,7 +2207,7 @@ def FindBusLines():
         #Specify the file path to the shape file
         map_location = os.path.join(general_data_location,'Geographic Data','GTFS_NTM_Stops','GTFS_NTM_Stops.shp')
 
-        print('Opened Transit Stops File')
+        # print('Opened Transit Stops File')
         #Open the shapefile
         map = shapefile.Reader(map_location)
         index_list = [] #Create empty list that we will fill with numbers that correspond to routes within the subject area
@@ -2221,7 +2219,7 @@ def FindBusLines():
             if neighborhood_shape_polygon.contains(coords):
                 index_list.append(i)
 
-        print('Created Transit Stop Index List')
+        # print('Created Transit Stop Index List')
         #Now loop through our list of index numbers, for each index number, create a dictionary with key info (name, etc), append that dictionary to empty list
         i = 0
         info_list = []    
@@ -2244,11 +2242,11 @@ def FindBusLines():
             info_list.append(info_dict)
             i+=1
             
-        print('Created Transit Stop Info Dict List')
+        # print('Created Transit Stop Info Dict List')
         #When there are more than 1 routes
         if len(info_list) > 0:
             agency_id = str(info_list[0]['agency_id'])
-            print(agency_id)
+            # print(agency_id)
             agency_name = TransitAgencyIdToName(id = agency_id)
             sentence = (agency_name + ' provides public bus service within ' + neighborhood)
 
