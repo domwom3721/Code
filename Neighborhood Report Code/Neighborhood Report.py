@@ -3466,6 +3466,8 @@ def HousingTypeTenureLanguage():
         size_list   = list(top_size_dict.keys())
         most_common_category        = size_list[len(size_list)     - 1]
         second_most_common_category = size_list[len(size_list)     - 2]
+        third_most_common_category = size_list[len(size_list)     - 3]
+
 
         
         
