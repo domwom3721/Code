@@ -16,17 +16,10 @@ raw_office_file                =  os.path.join(costar_data_location,'Raw Data','
 raw_retail_file                =  os.path.join(costar_data_location,'Raw Data','retail.csv') 
 raw_industrial_file            =  os.path.join(costar_data_location,'Raw Data','industrial.csv') 
 
-raw_multifamily_slices_file    =  os.path.join(costar_data_location,'Raw Data','mf_slices.xlsx') 
-raw_office_slices_file         =  os.path.join(costar_data_location,'Raw Data','office_slices.xlsx') 
+raw_multifamily_slices_file    =  os.path.join(costar_data_location,'Raw Data','mf_slices.csv') 
+raw_office_slices_file         =  os.path.join(costar_data_location,'Raw Data','office_slices.csv') 
 raw_retail_slices_file         =  os.path.join(costar_data_location,'Raw Data','retail_slices.csv') 
 raw_industrial_slices_file     =  os.path.join(costar_data_location,'Raw Data','industrial_slices.xlsx') 
-
-
-
-
- 
-
-
 
 
 # Import raw CoStar data as pandas data frames
@@ -69,9 +62,6 @@ df_office       = pd.read_csv(raw_office_file,
 
                         }     )
 
-                        
-
-
 df_retail       = pd.read_csv(raw_retail_file,
                   dtype={'Sales Volume Transactions': object,
                        'Cap Rate Transactions'    :object,
@@ -96,17 +86,17 @@ df_industrial   = pd.read_csv(raw_industrial_file,
                         }
                              )  		
 
-
-#Import the raw slices data from Costar where the markets are broken down by the quality of the properties
-df_multifamily_slices  = pd.read_excel(raw_multifamily_slices_file,
+# Import the raw slices data from Costar where the markets are broken down by the quality of the properties
+df_multifamily_slices  = pd.read_csv(raw_multifamily_slices_file,
                 dtype={'Sales Volume Transactions': object
                       }      ) 
-df_office_slices       = pd.read_excel(raw_office_slices_file,
+
+df_office_slices       = pd.read_csv(raw_office_slices_file,
                   dtype={'Sales Volume Transactions': object,
                         'Total Sales Volume':object,
                         'Transaction Sale Price/SF':object,
                         'Under Construction Buildings':object,
-                        'Vacancy Rate': float
+                        'Vacancy Rate': object
                         }     )
 
 df_retail_slices       = pd.read_csv(raw_retail_slices_file,
@@ -133,30 +123,7 @@ df_industrial_slices   = pd.read_excel(raw_industrial_slices_file,
                         })
 
 
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#Data cleaning
+#Define Data cleaning functions
 def DropClusters(df): #drops rows that report data on the cluster geography type
     df = df.loc[df['Geography Type'] != 'Cluster']
     return(df)
@@ -312,19 +279,20 @@ def MainCleanSlices(df,sector): #Calls cleaning functions and returns cleaned da
 
         #Replace NA with 0
         df['Under Construction SF'] = df['Under Construction SF'].fillna(0)
-        
     
-    df['Vacancy Rate'] = round(df['Vacancy Rate'] * 100,1)
+    if df['Vacancy Rate'].dtype == 'object':
+        df['Vacancy Rate'] = df['Vacancy Rate'].str.replace('%','')
+    else:
+        df['Vacancy Rate'] = round(df['Vacancy Rate'] * 100,1)
+
+
     #Remove "Center" from slice name
     df['Slice'] = df['Slice'].str.replace(' Center', '', regex=False)
-    
     df['Geography Name'] = df['Geography Name'].str.replace('New York City', 'Manhattan', regex=False)
-    
     
 
     #Drop the aggregate slice
     df = df.loc[df['Slice'] != 'All']
-
     df.loc[:,'Year']           =   df.loc[:,'Period'].str[:4]
     df.loc[:,'Quarter']        =   df.loc[:,'Period'].str[5:]
 
@@ -510,15 +478,14 @@ df_industrial_slices    =  KeepLast10Years(df_industrial_slices,groupbylist= ['G
 
 
 #Export Cleaned Data Files
-df_multifamily.to_csv(os.path.join(costar_data_location,'Clean Data','mf_clean.csv'))
-df_office.to_csv(os.path.join(costar_data_location, 'Clean Data','office_clean.csv'))
-df_retail.to_csv(os.path.join(costar_data_location,'Clean Data','retail_clean.csv',))
-df_industrial.to_csv(os.path.join(costar_data_location,'Clean Data','industrial_clean.csv'))
+df_multifamily.to_csv(os.path.join(costar_data_location,'Clean Data','mf_clean.csv'),index=False)
+df_office.to_csv(os.path.join(costar_data_location, 'Clean Data','office_clean.csv'),index=False)
+df_retail.to_csv(os.path.join(costar_data_location,'Clean Data','retail_clean.csv',),index=False)
+df_industrial.to_csv(os.path.join(costar_data_location,'Clean Data','industrial_clean.csv'),index=False)
 
+df_multifamily_slices.to_csv(os.path.join(costar_data_location,'Clean Data','mf_slices_clean.csv'),index=False)
+df_office_slices.to_csv(os.path.join(costar_data_location,'Clean Data','office_slices_clean.csv'),index=False)
+df_retail_slices.to_csv(os.path.join(costar_data_location,'Clean Data','retail_slices_clean.csv',),index=False)
+df_industrial_slices.to_csv(os.path.join(costar_data_location,'Clean Data','industrial_slices_clean.csv'),index=False)
 
-
-
-df_multifamily_slices.to_csv(os.path.join(costar_data_location,'Clean Data','mf_slices_clean.csv'))
-df_office_slices.to_csv(os.path.join(costar_data_location,'Clean Data','office_slices_clean.csv'))
-df_retail_slices.to_csv(os.path.join(costar_data_location,'Clean Data','retail_slices_clean.csv',))
-df_industrial_slices.to_csv(os.path.join(costar_data_location,'Clean Data','industrial_slices_clean.csv'))
+print('Cleaning Complete')
