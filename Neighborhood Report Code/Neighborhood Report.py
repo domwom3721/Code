@@ -2427,6 +2427,7 @@ def SetGraphFormatVariables():
     
     global graph_width, graph_height, scale,tickfont_size,left_margin,right_margin,top_margin,bottom_margin,legend_position,paper_backgroundcolor,title_position
     global fig_width
+    global main_graph_font_size
 
     #Set graph size and format variables
     marginInches = 1/18
@@ -2444,6 +2445,7 @@ def SetGraphFormatVariables():
 
     #Set tick font size (also controls legend font size)
     tickfont_size = 14 
+    main_graph_font_size = 10.5
 
     #Set Margin parameters/legend location
     left_margin   = 0
@@ -2512,7 +2514,7 @@ def CreateHouseholdSizeHistogram():
     fig.update_layout(
     font_family="Avenir Next LT Pro",
     font_color='#262626',
-    font_size = 10.5,
+    font_size = main_graph_font_size,
     paper_bgcolor=paper_backgroundcolor,
     plot_bgcolor ="White"
                      )
@@ -2526,9 +2528,9 @@ def CreateHouseholdSizeHistogram():
                     )
 
 
-
     #Add % to  axis ticks
-    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.0f',secondary_y=False)       
+    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.0f',secondary_y=False)
+    fig.update_xaxes(tickfont = dict(size=tickfont_size))       
     fig.write_image(os.path.join(hood_folder,'household_size_graph.png'),engine='kaleido',scale=scale)
 
 def CreateHouseholdTenureHistogram():
@@ -2585,7 +2587,7 @@ def CreateHouseholdTenureHistogram():
     fig.update_layout(
     font_family="Avenir Next LT Pro",
     font_color='#262626',
-    font_size = 10.5,
+    font_size = main_graph_font_size,
     paper_bgcolor=paper_backgroundcolor,
     plot_bgcolor ="White"
                      )
@@ -2661,7 +2663,7 @@ def CreateHouseholdNumberUnitsInBuildingHistogram():
     fig.update_layout(
     font_family="Avenir Next LT Pro",
     font_color='#262626',
-    font_size = 10.5,
+    font_size = main_graph_font_size,
     paper_bgcolor=paper_backgroundcolor,
     plot_bgcolor ="White"
                      )
@@ -2737,7 +2739,7 @@ def CreateHouseholdYearBuiltHistogram():
     fig.update_layout(
     font_family="Avenir Next LT Pro",
     font_color='#262626',
-    font_size = 10.5,
+    font_size = main_graph_font_size,
     paper_bgcolor=paper_backgroundcolor,
     plot_bgcolor ="White"
                      )
@@ -2812,7 +2814,7 @@ def CreateHouseholdValueHistogram():
     fig.update_layout(
     font_family="Avenir Next LT Pro",
     font_color='#262626',
-    font_size = 10.5,
+    font_size = 14,
     paper_bgcolor=paper_backgroundcolor,
     plot_bgcolor ="White"
                      )
@@ -2890,7 +2892,7 @@ def CreatePopulationByAgeHistogram():
     fig.update_layout(
     font_family="Avenir Next LT Pro",
     font_color='#262626',
-    font_size = 10.5,
+    font_size = main_graph_font_size,
     paper_bgcolor=paper_backgroundcolor,
     plot_bgcolor ="White"
                      )
@@ -2982,7 +2984,7 @@ def CreatePopulationByIncomeHistogram():
     fig.update_layout(
     font_family="Avenir Next LT Pro",
     font_color='#262626',
-    font_size = 10.5,
+    font_size = main_graph_font_size,
     paper_bgcolor=paper_backgroundcolor,
     plot_bgcolor ="White"
                      )
@@ -3060,7 +3062,7 @@ def CreateTopOccupationsHistogram():
     fig.update_layout(
     font_family="Avenir Next LT Pro",
     font_color='#262626',
-    font_size = 10.5,
+    font_size = main_graph_font_size,
     paper_bgcolor=paper_backgroundcolor,
     plot_bgcolor ="White"
                      )
@@ -3133,7 +3135,7 @@ def CreateTravelTimeHistogram():
     fig.update_layout(
     font_family="Avenir Next LT Pro",
     font_color='#262626',
-    font_size = 10.5,
+    font_size = main_graph_font_size,
     paper_bgcolor=paper_backgroundcolor,
     plot_bgcolor ="White"
                      )
@@ -3197,7 +3199,7 @@ def CreateTravelModeHistogram():
     fig.update_layout(
     font_family="Avenir Next LT Pro",
     font_color='#262626',
-    font_size = 10.5,
+    font_size = main_graph_font_size,
     paper_bgcolor=paper_backgroundcolor,
     plot_bgcolor ="White"
                      )
