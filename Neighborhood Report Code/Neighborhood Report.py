@@ -3633,30 +3633,44 @@ def HouseholdSizeLanguage():
     household_size_categories = ['1 person','2 people','3 people','4 people','5 people','6 people','7 or more people']
 
     #Largest cateogy for hood and comparsion area
-    hood_largest_time_category = household_size_categories[neighborhood_household_size_distribution.index(max(neighborhood_household_size_distribution))] #get the most common household size category
-    comp_largest_time_category = household_size_categories[comparison_household_size_distribution.index(max(comparison_household_size_distribution))]
+    hood_largest_size_category = household_size_categories[neighborhood_household_size_distribution.index(max(neighborhood_household_size_distribution))] #get the most common household size category
+    comp_largest_size_category = household_size_categories[comparison_household_size_distribution.index(max(comparison_household_size_distribution))]
 
-    if "{:,.1f}".format(neighborhood_average_hh_size) > "{:,.1f}".format(comparison_average_hh_size):
+    #Compare the average household size of the hood and comparison area
+    if neighborhood_average_hh_size > comparison_average_hh_size:
         avg_hh_size_comparison  = 'Households in ' + neighborhood + ' tend to be larger than those in ' + comparison_area + '. '             
         avg_hh_size_comparison2  = 'Given the average age, household size, and age distribution, the majority of households consist of families.'
-    elif "{:,.1f}".format(neighborhood_average_hh_size) < "{:,.1f}".format(comparison_average_hh_size):
-        avg_hh_size_comparison  = 'The majority of Households in ' + neighborhood + ' tend to be smaller than those in ' + comparison_area + '. '
+    elif neighborhood_average_hh_size < comparison_average_hh_size:
+        avg_hh_size_comparison  = 'Households in ' + neighborhood + ' tend to be smaller than those in ' + comparison_area + '. '   
         avg_hh_size_comparison2  ='Given the average age, household size, and age distribution, the majority of households consist of individuals, couples, and young families, compared to slightly larger families in ' + neighborhood + '. '
+    elif neighborhood_average_hh_size == comparison_average_hh_size:
+        avg_hh_size_comparison  = 'The average size of a ' + neighborhood + ' household is equal to those in ' + comparison_area + '. In fact, '
+        avg_hh_size_comparison2 = ''
     else:
         avg_hh_size_comparison  = 'The average size of a ' + neighborhood + ' household is similar to those in ' + comparison_area + '. In fact, '
         avg_hh_size_comparison2 = ''
 
-    if hood_largest_time_category > comp_largest_time_category:
-        hh_size_category_comparison  = 'the majority of households consist of ' + hood_largest_time_category + ' compared to ' + comparison_area + ', where households are smaller. In ' + neighborhood              
+    #Compare the modal categories
+    hood_largest_size_category_numeric = int(hood_largest_size_category[0])
+    comp_largest_size_category_numeic  = int(comp_largest_size_category[0])
+    assert 0 < hood_largest_size_category_numeric < 8
+    assert 0 < comp_largest_size_category_numeic  < 8
+
+    if hood_largest_size_category_numeric > comp_largest_size_category_numeic:
+        hh_size_category_comparison  = 'the majority of households consist of ' + hood_largest_size_category + ' compared to ' + comparison_area + ', where households are smaller. In ' + neighborhood              
         hh_size_category_comparison2  = ''
-    elif hood_largest_time_category < comp_largest_time_category:
-        hh_size_category_comparison  = 'the majority of households consist of ' + hood_largest_time_category + ' compared to ' + comparison_area + ', where households are larger. In '
+    elif hood_largest_size_category_numeric < comp_largest_size_category_numeic:
+        hh_size_category_comparison  = 'the majority of households consist of ' + hood_largest_size_category + ' compared to ' + comparison_area + ', where households are larger. In '
         hh_size_category_comparison2  ='Given the average age, family size, and age distribution, the majority of households consist of individuals, couples, and young families, compared to slightly larger families in ' + neighborhood + '. '
+    elif hood_largest_size_category_numeric == comp_largest_size_category_numeic:
+        hh_size_category_comparison  = comp_largest_size_category + ' households account for the largest share in both ' + neighborhood + ' and ' + comparison_area + '. '
+        hh_size_category_comparison2 = 'Given the average age, family size, and age distribution, the majority of households consist of [individuals/couples/and young families/and retirees].'
     else:
-        hh_size_category_comparison  = comp_largest_time_category + ' households account for the largest share in both ' + neighborhood + ' and ' + comparison_area + '. '
+        hh_size_category_comparison  = comp_largest_size_category + ' households account for the largest share in both ' + neighborhood + ' and ' + comparison_area + '. '
         hh_size_category_comparison2 = 'Given the average age, family size, and age distribution, the majority of households consist of [individuals/couples/and young families/and retirees].'
 
-    household_size_language = (avg_hh_size_comparison + 'Households in '               +
+    household_size_language = (avg_hh_size_comparison + 
+                             'Households in '                                          +
                                neighborhood                                            + 
                               ' have an average size of '                              + 
                               "{:,.1f} people".format(neighborhood_average_hh_size)    +
@@ -3686,12 +3700,15 @@ def PopulationAgeLanguage():
         hood_largest_age_category  = age_ranges[neighborhood_age_data.index(max(neighborhood_age_data))] #get the most common income category
         comp_largest_age_category  = age_ranges[comparison_age_data.index(max(comparison_age_data))]
 
-        if "{:,.1f}".format(neighborhood_median_age) > "{:,.1f}".format(comparison_median_age):
+        if neighborhood_median_age > comparison_median_age:
             median_age_comparison  = 'With a large presence of families, the median age in ' + neighborhood + ' tends to be higher than ' + comparison_area + '. '             
             median_age_comparison2  = ''
-        elif "{:,.1f}".format(neighborhood_median_age) < "{:,.1f}".format(comparison_median_age):
+        elif neighborhood_median_age < comparison_median_age:
             median_age_comparison  = 'The majority of Households in ' + neighborhood + ' tend to be younger than those in ' + comparison_area + '. '
             median_age_comparison2  = 'These groupings of age cohorts suggest a large presence of young families. '
+        elif neighborhood_median_age == comparison_median_age:
+            median_age_comparison  = 'The average size of a ' + neighborhood + ' household is equal to those in ' + comparison_area + '. In fact, '
+            median_age_comparison2 = ''
         else:
             median_age_comparison  = 'The average size of a ' + neighborhood + ' household is fairly similar to those in ' + comparison_area + '. In fact, '
             median_age_comparison2 = ''
@@ -3741,26 +3758,18 @@ def IncomeLanguage():
                          'between $150,000-199,999',
                          'over $200,000']
 
-    #Estimate a median household income from a category freqeuncy distribution
-    # hood_median_income_range   = FindMedianCategory(frequency_list=neighborhood_household_income_data, category_list=income_categories)
-    # if (hood_median_income_range == 'under $10,000') or (hood_median_income_range == 'over $200,000'):
-    #     hood_median_income     = hood_median_income_range
-    # else: 
-    #     hood_median_income_range   = hood_median_income_range.replace('$','')
-    #     hood_median_income_range   = hood_median_income_range.replace('between ','')
-    #     hood_median_income_range   = hood_median_income_range.replace(',','').split('-')
-    #     hood_median_income         = round((int(hood_median_income_range[0]) + int(hood_median_income_range[1]))/2,1)
-    #     hood_median_income         = "around ${:,.0f}".format(hood_median_income)  
-
     hood_largest_income_category = income_categories[neighborhood_household_income_data.index(max(neighborhood_household_income_data))] #get the most common income category
     comp_largest_income_category = income_categories[comparison_household_income_data.index(max(comparison_household_income_data))]
 
-    if "{:,.1f}".format(neighborhood_median_hh_inc) > "{:,.1f}".format(comparison_median_hh_inc):
+    if neighborhood_median_hh_inc > comparison_median_hh_inc:
         median_hh_comparison  = 'Households in ' + neighborhood + ' have a higher median household income rate than ' + comparison_area + '. '             
         median_hh_comparison2  = ''
-    elif "{:,.1f}".format(neighborhood_median_hh_inc) < "{:,.1f}".format(comparison_median_hh_inc):
+    elif neighborhood_median_hh_inc < comparison_median_hh_inc:
         median_hh_comparison  = 'Households in ' + neighborhood + ' tend to have a lower median household income rate than ' + comparison_area + '. '
         median_hh_comparison2  =''
+    elif neighborhood_median_hh_inc == comparison_median_hh_inc:
+        median_hh_comparison  = 'Median household income levels are equal in ' + neighborhood + ' and ' + comparison_area + '. In fact, '
+        median_hh_comparison2 = ''
     else:
         median_hh_comparison  = 'Household income levels are similar in ' + neighborhood + ' and ' + comparison_area + '. In fact, '
         median_hh_comparison2 = ''
