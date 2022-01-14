@@ -3638,37 +3638,28 @@ def HouseholdSizeLanguage():
 
     #Compare the average household size of the hood and comparison area
     if neighborhood_average_hh_size > comparison_average_hh_size:
-        avg_hh_size_comparison  = 'Households in ' + neighborhood + ' tend to be larger than those in ' + comparison_area + '. '             
-        avg_hh_size_comparison2 = 'Given the average age, household size, and age distribution, the majority of households consist of families.'
+        avg_hh_size_comparison  = 'Households in ' + neighborhood + ' tend to be larger than those in ' + comparison_area + '. '    
+        comp_smaller_larger     = 'smaller'         
     elif neighborhood_average_hh_size < comparison_average_hh_size:
-        avg_hh_size_comparison  = 'Households in ' + neighborhood + ' tend to be smaller than those in ' + comparison_area + '. '   
-        avg_hh_size_comparison2 = 'Given the average age, household size, and age distribution, the majority of households consist of individuals, couples, and young families, compared to slightly larger families in ' + neighborhood + '. '
+        avg_hh_size_comparison  = 'Households in ' + neighborhood + ' tend to be smaller than those in ' + comparison_area + '. '  
+        comp_smaller_larger     = 'larger'         
     elif neighborhood_average_hh_size == comparison_average_hh_size:
         avg_hh_size_comparison  = 'The average size of a ' + neighborhood + ' household is equal to those in ' + comparison_area + '. In fact, '
-        avg_hh_size_comparison2 = ''
-    else:
-        avg_hh_size_comparison  = 'The average size of a ' + neighborhood + ' household is similar to those in ' + comparison_area + '. In fact, '
-        avg_hh_size_comparison2 = ''
+        comp_smaller_larger     = 'equal in size on average'         
 
+    family_vs_individual_break_down = 'Given the average age, household size, and age distribution, the majority of households consist of [individuals, couples, and families].'
+    
     #Compare the modal categories
     hood_largest_size_category_numeric = int(hood_largest_size_category[0])
     comp_largest_size_category_numeic  = int(comp_largest_size_category[0])
     assert 0 < hood_largest_size_category_numeric < 8
     assert 0 < comp_largest_size_category_numeic  < 8
 
-    # if hood_largest_size_category_numeric > comp_largest_size_category_numeic:
-    #     hh_size_category_comparison  = 'The majority of households consist of ' + hood_largest_size_category + ' compared to ' + comparison_area + ', where households are smaller.'          
-    #     hh_size_category_comparison2 = ''
-    # elif hood_largest_size_category_numeric < comp_largest_size_category_numeic:
-    #     hh_size_category_comparison  = 'The majority of households consist of ' + hood_largest_size_category + ' compared to ' + comparison_area + ', where households are larger. In '
-    #     hh_size_category_comparison2 = 'Given the average age, family size, and age distribution, the majority of households consist of individuals, couples, and young families, compared to slightly larger families in ' + neighborhood + '. '
-    # elif hood_largest_size_category_numeric == comp_largest_size_category_numeic:
-    #     hh_size_category_comparison  = comp_largest_size_category + ' households account for the largest share in both ' + neighborhood + ' and ' + comparison_area + '. '
-    #     hh_size_category_comparison2 = 'Given the average age, family size, and age distribution, the majority of households consist of [individuals/couples/and young families/and retirees].'
-    # else:
-    #     hh_size_category_comparison  = comp_largest_size_category + ' households account for the largest share in both ' + neighborhood + ' and ' + comparison_area + '. '
-    #     hh_size_category_comparison2 = 'Given the average age, family size, and age distribution, the majority of households consist of [individuals/couples/and young families/and retirees].'
-
+    if hood_largest_size_category_numeric != comp_largest_size_category_numeic:
+        hh_size_category_comparison  = 'The largest share of households consist of ' + hood_largest_size_category + ' compared to ' + comparison_area + ', where households are ' + comp_smaller_larger +  '. '          
+    elif hood_largest_size_category_numeric == comp_largest_size_category_numeic:
+        hh_size_category_comparison  = comp_largest_size_category + ' households account for the largest share in both ' + neighborhood + ' and ' + comparison_area + '. '
+ 
     household_size_language = (avg_hh_size_comparison + 
                              'Households in '                                          +
                                neighborhood                                            + 
@@ -3677,10 +3668,10 @@ def HouseholdSizeLanguage():
                               ', compared to '                                         +
                               "{:,.1f} people".format(comparison_average_hh_size)      +
                               ' in '                                                   +   
-                              neighborhood                                             + 
+                              comparison_area                                          + 
                               '. '                                                     +
-                            #   hh_size_category_comparison                              +
-                              avg_hh_size_comparison2                                              
+                              hh_size_category_comparison                              +
+                              family_vs_individual_break_down                                              
                             )
     
     return([household_size_language])
