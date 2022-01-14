@@ -3463,7 +3463,7 @@ def HousingIntroLanguage():
 def HousingTypeTenureLanguage():
     print('Creating housing type and tenure Langauge')
     try:
-        number_units_categories = ['Single-family homes','Townhomes','Duplexes','3-4 units','5-9 units','10-19 units','20-49 units','50+ units']
+        number_units_categories = ['Single-family homes','Townhomes','Duplexes','3-4 unit properties','5-9 unit properties','10-19 unit properties','20-49 unit properties','properties with 50+ units']
         assert len(number_units_categories) == len(neighborhood_number_units_data)
         
         #We have a list of categories and a list of their respecitive employment shares. Covert to list, then sort from smallest to largest
@@ -3511,7 +3511,7 @@ def HousingTypeTenureLanguage():
                                         neighborhood                                                             +
                                         ', followed by '                                                         +
                                         second_most_common_category                                              + 
-                                        'and  '                                                                  +
+                                        ' and  '                                                                  +
                                         third_most_common_category                                               +
                                         '. '                                                                     +
                                         "{:,.0f}%".format(hood_owner_occupied_fraction)                          +   
