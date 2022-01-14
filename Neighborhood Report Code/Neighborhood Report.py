@@ -3538,7 +3538,7 @@ def HousingTypeTenureLanguage():
 def HousingValueLanguage():
     print('Creating Household by value Langauge')
     try:
-        housing_value_categories = ['under $10,000','$10,000-14,999','$15,000-19,999','$20,000-24,999','$25,000-29,999','$30,000-34,000','$35,000-39,999','$40,000-49,000','$50,000-59,9999','$60,000-69,999','$70,000-79,999','$80,000-89,999','$90,000-99,999','$100,000-124,999','$125,000-149,999','$150,000-174,999','$175,000-199,999','$200,000-249,999','$250,000-299,999','$300,000-399,999','$400,000-499,999','$500,000-749,999','$750,000-999,999','$1,000,000-1,499,999','$1,500,000-1,999,999','over $2,000,000']
+        housing_value_categories = ['under $10k','$10,000-14,999','$15,000-19,999','$20,000-24,999','$25,000-29,999','$30,000-34,000','$35,000-39,999','under $50k','$50,000-59,9999','$60,000-69,999','$70,000-79,999','$80k - $89k','$90k - $99k','$100k - $124k','$125k - $149k','$150k - $174k','$175k - $199k','$200k - $249k','$250k - $299k','$300k - $399k','$400k - $499k','$500k - $749k','$750k - $1 million','$1 million - $1.5m','$1.5 million -$2m','over $2 million']
         assert len(neighborhood_housing_value_data) == len(housing_value_categories) == len(comparison_housing_value_data)
         
         hood_largest_value_category = housing_value_categories[neighborhood_housing_value_data.index(max(neighborhood_housing_value_data))] #get the most common income category
@@ -3735,10 +3735,10 @@ def PopulationAgeLanguage():
                         #', the largest age range is '                                       +
                         hood_largest_age_category                                                   +
                         ' account for the largest cohort, similar/compared to'                                                            +
+                        comparison_area                                                             +
+                        ' where '                                                                   +
                         comp_largest_age_category                                                   +
-                        ' for '                                                                     +
-                            comparison_area                                                         +
-                            '. '                                                                     
+                        ' account for the largest cohort. '                                                                     
                         # median_age_comparison2
                         )
     except Exception as e:
