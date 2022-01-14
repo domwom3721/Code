@@ -3687,11 +3687,11 @@ def PopulationAgeLanguage():
         comp_largest_age_category  = age_ranges[comparison_age_data.index(max(comparison_age_data))]
 
         if "{:,.1f}".format(neighborhood_median_age) > "{:,.1f}".format(comparison_median_age):
-            median_age_comparison  = 'With a large presence of families, the median age in ' + neighborhood + ' tends to be larger than ' + comparison_area + '. '             
+            median_age_comparison  = 'With a large presence of families, the median age in ' + neighborhood + ' tends to be higher than ' + comparison_area + '. '             
             median_age_comparison2  = ''
         elif "{:,.1f}".format(neighborhood_median_age) < "{:,.1f}".format(comparison_median_age):
-            median_age_comparison  = 'The majority of Households in ' + neighborhood + ' tend to be smaller than those in ' + comparison_area + '. '
-            median_age_comparison2  = 'These groupings of age cohorts suggest a large presence of families. '
+            median_age_comparison  = 'The majority of Households in ' + neighborhood + ' tend to be younger than those in ' + comparison_area + '. '
+            median_age_comparison2  = 'These groupings of age cohorts suggest a large presence of young families. '
         else:
             median_age_comparison  = 'The average size of a ' + neighborhood + ' household is fairly similar to those in ' + comparison_area + '. In fact, '
             median_age_comparison2 = ''
@@ -4614,8 +4614,8 @@ def WriteReport():
     IntroSection(             document = document)
     LandUseandZoningSection(  document = document)
     PopulationSection(        document = document)
-    CommunityAssetsSection(   document = document)
     HousingSection(           document = document)
+    CommunityAssetsSection(   document = document)
     TransportationSection(    document = document)
     OutlookSection(           document = document)
 
