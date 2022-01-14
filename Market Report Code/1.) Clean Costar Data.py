@@ -286,6 +286,12 @@ def MainCleanSlices(df,sector): #Calls cleaning functions and returns cleaned da
         df['Vacancy Rate'] = round(df['Vacancy Rate'] * 100,1)
 
 
+    if sector == 'Multifamily':
+        df['Market Effective Rent/Unit'] = df['Market Effective Rent/Unit'].str.replace('$','')
+        df['Market Effective Rent/Unit'] = df['Market Effective Rent/Unit'].str.replace(',','',5)
+        df['Market Effective Rent/Unit'] = df['Market Effective Rent/Unit'].astype(float)
+
+
     #Remove "Center" from slice name
     df['Slice'] = df['Slice'].str.replace(' Center', '', regex=False)
     df['Geography Name'] = df['Geography Name'].str.replace('New York City', 'Manhattan', regex=False)
