@@ -3656,7 +3656,7 @@ def HouseholdSizeLanguage():
     assert 0 < comp_largest_size_category_numeic  < 8
 
     if hood_largest_size_category_numeric != comp_largest_size_category_numeic:
-        hh_size_category_comparison  = 'The largest share of households consist of ' + hood_largest_size_category + ' compared to ' + comp_largest_size_category + 'for ' +  comparison_area + ', where households are ' + comp_smaller_larger +  '. '          
+        hh_size_category_comparison  = 'The largest share of households consist of ' + hood_largest_size_category + ' compared to ' + comp_largest_size_category + ' for ' +  comparison_area + ', where households are ' + comp_smaller_larger +  '. '          
     elif hood_largest_size_category_numeric == comp_largest_size_category_numeic:
         hh_size_category_comparison  = comp_largest_size_category + ' households account for the largest share in both ' + neighborhood + ' and ' + comparison_area + '. '
  
