@@ -89,9 +89,6 @@ def user_selects_reports_or_not():
     # infinite loop 
     ws.mainloop()
 
-    
-    #GUI Over now define functions
-
 #GUI for user to select sector
 def user_selects_sector():
     global   df_list, df_slices_list,sector_name_list,selected_sector
@@ -284,8 +281,7 @@ def user_selects_sector():
         df_list          = [df_industrial]
         df_slices_list   = [df_industrial_slices]
         sector_name_list =  ['Industrial']
-    #GUI Over now define functions
-
+    
 #Define functions used to handle the clean CoStar data and help write our repots
 def CreateMarketDictionary(df): #Creates a dictionary where each key is a market and the items are lists of its submarkets
      df_markets             = df.loc[df['Geography Type'] == 'Metro'] 
@@ -1259,55 +1255,6 @@ def user_selects_market(market_list):
             return(market_list)
     else:
          return([selected_market])
-
-
-
-    # ###############
-    # market_list.insert(0,'All')
-    # if len(df_list) == 4:
-    #     market_list.remove('All')
-    #     return(market_list)
-    
-    # #GUI that lets user specify which sectors they want to run
-    # ws = Tk()
-    # ws.title('Research Automation Project - Market Reports')
-    # ws.geometry('400x300')
-    # ws.config(bg='#404858') 
-
-    # def select_market():
-    #     global selected_market
-    #     selected_market = variable.get()
-        
-    # # setting variable for Integers
-    # variable = StringVar()
-    # variable.set('Select a market')
-
-    # # creating widget
-    # dropdown = OptionMenu(
-    #     ws,
-    #     variable,
-    #     *market_list,
-    #     command=select_market
-    # )
-
-    # # positioning widget
-    # dropdown.pack(expand=True)
-
-    # # infinite loop 
-    # ws.mainloop()
-    
-    # # button = Button(master, text="OK", command=SelectMarket)
-    # # button.pack()
-
-    # try:
-    #     if selected_market == 'All':
-    #         market_list.remove('All')
-    #         return(market_list)
-
-    #     return([selected_market])
-    # except Exception as e:
-    #     print(e)
-    #     return(market_list)
 
 def CreateDirectoryCSV():
     global dropbox_markets,dropbox_research_names,dropbox_analysis_types,dropbox_states,dropbox_sectors,dropbox_sectors_codes,dropbox_links,dropbox_versions,dropbox_statuses,dropbox_document_names
