@@ -2004,6 +2004,7 @@ def FindNearestHighways():
             highway_name          = highway_name.replace('Hwy','Highway')
             highway_name          = highway_name.replace('Pkwy','Parkway') 
 
+            highway_number        = str(highway_record.record['ROADNUM'])
 
             #Don't add unnamed highways to our list
             if highway_name == '' or highway_name == 'Unknown':
@@ -2022,7 +2023,7 @@ def FindNearestHighways():
            
             
             highway_type          = highway_record.record['ADMIN'].title()
-            highway_dict          = {'name':highway_name,'type':highway_type}
+            highway_dict          = {'name':highway_name,'type':highway_type,'number':highway_number}
             highway_info_list.append(highway_dict)
             i+=1
 
@@ -2034,20 +2035,20 @@ def FindNearestHighways():
                
 
                 if count < len(highway_info_list) -1 :
-                    sentence = sentence + (highway['name']) + ' ('  + (highway['type'])   + '), ' 
+                    sentence = sentence + (highway['name']) + ' ('  + (highway['type'])   + '), ' + ' (' + highway['number'] + ')'
                 else:
-                    sentence = sentence + 'and ' + (highway['name']) + ' ('  + (highway['type'])   + ').' 
+                    sentence = sentence + 'and ' + (highway['name']) + ' ('  + (highway['type'])   + ')' + ' (' + highway['number'] + ').' 
         
         
         
         #When we only have 1 major road in our list
         elif len(highway_info_list) == 1:
-            sentence = (highway_info_list[0]['name'] + ' is the main road connecting ' + neighborhood + '.')
+            sentence = (highway_info_list[0]['name'] + ' (' + highway_info_list[0]['number'] + ')' + ' is the main road connecting ' + neighborhood + '.')
         
         elif len(highway_info_list) == 2:
            
-            sentence = ((highway_info_list[0]['name']) + ' ('  + (highway_info_list[0]['type'])   + ') ' + 'and '  + 
-                        (highway_info_list[1]['name']) + ' ('  + (highway_info_list[1]['type'])   + ') '
+            sentence = ((highway_info_list[0]['name']) + ' (' + highway_info_list[0]['number'] + ')' + ' ('  + (highway_info_list[0]['type'])   + ') ' + 'and '  + 
+                        (highway_info_list[1]['name']) + ' (' + highway_info_list[1]['number'] + ')'+ ' ('  + (highway_info_list[1]['type'])   + ') '
                         + ' are the main roads connecting ' + neighborhood + '.')
         elif len(highway_info_list) == 0:
             sentence = None
@@ -3504,7 +3505,7 @@ def HousingTypeTenureLanguage():
 
         housing_type_tenure_langugage = (#'Data from the the most recent American Community Survey indicates a presence of ' + 
                                         #available_housing_types_list                                             + 
-                                        '. '                                                                     +
+                                        #'. '                                                                     +
                                         most_common_category                                                     +  
                                         ' are the most common form of housing in '                               +
                                         neighborhood                                                             +
@@ -3668,7 +3669,7 @@ def HouseholdSizeLanguage():
     assert 0 < comp_largest_size_category_numeic  < 8
 
     if hood_largest_size_category_numeric != comp_largest_size_category_numeic:
-        hh_size_category_comparison  = 'The largest share of households consist of ' + hood_largest_size_category + ' compared to ' + comp_largest_size_category + ' for ' +  comparison_area + ', where households are ' + comp_smaller_larger +  '. '          
+        hh_size_category_comparison  = 'The largest share of households consist of ' + hood_largest_size_category + ' compared to ' + comp_largest_size_category + ' for ' +  comparison_area + ', where the average household tends to be ' + comp_smaller_larger +  '. '          
     elif hood_largest_size_category_numeric == comp_largest_size_category_numeic:
         hh_size_category_comparison  = comp_largest_size_category + ' households account for the largest share in both ' + neighborhood + ' and ' + comparison_area + '. '
  
@@ -3698,7 +3699,7 @@ def PopLanguage():
 def PopulationAgeLanguage():
     print('Creating Population by Age Langauge')
     try:
-        age_ranges = ['children & teens','young adults','young professionals','between 35-49','between 50-66','over 67']
+        age_ranges = [' children & teens',' young adults',' young professionals',' those between 35 and 49 years',' those between 50 and 66 years','those over 67 years old']
 
         hood_largest_age_category  = age_ranges[neighborhood_age_data.index(max(neighborhood_age_data))] #get the most common income category
         comp_largest_age_category  = age_ranges[comparison_age_data.index(max(comparison_age_data))]
@@ -3731,9 +3732,9 @@ def PopulationAgeLanguage():
                         '. '                                                                        +
                         'In '                                                                       + 
                         neighborhood                                                                + 
-                        ', the largest age range is '                                       +
+                        #', the largest age range is '                                       +
                         hood_largest_age_category                                                   +
-                        ', compared to '                                                            +
+                        ' account for the largest cohort, similar/compared to'                                                            +
                         comp_largest_age_category                                                   +
                         ' for '                                                                     +
                             comparison_area                                                         +
@@ -3748,22 +3749,22 @@ def PopulationAgeLanguage():
 
 def IncomeLanguage():
     print('Creating HH Income Langauge')
-    income_categories = ['under $10,000',
-                         'between $10,000-14,999',
-                         'between $15,000-19,999',
-                         'between $20,000-24,999',
-                         'between $25,000-29,999',
-                         'between $30,000-34,999',
-                         'between $35,000-39,999',
-                         'between $40,000-44,999',
-                         'between $45,000-49,999',
-                         'between $50,000-59,999',
-                         'between $60,000-74,999',
-                         'between $75,000-99,999',
-                         'between $100,000-124,999',
-                         'between $125,000-149,999',
-                         'between $150,000-199,999',
-                         'over $200,000']
+    income_categories = ['under $10k',
+                         'between $10k-14,999',
+                         'between $15k-19,999',
+                         'between $20k-24,999',
+                         'between $25k-29,999',
+                         'between $30k-34,999',
+                         'between $35k-39,999',
+                         'between $40k-44,999',
+                         'between $45k-49,999',
+                         'between $50k-59,999',
+                         'between $60k-74,999',
+                         'between $75k-99,999',
+                         'between $100k-124,999',
+                         'between $125k-149,999',
+                         'between $150k-199,999',
+                         '$200k or higher']
 
     hood_largest_income_category = income_categories[neighborhood_household_income_data.index(max(neighborhood_household_income_data))] #get the most common income category
     comp_largest_income_category = income_categories[comparison_household_income_data.index(max(comparison_household_income_data))]
@@ -3792,9 +3793,9 @@ def IncomeLanguage():
                        comparison_area                                       +
                        '. The chart below indicates the share of households by income brackets. In ' +                                
                        neighborhood                                          + 
-                       ', the largest share of households have a household income ' +
+                       ', the largest share of households have a household income of ' +
                        hood_largest_income_category +
-                       ', compared to ' +
+                       ', similar/compared to ' +
                        comp_largest_income_category        +
                        ' for '           +
                         comparison_area +
