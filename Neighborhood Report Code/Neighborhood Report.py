@@ -3656,7 +3656,7 @@ def HouseholdSizeLanguage():
     assert 0 < comp_largest_size_category_numeic  < 8
 
     if hood_largest_size_category_numeric != comp_largest_size_category_numeic:
-        hh_size_category_comparison  = 'The largest share of households consist of ' + hood_largest_size_category + ' compared to ' + comparison_area + ', where households are ' + comp_smaller_larger +  '. '          
+        hh_size_category_comparison  = 'The largest share of households consist of ' + hood_largest_size_category + ' compared to ' + comp_largest_size_category + 'for ' +  comparison_area + ', where households are ' + comp_smaller_larger +  '. '          
     elif hood_largest_size_category_numeric == comp_largest_size_category_numeic:
         hh_size_category_comparison  = comp_largest_size_category + ' households account for the largest share in both ' + neighborhood + ' and ' + comparison_area + '. '
  
@@ -3757,25 +3757,26 @@ def IncomeLanguage():
     comp_largest_income_category = income_categories[comparison_household_income_data.index(max(comparison_household_income_data))]
 
     if neighborhood_median_hh_inc > comparison_median_hh_inc:
-        median_hh_comparison  = 'Households in ' + neighborhood + ' have a higher median household income than ' + comparison_area + '. '             
+        median_hh_comparison  = 'Households in ' + neighborhood + ' have a higher median income than ' + comparison_area + '. '             
         median_hh_comparison2  = ''
     elif neighborhood_median_hh_inc < comparison_median_hh_inc:
-        median_hh_comparison  = 'Households in ' + neighborhood + ' have a lower median household income than ' + comparison_area + '. '
+        median_hh_comparison  = 'Households in ' + neighborhood + ' have a lower median income than ' + comparison_area + '. '
         median_hh_comparison2  =''
     elif neighborhood_median_hh_inc == comparison_median_hh_inc:
-        median_hh_comparison  = 'Median household income levels are equal in ' + neighborhood + ' and ' + comparison_area + '. In fact, '
+        median_hh_comparison  = 'Median household income levels are equal in ' + neighborhood + ' and ' + comparison_area + '. '
         median_hh_comparison2 = ''
     else:
-        median_hh_comparison  = 'Household income levels are similar in ' + neighborhood + ' and ' + comparison_area + '. In fact, '
+        median_hh_comparison  = 'Household income levels are similar in ' + neighborhood + ' and ' + comparison_area + '. '
         median_hh_comparison2 = ''
 
-    income_language = (median_hh_comparison + 'Households in '               +
+    income_language = (median_hh_comparison                                  +
+                      'Households in '                                       +
                        neighborhood                                          + 
-                       ' have a median income of '                 + 
+                       ' have a median income of '                           + 
                         "${:,.0f}".format(neighborhood_median_hh_inc)        +
                        ', compared to '                                      +
                        "${:,.0f}".format(comparison_median_hh_inc)           +
-                       ' for households in '                                  + 
+                       ' for households in '                                 + 
                        comparison_area                                       +
                        '. The chart below indicates the share of households by income brackets. In ' +                                
                        neighborhood                                          + 
