@@ -280,16 +280,23 @@ def MainCleanSlices(df,sector): #Calls cleaning functions and returns cleaned da
         #Replace NA with 0
         df['Under Construction SF'] = df['Under Construction SF'].fillna(0)
     
+    #Clean the vacancy rate variable by removing the percentage sign
     if df['Vacancy Rate'].dtype == 'object':
         df['Vacancy Rate'] = df['Vacancy Rate'].str.replace('%','')
     else:
         df['Vacancy Rate'] = round(df['Vacancy Rate'] * 100,1)
 
-
+    #Clean the rent variables by removing the dollar sign and commas
     if sector == 'Multifamily':
         df['Market Effective Rent/Unit'] = df['Market Effective Rent/Unit'].str.replace('$','')
         df['Market Effective Rent/Unit'] = df['Market Effective Rent/Unit'].str.replace(',','',5)
         df['Market Effective Rent/Unit'] = df['Market Effective Rent/Unit'].astype(float)
+
+    else:
+        if df['Vacancy Rate'].dtype == 'object':
+            df['Market Rent/SF'] = df['Market Rent/SF'].str.replace('$','')
+            df['Market Rent/SF'] = df['Market Rent/SF'].str.replace(',','',5)
+            df['Market Rent/SF'] = df['Market Rent/SF'].astype(float)
 
 
     #Remove "Center" from slice name
