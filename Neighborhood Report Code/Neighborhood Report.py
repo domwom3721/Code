@@ -2035,7 +2035,7 @@ def FindNearestHighways():
                
 
                 if count < len(highway_info_list) -1 :
-                    sentence = sentence + (highway['name']) + ' ('  + (highway['type'])   + '), ' + ' (' + highway['number'] + ')'
+                    sentence = sentence + (highway['name']) + ' ('  + (highway['type'])   + ') ' + ' (' + highway['number'] + '),'
                 else:
                     sentence = sentence + 'and ' + (highway['name']) + ' ('  + (highway['type'])   + ')' + ' (' + highway['number'] + ').' 
         
