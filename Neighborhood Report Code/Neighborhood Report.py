@@ -3448,10 +3448,10 @@ def OutlookLanguage():
 def HousingIntroLanguage():
     print('Creating housing intro Langauge')
     try:
-        housing_mix_description = ('[diverse, with a variety of types, tenure status, age, and price points] [largely homogeneous with the majority of the housing stock being owner-occupied single-family homes]')
+        housing_mix_description = ('[diverse with varying density, tenure status, and price points] [largely homogeneous with the majority of the housing stock being _____-occupied _____ homes]')
 
-        housing_intro_language = ('Housing is one of the most identifiable characteristics of an area. Different elements related to housing, such as the property type, ' +
-            'renter/owner mix, housing age, and household characteristics play crucial roles in how an area is defined. ' +
+        housing_intro_language = ('Housing is one of the most identifiable characteristics of an area. Different factors, such as property type, ' +
+            'renter/owner mix, housing age, and household characteristics play roles in how an area is defined. ' +
             'In ' + neighborhood + ', housing is ' + housing_mix_description +  '. ')
     
     except Exception as e:
@@ -3502,14 +3502,16 @@ def HousingTypeTenureLanguage():
             available_housing_types_list = ('single-family homes, some smaller multifamily properties, and some larger garden style properties')
 
 
-        housing_type_tenure_langugage = ('Data from the the most recent American Community Survey indicates a presence of ' + 
-                                        available_housing_types_list                                             + 
+        housing_type_tenure_langugage = (#'Data from the the most recent American Community Survey indicates a presence of ' + 
+                                        #available_housing_types_list                                             + 
                                         '. '                                                                     +
                                         most_common_category                                                     +  
                                         ' are the most common form of housing in '                               +
                                         neighborhood                                                             +
                                         ', followed by '                                                         +
                                         second_most_common_category                                              + 
+                                        'and  '                                                                  +
+                                        third_most_common_category                                               +
                                         '. '                                                                     +
                                         "{:,.0f}%".format(hood_owner_occupied_fraction)                          +   
                                         ' of the housing units in '                                              + 
@@ -3696,19 +3698,19 @@ def PopLanguage():
 def PopulationAgeLanguage():
     print('Creating Population by Age Langauge')
     try:
-        age_ranges = ['between 0-19','between 20-24','between 25-34','between 35-49','between 50-66','over 67']
+        age_ranges = ['children & teens','young adults','young professionals','between 35-49','between 50-66','over 67']
 
         hood_largest_age_category  = age_ranges[neighborhood_age_data.index(max(neighborhood_age_data))] #get the most common income category
         comp_largest_age_category  = age_ranges[comparison_age_data.index(max(comparison_age_data))]
 
         #Median age higher in hood
         if neighborhood_median_age > comparison_median_age:
-            median_age_comparison   = 'The median age in ' + neighborhood + ' is older than ' + comparison_area + '. '             
+            median_age_comparison   = 'The median age of a ' + neighborhood + ' resident is older than in ' + comparison_area + '. '             
             # median_age_comparison2  = ''
         
         #Median age lower in hood
         elif neighborhood_median_age < comparison_median_age:
-            median_age_comparison   = 'The median age in ' + neighborhood + ' is younger than ' + comparison_area + '. '             
+            median_age_comparison   = 'The median age of a ' + neighborhood + ' resident is younger than in ' + comparison_area + '. '             
             # median_age_comparison2  = 'These groupings of age cohorts suggest a large presence of young families. '
         
         #Median age equal
