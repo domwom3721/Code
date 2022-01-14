@@ -2443,7 +2443,7 @@ def SetGraphFormatVariables():
     scale = 7
 
     #Set tick font size (also controls legend font size)
-    tickfont_size = 8 
+    tickfont_size = 14 
 
     #Set Margin parameters/legend location
     left_margin   = 0
@@ -2528,7 +2528,7 @@ def CreateHouseholdSizeHistogram():
 
 
     #Add % to  axis ticks
-    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.1f',secondary_y=False)       
+    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.0f',secondary_y=False)       
     fig.write_image(os.path.join(hood_folder,'household_size_graph.png'),engine='kaleido',scale=scale)
 
 def CreateHouseholdTenureHistogram():
@@ -2601,7 +2601,7 @@ def CreateHouseholdTenureHistogram():
 
 
     #Add % to  axis ticks
-    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.1f',secondary_y=False)       
+    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.0f',secondary_y=False)       
     fig.write_image(os.path.join(hood_folder,'household_tenure_graph.png'),engine='kaleido',scale=scale)
 
 def CreateHouseholdNumberUnitsInBuildingHistogram():
@@ -2677,7 +2677,7 @@ def CreateHouseholdNumberUnitsInBuildingHistogram():
 
 
     #Add % to  axis ticks
-    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.1f',secondary_y=False)       
+    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.0f',secondary_y=False)       
     fig.write_image(os.path.join(hood_folder,'household_units_in_structure_graph.png'),engine='kaleido',scale=scale)
 
 def CreateHouseholdYearBuiltHistogram():
@@ -2753,7 +2753,7 @@ def CreateHouseholdYearBuiltHistogram():
 
 
     #Add % to  axis ticks
-    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.1f',secondary_y=False)       
+    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.0f',secondary_y=False)       
     fig.write_image(os.path.join(hood_folder,'household_year_built_graph.png'),engine='kaleido',scale=scale)
 
 def CreateHouseholdValueHistogram():
@@ -2829,7 +2829,7 @@ def CreateHouseholdValueHistogram():
 
     #Add % to  axis ticks
     fig.update_xaxes(tickangle = 45, tickfont = dict(size=tickfont_size-1))       
-    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.1f',secondary_y=False)       
+    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.0f',secondary_y=False)       
     fig.write_image(os.path.join(hood_folder,'household_value_graph.png'),engine='kaleido',scale=scale)
 
 def CreatePopulationByAgeHistogram():
@@ -2906,7 +2906,7 @@ def CreatePopulationByAgeHistogram():
 
     fig.update_xaxes(tickangle = 0)  
     #Add % to  axis ticks
-    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.1f',secondary_y=False)       
+    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.0f',secondary_y=False)       
     fig.write_image(os.path.join(hood_folder,'population_by_age_graph.png'),engine='kaleido',scale=scale)
 
 def CreatePopulationByIncomeHistogram():
@@ -2999,7 +2999,7 @@ def CreatePopulationByIncomeHistogram():
 
     #Add % to  axis ticks
     fig.update_xaxes(tickangle = 45)       
-    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.1f',secondary_y=False)       
+    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.0f',secondary_y=False)       
     fig.write_image(os.path.join(hood_folder,'population_by_income_graph.png'),engine='kaleido',scale=scale)
 
 def CreateTopOccupationsHistogram():
@@ -3076,7 +3076,7 @@ def CreateTopOccupationsHistogram():
 
 
     #Add % to  axis ticks
-    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.1f',secondary_y=False)       
+    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.0f',secondary_y=False)       
     fig.write_image(os.path.join(hood_folder,'top_occupations_graph.png'),engine='kaleido',scale=scale)
 
 def CreateTravelTimeHistogram():
@@ -3149,7 +3149,7 @@ def CreateTravelTimeHistogram():
 
 
     #Add % to  axis ticks
-    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.1f',secondary_y=False)       
+    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.0f',secondary_y=False)       
     fig.write_image(os.path.join(hood_folder,'travel_time_graph.png'),engine='kaleido',scale=scale)
 
 def CreateTravelModeHistogram():
@@ -3213,7 +3213,7 @@ def CreateTravelModeHistogram():
 
 
     #Add % to  axis ticks
-    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.1f',secondary_y=False)       
+    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.0f',secondary_y=False)       
     fig.write_image(os.path.join(hood_folder,'travel_mode_graph.png'),engine='kaleido',scale=scale)
 
 def CreateGraphs():
