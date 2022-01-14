@@ -3637,13 +3637,13 @@ def HouseholdSizeLanguage():
     comp_largest_size_category = household_size_categories[comparison_household_size_distribution.index(max(comparison_household_size_distribution))]
 
     #Compare the average household size of the hood and comparison area
-    if int(hood_largest_size_category[0]) > int(comp_largest_size_category[0]):
+    if neighborhood_average_hh_size  > comparison_average_hh_size:
         avg_hh_size_comparison  = 'Households in ' + neighborhood + ' tend to be larger than those in ' + comparison_area + '. '    
         comp_smaller_larger     = 'smaller'         
-    elif int(hood_largest_size_category[0]) < int(comp_largest_size_category[0]):
+    elif neighborhood_average_hh_size < comparison_average_hh_size:
         avg_hh_size_comparison  = 'Households in ' + neighborhood + ' tend to be smaller than those in ' + comparison_area + '. '  
         comp_smaller_larger     = 'larger'         
-    elif int(hood_largest_size_category[0]) == int(comp_largest_size_category[0]):
+    elif neighborhood_average_hh_size == comparison_average_hh_size:
         avg_hh_size_comparison  = 'The average size of a ' + neighborhood + ' household is equal to those in ' + comparison_area + '. In fact, '
         comp_smaller_larger     = 'equal in size on average'         
 
@@ -3693,12 +3693,12 @@ def PopulationAgeLanguage():
 
         #Median age higher in hood
         if neighborhood_median_age > comparison_median_age:
-            median_age_comparison   = 'The median age in ' + neighborhood + ' is higher than ' + comparison_area + '. '             
+            median_age_comparison   = 'The median age in ' + neighborhood + ' is older than ' + comparison_area + '. '             
             # median_age_comparison2  = ''
         
         #Median age lower in hood
         elif neighborhood_median_age < comparison_median_age:
-            median_age_comparison   = 'The median age in ' + neighborhood + ' is lower than ' + comparison_area + '. '             
+            median_age_comparison   = 'The median age in ' + neighborhood + ' is younger than ' + comparison_area + '. '             
             # median_age_comparison2  = 'These groupings of age cohorts suggest a large presence of young families. '
         
         #Median age equal
