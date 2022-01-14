@@ -2452,7 +2452,7 @@ def SetGraphFormatVariables():
     right_margin  = 0
     top_margin    = 75
     bottom_margin = 10
-    legend_position = 1.10
+    legend_position = 1.05
 
     #Paper color
     paper_backgroundcolor = 'white'
@@ -2833,7 +2833,7 @@ def CreateHouseholdValueHistogram():
 
 
     #Add % to  axis ticks
-    fig.update_xaxes(tickangle = 45, tickfont = dict(size=tickfont_size-1))       
+    fig.update_xaxes(tickangle = 45, tickfont = dict(size=tickfont_size - 3))       
     fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.0f',secondary_y=False)       
     fig.write_image(os.path.join(hood_folder,'household_value_graph.png'),engine='kaleido',scale=scale)
 
@@ -3002,11 +3002,9 @@ def CreatePopulationByIncomeHistogram():
                     )
 
 
-
     #Add % to  axis ticks
-    fig.update_xaxes(tickangle = 45)       
     fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.0f',secondary_y=False) 
-    fig.update_xaxes(tickfont = dict(size=tickfont_size))       
+    fig.update_xaxes(tickfont = dict(size=tickfont_size - 3),tickangle = 45)       
     fig.write_image(os.path.join(hood_folder,'population_by_income_graph.png'),engine='kaleido',scale=scale)
 
 def CreateTopOccupationsHistogram():
