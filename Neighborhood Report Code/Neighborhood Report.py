@@ -3511,7 +3511,7 @@ def HousingTypeTenureLanguage():
                                         neighborhood                                                             +
                                         ', followed by '                                                         +
                                         second_most_common_category                                              + 
-                                        ' and  '                                                                  +
+                                        ' and '                                                                  +
                                         third_most_common_category                                               +
                                         '. '                                                                     +
                                         "{:,.0f}%".format(hood_owner_occupied_fraction)                          +   
@@ -3734,9 +3734,9 @@ def PopulationAgeLanguage():
                         neighborhood                                                                + 
                         #', the largest age range is '                                       +
                         hood_largest_age_category                                                   +
-                        ' account for the largest cohort, similar/compared to'                                                            +
+                        ' account for the largest cohort, similar/compared to '                     +
                         comparison_area                                                             +
-                        ' where '                                                                   +
+                        ' where'                                                                   +
                         comp_largest_age_category                                                   +
                         ' account for the largest cohort. '                                                                     
                         # median_age_comparison2
@@ -4599,12 +4599,12 @@ def TransportationSection(document):
     #Travel time Lanaguage
     AddDocumentParagraph(document = document,language_variable =  travel_time_language)
 
-    #Insert Travel Time to Work graph
-    AddDocumentPicture(document = document, image_path = os.path.join(hood_folder,'travel_time_graph.png'),citation ='U.S. Census Bureau')
-    
     #Travel method Lanaguage
     AddDocumentParagraph(document = document,language_variable =  travel_method_language)
 
+    #Insert Travel Time to Work graph
+    AddDocumentPicture(document = document, image_path = os.path.join(hood_folder,'travel_time_graph.png'),citation ='U.S. Census Bureau')
+    
     #Insert Transport Method to Work graph
     AddDocumentPicture(document = document, image_path = os.path.join(hood_folder,'travel_mode_graph.png'),citation ='U.S. Census Bureau')
     
