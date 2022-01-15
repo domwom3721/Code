@@ -1036,6 +1036,8 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
         year = decennial_census_year
     elif operator == c.acs5:
         year = acs_5y_year
+    elif operator == c.pl:
+        year = 2020
     else:
         assert(False)
 
@@ -1164,12 +1166,13 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
                     neighborhood_tracts_data.append((tract_data))
 
                 #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
-                _2010_hood_pop_raw_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = [field])
-                _2010_hood_pop          = _2010_hood_pop_raw_data[field]
-
+                value_raw_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = [field])
+                value = value_raw_data[field]
+                return(value)
 
             else:
                 assert(False)
+
         except Exception as e:
             print('Data not avilable for blockgroup, using tract level')
             
@@ -1201,8 +1204,9 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
                     neighborhood_tracts_data.append((tract_data))
 
                 #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
-                _2010_hood_pop_raw_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = [field])
-                _2010_hood_pop          = _2010_hood_pop_raw_data[field]
+                value_raw_data          = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = [field])
+                value                   = value_raw_data[field]
+                return(value)
             
             else:
                 assert(False)
@@ -1599,7 +1603,7 @@ def GetTopOccupationsData(geographic_level,hood_or_comparison_area):
     
 def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     print('Getting Overview table data')
-    
+
     total_pop_field               = 'P001001'
     total_households_field        = 'H003002'
     total_families_field          = 'P035001'
@@ -1614,10 +1618,10 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     print('Getting 2010 Population and Total Households Estimate for Hood')
     _2010_hood_pop = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = total_pop_field,        operator = c.sf1, aggregation_method = 'total')
     _2010_hood_hh  = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = total_households_field, operator = c.sf1, aggregation_method = 'total')
-    _2010_hood_fam = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = total_families_field,   operator = c.sf1, aggregation_method = 'total')
     
+    print('Successfully grabbed 2010 Population and HH count for hood')
     
-
+    print('Getting current or 2020 Population and Total Households Estimate for Hood')
     #calculate table variables for hood
     if hood_geographic_level != 'custom':
         current_estimate_period = '2020 Census'
@@ -1630,12 +1634,17 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         current_hood_hh         = 'NA'
 
 
+    print('Successfully grabbed 2020 Population and HH count for hood')
+    assert _2010_hood_pop > 0
+    assert _2010_hood_pop > 0 
+    assert current_hood_pop > 0
 
     #Table variables for comparison area
-    print('Getting current Population and Total Households for comparison area')
+    print('Getting 2010 Population and Total Households for comparison area')
     _2010_comparison_pop = GetCensusValue(geographic_level = comparison_level,   hood_or_comparison_area = 'comparison area',  field = total_pop_field,        operator = c.sf1, aggregation_method = 'total')
     _2010_comparison_hh  = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area =  'comparison area', field = total_households_field, operator = c.sf1, aggregation_method = 'total')
-
+    
+    print('Getting current Population and Total Households for comparison area')
     if comparison_geographic_level != 'custom':
         current_comparison_pop    = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area', field = redistricting_total_pop_field,   operator = c.pl, aggregation_method = 'total')
         current_comparison_hh     = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area', field = redistricting_total_hh_field,    operator = c.pl, aggregation_method = 'total')
