@@ -1149,6 +1149,7 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
                         neighborhood_tracts_data.append((tract_value))
                 
                 #We take the simple mean of the census tracts in the area
+                assert(len(neighborhood_tracts_data) > 0)
                 value = mean(neighborhood_tracts_data)
 
                 return(value)
@@ -1188,6 +1189,7 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
                         neighborhood_tracts_data.append((tract_value))
                 
                 #We take the simple mean of the census tracts in the area
+                assert(len(neighborhood_tracts_data) > 0)
                 value = mean(neighborhood_tracts_data)
 
                 return(value)
@@ -1212,6 +1214,7 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
                 assert(False)
         finally:
             print('Unable to get census value')
+            return(None)
          
 #Households by number of memebrs
 def GetHouseholdSizeData(geographic_level,hood_or_comparison_area):
