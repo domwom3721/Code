@@ -3706,19 +3706,36 @@ def PopulationAgeLanguage():
 
         #Median age higher in hood
         if neighborhood_median_age > comparison_median_age:
-            median_age_comparison   = 'The median age of a ' + neighborhood + ' resident is older than in ' + comparison_area + '. '             
-            # median_age_comparison2  = ''
+            median_age_comparison   = 'The median age of ' + neighborhood + ' residents is older than in ' + comparison_area + '. '             
         
         #Median age lower in hood
         elif neighborhood_median_age < comparison_median_age:
-            median_age_comparison   = 'The median age of a ' + neighborhood + ' resident is younger than in ' + comparison_area + '. '             
-            # median_age_comparison2  = 'These groupings of age cohorts suggest a large presence of young families. '
+            median_age_comparison   = 'The median age of ' + neighborhood + ' residents is younger than in ' + comparison_area + '. '             
         
         #Median age equal
         elif neighborhood_median_age == comparison_median_age:
-            median_age_comparison  = 'The average size of a ' + neighborhood + ' household is equal to those in ' + comparison_area + '. '
-            # median_age_comparison2 = ''
+            median_age_comparison   = 'The median age of ' + neighborhood + ' residents is equal to ' + comparison_area + '. '             
         
+        #Largest Cohort Comparison
+        if hood_largest_age_category != comp_largest_age_category:
+            largest_age_cohort_comparison = ('In '                                                  + 
+                        neighborhood                                                                +
+                        ','                                                                         + 
+                        hood_largest_age_category                                                   +
+                        ' account for the largest cohort, compared to '                             +
+                        comparison_area                                                             +
+                        ' where'                                                                    +
+                        comp_largest_age_category                                                   +
+                        ' accounts for the largest cohort. '                                         )
+
+        elif hood_largest_age_category == comp_largest_age_category:
+            largest_age_cohort_comparison = ('In both '                                             + 
+                        neighborhood                                                                + 
+                        ' and '                                                                     +
+                        comparison_area                                                             +
+                        ','                                                                         + 
+                        hood_largest_age_category                                                   +
+                        ' account for the largest cohort.')
 
         age_language = (median_age_comparison                                                       + 
                         'Residents of '                                                             +
@@ -3730,17 +3747,9 @@ def PopulationAgeLanguage():
                         ' in '                                                                      +
                         comparison_area                                                             +
                         '. '                                                                        +
-                        'In '                                                                       + 
-                        neighborhood                                                                + 
-                        #', the largest age range is '                                       +
-                        hood_largest_age_category                                                   +
-                        ' account for the largest cohort, similar/compared to '                     +
-                        comparison_area                                                             +
-                        ' where'                                                                   +
-                        comp_largest_age_category                                                   +
-                        ' account for the largest cohort. '                                                                     
-                        # median_age_comparison2
+                        largest_age_cohort_comparison              
                         )
+
     except Exception as e:
         print(e,'unable to create population by age langauge')
         age_language = ''
