@@ -2328,7 +2328,7 @@ def GetData():
 
     print('Getting Data For ' + comparison_area)
     #Start by getting our distributions for our graphs
-    print('Getting distributions for cimparison area')
+    print('Getting distributions for comparison area')
     comparison_household_size_distribution            = GetHouseholdSizeData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
     comparison_tenure_distribution                    = GetHousingTenureData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
     comparison_housing_value_data                     = GetHousingValues(        geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
@@ -3937,14 +3937,16 @@ def LocationIQPOIList(lat,lon,category,radius,limit):
         return(poi_list)
 
     except Exception as e:
-        time.sleep(5)
-        response = requests.get(url, params=data).json()
-        poi_list = [x['name'] for x in response]
-        return(poi_list)
-
-    finally:
-        print('problem getting Location IQ resuts for ', category)
-        return([])
+        try:
+            print(e,'Unable to get location IQ result on first attempt, sleeping for 5 seconds and trying again')
+            time.sleep(5)
+            response = requests.get(url, params=data).json()
+            print(response)
+            poi_list = [x['name'] for x in response]
+            return(poi_list)
+        except:
+            print('Unable to get location IQ results on second try')
+            return(([]))
 
 def CreateLanguage():
     
