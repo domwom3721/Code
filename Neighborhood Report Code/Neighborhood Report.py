@@ -1028,7 +1028,7 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
     except Exception as e:
         print(e)
 
-def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator):
+def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggregation_method):
     #A general function that takes a single census variable (eg: median home value)
     #It pulls the value for that variable from census API and returns it
 
@@ -1134,37 +1134,48 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator):
             operator = c_area.sf1
 
         try:
-            #Create empty list we will fill with values (one for each census tract within the custom shape/neighborhood)
-            neighborhood_tracts_data = []
+            if aggregation_method == 'mean':
+                #Create empty list we will fill with values (one for each census tract within the custom shape/neighborhood)
+                neighborhood_tracts_data = []
 
-            #Fetch census data for all relevant census tracts within the neighborhood
-            raw_census_data = operator.geo_blockgroup(field, neighborhood_shape,year= year)
-            for tract_geojson, tract_data, tract_proportion in raw_census_data:
-                tract_value = int(tract_data[field])
-                if tract_value > 0:
-                    neighborhood_tracts_data.append((tract_value))
-            
-            #We take the simple mean of the census tracts in the area
-            value = mean(neighborhood_tracts_data)
+                #Fetch census data for all relevant census tracts within the neighborhood
+                raw_census_data = operator.geo_blockgroup(field, neighborhood_shape,year= year)
+                for tract_geojson, tract_data, tract_proportion in raw_census_data:
+                    tract_value = int(tract_data[field])
+                    if tract_value > 0:
+                        neighborhood_tracts_data.append((tract_value))
+                
+                #We take the simple mean of the census tracts in the area
+                value = mean(neighborhood_tracts_data)
 
-            return(value)
+                return(value)
+
+
+            elif aggregation_method == 'total':
+                pass
+            else:
+                assert(False)
         except Exception as e:
             print('Data not avilable for blockgroup, using tract level')
-                        #Create empty list we will fill with values (one for each census tract within the custom shape/neighborhood)
-            neighborhood_tracts_data = []
-
-            #Fetch census data for all relevant census tracts within the neighborhood
-            raw_census_data = operator.geo_tract(field, neighborhood_shape,year= year)
-            for tract_geojson, tract_data, tract_proportion in raw_census_data:
-                tract_value = int(tract_data[field])
-                if tract_value > 0:
-                    neighborhood_tracts_data.append((tract_value))
             
-            #We take the simple mean of the census tracts in the area
-            value = mean(neighborhood_tracts_data)
+            if aggregation_method == 'mean':
+                #Create empty list we will fill with values (one for each census tract within the custom shape/neighborhood)
+                neighborhood_tracts_data = []
 
-            return(value)
-            
+                #Fetch census data for all relevant census tracts within the neighborhood
+                raw_census_data = operator.geo_tract(field, neighborhood_shape,year= year)
+                for tract_geojson, tract_data, tract_proportion in raw_census_data:
+                    tract_value = int(tract_data[field])
+                    if tract_value > 0:
+                        neighborhood_tracts_data.append((tract_value))
+                
+                #We take the simple mean of the census tracts in the area
+                value = mean(neighborhood_tracts_data)
+
+                return(value)
+            else:
+                pass
+                
 #Households by number of memebrs
 def GetHouseholdSizeData(geographic_level,hood_or_comparison_area):
     print('Getting household size data for: ',hood_or_comparison_area)
@@ -2382,11 +2393,11 @@ def GetData():
     neighborhood_age_data                             = GetAgeData(               geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Population by age data
     
     #Now grab single values for our language
-    neighborhood_median_home_value                    = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'B25077_001E',operator = c.acs5)
-    neighborhood_median_year_built                    = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'B25035_001E',operator = c.acs5)
-    neighborhood_median_age                           = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'B01002_001E',operator = c.acs5)
-    neighborhood_median_hh_inc                        = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'B19013_001E',operator = c.acs5)
-    neighborhood_average_hh_size                      = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'H012001',operator = c.sf1)
+    neighborhood_median_home_value                    = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'B25077_001E',operator = c.acs5,aggregation_method = 'mean')
+    neighborhood_median_year_built                    = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'B25035_001E',operator = c.acs5,aggregation_method = 'mean')
+    neighborhood_median_age                           = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'B01002_001E',operator = c.acs5,aggregation_method = 'mean')
+    neighborhood_median_hh_inc                        = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'B19013_001E',operator = c.acs5,aggregation_method = 'mean')
+    neighborhood_average_hh_size                      = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'H012001',operator = c.sf1,aggregation_method = 'mean')
 
     #Handle missing values 
     if neighborhood_median_year_built == '0':
@@ -2405,11 +2416,11 @@ def GetData():
     comparison_number_units_data                      = GetNumberUnitsData(      geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
     
     #Now grab single values for our language
-    comparison_median_home_value                      = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'B25077_001E',operator = c.acs5)
-    comparison_median_year_built                      = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'B25035_001E',operator = c.acs5)
-    comparison_median_age                             = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'B01002_001E',operator = c.acs5)
-    comparison_median_hh_inc                          = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'B19013_001E',operator = c.acs5)
-    comparison_average_hh_size                        = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'H012001',    operator = c.sf1)
+    comparison_median_home_value                      = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'B25077_001E',operator = c.acs5,aggregation_method = 'mean')
+    comparison_median_year_built                      = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'B25035_001E',operator = c.acs5,aggregation_method = 'mean')
+    comparison_median_age                             = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'B01002_001E',operator = c.acs5,aggregation_method = 'mean')
+    comparison_median_hh_inc                          = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'B19013_001E',operator = c.acs5,aggregation_method = 'mean')
+    comparison_average_hh_size                        = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'H012001',    operator = c.sf1,aggregation_method  = 'mean')
     
     
     #Handle missing values 
