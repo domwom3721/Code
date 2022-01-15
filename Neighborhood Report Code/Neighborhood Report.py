@@ -3626,7 +3626,7 @@ def PopLanguage():
 def PopulationAgeLanguage():
     print('Creating Population by Age Langauge')
     try:
-        age_ranges = [' children & teens',' young adults',' young professionals',' those between 35 and 49 years',' those between 50 and 66 years','those over 67 years old']
+        age_ranges = [' children & teens',' young adults',' young professionals',' those between 35 and 49 years',' those between 50 and 66 years',' those over 67 years old']
 
         hood_largest_age_category  = age_ranges[neighborhood_age_data.index(max(neighborhood_age_data))] #get the most common income category
         comp_largest_age_category  = age_ranges[comparison_age_data.index(max(comparison_age_data))]
