@@ -3943,7 +3943,7 @@ def LocationIQPOIList(lat,lon,category,radius,limit):
         return(poi_list)
 
     finally:
-        print(e,'problem getting Location IQ resuts for ', category)
+        print('problem getting Location IQ resuts for ', category)
         return([])
 
 def CreateLanguage():
