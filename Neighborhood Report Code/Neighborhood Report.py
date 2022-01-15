@@ -1175,14 +1175,6 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
                 return(None)
 
 
-
-
-
-
-
-            #Use this method when adding all the values together
-            elif aggregation_method == 'total':
-                
         #Use this method when adding all the values together
         elif aggregation_method == 'total':
             try:
@@ -1221,9 +1213,7 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
         else:
             print('Not a supported aggregation method')
             assert(False)
-
-
-         
+            
 #Households by number of memebrs
 def GetHouseholdSizeData(geographic_level,hood_or_comparison_area):
     print('Getting household size data for: ',hood_or_comparison_area)
