@@ -1213,7 +1213,7 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
         else:
             print('Not a supported aggregation method')
             assert(False)
-            
+
 #Households by number of memebrs
 def GetHouseholdSizeData(geographic_level,hood_or_comparison_area):
     print('Getting household size data for: ',hood_or_comparison_area)
@@ -3937,16 +3937,10 @@ def LocationIQPOIList(lat,lon,category,radius,limit):
         return(poi_list)
 
     except Exception as e:
-        try:
-            time.sleep(3)
-            response = requests.get(url, params=data).json()
-            poi_list = [x['name'] for x in response]
-            return(poi_list)
-        except:
-            time.sleep(5)
-            response = requests.get(url, params=data).json()
-            poi_list = [x['name'] for x in response]
-            return(poi_list)
+        time.sleep(5)
+        response = requests.get(url, params=data).json()
+        poi_list = [x['name'] for x in response]
+        return(poi_list)
 
     finally:
         print(e,'problem getting Location IQ resuts for ', category)
