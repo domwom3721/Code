@@ -1210,6 +1210,8 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
             
             else:
                 assert(False)
+        finally:
+            print('Unable to get census value')
          
 #Households by number of memebrs
 def GetHouseholdSizeData(geographic_level,hood_or_comparison_area):
