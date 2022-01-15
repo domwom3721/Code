@@ -1613,12 +1613,15 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
 
     redistricting_total_pop_field = 'P1_001N'
     redistricting_total_hh_field  = 'H1_002N'
-    #redistricting_total_f_field   = 'P1_035N'
+    redistricting_total_f_field   = 'P1_035N'
 
     print('Getting 2010 Population and Total Households Estimate for Hood')
     _2010_hood_pop = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = total_pop_field,        operator = c.sf1, aggregation_method = 'total')
     _2010_hood_hh  = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = total_households_field, operator = c.sf1, aggregation_method = 'total')
-    
+    # print(_2010_hood_pop,_2010_hood_hh)
+    assert int(_2010_hood_pop) > 0
+    assert int(_2010_hood_hh) > 0 
+
     print('Successfully grabbed 2010 Population and HH count for hood')
     
     print('Getting current or 2020 Population and Total Households Estimate for Hood')
@@ -1635,8 +1638,6 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
 
 
     print('Successfully grabbed 2020 Population and HH count for hood')
-    assert _2010_hood_pop > 0
-    assert _2010_hood_pop > 0 
     assert current_hood_pop > 0
 
     #Table variables for comparison area
