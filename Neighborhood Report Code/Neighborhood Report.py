@@ -1170,10 +1170,6 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
                 value = mean(neighborhood_tracts_data)
 
                 return(value)
-            finally:
-                print('Unable to get census value')
-                return(None)
-
 
         #Use this method when adding all the values together
         elif aggregation_method == 'total':
@@ -1205,10 +1201,6 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
                 value = value_raw_data[field]
                 return(value)
 
-            finally:
-                print('Unable to get census value')
-                return(0)
-        
         #Raise an error if passed an unsupported aggregation method
         else:
             print('Not a supported aggregation method')
