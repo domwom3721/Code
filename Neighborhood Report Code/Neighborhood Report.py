@@ -1598,13 +1598,20 @@ def GetTopOccupationsData(geographic_level,hood_or_comparison_area):
     
 def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     print('Getting Overview table data')
-
+    global _2010_hood_pop,  _2010_hood_hh
+    global current_hood_pop, current_hood_hh
+    global _2010_comparison_pop, _2010_comparison_hh
+    global current_comparison_pop, current_comparison_hh
+    global  hood_pop_growth,comparsion_hh_growth      
+    global comparsion_pop_growth,comparsion_hh_growth
+        
+    #Pulls in our population and hh variables and estiatmes growth rates, returns a list of list that we will use to populate the overview table
     total_pop_field               = 'P001001'
     total_households_field        = 'H003002'
     total_families_field          = 'P035001'
 
     acs_total_pop_field           = 'B01001_001E'
-    acs_total_households_field    = ''  
+    acs_total_households_field    = 'B25124_002E'  
 
     redistricting_total_pop_field = 'P1_001N'
     redistricting_total_hh_field  = 'H1_002N'
@@ -1629,7 +1636,8 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     elif hood_geographic_level == 'custom':
         current_estimate_period = 'Current Estimate'
         current_hood_pop        = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = acs_total_pop_field,   operator = c.acs5, aggregation_method = 'total')
-        current_hood_hh         = 'NA'
+        current_hood_hh         = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = acs_total_households_field,   operator = c.acs5, aggregation_method = 'total')
+
 
 
     print('Successfully grabbed 2020 Population and HH count for hood')
