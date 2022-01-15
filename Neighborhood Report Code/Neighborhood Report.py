@@ -3778,18 +3778,41 @@ def IncomeLanguage():
     hood_largest_income_category = income_categories[neighborhood_household_income_data.index(max(neighborhood_household_income_data))] #get the most common income category
     comp_largest_income_category = income_categories[comparison_household_income_data.index(max(comparison_household_income_data))]
 
+    #Compare Median HH Income levels
     if neighborhood_median_hh_inc > comparison_median_hh_inc:
-        median_hh_comparison  = 'Households in ' + neighborhood + ' have a higher median income than ' + comparison_area + '. '             
-        median_hh_comparison2  = ''
+        median_hh_comparison  = 'Households in ' + neighborhood + ' have a higher median income than those in ' + comparison_area + '. '             
     elif neighborhood_median_hh_inc < comparison_median_hh_inc:
-        median_hh_comparison  = 'Households in ' + neighborhood + ' have a lower median income than ' + comparison_area + '. '
-        median_hh_comparison2  =''
+        median_hh_comparison  = 'Households in ' + neighborhood + ' have a lower median income than those in ' + comparison_area + '. '
     elif neighborhood_median_hh_inc == comparison_median_hh_inc:
         median_hh_comparison  = 'Median household income levels are equal in ' + neighborhood + ' and ' + comparison_area + '. '
-        median_hh_comparison2 = ''
     else:
         median_hh_comparison  = 'Household income levels are similar in ' + neighborhood + ' and ' + comparison_area + '. '
-        median_hh_comparison2 = ''
+
+    #Compare the largest income cateogry
+    if hood_largest_income_category !=  comp_largest_income_category:
+        largest_income_cohort_comparison = (
+                        'In '                                                          +                                
+                       neighborhood                                                    + 
+                       ', the largest share of households have a household income of ' +
+                       hood_largest_income_category                                    +
+                       ', compared to '                                                +
+                       comp_largest_income_category                                    +
+                       ' for '                                                         +
+                        comparison_area                                                +
+                        '.' 
+                                                )
+
+    elif hood_largest_income_category ==  comp_largest_income_category:
+        largest_income_cohort_comparison = (
+                        'In both '                                                     +                                
+                       neighborhood                                                    +
+                       ' and '                                                         +
+                       comparison_area                                                 + 
+                       ', the largest share of households have a household income of ' +
+                       hood_largest_income_category                                    +
+                       '.'
+                                                )
+        
 
     income_language = (median_hh_comparison                                  +
                       'Households in '                                       +
@@ -3800,15 +3823,8 @@ def IncomeLanguage():
                        "${:,.0f}".format(comparison_median_hh_inc)           +
                        ' for households in '                                 + 
                        comparison_area                                       +
-                       '. The chart below indicates the share of households by income brackets. In ' +                                
-                       neighborhood                                          + 
-                       ', the largest share of households have a household income of ' +
-                       hood_largest_income_category +
-                       ', similar/compared to ' +
-                       comp_largest_income_category        +
-                       ' for '           +
-                        comparison_area +
-                        '. ' + median_hh_comparison2
+                       '. The chart below indicates the share of households by income brackets. ' +
+                       largest_income_cohort_comparison
                         )
     
     return([income_language])
