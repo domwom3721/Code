@@ -1134,6 +1134,7 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
             operator = c_area.sf1
 
         try:
+            #Use this method when you want to average across blockgroups
             if aggregation_method == 'mean':
                 #Create empty list we will fill with values (one for each census tract within the custom shape/neighborhood)
                 neighborhood_tracts_data = []
@@ -1151,8 +1152,22 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
                 return(value)
 
 
+            #Use this method when adding all the values together
             elif aggregation_method == 'total':
-                pass
+               
+                neighborhood_tracts_data = []
+
+                #Fetch census data for all relevant census tracts within the neighborhood
+                raw_census_data = operator.geo_blockgroup(field, neighborhood_shape,year = decennial_census_year)
+            
+                for tract_geojson, tract_data, tract_proportion in raw_census_data:
+                    neighborhood_tracts_data.append((tract_data))
+
+                #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
+                _2010_hood_pop_raw_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = [field])
+                _2010_hood_pop          = _2010_hood_pop_raw_data[field]
+
+
             else:
                 assert(False)
         except Exception as e:
@@ -1173,9 +1188,25 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
                 value = mean(neighborhood_tracts_data)
 
                 return(value)
+            
+            #Use this method when adding all the values together
+            elif aggregation_method == 'total':
+               
+                neighborhood_tracts_data = []
+
+                #Fetch census data for all relevant census tracts within the neighborhood
+                raw_census_data = operator.geo_tract(field, neighborhood_shape,year = decennial_census_year)
+            
+                for tract_geojson, tract_data, tract_proportion in raw_census_data:
+                    neighborhood_tracts_data.append((tract_data))
+
+                #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
+                _2010_hood_pop_raw_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = [field])
+                _2010_hood_pop          = _2010_hood_pop_raw_data[field]
+            
             else:
-                pass
-                
+                assert(False)
+         
 #Households by number of memebrs
 def GetHouseholdSizeData(geographic_level,hood_or_comparison_area):
     print('Getting household size data for: ',hood_or_comparison_area)
@@ -1568,10 +1599,10 @@ def GetTopOccupationsData(geographic_level,hood_or_comparison_area):
     
 def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     print('Getting Overview table data')
-
+    
     total_pop_field               = 'P001001'
     total_households_field        = 'H003002'
-    #total_families_field          = 'P035001'
+    total_families_field          = 'P035001'
 
     acs_total_pop_field           = 'B01001_001E'
     acs_total_households_field    = ''  
@@ -1581,167 +1612,41 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     #redistricting_total_f_field   = 'P1_035N'
 
     print('Getting 2010 Population and Total Households Estimate for Hood')
+    _2010_hood_pop = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = total_pop_field,        operator = c.sf1, aggregation_method = 'total')
+    _2010_hood_hh  = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = total_households_field, operator = c.sf1, aggregation_method = 'total')
+    _2010_hood_fam = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = total_families_field,   operator = c.sf1, aggregation_method = 'total')
+    
+    
+
     #calculate table variables for hood
-    if hood_geographic_level == 'place':
+    if hood_geographic_level != 'custom':
         current_estimate_period = '2020 Census'
-
-        _2010_hood_pop         = c.sf1.state_place(fields = total_pop_field,                                        state_fips = hood_state_fips, place = hood_place_fips,year=decennial_census_year)[0][total_pop_field]
-        _2010_hood_hh          = c.sf1.state_place(fields = total_households_field,                                 state_fips = hood_state_fips, place = hood_place_fips,year=decennial_census_year)[0][total_households_field]
-        #_2010_hood_fam         = c.sf1.state_place(fields = total_families_field,                                   state_fips = hood_state_fips, place = hood_place_fips,year=decennial_census_year)[0][total_families_field]
-
-        current_hood_pop       = c.pl.state_place(fields = [redistricting_total_pop_field],                         state_fips = hood_state_fips, place = hood_place_fips)[0][redistricting_total_pop_field]
-        current_hood_hh        = c.pl.state_place(fields = [redistricting_total_hh_field],                          state_fips = hood_state_fips, place = hood_place_fips)[0][redistricting_total_hh_field]
-        #current_hood_fam       = c.pl.state_place(fields = [redistricting_total_f_field],                           state_fips = hood_state_fips, place = hood_place_fips)[0][redistricting_total_f_field]
-
-    elif hood_geographic_level == 'county':
-        current_estimate_period = '2020 Census'
-
-        _2010_hood_pop   = c.sf1.state_county(fields = total_pop_field,                      state_fips = hood_state_fips, county_fips = hood_county_fips,year=decennial_census_year)[0][total_pop_field]
-        _2010_hood_hh    = c.sf1.state_county(fields = total_households_field,               state_fips = hood_state_fips, county_fips = hood_county_fips,year=decennial_census_year)[0][total_households_field]
-        #_2010_hood_fam   = c.sf1.state_county(fields = total_families_field,                state_fips = hood_state_fips, county_fips = hood_county_fips,year=decennial_census_year)[0][total_families_field]
-
-        current_hood_pop =  c.pl.state_county(fields = redistricting_total_pop_field,        state_fips = hood_state_fips, county_fips = hood_county_fips)[0][redistricting_total_pop_field]
-        current_hood_hh  =  c.pl.state_county(fields = redistricting_total_hh_field,         state_fips = hood_state_fips, county_fips = hood_county_fips)[0][redistricting_total_hh_field]
-        #current_hood_fam =  c.pl.state_county(fields = redistricting_total_f_field,         state_fips = hood_state_fips, county_fips = hood_county_fips)[0][redistricting_total_f_field]
-
-    elif hood_geographic_level == 'county subdivision':
-        current_estimate_period = '2020 Census'
-        _2010_hood_pop         = c.sf1.state_county_subdivision(fields = total_pop_field,                     state_fips = hood_state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips,year=decennial_census_year)[0][total_pop_field]
-        _2010_hood_hh          = c.sf1.state_county_subdivision(fields = total_households_field,              state_fips = hood_state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips,year=decennial_census_year)[0][total_households_field]
-        #_2010_hood_fam          = c.sf1.state_county_subdivision(fields = total_families_field,                state_fips = hood_state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips,year=decennial_census_year)[0][total_families_field]
-
-        current_hood_pop       = c.pl.state_county_subdivision(fields = redistricting_total_pop_field,        state_fips = hood_state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips)[0][redistricting_total_pop_field]
-        current_hood_hh        = c.pl.state_county_subdivision(fields = redistricting_total_hh_field,         state_fips = hood_state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips)[0][redistricting_total_hh_field]
-        #current_hood_fam       = c.pl.state_county_subdivision(fields = redistricting_total_f_field,          state_fips = hood_state_fips, county_fips = hood_county_fips, subdiv_fips = hood_suvdiv_fips)[0][redistricting_total_f_field]
-
-    elif hood_geographic_level == 'zip':
-        current_estimate_period = 'Current Estimate'
-
-        _2010_hood_pop         = c.sf1.state_zipcode(fields = total_pop_field,        state_fips = hood_state_fips, zcta = hood_zip,year=decennial_census_year)[0][total_pop_field]
-        _2010_hood_hh          = c.sf1.state_zipcode(fields = total_households_field, state_fips = hood_state_fips, zcta = hood_zip,year=decennial_census_year)[0][total_households_field]
-        #_2010_hood_fam         = c.sf1.state_zipcode(fields = total_families_field,   state_fips = hood_state_fips, zcta = hood_zip,year=decennial_census_year)[0][total_families_field]
-
-        current_hood_pop       = _2010_hood_pop
-        current_hood_hh        = _2010_hood_hh
-        #current_hood_fam       = _2010_hood_fam
-
-    elif hood_geographic_level == 'tract':
-        current_estimate_period = '2020 Census'
-        _2010_hood_pop         = c.sf1.state_county_tract(fields = total_pop_field,              state_fips = hood_state_fips,county_fips=hood_county_fips, tract = hood_tract, year = decennial_census_year)[0][total_pop_field]
-        _2010_hood_hh          = c.sf1.state_county_tract(fields = total_households_field,       state_fips = hood_state_fips,county_fips=hood_county_fips, tract = hood_tract, year = decennial_census_year)[0][total_households_field]
-        #_2010_hood_fam         = c.sf1.state_county_tract(fields = total_families_field,         state_fips = hood_state_fips,county_fips=hood_county_fips, tract = hood_tract, year = decennial_census_year)[0][total_families_field]
-
-        current_hood_pop       = c.pl.state_county_tract(fields = redistricting_total_pop_field, state_fips = hood_state_fips,county_fips=hood_county_fips,tract=hood_tract)[0][redistricting_total_pop_field]
-        current_hood_hh        = c.pl.state_county_tract(fields = redistricting_total_hh_field,  state_fips = hood_state_fips,county_fips=hood_county_fips,tract=hood_tract)[0][redistricting_total_hh_field]
-        #current_hood_fam       = c.pl.state_county_tract(fields = redistricting_total_f_field,   state_fips = hood_state_fips,county_fips=hood_county_fips,tract=hood_tract)[0][redistricting_total_f_field]
-
+        current_hood_pop        = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = redistricting_total_pop_field,   operator = c.pl, aggregation_method = 'total')
+        current_hood_hh         = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = redistricting_total_hh_field,    operator = c.pl, aggregation_method = 'total')
+    
     elif hood_geographic_level == 'custom':
         current_estimate_period = 'Current Estimate'
-        print('Getting 2010 pop and HH for custom hood area')
-        #2010 Population
-        neighborhood_tracts_data = []
-
-        #Fetch census data for all relevant census tracts within the neighborhood
-        raw_census_data = c_area.sf1.geo_blockgroup(total_pop_field, neighborhood_shape,year = decennial_census_year)
-       
-        
-        for tract_geojson, tract_data, tract_proportion in raw_census_data:
-            # print(tract_data,tract_proportion)
-            neighborhood_tracts_data.append((tract_data))
-
-        #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
-        _2010_hood_pop_raw_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = [total_pop_field])
-        _2010_hood_pop          = _2010_hood_pop_raw_data[total_pop_field]
+        current_hood_pop        = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = acs_total_pop_field,   operator = c.acs5, aggregation_method = 'total')
+        current_hood_hh         = 'NA'
 
 
-        #2010 Households
-        neighborhood_tracts_data = []
-
-        #Fetch census data for all relevant census tracts within the neighborhood
-        raw_census_data = c_area.sf1.geo_blockgroup(total_households_field, neighborhood_shape,year = decennial_census_year)
-        
-        for tract_geojson, tract_data, tract_proportion in raw_census_data:
-            # print(tract_data,tract_proportion)
-            neighborhood_tracts_data.append((tract_data))
-
-        #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
-        _2010_hood_hh_raw_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = [total_households_field])
-        _2010_hood_hh          = _2010_hood_hh_raw_data[total_households_field]
-
-
-        #2020 Population
-        print('Getting current population for custom hood area')
-        neighborhood_tracts_data = []
-
-        #Fetch census data for all relevant census tracts within the neighborhood
-        raw_census_data = c_area.acs5.geo_blockgroup(acs_total_pop_field, neighborhood_shape,year=acs_5y_year)
-       
-        
-        for tract_geojson, tract_data, tract_proportion in raw_census_data:
-            # print(tract_data,tract_proportion)
-            neighborhood_tracts_data.append((tract_data))
-
-        #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
-        current_hood_pop_raw_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = [acs_total_pop_field])
-        current_hood_pop          = current_hood_pop_raw_data[acs_total_pop_field]
-
-
-        #2020 HH
-        # print('Getting current households for custom hood area')
-        current_hood_hh = 'NA'
-        # neighborhood_tracts_data = []
-
-        # #Fetch census data for all relevant census tracts within the neighborhood
-        # raw_census_data = c_area.acs5.geo_tract(acs_total_households_field, neighborhood_shape,year=acs_5y_year)
-       
-        
-        # for tract_geojson, tract_data, tract_proportion in raw_census_data:
-        #     print(tract_data,tract_proportion)
-        #     neighborhood_tracts_data.append((tract_data))
-
-        # #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
-        # current_hood_hh_raw_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = [acs_total_households_field])
-        # current_hood_hh          = current_hood_hh_raw_data[acs_total_households_field]
 
     #Table variables for comparison area
     print('Getting current Population and Total Households for comparison area')
-    if comparison_geographic_level == 'place':
-        _2010_comparison_pop = c.sf1.state_place(fields = total_pop_field,                       state_fips = comparison_state_fips, place = comparison_place_fips)[0][total_pop_field]
-        _2010_comparison_hh  = c.sf1.state_place(fields = total_households_field,                state_fips = comparison_state_fips, place = comparison_place_fips)[0][total_households_field]
+    _2010_comparison_pop = GetCensusValue(geographic_level = comparison_level,   hood_or_comparison_area = 'comparison area',  field = total_pop_field,        operator = c.sf1, aggregation_method = 'total')
+    _2010_comparison_hh  = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area =  'comparison area', field = total_households_field, operator = c.sf1, aggregation_method = 'total')
 
-        current_comparison_pop = c.pl.state_place(fields = redistricting_total_pop_field,        state_fips = comparison_state_fips, place = comparison_place_fips)[0][redistricting_total_pop_field]
-        current_comparison_hh  = c.pl.state_place(fields = redistricting_total_hh_field,         state_fips = comparison_state_fips, place = comparison_place_fips)[0][redistricting_total_hh_field]
-
-    elif comparison_geographic_level == 'county':
-        _2010_comparison_pop   = c.sf1.state_county(fields = total_pop_field,                      state_fips = comparison_state_fips, county_fips = comparison_county_fips)[0][total_pop_field]
-        _2010_comparison_hh    = c.sf1.state_county(fields = total_households_field,               state_fips = comparison_state_fips, county_fips = comparison_county_fips)[0][total_households_field]
-
-        current_comparison_pop =  c.pl.state_county(fields = redistricting_total_pop_field,        state_fips = comparison_state_fips, county_fips = comparison_county_fips)[0][redistricting_total_pop_field]
-        current_comparison_hh  =  c.pl.state_county(fields = redistricting_total_hh_field,         state_fips = comparison_state_fips, county_fips = comparison_county_fips)[0][redistricting_total_hh_field]
-
-    elif comparison_geographic_level == 'county subdivision':
-        _2010_comparison_pop    = c.sf1.state_county_subdivision(fields = total_pop_field,                     state_fips = comparison_state_fips, county_fips = comparison_county_fips, subdiv_fips = comparison_suvdiv_fips)[0][total_pop_field]
-        _2010_comparison_hh     = c.sf1.state_county_subdivision(fields = total_households_field,              state_fips = comparison_state_fips, county_fips = comparison_county_fips, subdiv_fips = comparison_suvdiv_fips)[0][total_households_field]
-
-        current_comparison_pop  = c.pl.state_county_subdivision(fields = redistricting_total_pop_field,        state_fips = comparison_state_fips, county_fips = comparison_county_fips, subdiv_fips = comparison_suvdiv_fips)[0][redistricting_total_pop_field]
-        current_comparison_hh   = c.pl.state_county_subdivision(fields = redistricting_total_hh_field,         state_fips = comparison_state_fips, county_fips = comparison_county_fips, subdiv_fips = comparison_suvdiv_fips)[0][redistricting_total_hh_field]
-
-    elif comparison_geographic_level == 'zip':
-        _2010_comparison_pop   = c.sf1.state_zipcode(fields = total_pop_field,state_fips=comparison_state_fips,zcta = comparison_zip)[0][total_pop_field]
-        _2010_comparison_hh    = c.sf1.state_zipcode(fields = total_households_field,state_fips=comparison_state_fips,zcta=comparison_zip)[0][total_households_field]
-
-        current_comparison_pop = _2010_comparison_pop
-        current_comparison_hh  = _2010_comparison_hh
-
-    elif comparison_geographic_level == 'tract':
-        _2010_comparison_pop   = c.sf1.state_county_tract(fields = total_pop_field,                     state_fips = comparison_state_fips, county_fips = comparison_county_fips, tract = comparison_tract)[0][total_pop_field]
-        _2010_comparison_hh    = c.sf1.state_county_tract(fields = total_households_field,              state_fips = comparison_state_fips, county_fips = comparison_county_fips, tract = comparison_tract)[0][total_households_field]
-
-        current_comparison_pop =  c.pl.state_county_tract(fields = redistricting_total_pop_field,        state_fips = comparison_state_fips, county_fips = comparison_county_fips, tract = comparison_tract)[0][redistricting_total_pop_field]
-        current_comparison_hh  =  c.pl.state_county_tract(fields = redistricting_total_hh_field,         state_fips = comparison_state_fips, county_fips = comparison_county_fips, tract = comparison_tract)[0][redistricting_total_hh_field]
+    if comparison_geographic_level != 'custom':
+        current_comparison_pop    = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area', field = redistricting_total_pop_field,   operator = c.pl, aggregation_method = 'total')
+        current_comparison_hh     = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area', field = redistricting_total_hh_field,    operator = c.pl, aggregation_method = 'total')
 
     elif comparison_geographic_level == 'custom':
+        #Custom vs. custom still not supported
         pass
+
+
+
+
 
     #Set growth periods
     if hood_geographic_level == 'custom':
