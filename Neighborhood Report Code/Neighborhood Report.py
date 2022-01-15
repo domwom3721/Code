@@ -3927,10 +3927,21 @@ def LocationIQPOIList(lat,lon,category,radius,limit):
     try:
         response = requests.get(url, params=data).json()
         poi_list = [x['name'] for x in response]
-        time.sleep(1) 
         return(poi_list)
 
     except Exception as e:
+        try:
+            time.sleep(3)
+            response = requests.get(url, params=data).json()
+            poi_list = [x['name'] for x in response]
+            return(poi_list)
+        except:
+            time.sleep(5)
+            response = requests.get(url, params=data).json()
+            poi_list = [x['name'] for x in response]
+            return(poi_list)
+
+    finally:
         print(e,'problem getting Location IQ resuts for ', category)
         return([])
 
