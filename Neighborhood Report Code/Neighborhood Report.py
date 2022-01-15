@@ -4,6 +4,7 @@
 
 import json
 import msvcrt
+from operator import ne
 import os
 import shutil
 import sys
@@ -3627,9 +3628,45 @@ def HouseholdSizeLanguage():
 def PopLanguage():
     print('Creating Population intro Langauge')
 
-    population_language = ("""The following demographic profile, created with data from the U.S. Census Bureau, reflects the subject's municipality and market. """)
+    #global _2010_hood_pop,  _2010_hood_hh
+    # global current_hood_pop, current_hood_hh
+    # global _2010_comparison_pop, _2010_comparison_hh
+    # global current_comparison_pop, current_comparison_hh
+    # global  hood_pop_growth,comparsion_hh_growth      
+    # global comparsion_pop_growth,comparsion_hh_growth
+    
+    disclaimer_language = ("""The following demographic profile, created with data from the U.S. Census Bureau, reflects the subject's municipality and market. """)
 	
-    return([population_language])
+
+    if neighborhood_level != 'Custom':
+        
+        if float(hood_pop_growth.replace('%','')) < 0:
+            hood_pop_growth_or_contract =  'contracted'  
+        elif float(hood_pop_growth.replace('%','')) > 0:
+            hood_pop_growth_or_contract =  'grown'  
+
+
+        population_description = ( 'As of the 2010 Census, ' + 
+                                   neighborhood             +
+                                   ' had a population of '  +
+                                    _2010_hood_pop          +
+                                    ' people and '          +
+                                    _2010_hood_hh           +
+                                    ' households. '         +
+                                    'Preliminary 2020 Census data shows its population has ' +
+                                     hood_pop_growth_or_contract                             +
+                                    ' by '                                                   +
+                                    hood_pop_growth                                          +
+                                    ' per year to '                                          +
+                                    current_hood_pop                                         +
+                                    ' residents.'
+                                    )
+    else:
+        population_description = ('')
+    
+    pop_intro_language = (disclaimer_language + population_description)
+
+    return([pop_intro_language])
 
 def PopulationAgeLanguage():
     print('Creating Population by Age Langauge')
@@ -3941,7 +3978,6 @@ def LocationIQPOIList(lat,lon,category,radius,limit):
             print(e,'Unable to get location IQ result on first attempt, sleeping for 5 seconds and trying again')
             time.sleep(5)
             response = requests.get(url, params=data).json()
-            print(response)
             poi_list = [x['name'] for x in response]
             return(poi_list)
         except:
