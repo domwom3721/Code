@@ -1174,7 +1174,7 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
                 assert(False)
 
         except Exception as e:
-            print('Data not avilable for blockgroup, using tract level')
+            print(e,'Data not avilable for blockgroup, using tract level')
             
             if aggregation_method == 'mean':
                 #Create empty list we will fill with values (one for each census tract within the custom shape/neighborhood)
@@ -1653,6 +1653,8 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         #Custom vs. custom still not supported
         pass
 
+    print('Successfully grabbed 2020 Population and HH count for comparison area')
+    
 
 
 
