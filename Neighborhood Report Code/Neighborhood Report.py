@@ -3638,7 +3638,7 @@ def PopLanguage():
     disclaimer_language = ("""The following demographic profile, created with data from the U.S. Census Bureau, reflects the subject's municipality and market. """)
 	
 
-    if neighborhood_level != 'Custom':
+    if neighborhood_level != 'custom':
         
         if float(hood_pop_growth.replace('%','')) < 0:
             hood_pop_growth_or_contract =  'contracted'  
