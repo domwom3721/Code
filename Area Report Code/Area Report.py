@@ -4523,7 +4523,7 @@ def PopulationLanguage(national_resident_pop):
 
             population_language = ('Going back ten years, ' +
                     county +
-                's population has '+
+                """'s population has """+
                 county_10y_expand_or_compress +
                 ' ' +
                     county_10y_growth +
