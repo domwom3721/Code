@@ -3642,8 +3642,9 @@ def PopLanguage():
         
         if float(hood_pop_growth.replace('%','')) < 0:
             hood_pop_growth_or_contract =  'contracted'  
-        elif float(hood_pop_growth.replace('%','')) > 0:
+        elif float(hood_pop_growth.replace('%','')) >= 0:
             hood_pop_growth_or_contract =  'grown'  
+ 
 
 
         population_description = ( 'As of the 2010 Census, ' + 
