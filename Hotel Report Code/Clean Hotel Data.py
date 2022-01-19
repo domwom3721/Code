@@ -21,4 +21,4 @@ def MainClean(df):
 clean_hotel_df  = MainClean(df = raw_hotel_df)
 
 #Step 3: Export Cleaned Data
-clean_hotel_df.to_csv(os.path.join(hotel_data_location,'Clean Hotel Data','clean_hotel_data.csv'))
+clean_hotel_df.to_csv(os.path.join(hotel_data_location,'Clean Hotel Data','clean_hotel_data.csv'), index=False)
