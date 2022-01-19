@@ -117,11 +117,12 @@ def CreateOutputDirectory():
 
     if market == primary_market:
         output_directory     = market_folder                    #Folder where we write report to
-    
+        market_or_submarket = 'Market'
     else:
         output_directory     = os.path.join(state_folder,primary_market_clean,market_clean)
+        market_or_submarket = 'Submarket'
 
-    document_name = current_quarter + ' ' + state + ' - ' + market_clean + '_draft.docx'
+    document_name = current_quarter + ' ' + state + ' - ' + market_clean + ' - ' + 'Hotel ' + market_or_submarket  + '_draft.docx'
     report_path = os.path.join(output_directory,document_name)
 
     #Check if output,map, and summary folder already exists, and if it doesnt, make it
@@ -145,9 +146,10 @@ def CreateMarketReport():
     output_directory    = CreateOutputDirectory()
     map_directory       = CreateMapDirectory()
 
+    WriteReport()
 
 
-#Report Related Functions
+###############################Report Related Functions###############################
 def SetPageMargins(document,margin_size):
     sections = document.sections
     for section in sections:
@@ -281,7 +283,7 @@ def WriteReport():
 
 
 
-current_quarter = 'Q3'
+current_quarter = '2021 Q4'
 
 #Create dictionary with each market as key and a list of its submarkets as items
 market_dictionary            = CreateMarketDictionary(hotel_df)
