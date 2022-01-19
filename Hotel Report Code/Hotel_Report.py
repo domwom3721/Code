@@ -17,8 +17,8 @@ from docx.shared import Inches, Pt, RGBColor
 
 #Define file pre paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
-project_location               =  os.path.join(dropbox_root,'Research','Projects','Research Report Automation Project')      #Main Folder that stores all output, code, and documentation
-# output_location                = os.path.join(dropbox_root,'Research','Market Analysis','Market','Other','Hotel')           #The folder where we store our current reports, production
+# project_location               =  os.path.join(dropbox_root,'Research','Projects','Research Report Automation Project')      #Main Folder that stores all output, code, and documentation
+output_location                = os.path.join(dropbox_root,'Research','Market Analysis','Market','Other','Hotel')           #The folder where we store our current reports, production
 output_location                = os.path.join(project_location,'Output','Hotel')                                              #The folder where we store our current reports, testing folder
 map_location                   = os.path.join(project_location,'Data','Hotel Reports Data','Hotel Maps')                     #Folders with maps png files  
 general_data_location          =  os.path.join(project_location,'Data','General Data')                                        #Folder with data used in multiple report types
@@ -26,10 +26,8 @@ hotel_data_location            = os.path.join(project_location,'Data','Hotel Rep
 
 
 #Import hotel data
-hotel_df                 = pd.read_csv(os.path.join(hotel_data_location,'Clean Hotel Data','clean_hotel_data.csv')) 
+hotel_df                       = pd.read_csv(os.path.join(hotel_data_location,'Clean Hotel Data','clean_hotel_data.csv')) 
  
-primary_font                  = 'Avenir Next LT Pro Light' 
-primary_space_after_paragraph = 8
 
 def CreateMarketDictionary(df): #Creates a dictionary where each key is a market and the items are lists of its submarkets
      df_markets             = df.loc[df['Geography Type'] == 'Market'] 
@@ -133,6 +131,7 @@ def CreateOutputDirectory():
     return(output_directory)
 
 def CreateMapDirectory():
+    global map_path
     state_folder         = os.path.join(map_location,state)
     market_folder        = os.path.join(map_location,state,primary_market_clean)
 
@@ -140,7 +139,7 @@ def CreateMapDirectory():
         output_directory     = market_folder                    #Folder where we write report to
     else:
         output_directory     = os.path.join(state_folder,primary_market_clean,market_clean)
-
+    map_path = os.path.join(output_directory,'map.png')
     #Check if output,map, and summary folder already exists, and if it doesnt, make it
     for folder in [state_folder,market_folder,output_directory]:
        
@@ -159,7 +158,7 @@ def CreateMarketReport():
     output_directory    = CreateOutputDirectory()
     map_directory       = CreateMapDirectory()
 
-    WriteReport()
+    # WriteReport()
 
 ###############################Report Related Functions###############################
 def SetPageMargins(document,margin_size):
@@ -297,28 +296,32 @@ def AddTableTitle(document,title):
                     font.name = 'Avenir Next LT Pro Medium'
 
 def WriteReport():
+    global document
     #Create Document
     document = Document()
     SetPageMargins(document   = document, margin_size=1)
     SetDocumentStyle(document = document)
     AddTitle(document = document)
-    # AddMap(document = document)
-    # OverviewSection(document     = document)
-    # EmploymentSection(document   = document)
-    # ProductionSection(document   = document)
-    # DemographicsSection(document = document)
-    # InfrastructureSection(document = document)
-    # HousingSection(document=document)
-    # OutlookSection(document = document)
+    AddMap()
 
     #Save report
     document.save(report_path)  
 
+def AddMap():
+    #Add image of map if there is one in the appropriate map folder
+    if os.path.exists(map_path):
+        map = document.add_picture(map_path, width=Inches(6.5) )
+    else:
+        map = document.add_paragraph('')
+
+    last_paragraph = document.paragraphs[-1] 
+    last_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
 
 
-
-
-current_quarter = '2021 Q4'
+#Set global paramaters
+current_quarter               = '2021 Q4'
+primary_font                  = 'Avenir Next LT Pro Light' 
+primary_space_after_paragraph = 8
 
 #Create dictionary with each market as key and a list of its submarkets as items
 market_dictionary            = CreateMarketDictionary(hotel_df)
