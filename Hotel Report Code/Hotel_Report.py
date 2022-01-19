@@ -20,7 +20,7 @@ dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropb
 project_location               =  os.path.join(dropbox_root,'Research','Projects','Research Report Automation Project')      #Main Folder that stores all output, code, and documentation
 # output_location                = os.path.join(dropbox_root,'Research','Market Analysis','Market','Other','Hotel')           #The folder where we store our current reports, production
 output_location                = os.path.join(project_location,'Output','Hotel')                                              #The folder where we store our current reports, testing folder
-map_location                   = os.path.join(project_location,'Data','Hotel Reports Data','CoStar Maps')                     #Folders with maps png files  
+map_location                   = os.path.join(project_location,'Data','Hotel Reports Data','Hotel Maps')                     #Folders with maps png files  
 general_data_location          =  os.path.join(project_location,'Data','General Data')                                        #Folder with data used in multiple report types
 hotel_data_location            = os.path.join(project_location,'Data','Hotel Reports Data')                                   #Folder with data for hotel reports only
 
@@ -133,7 +133,20 @@ def CreateOutputDirectory():
     return(output_directory)
 
 def CreateMapDirectory():
-    pass
+    state_folder         = os.path.join(map_location,state)
+    market_folder        = os.path.join(map_location,state,primary_market_clean)
+
+    if market == primary_market:
+        output_directory     = market_folder                    #Folder where we write report to
+    else:
+        output_directory     = os.path.join(state_folder,primary_market_clean,market_clean)
+
+    #Check if output,map, and summary folder already exists, and if it doesnt, make it
+    for folder in [state_folder,market_folder,output_directory]:
+       
+        if os.path.exists(folder) == False:
+            os.mkdir(folder) #Create new folder for market or submarket
+    return(output_directory)
 
 def CreateMarketReport():
     global market,market_clean,output_directory,map_directory,primary_market_clean
@@ -147,7 +160,6 @@ def CreateMarketReport():
     map_directory       = CreateMapDirectory()
 
     WriteReport()
-
 
 ###############################Report Related Functions###############################
 def SetPageMargins(document,margin_size):
@@ -178,8 +190,32 @@ def AddTitle(document):
     rFonts = title_style.element.rPr.rFonts
     rFonts.set(qn("w:asciiTheme"), "Avenir Next LT Pro Light")
 
-    above_map_paragraph = document.add_paragraph("The following analysis includes pertinent aspects of the surrounding region as it pertains to the subject property. " + 
-                                                'This report was compiled using data as of ' + current_quarter + ' unless otherwise noted. Data is from a number of sources including the U.S. Bureau of Labor Statistics, the U.S. Bureau of Economic Analysis, and the U.S. Census Bureau.')
+
+    if market == primary_market:
+        above_map_paragraph = document.add_paragraph('The information contained in this report was provided using ' +
+                                             current_quarter + 
+                                            ' CoStar data for the ' + 
+                                            market + 
+                                            ' ' + 
+                                            'Hotel' + 
+                                            """ Market ("Market").""")
+    #Submarket disclaimer
+    else:
+
+        above_map_paragraph = document.add_paragraph('The information contained in this report was provided using ' +
+                                            current_quarter  + 
+                                            ' CoStar data for the ' + 
+                                            market_clean + 
+                                            ' ' + 
+                                            'Hotel' + 
+                                            """ Submarket ("Submarket") """ +
+                                            'located in the ' +
+                                            primary_market_clean +
+                                            """ Market ("Market"). """ 
+                                            )     
+
+
+
     above_map_style = above_map_paragraph.style
     above_map_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
     above_map_style.font.size = Pt(9)
@@ -261,7 +297,6 @@ def AddTableTitle(document,title):
                     font.name = 'Avenir Next LT Pro Medium'
 
 def WriteReport():
-    print('Writing Report')
     #Create Document
     document = Document()
     SetPageMargins(document   = document, margin_size=1)
