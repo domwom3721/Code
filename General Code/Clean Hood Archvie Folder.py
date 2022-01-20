@@ -3,7 +3,7 @@
 #Date: 9/24/2021
 import os
 
-hood_archive_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Market Analysis','Neighborhood','Archive','2021') 
+hood_archive_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Market Analysis','Neighborhood','Archive','2022') 
 assert os.path.exists(hood_archive_root)
 
 
@@ -25,6 +25,6 @@ for (dirpath, dirnames, filenames) in os.walk(hood_root):
     if 'Archive' in dirpath:
         continue
     for file in filenames:
-        print('Deleting',file)
-        os.remove(file)
+        print('Deleting',os.path.join(dirpath,file) )
+        os.remove(os.path.join(dirpath,file))
 
