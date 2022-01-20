@@ -324,65 +324,65 @@ def CreateOverviewLanguage(submarket_data_frame,market_data_frame,natioanl_data_
     if sector == "Multifamily":
         #Negative Rent Growth, positive vacancy growth
         if yoy_rent_growth < 0 and vacancy_change > 0:
-            overview_sector_specific_language =  ("""The unique nature of the pandemic and lockdown dramatically shifted renter preferences in 2020, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
+            overview_sector_specific_language =  ("""The pandemic dramatically shifted renter preferences in 2020, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
                                 'Multiple factors inspired the shift, including an ability to work-from-home, the need for more affordable rents, or the desire for more space. ' + 
                                  sector + ' properties in the ' + market_or_submarket + 
                                 """ have been negatively affected by these shifts in demand, leading to rising vacancy rates and contracting rents. """)
  	
 	    #Negative Rent Growth, Negative vacancy growth
         elif yoy_rent_growth < 0 and vacancy_change < 0:
-            overview_sector_specific_language =  ("""The unique nature of the pandemic and lockdown dramatically shifted renter preferences, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
+            overview_sector_specific_language =  ("""The pandemic dramatically shifted renter preferences in 2020, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
                                 'Multiple factors inspired the shift, including an ability to work-from-home, the need for more affordable rents, or the desire for more space. ' +  
                                 'Despite vacancy rate compression in the ' +
                                 market_or_submarket + ' over the past year, multifamily rents have contracted, decreasing ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + ' since 2020 Q4.')
         
         #Negative rent growth, no vacancy growth
         elif  yoy_rent_growth < 0 and vacancy_change == 0:
-            overview_sector_specific_language = ("""The unique nature of the pandemic and lockdown dramatically shifted renter preferences, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
+            overview_sector_specific_language = ("""The pandemic dramatically shifted renter preferences, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
                                 'Multiple factors inspired the shift, including an ability to work-from-home, the need for more affordable rents, or the desire for more space. ' +  
                                 'Despite no change in vacancy rates for properties in the ' +
                                 market_or_submarket + ' over the past year, multifamily rents have contracted, decreasing ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + ' since 2020 Q4.')
         
         #Positive rent growth, positive vacancy growth
         elif yoy_rent_growth > 0 and vacancy_change > 0:
-            overview_sector_specific_language =  ("""The unique nature of the pandemic and lockdown dramatically shifted renter preferences, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
+            overview_sector_specific_language =  ("""The pandemic shifted renter preferences in 2020, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
                                 'Multiple factors inspired the shift, including an ability to work-from-home, the need for more affordable rents, or the desire for more space. The ' + 
                                 market_or_submarket + 
                                 ' has been positively affected by these shifts, despite an increase in vacancy over the past year. During that time, rents have managed to grow, expanding ' + "{:,.1f}%".format(yoy_rent_growth) + ' since 2020 Q4.')
 
         #Positive rent growth, negative vacancy growth
         elif  yoy_rent_growth > 0 and vacancy_change < 0:
-            overview_sector_specific_language = ("""The unique nature of the pandemic and lockdown dramatically shifted renter preferences, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
+            overview_sector_specific_language = ("""The pandemic shifted renter preferences in 2020, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
                                 'Multiple factors inspired the shift, including an ability to work-from-home, the need for more affordable rents, or the desire for more space. ' + 
-                                'These shifts have positively affected the ' + 
-                                market_or_submarket + ', which has shown resounding strength since the pandemic. In fact, vacancy rates have compressed to ' + "{:,.1f}%".format(vacancy) + ' while rents have expanded ' + "{:,.1f}%".format(yoy_rent_growth) + '. ')  
+                                'These shifts positively affected the ' + 
+                                market_or_submarket + ' in 2021. In fact, vacancy rates have compressed to ' + "{:,.1f}%".format(vacancy) + ' while rents have expanded ' + "{:,.1f}%".format(yoy_rent_growth) + '. ')  
         
         #Positive rent growth, no vacancy growth
         elif  yoy_rent_growth > 0 and vacancy_change == 0:
-            overview_sector_specific_language = ("""The unique nature of the pandemic and lockdown dramatically shifted renter preferences, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
+            overview_sector_specific_language = ("""The pandemic shifted renter preferences, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
                                 'Multiple factors inspired the shift, including an ability to work-from-home, the need for more affordable rents, or the desire for more space. ' + 
                                 'These shifts have positively affected the ' + 
                                 market_or_submarket + ', which has shown resounding strength despite stable vacancy rates. In fact, rents have expanded ' + "{:,.1f}%".format(yoy_rent_growth) + '. ')
         
         #no rent growth, negative vacancy growth
         elif  yoy_rent_growth == 0 and vacancy_change < 0:
-            overview_sector_specific_language = ("""The unique nature of the pandemic and lockdown dramatically shifted renter preferences, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
+            overview_sector_specific_language = ("""The pandemic shifted renter preferences, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
                                 'Multiple factors inspired the shift, including an ability to work-from-home, the need for more affordable rents, or the desire for more space. ' + 'While vacancy rates have compressed over the past year to ' + "{:,.1f}%".format(vacancy) + ' rents have seen no growth. ')  
         
 	    #no rent growth, postive vacancy growth
         elif  yoy_rent_growth == 0 and vacancy_change > 0:
-            overview_sector_specific_language = ("""The unique nature of the pandemic and lockdown dramatically shifted renter preferences, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
+            overview_sector_specific_language = ("""The pandemic shifted renter preferences in 2020, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
                                 'Multiple factors inspired the shift, including an ability to work-from-home, the need for more affordable rents, or the desire for more space. ' + 
                                 'These shifts have negatively affected the ' + 
-                                market_or_submarket + ', where vacacny rates have expanded to ' + "{:,.1f}%".format(vacancy) + '. Despite this, rents have managed to remain stable. ')
+                                market_or_submarket + ', where vacancy rates have expanded to ' + "{:,.1f}%".format(vacancy) + '. Despite this, rents have managed to remain stable. ')
         
         #no rent growth, no vacancy growth
         elif  yoy_rent_growth == 0 and vacancy_change == 0:
-            overview_sector_specific_language = ("""The unique nature of the pandemic and lockdown dramatically shifted renter preferences, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
+            overview_sector_specific_language = ("""The pandemic shifted renter preferences in 2020, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
                                 'Multiple factors inspired the shift, including an ability to work-from-home, the need for more affordable rents, or the desire for more space. ' + 
                                 'These shifts have resulted in steady vacancy rates and no growth in rents. ')
         else:
-            overview_sector_specific_language = ("""The unique nature of the pandemic and lockdown dramatically shifted renter preferences, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
+            overview_sector_specific_language = ("""The pandemic dramatically shifted renter preferences, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
                                 'Multiple factors inspired the shift, including an ability to work-from-home, the need for more affordable rents, or the desire for more space. ' ) 
                                 
     #Create the Industrial sepecific language
