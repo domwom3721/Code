@@ -848,7 +848,7 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
 
     elif 'Q4' in latest_quarter:
         quarter = 'fourth'
-        number_of_quarters = '' 
+        number_of_quarters = ' the course of ' + latest_year + '. ' 
 
     #Describe change in vacancy over the past year
     if yoy_submarket_vacancy_growth > 0:
@@ -2488,7 +2488,7 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
     
     #Sector Specific language
     if sector == "Multifamily":
-        sector_specific_outlook_language=('Strong economic growth and a drastically improving public health situation helped boost multifamily fundamentals over the first three quarters of 2021. With demand and rent growth indicators surging, investors have regained confidence in the sector, and sales volume has returned to more normal levels over the past few quarters. ' + 
+        sector_specific_outlook_language=('Strong economic growth and a drastically improving public health situation boosted multifamily fundamentals in 2021. With demand and rent growth indicators surging, investors have regained confidence in the sector, and sales volume has returned to elevated levels over the past few quarters. ' + 
                                         "{headwinds_description}".format(headwinds_description = "" if under_construction_share < large_supply_pipeline_threshold  else ('Still, a few headwinds exist that could put upward pressure on vacancies over the next few quarters. The ' + market_or_submarket + ' still faces a robust near-term supply pipeline, and those units will deliver amid a potential slowdown in demand due to seasonality and the fading effects of fiscal stimulus that has helped thousands of people pay rent. Furthermore, single-family starts have ramped up, and the increase in new for-sale housing could draw higher-income renters away from luxury properties.') ) 
                                         )
                                           
