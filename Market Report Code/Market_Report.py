@@ -517,12 +517,12 @@ def MakeCoStarDisclaimer():
                                             sector + 
                                             """ Submarket ("Submarket") """ +
                                             'located in the ' +
-                                            primary_market +
-                                            """ Market ("Market"). """ +
-                                            'The Submarket includes the ' + 
-                                            'neighborhoods/towns' + 
-                                            ' of ' + 
-                                            towns + '.'
+                                            primary_market + 
+                                            """ Market ("Market"). """
+                                            #'The Submarket includes the ' + 
+                                            #'neighborhoods/towns' + 
+                                            #' of ' + 
+                                            #towns + '.'
                                             )                
     
     
