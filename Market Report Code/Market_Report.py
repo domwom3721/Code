@@ -693,12 +693,6 @@ def SupplyDemandSection():
         supply_demand_paragraph_style = supply_demand_paragraph1.style
         supply_demand_paragraph_style.font.name = primary_font
 
-    #Vacancy Table
-    AddTableTitle(document = document,title ='Vacancy Rates')
-
-    vacancy_table_width = 1.2
-    AddTable(document,data_for_vacancy_table,vacancy_table_width)
-    
     if type(demand_language) == list:
         pass
     else:
@@ -708,6 +702,12 @@ def SupplyDemandSection():
         supply_demand_paragraph2.paragraph_format.space_before = Pt(6)
         supply_demand_paragraph_style = supply_demand_paragraph2.style
         supply_demand_paragraph_style.font.name = primary_font
+
+    #Vacancy Table
+    AddTableTitle(document = document,title ='Vacancy Rates')
+
+    vacancy_table_width = 1.2
+    AddTable(document,data_for_vacancy_table,vacancy_table_width)
 
     #Absorption rate Graph
     AddDocumentPicture(document=document,image_path=os.path.join(output_directory,'absorption_rate.png'))
