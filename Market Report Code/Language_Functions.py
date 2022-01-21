@@ -2495,14 +2495,14 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
                                           
     
     elif sector == "Office":
-        sector_specific_outlook_language=('The first three quarters of 2021 remained in line with pandemic-era trends in terms of office market performance. Although leasing activity has picked up slightly, it remained rather subdued. Many tenants continue to downsize and adopt hybrid work models, limiting demand and rent growth. Investment volume remains subdued, but investors are looking at alternatives such as the medical office sector or single-tenant assets with sticky tenants and lengthy leases in place. Looking ahead over the next few quarters, supply additions will be met with muted demand, limiting improvement in rents and values.')
+        sector_specific_outlook_language=('U.S. office market activity strengthened in the second half of 2021, and the momentum likely will continue in 2022. Although the outlook depends on how new COVID variants impact society.' + 'Demand will likely improve slowly over the course of 2022, but many office markets will contend with elevated vacancy rates and limited rent growth over the near term. ')
 
     elif sector == "Retail":
         sector_specific_outlook_language=('The retail sector is recovering relatively well from the pandemics major disruptions.  Retail sales and foot traffic surged throughout the year ' + ' and leasing activity among many tenant segments remains strong. ' + 
         + 'With developers focused primarily on industrial and multifamily projects, the retail pipeline will remain modest in 2022, aiding improvement. ' + ' Still, Property performance continues to vary significantly by subtype, location, class, and tenant composition. ') 
     
     elif sector == "Industrial":
-        sector_specific_outlook_language=("""2021 has brought much needed support to the nation's economy and to its consumers, who continue to buy record amounts of goods online. In response, industrial users continue to seek more warehouse space closer to the consumer as they evolve their supply chains to meet the demand for fast delivery times. Industrial's rent growth prospects continue to lead across sectors, as well, with both retail and office posting rent declines as multifamily gradually regains momentum after plateauing throughout much of 2020. Still, following the national theme, most markets are set to experience a deceleration in rent growth. With such strength prevailing throughout industrial's operating environment, and with other sectors and asset classes registering more volatility and relatively weaker performance, investors continue to aggressively pursue industrial acquisitions. Looking ahead over the next few quarters, demand from consumers, tenants, and investors will continue driving growth in fundamentals.""")
+        sector_specific_outlook_language=("""On the heels of record transaction volume and rent growth amid extremely tight supply and high demand, the industrial real estate market will remain very strong in 2022. The expansion of E-commerce will fuel the need for more warehouse space, as will the growing economy, population migration, and onshoring.""")
 
 
 
