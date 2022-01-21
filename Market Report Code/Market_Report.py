@@ -799,6 +799,7 @@ def CapitalMarketsSection():
 
     #Sales Volume Graphs
     AddDocumentPicture(document=document,image_path=os.path.join(output_directory,'sales_volume.png'))
+    document.add_paragraph('')
 
     if type(sale_language) == list:
         pass
