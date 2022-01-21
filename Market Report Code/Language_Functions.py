@@ -1045,11 +1045,11 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
 
             #12m net absorption grew over past year
             if leasing_change > 0:
-                leasing_activity_intro_clause = 'Despite falling inventory levels and growing demand, vacancy rates have '
+                leasing_activity_intro_clause = 'While inventory levels have contracted over the past year, the positive change in net absorption has had little affect and vacancy rates have '
 
             #12m net absorption declined over past year
             elif  leasing_change < 0:
-                leasing_activity_intro_clause = 'Despite falling inventory levels, with falling demand, vacancy rates have '
+                leasing_activity_intro_clause = 'Despite a decrease in inventory levels, net absorption has declined as well and vacancy rates have '
                
             #12m net absorption flat over past year
             elif leasing_change == 0:
@@ -2405,11 +2405,11 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
         elif vacancy_change == 0:
             #12m net absorption grew over past year
             if leasing_change > 0:
-                fundamentals_clause = 'Despite falling inventory and growing demand,'
+                fundamentals_clause = 'Despite inventory levels contracting, and growing demand,'
 
             #12m net absorption declined over past year
             elif  leasing_change < 0:
-                fundamentals_clause = 'Despite falling inventory levels, with demand falling,'
+                fundamentals_clause = 'Despite a decrease in inventory levels, with demand falling,'
                
             #12m net absorption flat over past year
             elif leasing_change == 0:
@@ -2499,7 +2499,7 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
 
     elif sector == "Retail":
         sector_specific_outlook_language=('The retail sector is recovering relatively well from the pandemics major disruptions.  Retail sales and foot traffic surged throughout the year ' + ' and leasing activity among many tenant segments remains strong. ' + 
-        + 'With developers focused primarily on industrial and multifamily projects, the retail pipeline will remain modest in 2022, aiding improvement. ' + ' Still, Property performance continues to vary significantly by subtype, location, class, and tenant composition. ') 
+        'With developers focused primarily on industrial and multifamily projects, the retail pipeline will remain modest in 2022, aiding improvement. ' + ' Still, Property performance continues to vary significantly by subtype, location, class, and tenant composition. ') 
     
     elif sector == "Industrial":
         sector_specific_outlook_language=("""On the heels of record transaction volume and rent growth amid extremely tight supply and high demand, the industrial real estate market will remain very strong in 2022. The expansion of E-commerce will fuel the need for more warehouse space, as will the growing economy, population migration, and onshoring.""")
