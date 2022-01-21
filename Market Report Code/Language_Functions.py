@@ -390,57 +390,57 @@ def CreateOverviewLanguage(submarket_data_frame,market_data_frame,natioanl_data_
         
  	    #Negative Rent Growth, positive vacancy growth
         if yoy_rent_growth < 0 and vacancy_change > 0:
-            overview_sector_specific_language =  ('Industrial enters the fourth quarter in among the best shape of any of the major property types. ' + 
-                                'A pandemic driven spike in e-commerce sales along with significant growth in third-party logistics providers continues to drive demand. ' + 
+            overview_sector_specific_language =  ('The industrial sector enters 2022 in the best shape of any of the major property types. ' + 
+                                'Economic growth has been largely attributed to increased spending power, which has in turn driven a spike in e-commerce sales. This, when combined with global supply chain issues, has pushed nationwide industrial leasing activity to a historical high. ' + 
                                 'Despite these macro trends, '  + sector.lower() + ' properties in the ' + market_or_submarket + 
                                 ' have not felt the affects of these demand drivers, leading to softened levels of leasing activity and rent growth. ')
  	
 	    #Negative Rent Growth, Negative vacancy growth
         elif yoy_rent_growth < 0 and vacancy_change < 0:
-            overview_sector_specific_language =  ('Industrial enters the fourth quarter in among the best shape of any of the major property types. ' + 
-                                'A pandemic driven spike in e-commerce sales along with significant growth in third-party logistics providers continues to drive demand. ' + 
-                                'Despite these macro trends leading to a decrease in vacancy rates, '  + sector.lower() + 'rents in the market_or_submarket have decreased ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + ' since 2020 Q3.')
+            overview_sector_specific_language =  ('Industrial enters 2022 in the best shape of any of the major property types. ' + 
+                                'Economic growth has been largely attributed to increased spending power, which has in turn driven a spike in e-commerce sales. This, when combined with global supply chain issues, has pushed nationwide industrial leasing activity to a historical high. ' + 
+                                'Despite these macro trends leading to a decrease in vacancy rates, '  + sector.lower() + 'rents in the market_or_submarket have decreased ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + ' since 2020 Q4.')
         
         #Negative rent growth, no vacancy growth
         elif  yoy_rent_growth < 0 and vacancy_change == 0:
-            overview_sector_specific_language = ('Industrial enters the fourth quarter in among the best shape of any of the major property types. ' + 
-                                'A pandemic driven spike in e-commerce sales along with significant growth in third-party logistics providers continues to drive demand. ' + 
-                                'Unfortunately, these macro trends have had little affect on ' + sector.lower() + ' properties in the ' + market_or_submarket + '.' + ' Despite stable vacacny rates, rents have contracted, decreasing ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + ' since 2020 Q3.')
+            overview_sector_specific_language = ('Industrial enters 2022 in the best shape of any of the major property types. ' + 
+                                'Economic growth has been largely attributed to increased spending power, which has in turn driven a spike in e-commerce sales. This, when combined with global supply chain issues, has pushed nationwide industrial leasing activity to a historical high. ' + 
+                                'Unfortunately, these macro trends have had little affect on ' + sector.lower() + ' properties in the ' + market_or_submarket + '.' + ' Despite stable vacacny rates, rents have contracted, decreasing ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + ' since 2020 Q4.')
         
         #Positive rent growth, positive vacancy growth
         elif yoy_rent_growth > 0 and vacancy_change > 0:
-            overview_sector_specific_language =  ('Industrial enters the fourth quarter in among the best shape of any of the major property types. ' + 
-                                'A pandemic driven spike in e-commerce sales along with significant growth in third-party logistics providers continues to drive demand. ' + 
-                                'Despite vacancy rates expanding over the past year, rents have managed to grow, expanding ' + "{:,.1f}%".format(yoy_rent_growth) + ' since 2020 Q3.')
+            overview_sector_specific_language =  ('Industrial enters 2022 in the best shape of any of the major property types. ' + 
+                                'Economic growth has been largely attributed to increased spending power, which has in turn driven a spike in e-commerce sales. This, when combined with global supply chain issues, has pushed nationwide industrial leasing activity to a historical high. ' + 
+                                'Despite vacancy rates expanding over the past year, rents have managed to grow, expanding ' + "{:,.1f}%".format(yoy_rent_growth) + ' since 2020 Q4.')
 
         #Positive rent growth, negative vacancy growth
         elif  yoy_rent_growth > 0 and vacancy_change < 0:
-            overview_sector_specific_language = ('Industrial enters the fourth quarter in among the best shape of any of the major property types. ' + 
-                                'A pandemic driven spike in e-commerce sales along with significant growth in third-party logistics providers continues to drive demand for industrial space. ' + 
-                                'These macro trends have positively affected ' + sector.lower() + ' properties in the ' + market_or_submarket + '. With vacancy rates compressing over the past year, rents have expanded ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + ' since 2020 Q3.')
+            overview_sector_specific_language = ('Industrial enters 2022 in the best shape of any of the major property types. ' + 
+                                'Economic growth has been largely attributed to increased spending power, which has in turn driven a spike in e-commerce sales. This, when combined with global supply chain issues, has pushed nationwide industrial leasing activity to a historical high. ' + 
+                                'These macro trends have positively affected ' + sector.lower() + ' properties in the ' + market_or_submarket + '. With vacancy rates compressing over the past year, rents have expanded ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + ' since 2020 Q4.')
         
         #Positive rent growth, no vacancy growth
         elif  yoy_rent_growth > 0 and vacancy_change == 0:
-            overview_sector_specific_language = ('Industrial enters the fourth quarter in among the best shape of any of the major property types. ' + 
-                                'A pandemic driven spike in e-commerce sales along with significant growth in third-party logistics providers continues to drive demand for industrial space. ' + 
-                                'These macro trends have positively affected ' + sector + ' properties in the ' + market_or_submarket + '. While vacancy rates have remained stable, rents have continued to expand, increasing' + "{:,.1f}%".format(abs(yoy_rent_growth)) + ' since 2020 Q3.')
+            overview_sector_specific_language = ('Industrial enters 2022 in the best shape of any of the major property types. ' + 
+                                'Economic growth has been largely attributed to increased spending power, which has in turn driven a spike in e-commerce sales. This, when combined with global supply chain issues, has pushed nationwide industrial leasing activity to a historical high. ' + 
+                                'These macro trends have positively affected ' + sector + ' properties in the ' + market_or_submarket + '. While vacancy rates have remained stable, rents have continued to expand, increasing' + "{:,.1f}%".format(abs(yoy_rent_growth)) + ' since 2020 Q4.')
         
         #no rent growth, negative vacancy growth
         elif  yoy_rent_growth == 0 and vacancy_change < 0:
-            overview_sector_specific_language = ('Industrial enters the fourth quarter in among the best shape of any of the major property types. ' + 
-                                'A pandemic driven spike in e-commerce sales along with significant growth in third-party logistics providers continues to drive demand for industrial space. ' +
+            overview_sector_specific_language = ('Industrial enters 2022 in the best shape of any of the major property types. ' + 
+                                'Economic growth has been largely attributed to increased spending power, which has in turn driven a spike in e-commerce sales. This, when combined with global supply chain issues, has pushed nationwide industrial leasing activity to a historical high. ' +
                                 'Despite these macro trends leading to compressing vacancy rates, industrial rents have seen no growth over the past year. ')
 	
         #no rent growth, postive vacancy growth
         elif  yoy_rent_growth == 0 and vacancy_change > 0:
-            overview_sector_specific_language = ('Industrial enters the fourth quarter in among the best shape of any of the major property types. ' + 
-                                'A pandemic driven spike in e-commerce sales along with significant growth in third-party logistics providers continues to drive demand for industrial space. ' +
+            overview_sector_specific_language = ('Industrial enters 2022 in the best shape of any of the major property types. ' + 
+                                'Economic growth has been largely attributed to increased spending power, which has in turn driven a spike in e-commerce sales. This, when combined with global supply chain issues, has pushed nationwide industrial leasing activity to a historical high. ' +
                                 'Despite these macro trends, vacancy rates have expanded over the past year. Fortunately, rents have managed to stay put, but at 0%, are close to moving into negative territory. ' )
 
         #no rent growth, no vacancy growth
         elif  yoy_rent_growth == 0 and vacancy_change == 0:
-            overview_sector_specific_language = ('Industrial enters the fourth quarter in among the best shape of any of the major property types. ' + 
-                                'A pandemic driven spike in e-commerce sales along with significant growth in third-party logistics providers continues to drive demand for industrial space. ')
+            overview_sector_specific_language = ('Industrial enters the fourth quarter in the best shape of any of the major property types. ' + 
+                                'Economic growth has been largely attributed to increased spending power, which has in turn driven a spike in e-commerce sales. This, when combined with global supply chain issues, has pushed nationwide industrial leasing activity to a historical high. ')
         else:
             overview_sector_specific_language = ('Industrial enters the fourth quarter in among the best shape of any of the major property types. ' + 
                                 'A pandemic driven spike in e-commerce sales along with significant growth in third-party logistics providers continues to drive demand for industrial space. ')
@@ -450,14 +450,14 @@ def CreateOverviewLanguage(submarket_data_frame,market_data_frame,natioanl_data_
 
         #Negative Rent Growth, positive vacancy growth
         if yoy_rent_growth < 0 and vacancy_change > 0:
-            overview_sector_specific_language =  ('Heading into Q4 2021, some of the adverse market trends established during the pandemic continue to plague the office sector. ' + 
+            overview_sector_specific_language =  ('Heading into Q1 2022, some of the adverse market trends established during the pandemic continue to plague the office sector. ' + 
                                 'Vacancy and availability rates have expanded as increasingly more businesses and tenants adopt remote work policies. While some markets and submarkets have fared better than others, ' + 
                                   sector.lower() + ' properties in the ' + market_or_submarket + 
                                 ' have not. With vacancy rates rising over the year, annual rent growth remains in negative territory. ')
  	
 	    #Negative Rent Growth, Negative vacancy growth
         elif yoy_rent_growth < 0 and vacancy_change < 0:
-            overview_sector_specific_language =  ('Heading into Q4 2021, some of the adverse market trends established during the pandemic continue to plague the office sector. ' + 
+            overview_sector_specific_language =  ('Heading into Q1 2022, some of the adverse market trends established during the pandemic continue to plague the office sector. ' + 
                                 'Vacancy and availability rates have expanded as increasingly more businesses and tenants adopt remote work policies. While some markets and submarkets have fared better than others, ' + 
                                   sector.lower() + ' properties in the ' + market_or_submarket +  
                                 ' continue to see negative rent growth despite vacancy rate compression. In fact, office rents have decreaseed ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + ' since 2020 Q4. ')
