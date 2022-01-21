@@ -2497,8 +2497,8 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
         ' If COVID cases wane during the first quarter, office usage and demand will likely improve. If a new variant emergees, the recovery for the sector will likely be extended. Many office markets will likely contend with elevated vacancy rates and limited rent growth over the near term. ')
 
     elif sector == "Retail":
-        sector_specific_outlook_language=('The retail sector is recovering relatively well from the pandemics major disruptions.  Retail sales and foot traffic surged throughout the year ' + ' and leasing activity among many tenant segments remains strong. ' + 
-        'With developers focused primarily on industrial and multifamily projects, the retail pipeline will remain modest in 2022, aiding improvement. ' + ' Still, Property performance continues to vary significantly by subtype, location, class, and tenant composition. ') 
+        sector_specific_outlook_language=('The retail sector is recovering relatively well from the pandemics major disruptions.  Retail sales and foot traffic surged throughout the year and leasing activity among many tenant segments remains strong. ' + 
+        'With developers focused primarily on industrial and multifamily projects, the retail pipeline will remain modest in 2022, aiding improvement.' + ' Still, Property performance continues to vary significantly by subtype, location, class, and tenant composition. ') 
     
     elif sector == "Industrial":
         sector_specific_outlook_language=("""On the heels of record transaction volume and rent growth amid extremely tight supply and high demand, the industrial real estate market will remain very strong in 2022. The expansion of E-commerce will fuel the need for more warehouse space, as will the growing economy, population migration, and onshoring.""")
