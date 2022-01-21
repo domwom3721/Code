@@ -5169,7 +5169,7 @@ if batch_mode == True:
             try:
                 Main()
             except Exception as e:
-                print(e,'REORT CREATION FAILED')
+                print(e,'REPORT CREATION FAILED')
 
     #When we are doing a batch of different cities
     elif batch_type_number == 1:
