@@ -923,8 +923,6 @@ def GetLanguage(writeup_directory):
         print(e,'problem creating sale langauge')
         sale_language = ['']
     
-        
-
 def GetOverviewTable():
     #Create Data for overview table
     global market,primary_market,market_title
