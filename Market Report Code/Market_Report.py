@@ -35,7 +35,7 @@ start_time = time.time()
 #Define file pre paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
 project_location               =  os.path.join(dropbox_root,'Research','Projects','Research Report Automation Project') #Main Folder that stores all output, code, and documentation
-#output_location                = os.path.join(dropbox_root,'Research','Market Analysis','Market')                       #The folder where we store our current reports, production
+# output_location                = os.path.join(dropbox_root,'Research','Market Analysis','Market')                       #The folder where we store our current reports, production
 output_location                = os.path.join(project_location,'Output','Market')                               #The folder where we store our current reports, testing folder
 map_location                   = os.path.join(project_location,'Data','Market Reports Data','CoStar Maps')                             #Folders with maps png files  
 general_data_location          =  os.path.join(project_location,'Data','General Data')
