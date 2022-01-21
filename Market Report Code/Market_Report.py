@@ -886,16 +886,44 @@ def AppendixSection():
 
 def GetLanguage(writeup_directory):
     global overview_language, demand_language,sale_language,rent_language,construction_languge,outlook_language
-    overview_language    = CreateOverviewLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
+    try:
+        overview_language    = CreateOverviewLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
+    except Exception as e:
+        print(e,'problem creating overview langauge')
+        overview_language = ['']
+
     try:
         demand_language      = CreateDemandLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
     except Exception as e:
         print(e,'problem creating demand langauge')
         demand_language = ['']
-    rent_language        = CreateRentLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
-    construction_languge = CreateConstructionLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
-    outlook_language     = CreateOutlookLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
-    sale_language        = CreateSaleLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
+    try:
+        rent_language        = CreateRentLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
+    except Exception as e:
+        print(e,'problem creating rent langauge')
+        rent_language = ['']
+
+    
+    try:
+        construction_languge = CreateConstructionLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
+    except Exception as e:
+        print(e,'problem creating construction langauge')
+        construction_languge = ['']
+    
+    try:
+        outlook_language     = CreateOutlookLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
+    except Exception as e:
+        print(e,'problem creating outlook langauge')
+        outlook_language = ['']
+    
+    
+    try:
+        sale_language        = CreateSaleLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
+    except Exception as e:
+        print(e,'problem creating sale langauge')
+        sale_language = ['']
+    
+        
 
 def GetOverviewTable():
     #Create Data for overview table
