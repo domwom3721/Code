@@ -2494,7 +2494,7 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
                                           
     elif sector == "Office":
         sector_specific_outlook_language=('While office demand does remain below prepandemic levels for many markets, the U.S. office sector strengthened as a whole over the second half of 2021. Despite an improved outlook, much of the sectors performance depends on case counts and how tenants will utilize office space if and when they return to the office.' + 
-        'If COVID cases wane during the first quarter, office usage and demand will likely improve. If a new variant emergees, the recovery for the sector will likely be extended. Many office markets will likely contend with elevated vacancy rates and limited rent growth over the near term. ')
+        ' If COVID cases wane during the first quarter, office usage and demand will likely improve. If a new variant emergees, the recovery for the sector will likely be extended. Many office markets will likely contend with elevated vacancy rates and limited rent growth over the near term. ')
 
     elif sector == "Retail":
         sector_specific_outlook_language=('The retail sector is recovering relatively well from the pandemics major disruptions.  Retail sales and foot traffic surged throughout the year ' + ' and leasing activity among many tenant segments remains strong. ' + 
