@@ -5145,7 +5145,7 @@ if batch_mode == True:
     
     #Let user select batch number
     try:
-        batch_type_number =  int(input_with_timeout('Select batch type (1 = places, 2 = subdivisions, 3 = neighborhoods',10))  #controls what report type we are doing batches of
+        batch_type_number =  int(input_with_timeout('Select batch type (1 = places, 2 = subdivisions, 3 = neighborhoods vs city, 34 = neighborhoods vs county )',10))  #controls what report type we are doing batches of
     except:
         batch_type_number = 1 #controls what report type we are doing batches of
     
