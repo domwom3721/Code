@@ -1619,13 +1619,12 @@ def CreateSaleLanguage(submarket_data_frame,market_data_frame,natioanl_data_fram
                                                 ).reset_index()
                                                 
  
-    try:
-        data_frame_annual                   = data_frame_annual.loc[data_frame_annual['n'] == 4] #keep only years where we have 4 full quarters
-        data_frame_annual                   = data_frame_annual.iloc[[-1,-2,-3]]          #keep the last 3 (full) years
-        three_year_avg_sale_volume          = round(data_frame_annual['sale_volume'].mean())
-        three_year_avg_transaction_count    = round(data_frame_annual['transaction_count'].mean())
-    except:
-        return('(DID NOT HAVE 3 FULL YEARS OF DATA)')
+
+    data_frame_annual                   = data_frame_annual.loc[data_frame_annual['n'] == 4] #keep only years where we have 4 full quarters
+    data_frame_annual                   = data_frame_annual.iloc[[-1,-2,-3]]          #keep the last 3 (full) years
+    three_year_avg_sale_volume          = round(data_frame_annual['sale_volume'].mean())
+    three_year_avg_transaction_count    = round(data_frame_annual['transaction_count'].mean())
+
 
 
     
