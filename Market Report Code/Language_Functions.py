@@ -1133,6 +1133,7 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
             '. ') ]
 
     demand_language = CoStarWriteUp + demand_language
+    return(demand_language)
                                              
 #Language for rent section
 def CreateRentLanguage(submarket_data_frame,market_data_frame,natioanl_data_frame,market_title,primary_market,sector,writeup_directory):

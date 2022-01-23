@@ -741,7 +741,7 @@ def GetLanguage(writeup_directory):
     except Exception as e:
         print(e,'problem creating demand langauge')
         demand_language = ['']
-    
+        
     #Rent Language
     try:
         rent_language        = CreateRentLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
