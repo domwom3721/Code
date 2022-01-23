@@ -5,6 +5,7 @@
     #The word document is a report that reports tables and graphs generated from the data files
 
 import os
+from pydoc import doc
 import time
 import pandas as pd
 from tkinter import *
@@ -34,13 +35,13 @@ start_time = time.time()
 
 #Define file pre paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
-project_location               =  os.path.join(dropbox_root,'Research','Projects','Research Report Automation Project') #Main Folder that stores all output, code, and documentation
-output_location                = os.path.join(dropbox_root,'Research','Market Analysis','Market')                       #The folder where we store our current reports, production
-# output_location                = os.path.join(project_location,'Output','Market')                               #The folder where we store our current reports, testing folder
-map_location                   = os.path.join(project_location,'Data','Market Reports Data','CoStar Maps')                             #Folders with maps png files  
+project_location               =  os.path.join(dropbox_root,'Research','Projects','Research Report Automation Project')                       #Main Folder that stores all output, code, and documentation
+output_location                = os.path.join(dropbox_root,'Research','Market Analysis','Market')                                             #The folder where we store our current reports, production
+# output_location                = os.path.join(project_location,'Output','Market')                                                           #The folder where we store our current reports, testing folder
+map_location                   = os.path.join(project_location,'Data','Market Reports Data','CoStar Maps')                                    #Folders with maps png files  
 general_data_location          =  os.path.join(project_location,'Data','General Data')
 costar_data_location           = os.path.join(project_location,'Data','Market Reports Data','CoStar Data')                                    #Folder with clean CoStar CSV files
-costar_writeup_location        = os.path.join(project_location,'Data','Market Reports Data','CoStar Writeups')                                #Folder with clean CoStar CSV files
+costar_writeup_location        = os.path.join(project_location,'Data','Market Reports Data','CoStar Writeups')                                #Folder with html files downloaded from CoStar.com
 
 #If we have any custom data, read it in as a dataframe so we can append it to our primary data
 custom_data_file_location      = os.path.join(costar_data_location,'Clean Data','Clean Custom CoStar Data.xlsx')
@@ -562,6 +563,21 @@ def AddDocumentPicture(document,image_path):
 
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
+def AddDocumentParagraph(document,language_variable):
+    assert type(language_variable) == list
+    for paragraph in language_variable:
+        if paragraph == '':
+            continue
+        par                                               = document.add_paragraph(str(paragraph))
+        par.alignment                                     = WD_ALIGN_PARAGRAPH.JUSTIFY
+        par.paragraph_format.space_after                  = Pt(primary_space_after_paragraph)
+        summary_format                                    = document.styles['Normal'].paragraph_format
+        summary_format.line_spacing_rule                  = WD_LINE_SPACING.SINGLE
+        style = document.styles['Normal']
+        font = style.font
+        font.name = 'Avenir Next LT Pro Light'
+        par.style = document.styles['Normal']
+
 def AddTableTitle(document,title):
     table_title_paragraph = document.add_paragraph(title)
     table_title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -579,26 +595,8 @@ def OverviewSection():
     AddHeading(document,'Overview',2)
     
     #Overview Paragraph
-    if type(overview_language) == list:
-            for pargraph in overview_language:
-                summary_paragraph = document.add_paragraph(pargraph)
-                summary_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-                summary_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-                summary_paragraph_style = summary_paragraph.style
-                summary_paragraph_style.font.name = primary_font
-                summary_paragraph_style.font.size = Pt(9)
-                summary_format = document.styles['Normal'].paragraph_format
-                summary_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
-    else:
-        summary_paragraph = document.add_paragraph(overview_language)
-        summary_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-        summary_paragraph.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-        summary_paragraph_style = summary_paragraph.style
-        summary_paragraph_style.font.name = primary_font
-        summary_paragraph_style.font.size = Pt(9)
-        summary_format = document.styles['Normal'].paragraph_format
-        summary_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
-    
+    AddDocumentParagraph(document = document, language_variable = overview_language)
+
     #Overview table title
     AddTableTitle(document = document,title ='Sector Fundamentals')
     
@@ -666,42 +664,8 @@ def OverviewSection():
 def SupplyDemandSection():
     #Supply and Demand Section
     AddHeading(document,'Supply & Demand',2)
-
-    if type(demand_language) == list:
-        for paragraph in demand_language:
-            supply_demand_paragraph1 = document.add_paragraph(paragraph)
-            supply_demand_paragraph1.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-            supply_demand_paragraph1.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
-            supply_demand_paragraph1.paragraph_format.space_before = Pt(0)
-            supply_demand_paragraph_style = supply_demand_paragraph1.style
-            supply_demand_paragraph_style.font.name = primary_font
-    else:
-        try:
-            demand_language_splitter = 'In the'
-            demand_language1 = demand_language.split(demand_language_splitter)[0]
-            demand_language2 = demand_language_splitter + demand_language.split(demand_language_splitter)[1]
-            demand_language2 = demand_language2.lstrip() 
-        except:
-            demand_language1 = demand_language
-            demand_language2 = ''
-
-
-        supply_demand_paragraph1 = document.add_paragraph(demand_language1)
-        supply_demand_paragraph1.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-        supply_demand_paragraph1.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
-        supply_demand_paragraph1.paragraph_format.space_before = Pt(0)
-        supply_demand_paragraph_style = supply_demand_paragraph1.style
-        supply_demand_paragraph_style.font.name = primary_font
-
-    if type(demand_language) == list:
-        pass
-    else:
-        supply_demand_paragraph2 = document.add_paragraph(demand_language2)
-        supply_demand_paragraph2.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-        supply_demand_paragraph2.paragraph_format.space_after  = Pt(0)
-        supply_demand_paragraph2.paragraph_format.space_before = Pt(6)
-        supply_demand_paragraph_style = supply_demand_paragraph2.style
-        supply_demand_paragraph_style.font.name = primary_font
+    
+    AddDocumentParagraph(document = document, language_variable = demand_language)
 
     #Vacancy Table
     AddTableTitle(document = document,title ='Vacancy Rates')
@@ -714,59 +678,21 @@ def SupplyDemandSection():
     
 def RentSecton():
     AddHeading(document,'Rents',3)   
-    if type(rent_language) == list:
-        for paragraph in rent_language:
-            rent_paragraph1 = document.add_paragraph(paragraph)
-            rent_paragraph1.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-            rent_paragraph1.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-            rent_paragraph1.paragraph_format.space_before = Pt(0)
-    else:
-        try:
-            rent_language_splitter = 'In 2019 Q4'
-            rent_language1 = rent_language.split(rent_language_splitter)[0]
-            rent_language2 = rent_language_splitter + rent_language.split(rent_language_splitter)[1]
-            rent_language2 = rent_language2.lstrip() 
-        except:
-            rent_language1 = rent_language
-            rent_language2 = ''
 
-        #Rent Paragraph
-        rent_paragraph1 = document.add_paragraph(rent_language1)
-        rent_paragraph1.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-        rent_paragraph1.paragraph_format.space_after = Pt(primary_space_after_paragraph)
-        rent_paragraph1.paragraph_format.space_before = Pt(0)
-    
+    AddDocumentParagraph(document = document, language_variable = rent_language)
 
     #Rent Table
     AddTableTitle(document = document,title ='Market Rents')
     AddTable(document,data_for_rent_table, col_width = 1.2)
     
-    if type(rent_language) == list:
-        pass
-    else:
-        rent_paragraph2 = document.add_paragraph(rent_language2)
-        rent_paragraph2.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-        rent_paragraph2.paragraph_format.space_after = Pt(0)
-        rent_paragraph2.paragraph_format.space_before = Pt(6)
-
     #Insert rent growth graph
     AddDocumentPicture(document=document,image_path=os.path.join(output_directory,'rent_growth.png'))
     
 def ConstructionSection():
     #Construction Section
     AddHeading(document,'Construction & Future Supply',2)
-    if type(construction_languge) == list:
-        for paragraph in construction_languge:
-            constr_paragraph = document.add_paragraph(paragraph)
-            constr_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-            constr_paragraph.paragraph_format.space_after = Pt(0)
-            constr_paragraph.paragraph_format.space_before = Pt(6)
 
-    else:
-        constr_paragraph = document.add_paragraph(construction_languge)
-        constr_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-        constr_paragraph.paragraph_format.space_after = Pt(0)
-        constr_paragraph.paragraph_format.space_before = Pt(0)
+    AddDocumentParagraph(document = document, language_variable = construction_languge)
 
     #Insert construction graph
     AddDocumentPicture(document=document,image_path=os.path.join(output_directory,'construction_volume.png'))
@@ -774,105 +700,19 @@ def ConstructionSection():
 def CapitalMarketsSection():
     #Captial Markets Section
     AddHeading(document,'Capital Markets',2)
-    #Split the capital market language into 2 paragraphs
-    if type(sale_language) == list:
-        for paragraph in sale_language:
-            capital_paragraph = document.add_paragraph(paragraph)
-            capital_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-            capital_paragraph.paragraph_format.space_after  = Pt(0)
-            capital_paragraph.paragraph_format.space_before = Pt(6)
-    else:
-        try:
-            splitter = 'Market pricing'
-            sale_language_1   = sale_language.split(splitter)[0]
-            sale_language_2   = splitter + sale_language.split('Market pricing')[1]
-        except:
-            sale_language_1   = sale_language
-            sale_language_2   = ''
-
-
-
-        capital_paragraph = document.add_paragraph(sale_language_1)
-        capital_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-        capital_paragraph.paragraph_format.space_after  = Pt(0)
-        capital_paragraph.paragraph_format.space_before = Pt(0)
+    AddDocumentParagraph(document = document, language_variable = sale_language)
 
     #Sales Volume Graphs
     AddDocumentPicture(document=document,image_path=os.path.join(output_directory,'sales_volume.png'))
     document.add_paragraph('')
 
-    if type(sale_language) == list:
-        pass
-    else:
-        capital_paragraph2 = document.add_paragraph(sale_language_2)
-        capital_paragraph2.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-        capital_paragraph2.paragraph_format.space_after  = Pt(0)
-        capital_paragraph2.paragraph_format.space_before = Pt(0)
-
-    #Create data for sales table (Market)
-    if df_market_cut.equals(df_primary_market):
-        if sector == 'Multifamily':
-            data_for_sales_table = [['Property',	'Submarket',	'Tenant',	'Units',	'Type'],['X' for i in range(5)],['X' for i in range(5)],['X' for i in range(5)],['X' for i in range(5)]]
-        else:
-            data_for_sales_table = [['Property',	'Submarket',	'Tenant',	'SF', 'Type'],['X' for i in range(5)],['X' for i in range(5)],['X' for i in range(5)],['X' for i in range(5)]]
-        
-        #Key Sales Table
-        sales_table_title_paragraph = document.add_paragraph('Key Sales Transactions ' + latest_quarter)
-        sales_table_title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        sales_table_title_paragraph.paragraph_format.space_after  = Pt(6)
-        sales_table_title_paragraph.paragraph_format.space_before = Pt(12)
-        for run in sales_table_title_paragraph.runs:
-            font = run.font
-            font.name = 'Avenir Next LT Pro Medium'
-
-        AddTable(document,data_for_sales_table,col_width=1)
-        document.add_paragraph('')
-    
-    #Create data for sales table (Submarket)
-    else:
-        if sector == 'Multifamily':
-            data_for_sales_table = [['Property',		'Tenant',	'Units',	'Type'],['X' for i in range(4)],['X' for i in range(4)],['X' for i in range(4)],['X' for i in range(4)]]
-        else:
-            data_for_sales_table = [['Property',		'Tenant',	'SF', 'Type'],['X' for i in range(4)],['X' for i in range(4)],['X' for i in range(4)],['X' for i in range(4)]]
-
-        #Uncomment out below to put sales table in submarket reports
-        # AddTable(document,data_for_sales_table,col_width=1)
-        # document.add_paragraph('')
-    
     #Asset Value  Graph
     AddDocumentPicture(document=document,image_path=os.path.join(output_directory,'asset_values.png'))
     
 def OutlookSection():
     #Outlook Section
     AddHeading(document,'Outlook',2)
-    if type(outlook_language) == list:
-        for paragarph in outlook_language:
-            conclusion_paragraph = document.add_paragraph(paragarph)
-            conclusion_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-            conclusion_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
-            conclusion_paragraph.paragraph_format.space_before = Pt(0)
-
-    else:
-        outlook_language_splt = outlook_language.split(('\n' + '\n')) #split on paragraph
-        assert len(outlook_language_splt) == 3 #make sure there are 3 paragraphs
-        outlook_language1 = outlook_language_splt[0]
-        outlook_language2 = outlook_language_splt[1]
-        outlook_language3 = outlook_language_splt[2]
-
-        conclusion_paragraph1 = document.add_paragraph(outlook_language1)
-        conclusion_paragraph1.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-        conclusion_paragraph1.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
-        conclusion_paragraph1.paragraph_format.space_before = Pt(0)
-
-        conclusion_paragraph2 = document.add_paragraph(outlook_language2)
-        conclusion_paragraph2.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-        conclusion_paragraph2.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
-        conclusion_paragraph2.paragraph_format.space_before = Pt(0)
-
-        conclusion_paragraph3 = document.add_paragraph(outlook_language3)
-        conclusion_paragraph3.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-        conclusion_paragraph3.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
-        conclusion_paragraph3.paragraph_format.space_before = Pt(0)
+    AddDocumentParagraph(document = document, language_variable = outlook_language)
 
 def AppendixSection():
     if market == primary_market:
@@ -887,42 +727,48 @@ def AppendixSection():
 
 def GetLanguage(writeup_directory):
     global overview_language, demand_language,sale_language,rent_language,construction_languge,outlook_language
+    
+    #Overview Language
     try:
         overview_language    = CreateOverviewLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
     except Exception as e:
         print(e,'problem creating overview langauge')
         overview_language = ['']
-
+    
+    #Demand Language
     try:
         demand_language      = CreateDemandLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
     except Exception as e:
         print(e,'problem creating demand langauge')
         demand_language = ['']
+    
+    #Rent Language
     try:
         rent_language        = CreateRentLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
     except Exception as e:
         print(e,'problem creating rent langauge')
         rent_language = ['']
 
-    
+    #Construction Language
     try:
         construction_languge = CreateConstructionLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
     except Exception as e:
         print(e,'problem creating construction langauge')
         construction_languge = ['']
     
-    try:
-        outlook_language     = CreateOutlookLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
-    except Exception as e:
-        print(e,'problem creating outlook langauge')
-        outlook_language = ['']
-    
-    
+    #Sale Language
     try:
         sale_language        = CreateSaleLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
     except Exception as e:
         print(e,'problem creating sale langauge')
         sale_language = ['']
+
+    #Outlook Language
+    try:
+        outlook_language     = CreateOutlookLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
+    except Exception as e:
+        print(e,'problem creating outlook langauge')
+        outlook_language = ['']
     
 def GetOverviewTable():
     #Create Data for overview table
