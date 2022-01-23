@@ -1,3 +1,4 @@
+from markupsafe import re
 import numpy as np
 import math
 import os
@@ -94,8 +95,6 @@ def PullCoStarWriteUp(section_names,writeup_directory):
                             text = text.replace('2021q2','2021 Q2')
                             text = text.replace('2021q3','2021 Q3')
                             text = text.replace('2021q4','2021 Q4')
-                            #our generated language is delayed compared to costar 
-                            # text = text.replace('fourth quarter of 2021','3Q 2021')
 
                             #Now remove bad characters
                             for char in ['ï','»','¿','â','€']:
@@ -106,24 +105,25 @@ def PullCoStarWriteUp(section_names,writeup_directory):
 
                        
 
-                    if len(master_narrative) > 0:     
-                        return(master_narrative)
-            return('')
-
+                      
+            return(master_narrative)
+            
+        
+        #Upon a failure, return an empty list
         except Exception as e:
-            print(e)
-            return('')
+            print(e,'unable to pull text from CoStar HTML File')
+            return([])
+    
+    #If missing the html file from CoStar.com, simply return an empty list
     else:
-        return('')
+        return([])
 
 #Langauge for overview section
 def CreateOverviewLanguage(submarket_data_frame,market_data_frame,natioanl_data_frame,market_title,primary_market,sector,writeup_directory):
 
     #Pull writeup from the CoStar Html page if we have one saved
     CoStarWriteUp = PullCoStarWriteUp(section_names= ['Summary'],writeup_directory = writeup_directory)
-    if CoStarWriteUp != '':
-        return(CoStarWriteUp)
-    
+
     #Section 1: Begin making variables for the overview language that come from the data: 
     if sector == 'Multifamily':
         yoy_rent_growth                 = submarket_data_frame['YoY Market Effective Rent/Unit Growth'].iloc[-1]
@@ -215,9 +215,6 @@ def CreateOverviewLanguage(submarket_data_frame,market_data_frame,natioanl_data_
         elif year_ago_cap_rate == avg_cap_rate:
             cap_rate_above_below_average = 'moving above'
             
-
-        # cap_rate_above_below_average = 'above'
-    
     #Cap equals  historical average
     elif  cap_rate == avg_cap_rate:
         #Cap Rate a year ago was above the historical average
@@ -602,150 +599,25 @@ def CreateOverviewLanguage(submarket_data_frame,market_data_frame,natioanl_data_
                                     )
 
     #Section 4.3: Combine the 3 langauge variables together to form the overview paragraph and return it
-    overview_language = (overview_intro_language     + overview_sector_specific_language + overview_conclusion_language)
-    return(overview_language)    
+    overview_language = [(overview_intro_language     + overview_sector_specific_language + overview_conclusion_language)]
+    overview_language = CoStarWriteUp + overview_language
+    return([overview_language])    
     
-    
-    #Unused code (old below)
-
-    # demand_change                       = data_frame[(net_absorption_var_name + ' 12 Mo')].iloc[-1] - data_frame[(net_absorption_var_name + ' 12 Mo')].iloc[-5]
-
-
-     # #Describe change in demand over the last year
-    # if demand_change > 0:
-    #     demand_change = 'accelerate'
-    # elif demand_change < 0:
-    #     demand_change = 'slow'
-    # elif demand_change == 0:
-    #     demand_change = 'remain steady'
-    # else:
-    #      demand_change = '[accelerate/slow/remained steady]'
-    
-
-
-    # #Describe YoY change in vacancy rates
-    # if vacancy_change > 0:
-    #     vacancy_change_description = 'expand'
-    # elif vacancy_change < 0:
-    #     vacancy_change_description = 'compress'
-    # elif vacancy_change == 0:
-    #     vacancy_change_description = 'remained steady'
-    # else:
-    #     vacancy_change_description = ''
-
-        # #Describe relationship between change in demand and change in vacancy
-    # if demand_change == 'accelerate' and vacancy_change_description == 'compress':
-    #     demand_change_vacancy_relationship = 'causing'                          +  ' vacancy rates to '                + vacancy_change_description
-    # elif demand_change == 'slow' and vacancy_change_description == 'expand':
-    #     demand_change_vacancy_relationship = 'causing'                          +  ' vacancy rates to '                + vacancy_change_description
-    
-    # #mismatch between demand change and vacancy rates change 
-    # elif demand_change == 'slow' and vacancy_change_description == 'compress':
-    #     demand_change_vacancy_relationship = 'but'                          +  ' vacancy rates '                + vacancy_change_description
-    # elif demand_change == 'accelerate' and vacancy_change_description == 'expand':
-    #     demand_change_vacancy_relationship = 'but'                          +  ' vacancy rates '                + vacancy_change_description
-    # else:
-    #     demand_change_vacancy_relationship = 'causing'                          +  ' vacancy rates to '                + vacancy_change_description
-
-                   
-
-     # #Describe vacancy rates relative to the historical average
-    # if vacancy > avg_vacancy:
-    #     vacancy_avg_above_or_below = 'above'
-    # elif vacancy < avg_vacancy:
-    #     vacancy_avg_above_or_below = 'below'
-    # elif vacancy == avg_vacancy:
-    #     vacancy_avg_above_or_below = 'at'
-    # else:
-    #     ''
-
-    #Describe cap rates relative to the historical average
-    # #Describe YoY rent growth
-    # if yoy_rent_growth > 0:
-    #     rent_growth_description = 'expanded'
-    # elif yoy_rent_growth < 0:
-    #     rent_growth_description = 'compressed'
-    # else:
-    #     rent_growth_description = 'remained steady'
-
-    # #Get Language for rent trends
-    # if yoy_rent_growth > 0 and qoq_rent_growth < 0:
-    #     rent_growth_description = 'have expanded over the past year but compressed in the past quarter'
-
-    # elif yoy_rent_growth < 0 and qoq_rent_growth < 0:
-    #     rent_growth_description = 'have contracted over the past year and continue to soften'
-
-
-    
-        # #Create the capital markets sentance
-    # #Write first half of the capital markets section
-    # if current_transaction_count == '1':
-    #     number_sales_sentanece_fragment  = ('There was only '                +
-    #                                         current_transaction_count        +
-    #                                         ' sale this quarter'                              
-    #                                     )
-
-    # elif current_transaction_count != '0':
-    #     number_sales_sentanece_fragment  = ('There were '                     +
-    #                                         current_transaction_count        +
-    #                                         ' sales this quarter'                              
-    #                                     )
-
-    # elif current_transaction_count == '0':
-    #     number_sales_sentanece_fragment = 'There were no transactions this quarter'
-
-    # #Write second half of the capital markets section
-    # if current_sale_volume != '$0':
-    #     sales__volume_sentanece_fragment = (
-    #                                     ' for a total sales volume of '       +
-    #                                         current_sale_volume                                
-    #                                         )
-    # else:
-    #     sales__volume_sentanece_fragment = ''
-
-    # capital_markets_sentance             =  number_sales_sentanece_fragment +  sales__volume_sentanece_fragment + '.  ' 
-
-
-    #    ' Over the past twelve months, the ' +
-    #     market_or_submarket                +
-    #     ' has seen demand '                +
-    #     demand_change                      +
-    #     ' '                                +
-    #     demand_change_vacancy_relationship +
-    #     ' to the current rate of '         +
-    #     vacancy                            +
-    #     '.'                                +
-    #     ' Meanwhile, rents '               +
-    #     rent_growth_description            +
-    #     ' at an annual rate of '           +
-    #     yoy_rent_growth                    +
-    #     " as of "                          +
-    #     latest_quarter                     +
-    #     '. '                               +
-    #     construcion_sentance               +       
-    #     capital_markets_sentance           +
-
 #Language for Supply and Demand Section
 def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_frame,market_title,primary_market,sector,writeup_directory):
     
     #Pull writeup from the CoStar Html page if we have one saved
     CoStarWriteUp = PullCoStarWriteUp(section_names= ['Vacancy','Supply and Demand', 'Leasing'],writeup_directory = writeup_directory)
-    if CoStarWriteUp != '':
-        return(CoStarWriteUp)
 
     #Section 1: Begin making variables for the supply and demand language that come from the data: 
     if sector == 'Multifamily':
         unit_or_sqft                    = 'units'
         net_absorption_var_name         = 'Absorption Units'
         inventory_var_name              = 'Inventory Units'
-
-
         net_absorption                  =  submarket_data_frame['Absorption Units'].iloc[-1]
         previous_quarter_net_absorption =  submarket_data_frame['Absorption Units'].iloc[-2]
         covid_quarter_net_absorption    =  submarket_data_frame['Absorption Units'].iloc[-6] #change_each_Q
-        # firsthalf2020_net_absorption  =  submarket_data_frame['Absorption Units']
-        # year_ago_net_absorption       = submarket_data_frame['Absorption Units'].iloc[-5] #change_each_Q
-        #over_last_year_units           = submarket_data_frame['Sold Units'][-1:-5:-1].sum()
+
 
     else:
         unit_or_sqft                    = 'square feet'
@@ -754,9 +626,6 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
         net_absorption                  =  submarket_data_frame['Net Absorption SF'].iloc[-1]
         previous_quarter_net_absorption =  submarket_data_frame['Net Absorption SF'].iloc[-2]
         covid_quarter_net_absorption    =  submarket_data_frame['Net Absorption SF'].iloc[-6] #change_each_Q
-        #availability rate              =  submarket_data_frame['Availability Rate'].iloc[-1]    
-        # year_ago_net_absorption       = submarket_data_frame['Net Absorption SF'].iloc[-5] #change_each_Q
-        # year_ago_leasing_activity     = submarket_data_frame['Leasing Activity'].iloc[-5] #change_each_Q
 
     #inventory levels
     submarket_inventory                 = submarket_data_frame[inventory_var_name].iloc[-1]
@@ -787,12 +656,7 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
     #Calculate 10 year average, trough, and peak
     submarket_avg_vacancy               = submarket_data_frame['Vacancy Rate'].mean()
     market_avg_vacancy                  = market_data_frame['Vacancy Rate'].mean()
-    # submarket_trough_vacancy            = submarket_data_frame['Vacancy Rate'].min()
-    # market_trough_vacancy               = market_data_frame['Vacancy Rate'].min()
-    # submarket_peak_vacancy              = submarket_data_frame['Vacancy Rate'].max()
-    # market_peak_vacancy                 = market_data_frame['Vacancy Rate'].max()
 
-    # leasing_activity12mo                = submarket_data_frame[(net_absorption_var_name + ' 12 Mo')].iloc[-1] 
     leasing_change                      = submarket_data_frame[(net_absorption_var_name + ' 12 Mo')].iloc[-1] -  submarket_data_frame[(net_absorption_var_name + ' 12 Mo')].iloc[-5]
     inventory_change                    = submarket_data_frame[inventory_var_name].iloc[-1] -  submarket_data_frame[inventory_var_name].iloc[-5]
 
@@ -801,16 +665,10 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
     try:
         lag_ammount                     = -41
         lagged_submarket_vacancy        = submarket_data_frame['Vacancy Rate'].iloc[lag_ammount]
-        # lagged_date                     = submarket_data_frame['Period'].iloc[lag_ammount]
-        # lagged_market_vacancy           = market_data_frame['Vacancy Rate'].iloc[lag_ammount]
-        # lagged_national_vacancy         = natioanl_data_frame['Vacancy Rate'].iloc[lag_ammount]
     except:
         lag_ammount                     = 0 #if therere arent 10 years of observations, use the first available
         lagged_submarket_vacancy        = submarket_data_frame['Vacancy Rate'].iloc[lag_ammount]
-        # lagged_date                     = submarket_data_frame['Period'].iloc[lag_ammount]
-        # lagged_market_vacancy           = market_data_frame['Vacancy Rate'].iloc[lag_ammount]
-        # lagged_national_vacancy         = natioanl_data_frame['Vacancy Rate'].iloc[lag_ammount]
-    
+
     ten_year_growth                     = (abs(submarket_vacancy -  lagged_submarket_vacancy)) * 100
     
 
@@ -1177,11 +1035,9 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
     market_submarket_differnce          = "{:,.0f}".format(market_submarket_differnce)
     current_year_total_net_absorption   = millify(current_year_total_net_absorption,'')
     submarket_inventory                 = millify(submarket_inventory,'')
-    # inventory_growth_pct                = "{:,.1f}%".format(inventory_growth_pct)
-    # ten_year_inventory_growth           = millify(ten_year_inventory_growth,'')
 
     #Section 4: Put together the variables we have created into the supply and demand language and return it
-    return(
+    demand_language = [(
             #Sentance 1 (Supply sentence)
             'The '                                                      +
             market_or_submarket                                         +
@@ -1274,90 +1130,15 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
             current_year_total_net_absorption                           +
             ' '                                                         +
             unit_or_sqft                                                +
-            '. '
-            )  
+            '. ') ]
 
-        # #Describe leasing activity/net abosorption over the past year relative to inventory growth
-    # if leasing_change > 0:
-    #     leasing_activity_change = 'picked up'
-    # elif leasing_change < 0:
-    #     leasing_activity_change = 'slowed'
-    # elif submarket_data_frame[(net_absorption_var_name + ' 12 Mo')].iloc[-1] == 0:
-    #     leasing_activity_change = 'been nonexistent'
-    # else:
-    #     leasing_activity_change                          = '[slowed/accelerated/stabilized/been volatile/nonexistent]'
-
-    # if leasing_activity12mo > inventory_change:
-    #     demand_fallenshort_or_exceeding_inventorygrowth  = 'exceeded'
-    #     # demand_fallingshort_or_exceeding_inventorygrowth = 'exceeding'
-
-    # elif leasing_activity12mo < inventory_change:
-    #     demand_fallenshort_or_exceeding_inventorygrowth  = 'fallen short of'
-    #     # demand_fallingshort_or_exceeding_inventorygrowth = 'falling short of'
-    # else:
-    #     demand_fallenshort_or_exceeding_inventorygrowth  = '[fallen short of/exceeded]'
-    #     # demand_fallingshort_or_exceeding_inventorygrowth = '[falling short of/exceeding]'
-    
-
-        # #Determine conjunction (and or but)
-    # if leasing_activity_change == 'picked up' and demand_fallenshort_or_exceeding_inventorygrowth == 'exceeded':
-    #     demand_inventory_growth_and_or_but               = 'and' 
-    # elif leasing_activity_change == 'slowed' and demand_fallenshort_or_exceeding_inventorygrowth == 'exceeded':
-    #     demand_inventory_growth_and_or_but               = 'but'
-    # elif leasing_activity_change == 'picked up' and demand_fallenshort_or_exceeding_inventorygrowth == 'fallen short of':
-    #     demand_inventory_growth_and_or_but               = 'but'
-    # elif leasing_activity_change == 'slowed' and demand_fallenshort_or_exceeding_inventorygrowth == 'fallen short of':
-    #     demand_inventory_growth_and_or_but               = 'and'
-    # else:
-    #     demand_inventory_growth_and_or_but               = '[and/but]'
-
-    # if submarket_vacancy > lagged_submarket_vacancy:
-    #     ten_year_growth_description = 'expanded'
-    # elif  submarket_vacancy < lagged_submarket_vacancy:
-    #     ten_year_growth_description = 'compressed'
-    # else:
-    #     ten_year_growth_description = 'stayed stead'
-
-
-
-    #Old Code (Unused) below:
-    #           
-    # #Sentance 1
-    # 'Leasing activity in the '                                  +
-    # market_or_submarket                                         +
-    # ' has '                                                     +
-    # leasing_activity_change                                     +
-    # ' over the past year '                                      +
-    # demand_inventory_growth_and_or_but                          +
-    # ' has '                                                     + 
-    # demand_fallenshort_or_exceeding_inventorygrowth             + 
-    # ' inventory growth. '                                       +
-    
-    # #Sentance 2
-    # 'With demand '                                              +
-    # demand_fallingshort_or_exceeding_inventorygrowth            +
-    # ' new supply, '                                             +
-
-    #determine if vacancy "expanded", "compressed", or "stayed at" the 10 year average over the past year
-    # if (submarket_data_frame['Vacancy Rate'].iloc[-1] > submarket_avg_vacancy) and (submarket_data_frame['Vacancy Rate'].iloc[-5] > submarket_avg_vacancy):
-    #     avg_relationship_change = 'stayed'
-
-    # elif (submarket_data_frame['Vacancy Rate'].iloc[-1] > submarket_avg_vacancy) and (submarket_data_frame['Vacancy Rate'].iloc[-5] < submarket_avg_vacancy):
-    #     avg_relationship_change = 'expanded'
-    
-    # elif (submarket_data_frame['Vacancy Rate'].iloc[-1] < submarket_avg_vacancy) and (submarket_data_frame['Vacancy Rate'].iloc[-5] > submarket_avg_vacancy):
-    #     avg_relationship_change = 'compressed'
-    
-    # else:
-    #     avg_relationship_change = 'expanded/compressed'
-                                                    
+    demand_language = CoStarWriteUp + demand_language
+                                             
 #Language for rent section
 def CreateRentLanguage(submarket_data_frame,market_data_frame,natioanl_data_frame,market_title,primary_market,sector,writeup_directory):
 
     #Pull writeup from the CoStar Html page if we have one saved
     CoStarWriteUp = PullCoStarWriteUp(section_names= ['Rent',],writeup_directory = writeup_directory)
-    if CoStarWriteUp != '':
-        return(CoStarWriteUp)
 
     #Section 1: Begin making variables for the overview language that come from the data: 
     if sector == "Multifamily":
@@ -1540,8 +1321,6 @@ def CreateRentLanguage(submarket_data_frame,market_data_frame,natioanl_data_fram
         submarket_qoq_growth                 = "{:,.1f}%".format(submarket_qoq_growth)
         submarket_year_ago_yoy_growth        = "{:,.1f}%".format(submarket_year_ago_yoy_growth)
         submarket_2019Q4_yoy_growth          = "{:,.1f}%".format(submarket_2019Q4_yoy_growth)
-        # submarket_2020Q4_yoy_growth          = "{:,.1f}%".format(submarket_2020Q4_yoy_growth)
-        # submarket_2020Q2_qoq_growth          = "{:,.1f}%".format(submarket_2020Q2_qoq_growth)
         market_decade_rent_growth            = "{:,.1f}%".format(abs(market_decade_rent_growth))
         market_decade_rent_growth_annual     = "{:,.1f}%".format(abs(market_decade_rent_growth_annual))
         market_yoy_growth                    = "{:,.1f}%".format(abs(market_yoy_growth))
@@ -1564,8 +1343,6 @@ def CreateRentLanguage(submarket_data_frame,market_data_frame,natioanl_data_fram
         submarket_qoq_growth                 = "{:,.1f}%".format(submarket_qoq_growth)
         submarket_year_ago_yoy_growth        = "{:,.1f}%".format(submarket_year_ago_yoy_growth)
         submarket_2019Q4_yoy_growth          = "{:,.1f}%".format(submarket_2019Q4_yoy_growth)
-        # submarket_2020Q4_yoy_growth          = "{:,.1f}%".format(submarket_2020Q4_yoy_growth)
-        # submarket_2020Q2_qoq_growth          = "{:,.1f}%".format(submarket_2020Q2_qoq_growth)
         market_decade_rent_growth            = "{:,.0f}%".format(abs(market_decade_rent_growth))
         market_decade_rent_growth_annual     = "{:,.1f}%".format(abs(market_decade_rent_growth_annual))
         market_yoy_growth                    = "{:,.1f}%".format(market_yoy_growth)
@@ -1577,7 +1354,7 @@ def CreateRentLanguage(submarket_data_frame,market_data_frame,natioanl_data_fram
 
     #Section 4: Put togther our rent langauge for either a market or submarket and return it
     if market_or_submarket == 'Market': #Market
-        return( 'At ' +
+        rent_langauge = [( 'At ' +
             current_rent +
             '/' +
             unit_or_sqft +
@@ -1631,10 +1408,10 @@ def CreateRentLanguage(submarket_data_frame,market_data_frame,natioanl_data_fram
            ' ' +
             market_yoy_growth +
             '.' 
-            )   
+            )   ]
 
     elif market_or_submarket == 'Submarket':
-        return( 'At ' +
+        rent_langauge = [( 'At ' +
             current_rent +
             '/' +
             unit_or_sqft +
@@ -1688,76 +1465,15 @@ def CreateRentLanguage(submarket_data_frame,market_data_frame,natioanl_data_fram
             qoq_pushing_or_contracting_annual_growth +
              ' ' +
             submarket_yoy_growth +
-            '.' 
-            )   
-
-        #Old code below
-        # submarket_annual_rent_growth_peak   = submarket_data_frame[rent_growth_var].max()
-
-
-        # submarket_start_period              =  str(submarket_data_frame['Period'].iloc[0])
-        # submarket_year_ago_period           =  str(submarket_data_frame['Period'].iloc[-5])
-        #market_ytd_rent_growth           = 
+            '.' )  ]
+    rent_langauge = CoStarWriteUp +  rent_langauge
+    return(rent_langauge) 
         
-        # #Describe YOY Growth 1 year ago
-        # if submarket_year_ago_yoy_growth > 0:
-        #     submarket_year_ago_yoy_growth_description = 'accelerating'
-        # elif submarket_year_ago_yoy_growth < 0:
-        #     submarket_year_ago_yoy_growth_description = 'decelerating'
-        # else:
-        #     submarket_year_ago_yoy_growth_description = 'stable'
-
-
-        # if submarket_decade_rent_growth > market_decade_rent_growth and primary_rent_discount > 0:
-        #         decade_rent_and_rent_discount = ' Despite elevated rents compared to the Market, landlords have had no issue pushing rents over the past ten years. '
-
-           # #Calculate 10 year average, trough, and peak
-        # if sector == "Multifamily":
-        #     submarket_trough_rents               = submarket_data_frame['Market Effective Rent/Unit'].min()
-        #     market_trough_rents                 = market_data_frame['Market Effective Rent/Unit'].min()
-        #     submarket_peak_rents               = submarket_data_frame['Market Effective Rent/Unit'].max()
-        #     market_peak_rents                  = market_data_frame['Market Effective Rent/Unit'].max()
-        
-        # else:
-        #     submarket_trough_rents               = submarket_data_frame['Market Rent/SF'].min()
-        #     market_trough_rents                 = market_data_frame['Market Rent/SF'].min()
-        #     submarket_peak_rents               = submarket_data_frame['Market Rent/SF'].max()
-        #     market_peak_rents                  = market_data_frame['Market Rent/SF'].max()    
-
-
-        # #See if submarket grew faster than market and if market grew faster than nation
-        # if market_decade_rent_growth > national_decade_rent_growth:
-        #     market_national_faster_or_slower = 'faster'
-        # elif market_decade_rent_growth < national_decade_rent_growth:
-        #     market_national_faster_or_slower = 'slower'
-        # else:
-        #     market_national_faster_or_slower = 'the same pace as'
-
-        # if submarket_decade_rent_growth > market_decade_rent_growth:
-        #     submarket_market_faster_or_slower = 'faster'
-        # elif submarket_decade_rent_growth < market_decade_rent_growth:
-        #     submarket_market_faster_or_slower = 'slower'
-        # else:
-        #     submarket_market_faster_or_slower = 'the same pace as'
-
-        # #Describe YOY growth for submarket
-        # if submarket_yoy_growth < 0:
-        #     submarket_yoy_growth_description = 'compressed'
-        #     submarket_signal                 = 'will likely compress further' 
-        # elif submarket_yoy_growth > 0:
-        #     submarket_yoy_growth_description = 'expanded'
-        #     submarket_signal                 = 'are starting to rebound' 
-        # else:
-        #     submarket_yoy_growth_description = 'remained at'
-        #     submarket_signal                 = 'are staying put' 
-
 #Language for construction section
 def CreateConstructionLanguage(submarket_data_frame, market_data_frame, natioanl_data_frame, market_title, primary_market, sector,writeup_directory):
     #Pull writeup from the CoStar Html page if we have one saved
     CoStarWriteUp = PullCoStarWriteUp(section_names= ['Construction',],writeup_directory = writeup_directory)
-    if CoStarWriteUp != '':
-        return(CoStarWriteUp)
-    
+
     #Section 1: Begin making variables for the overview language that come from the data:     
     if sector == "Multifamily":
         unit_or_sqft                        = 'units'
@@ -1768,7 +1484,6 @@ def CreateConstructionLanguage(submarket_data_frame, market_data_frame, natioanl
         decade_ago_inventory                = submarket_data_frame['Inventory Units'].iloc[0]
         delivered_inventory                 = submarket_data_frame['Gross Delivered Units'].sum()
         demolished_inventory                = submarket_data_frame['Demolished Units'].sum()                        
-        # previous_quarter_under_construction = data_frame['Under Construction Units'].iloc[-2]
 
     else:
         unit_or_sqft                        = 'square feet'
@@ -1779,7 +1494,6 @@ def CreateConstructionLanguage(submarket_data_frame, market_data_frame, natioanl
         decade_ago_inventory                = submarket_data_frame['Inventory SF'].iloc[0]
         delivered_inventory                 = submarket_data_frame['Gross Delivered SF'].sum()
         demolished_inventory                = submarket_data_frame['Demolished SF'].sum()
-        # previous_quarter_under_construction = data_frame['Under Construction SF'].iloc[-2]
     
     yoy_submarket_vacancy_growth        = submarket_data_frame['YoY Vacancy Growth'].iloc[-1]
 
@@ -1794,9 +1508,7 @@ def CreateConstructionLanguage(submarket_data_frame, market_data_frame, natioanl
     #Section 2: Begin making varaiables that are conditional on the variables we have created in section 1
 
     #Section 3: Format variables
-    # inventory_growth_pct                        = "{:,.1f}%".format(inventory_growth_pct)
 
-    
     #Section 4: Put together our variables into sentances and return the language
     #Determine if developers are historically active here
     #If theres at least 1 deliverable per quarter, active
@@ -1864,62 +1576,13 @@ def CreateConstructionLanguage(submarket_data_frame, market_data_frame, natioanl
         pipeline_vacancy_pressure    = 'The empty pipeline will likely limit supply pressure on vacancies, boding well for fundamentals in the near term. '
 
     
-    return(developers_historically_active_or_inactive + currently_active_or_inactive + pipeline_vacancy_pressure)
-
-
-
-
-
-
-
-
-
-
-
-
-    #Old Code below:
-    #Determine 10 year inventory growth   
-    #if inventory_growth > 0 and under_construction > 0:
-    #    inventory_expand_or_contract = 'In fact, over the past ten years, developers have added ' +  millify(inventory_growth,'') + ' '  + unit_or_sqft + ', expanding inventory by ' + inventory_growth_pct + '.'
-    #
-    #elif inventory_growth > 0 and under_construction <= 0 :
-    #    inventory_expand_or_contract = 'However, over the past ten years, developers have added ' +  millify(inventory_growth,'') + ' '  + unit_or_sqft + ', expanding inventory by ' + inventory_growth_pct + '.'
-    #
-    #elif inventory_growth < 0:
-    #    inventory_expand_or_contract = 'In fact, inventory has contracted ' +  millify(abs(inventory_growth),'')   + ' ' + unit_or_sqft + ', a ' + inventory_growth_pct + ' change. '
-    # 
-    #elif inventory_growth == 0:
-    #    inventory_expand_or_contract = 'Over the past ten years, inventory levels have remained constant in the ' + market_or_submarket + '.'
-
-
-    # #Determine qoq trends
-    # if under_construction > 0 and previous_quarter_under_construction == 0:
-    #     elevated_or_down_compared_to_previous_quarter = ' Developers have resumed activity after a brief pause. With ' +  "{:,.0f}".format(under_construction) + ' ' + unit_or_sqft + ' underway, inventory will expand by ' + "{:,.1f}%".format(under_construction_share) + '. While the pipeline is active, projects will not likely deliver over the 2nd half of the year, limiting supply pressure on vacancy rates.'
-    
-    # elif under_construction > 0 and previous_quarter_under_construction > 0 and under_construction == previous_quarter_under_construction:     
-    #     elevated_or_down_compared_to_previous_quarter = """ Developers have remained active with the same level of construction underway in the previous quarter."""
-    
-    # elif under_construction > 0 and previous_quarter_under_construction > 0 and under_construction > previous_quarter_under_construction:     
-    #     elevated_or_down_compared_to_previous_quarter = """ Developers have remained active with current construction levels surpassing the previous quarter's."""
-    
-    # elif under_construction > 0 and previous_quarter_under_construction > 0 and under_construction < previous_quarter_under_construction:     
-    #     elevated_or_down_compared_to_previous_quarter = """ Developers have remained active, but current construction levels are below the previous quarter's."""
-
-    # elif under_construction > 0 and previous_quarter_under_construction > 0:     
-    #     elevated_or_down_compared_to_previous_quarter = ' Developers have remained active with ' +  "{:,.0f}".format(under_construction) + ' ' + unit_or_sqft + ' underway.'
-    
-    # elif under_construction <= 0 and previous_quarter_under_construction > 0:
-    #      elevated_or_down_compared_to_previous_quarter = ' After activity in the previous quarter, developers have paused and nothing is currently underway. The empty pipeline will likely limit supply pressure on vacancies, boding well for fundamentals in the near term.'
-    
-    # elif under_construction == previous_quarter_under_construction == 0:
-    #     elevated_or_down_compared_to_previous_quarter = ' Development activity has been steady with nothing underway in the current or previous quarter.' 
+    construction_language = (developers_historically_active_or_inactive + currently_active_or_inactive + pipeline_vacancy_pressure)
+    return([CoStarWriteUp,construction_language])
 
 #Language for sales section
 def CreateSaleLanguage(submarket_data_frame,market_data_frame,natioanl_data_frame,market_title,primary_market,sector,writeup_directory):
     #Pull writeup from the CoStar Html page if we have one saved
     CoStarWriteUp = PullCoStarWriteUp(section_names= ['Sales','Capital Markets'],writeup_directory = writeup_directory)
-    if CoStarWriteUp != '':
-        return(CoStarWriteUp)
 
     #Section 1: Begin making variables for the sales language that come from the data:     
     if sector == "Multifamily":
@@ -2075,7 +1738,7 @@ def CreateSaleLanguage(submarket_data_frame,market_data_frame,natioanl_data_fram
 
 
     #Section 4: Put together our variables into a pargaraph and return the sales language
-    return(investors_active_or_inactive                      +
+    sales_language = [(investors_active_or_inactive                      +
             'Going back three years, investors have closed, on average, ' +
             three_year_avg_transaction_count                 +
             ' '                                              +
@@ -2131,15 +1794,10 @@ def CreateSaleLanguage(submarket_data_frame,market_data_frame,natioanl_data_fram
             cap_rate                                         +
             '.'                                              +
             ' Although capital markets have held up relatively well, uncertainty still remains.' +
-            ' Some investors may need to see signs of sustained economic growth before engaging. '
-            )
+            ' Some investors may need to see signs of sustained economic growth before engaging. ')]
+    sales_language = CoStarWriteUp + sales_language
+    return(sales_language)
 
-        #Old unused code below
-        # #determine change in investment volume over the last three years and the past year
-        # if over_last_year_transactions > three_year_avg_transaction_count:
-        #     investment_volume_change = 'Despite concerns over the pandemic, the number of closed transactions has picked up. In the past twelve months, investors have closed '
-        # else:     
-        #     investment_volume_change = 'With uncertainty surrounding the pandemic, transaction activity has slowed. '
 
 #Language for outlook section
 def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_frame,market_title,primary_market,sector,writeup_directory):
@@ -2554,8 +2212,6 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
                             ' indicate '                     + 
                             fundamentals_clause             +
                             ' quarterly growth in ' + current_period + ' reached ' +  "{:,.1f}%".format(submarket_qoq_growth) + ', ' + qoq_pushing_or_contracting_annual_growth + ' ' +  "{:,.1f}%".format(submarket_yoy_growth) + '. ')
-#                            + capital_markets_summary)
-                            
                             
     outlook_conclusion_language =  (
                             'Looking ahead to the ' +
@@ -2575,29 +2231,11 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
 
 
     #Section 5: Combine sentences and return the conclusion langage
-    return(sector_specific_outlook_language  + '\n' + '\n' + general_outlook_language + '\n' + '\n' + outlook_conclusion_language)
+    outlook_language = [sector_specific_outlook_language, general_outlook_language, outlook_conclusion_language]
+
+    return(outlook_language)
 
 
-
-
-
-
-
-        #Old Code Below:
-                            # 'general [stability/instability]' +
-                            # ' in demand while the count of new deliverables have been ' + 
-                            # '[expanding/steady/limited/absent]' +
-                            # '. Together, vacancy rates have ' +
-                            # '[managed to remain stable/expanded considerably/compressed]'  +
-                            # ' over the course of the pandemic. ' +
-                            # 'Rents responded by ' + 
-                            # '[remaining stable/expanding/softening]' +
-                            # '. The general ' +
-                            # '[stability/instability/acceleration/deceleration]' +
-                            # ' in fundamentals have helped improve the capital market, resulting in ' +
-                            # '[stable/accelerating/decelerating]' +
-                            # ' growth in property values across the sector. '
-                            # )
 
 
 
