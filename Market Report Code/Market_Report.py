@@ -571,6 +571,7 @@ def AddDocumentParagraph(document,language_variable):
         par                                               = document.add_paragraph(str(paragraph))
         par.alignment                                     = WD_ALIGN_PARAGRAPH.JUSTIFY
         par.paragraph_format.space_after                  = Pt(primary_space_after_paragraph)
+        par.paragraph_format.space_before                 = Pt(primary_space_after_paragraph)
         summary_format                                    = document.styles['Normal'].paragraph_format
         summary_format.line_spacing_rule                  = WD_LINE_SPACING.SINGLE
         style = document.styles['Normal']
@@ -679,12 +680,20 @@ def SupplyDemandSection():
 def RentSecton():
     AddHeading(document,'Rents',3)   
 
-    AddDocumentParagraph(document = document, language_variable = rent_language)
+    if len(rent_language) == 2:
+        AddDocumentParagraph(document = document, language_variable = [rent_language[0]])
+    else:
+        AddDocumentParagraph(document = document, language_variable = rent_language)
+
 
     #Rent Table
     AddTableTitle(document = document,title ='Market Rents')
     AddTable(document,data_for_rent_table, col_width = 1.2)
     
+    if len(rent_language) == 2:
+        document.add_paragraph('')
+        AddDocumentParagraph(document = document, language_variable = [rent_language[1]])
+
     #Insert rent growth graph
     AddDocumentPicture(document=document,image_path=os.path.join(output_directory,'rent_growth.png'))
     
@@ -700,11 +709,16 @@ def ConstructionSection():
 def CapitalMarketsSection():
     #Captial Markets Section
     AddHeading(document,'Capital Markets',2)
-    AddDocumentParagraph(document = document, language_variable = sale_language)
+    
+    if len(sale_language) == 2:
+        AddDocumentParagraph(document = document, language_variable = [sale_language[0]])
+    else:
+        AddDocumentParagraph(document = document, language_variable = sale_language)
 
     #Sales Volume Graphs
     AddDocumentPicture(document=document,image_path=os.path.join(output_directory,'sales_volume.png'))
-    document.add_paragraph('')
+    if len(sale_language) == 2:
+        AddDocumentParagraph(document = document, language_variable = [sale_language[1]])
 
     #Asset Value  Graph
     AddDocumentPicture(document=document,image_path=os.path.join(output_directory,'asset_values.png'))

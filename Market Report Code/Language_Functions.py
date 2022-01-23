@@ -1031,7 +1031,8 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
     submarket_inventory                 = millify(submarket_inventory,'')
 
     #Section 4: Put together the variables we have created into the supply and demand language and return it
-    demand_language = [(
+    demand_language = [
+            (
             #Sentance 1 (Supply sentence)
             'The '                                                      +
             market_or_submarket                                         +
@@ -1077,10 +1078,11 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
             ' the '                                                     +
             market_or_national                                          +     
             ' average'                                                  +
-            "{by_bps}".format(by_bps = "" if market_submarket_differnce == '0'  else ( ' by ' + market_submarket_differnce + ' bps') ) +     
+            "{by_bps}".format(by_bps = "" if market_submarket_differnce == '0'  else ( ' by ' + market_submarket_differnce + ' bps.') )) 
+            ,     
 
             #Sentence 3
-            '. In the '                                                 +
+            ('In the '                                                 +
             quarter                                                     +
             ' quarter, '                                                +
             sector.lower()                                              + 
@@ -1374,8 +1376,9 @@ def CreateRentLanguage(submarket_data_frame,market_data_frame,natioanl_data_fram
             ', where rents ' +
             'expanded ' +
             national_decade_rent_growth_annual +
-            ' per annum during that time. ' +
-            'In 2019 Q4, annual rent growth in the '+
+            ' per annum during that time. ' ),
+            
+            ('In 2019 Q4, annual rent growth in the '+
             market_or_submarket +
             ' ' +
             submarket_pre_pandemic_yoy_growth_description + 
@@ -1766,10 +1769,10 @@ def CreateSaleLanguage(submarket_data_frame,market_data_frame,natioanl_data_fram
             sales_count_sale_or_sales                        +
             "{recorded}".format(recorded = " recorded" if current_transaction_count == 'no'  else "") +
             for_a_sale_volume_of                             +
-            '.'                                              +
+            '.'                                             ),
             
             #Second paragraph
-            ' Market pricing, based on the estimated price movement of all properties in the ' +
+            ('Market pricing, based on the estimated price movement of all properties in the ' +
             submarket_or_market                              +
             ', sat at '                                      +
             asset_value                                      +
