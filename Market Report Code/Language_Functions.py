@@ -43,10 +43,10 @@ def PullCoStarWriteUp(section_names,writeup_directory):
             narrative_bodies = soup.find_all("div", {"class": "cscc-narrative-text"})
             narrative_titles = soup.find_all("div", {"class": "cscc-detail-narrative__title"})
 
+            master_narrative = []
             for narrative,title in zip(narrative_bodies,narrative_titles):
                 title_text = title.text 
                 for section_name in section_names:
-                    master_narrative = []
                     if section_name in title_text:
                         for count,p in enumerate(narrative.find_all("p")):
                             text  = p.get_text()
@@ -101,11 +101,6 @@ def PullCoStarWriteUp(section_names,writeup_directory):
                                 text = text.replace(char,'')
                             master_narrative.append(text)
 
-
-
-                       
-
-                      
             return(master_narrative)
             
         
@@ -123,7 +118,6 @@ def CreateOverviewLanguage(submarket_data_frame,market_data_frame,natioanl_data_
 
     #Pull writeup from the CoStar Html page if we have one saved
     CoStarWriteUp = PullCoStarWriteUp(section_names= ['Summary'],writeup_directory = writeup_directory)
-
     #Section 1: Begin making variables for the overview language that come from the data: 
     if sector == 'Multifamily':
         yoy_rent_growth                 = submarket_data_frame['YoY Market Effective Rent/Unit Growth'].iloc[-1]
@@ -601,7 +595,7 @@ def CreateOverviewLanguage(submarket_data_frame,market_data_frame,natioanl_data_
     #Section 4.3: Combine the 3 langauge variables together to form the overview paragraph and return it
     overview_language = [(overview_intro_language     + overview_sector_specific_language + overview_conclusion_language)]
     overview_language = CoStarWriteUp + overview_language
-    return([overview_language])    
+    return(overview_language)    
     
 #Language for Supply and Demand Section
 def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_frame,market_title,primary_market,sector,writeup_directory):
@@ -1577,8 +1571,9 @@ def CreateConstructionLanguage(submarket_data_frame, market_data_frame, natioanl
         pipeline_vacancy_pressure    = 'The empty pipeline will likely limit supply pressure on vacancies, boding well for fundamentals in the near term. '
 
     
-    construction_language = (developers_historically_active_or_inactive + currently_active_or_inactive + pipeline_vacancy_pressure)
-    return([CoStarWriteUp,construction_language])
+    construction_language = [(developers_historically_active_or_inactive + currently_active_or_inactive + pipeline_vacancy_pressure)]
+    construction_language = CoStarWriteUp + construction_language
+    return(construction_language)
 
 #Language for sales section
 def CreateSaleLanguage(submarket_data_frame,market_data_frame,natioanl_data_frame,market_title,primary_market,sector,writeup_directory):
