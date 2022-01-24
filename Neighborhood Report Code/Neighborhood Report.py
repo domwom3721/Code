@@ -166,7 +166,7 @@ def GetNeighborhoodShape():
         if os.path.exists(file_download_location):
             print('Moving custom geojson file from downloads folder into data folder') 
             shutil.move(file_download_location, new_geojson_file_location)
-
+            time.sleep(3)
         with open(new_geojson_file_location) as infile: #Open a geojson file with the city as the name the name of the file with the neighborhood boundries for that city
                 my_shape_geojson = json.load(infile)
 
@@ -2210,7 +2210,7 @@ def ApartmentDotComSearchTerm():
     if neighborhood_level == 'place':
         search_term = 'https://www.apartments.com/' + '-'.join(neighborhood.lower().split(' ')) + '-' + hood_state.lower() + '/'
     elif neighborhood_level == 'custom':
-        search_term = 'https://www.apartments.com/' + '-'.join(neighborhood.lower().split(' ')) + '-' + '-'.join(comparison_area.lower().split(' ')) +  '-' + hood_state.lower() + '/'
+        search_term = 'https://www.apartments.com/' + '-'.join(neighborhood.lower().split(' ')) + '-' .join(comparison_area.lower().split(' ')) +  '-' + hood_state.lower() + '/'
     elif neighborhood_level == 'county subdivision':
         search_term = 'https://www.apartments.com/' + '-'.join(neighborhood.lower().split(' ')) + '-' + hood_state.lower() + '/'
     #elif County FIPS = Manhattan
