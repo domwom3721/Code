@@ -1155,22 +1155,26 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
 
                 return(value)
             except Exception as e:
-                print(e,'Data not avilable for blockgroup, using tract level')
-                #Create empty list we will fill with values (one for each census tract within the custom shape/neighborhood)
-                neighborhood_tracts_data = []
+                try:
+                    print(e,'Data not avilable for blockgroup, using tract level')
+                    #Create empty list we will fill with values (one for each census tract within the custom shape/neighborhood)
+                    neighborhood_tracts_data = []
 
-                #Fetch census data for all relevant census tracts within the neighborhood
-                raw_census_data = operator.geo_tract(field, neighborhood_shape,year= year)
-                for tract_geojson, tract_data, tract_proportion in raw_census_data:
-                    tract_value = int(tract_data[field])
-                    if tract_value > 0:
-                        neighborhood_tracts_data.append((tract_value))
-                
-                #We take the simple mean of the census tracts in the area
-                assert(len(neighborhood_tracts_data) > 0)
-                value = mean(neighborhood_tracts_data)
+                    #Fetch census data for all relevant census tracts within the neighborhood
+                    raw_census_data = operator.geo_tract(field, neighborhood_shape,year= year)
+                    for tract_geojson, tract_data, tract_proportion in raw_census_data:
+                        tract_value = int(tract_data[field])
+                        if tract_value > 0:
+                            neighborhood_tracts_data.append((tract_value))
+                    
+                    #We take the simple mean of the census tracts in the area
+                    assert(len(neighborhood_tracts_data) > 0)
+                    value = mean(neighborhood_tracts_data)
 
-                return(value)
+                    return(value)
+                except Exception as e:
+                    print(e,'Not able to get value using tracts')
+                    return(0)
 
         #Use this method when adding all the values together
         elif aggregation_method == 'total':
