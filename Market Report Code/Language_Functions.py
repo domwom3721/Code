@@ -1435,8 +1435,8 @@ def CreateRentLanguage(submarket_data_frame,market_data_frame,natioanl_data_fram
             market_or_nation +
             ', where rents expanded ' +
             market_decade_rent_growth_annual +
-            ' per annum during that time. ' +
-            'In 2019 Q4, annual rent growth in the '+
+            ' per annum during that time. ' ),
+            ('In 2019 Q4, annual rent growth in the '+
             market_or_submarket +
             ' ' +
             submarket_pre_pandemic_yoy_growth_description +  
