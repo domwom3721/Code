@@ -4777,10 +4777,10 @@ def OutlookLanguage():
                                 
     national_economy_summary = (
                             'The United States economy continues to recover from the aftermath of the Covid-19 pandemic.' + 
-                            ' The labor market has restored almost 17 million of the 21 million jobs lost at the beginning of the pandemic, as measured by non-farm employment, bringing the unemployment rate to 4.8% as of September 2021.'+
+                            ' The labor market has restored almost 19 million of the 21 million jobs lost at the beginning of the pandemic, as measured by non-farm employment, bringing the unemployment rate to 4.8% as of September 2021.'+
                             ' GDP increased at a historically fast annual rate of 6.7% in Q2 2021. ' + 
                             'The increase in second quarter GDP reflected the continued economic recovery, reopening of establishments, and continued government response related to the COVID-19 pandemic. '+
-                            'However, supply chain issues as well as a slowdown in consumer spending, have slowed GDP growth down to 2% in the third quarter. ' +
+                            'However, supply chain issues as well as a slowdown in consumer spending, have slowed GDP growth down to 2.3% in the third quarter. ' +
                             'Supply-chain disruptions such as delays at U.S. ports and international manufacturing issues contributed to a sharp increase in inflation and pose a risk to the economic outlook. Despite supply-side challenges, many economic observers expect the economy to regain momentum in the final months of the year conditional on Covid-19 cases continuing to fall. ' 
                                  )
 
@@ -5405,10 +5405,6 @@ def Citation(document,text):
     font.italic = True
     font.color.rgb  = RGBColor.from_string('929292')
     citation_paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-    if text != 'Google Maps':
-        pass
-        # blank_paragraph = document.add_paragraph('')
-        # blank_paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
 
 def Note(document,text):
     citation_paragraph = document.add_paragraph()
