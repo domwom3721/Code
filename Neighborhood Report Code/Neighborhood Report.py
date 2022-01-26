@@ -3924,7 +3924,7 @@ def FoodLanguage():
     #This function returns a string we will place in the community assets table in the food row 
     food_list                          = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['restaurant'],radius=10000, limit = 5 ) 
     
-    food_language                      = ('For sit down restaurants, quick bites, and other eating locations, ' + neighborhood + ' offers limited multiple options such as ' +
+    food_language                      = ('For sit down restaurants, quick bites, and other eating locations, ' + neighborhood + ' offers options such as ' +
 
                                          ', '.join(food_list) + 
                                          ', and more.'
