@@ -1709,7 +1709,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     comparsion_hh_growth    = "{:,.1f}%".format(comparsion_hh_growth)
 
     #each row represents a row of data for overview table
-    row1 = [''          , 'Area',             '2010 Census',            current_estimate_period,                                      'Annualized % Change']
+    row1 = [''          , 'Area',             '2010 Census',            current_estimate_period,                                      'Annual % Change']
     row2 = ['Population', neighborhood,        _2010_hood_pop,          current_hood_pop ,                                 hood_pop_growth ]
     row3 = [''          , comparison_area,     _2010_comparison_pop,    current_comparison_pop,                       comparsion_pop_growth]
     row4 = ['Households', neighborhood,        _2010_hood_hh,           current_hood_hh,                                     hood_hh_growth]
@@ -3287,7 +3287,7 @@ def SummaryLangauge():
 def CommunityAssetsLanguage():
     print('Creating Community Assets Langauge')
     try:
-        community_assets_language = (neighborhood + ' offers many community assets throughout. Corridors such as ____ have commercial zoning, providing access to restaurants, retailers, and other small businesseses that are sufficient for weekly errands.')
+        community_assets_language = (neighborhood + ' offers a number of community assets throughout. Commercial corridors such as (insertroads), provide access to restaurants, retailers, and other small businesseses that are sufficient for weekly errands.')
     except Exception as e:
         print(e,'unable to get community assets langauge')
         community_assets_language = ''
@@ -3591,10 +3591,10 @@ def HouseholdSizeLanguage():
 
     #Compare the average household size of the hood and comparison area
     if neighborhood_average_hh_size  > comparison_average_hh_size:
-        avg_hh_size_comparison  = 'Households in ' + neighborhood + ' tend to be larger than those in ' + comparison_area + '. '    
+        avg_hh_size_comparison  = 'Households in ' + neighborhood + ' tend to be larger similar than those in ' + comparison_area + '. '    
         comp_smaller_larger     = 'smaller'         
     elif neighborhood_average_hh_size < comparison_average_hh_size:
-        avg_hh_size_comparison  = 'Households in ' + neighborhood + ' tend to be smaller than those in ' + comparison_area + '. '  
+        avg_hh_size_comparison  = 'Households in ' + neighborhood + ' tend to be smaller similar than those in ' + comparison_area + '. '  
         comp_smaller_larger     = 'larger'         
     elif neighborhood_average_hh_size == comparison_average_hh_size:
         avg_hh_size_comparison  = 'The average size of a ' + neighborhood + ' household is equal to those in ' + comparison_area + '. In fact, '
@@ -3667,7 +3667,20 @@ def PopLanguage():
                                     ' residents.'
                                     )
     else:
-        population_description = ('')
+        population_description = ('As of the 2010 Census, ' + 
+                                   neighborhood             +
+                                   ' had a population of '  +
+                                    _2010_hood_pop          +
+                                    ' people and '          +
+                                    _2010_hood_hh           +
+                                    ' households. '         +
+                                    'Preliminary 2020 Census data shows its population has ' +
+                                     hood_pop_growth_or_contract                             +
+                                    ' by '                                                   +
+                                    hood_pop_growth                                          +
+                                    ' per year to '                                          +
+                                    current_hood_pop                                         +
+                                    ' residents.')
     
     pop_intro_language = (disclaimer_language + population_description)
 
@@ -3809,7 +3822,7 @@ def IncomeLanguage():
 def TravelMethodLanguage():
     print('Creating Travel Method Langauge')
     try:
-        travel_method_categories = ['driving alone','car pooling','public transportation','walking','working from home','biking','other']
+        travel_method_categories = ['drive alone','car pool','use public transit','walking','work from home','biking','other']
         assert len(travel_method_categories) == len(neighborhood_method_to_work_distribution)
         
         #We have a list of categories and a list of their respecitive employment shares. Covert to list, then sort from smallest to largest
@@ -3831,12 +3844,12 @@ def TravelMethodLanguage():
 
 
 
-        travel_method_language = ('In ' + neighborhood + ', the most common method for traveling to work is ' + hood_largest_travel_category.lower()  + ' with ' +  "{:,.0f}%".format(hood_largest_travel_category_frac) + ' of commuters using it.' +
+        travel_method_language = ('In ' + neighborhood + ', the majority of residents' + hood_largest_travel_category.lower()  + ' with ' +  "{:,.0f}%".format(hood_largest_travel_category_frac) + ' choosing to do so.' +
                                  ' The second most popular method is ' + 
                                  second_most_common_category +
                                  ' with ' +
                                  "{:,.0f}%".format(second_most_common_frac) +
-                                 ' of commuters using it.'
+                                 ' .'
                                 )
     except Exception as e:
         print(e,'problem creating travel method langauge')
@@ -3901,10 +3914,10 @@ def FoodLanguage():
     #This function returns a string we will place in the community assets table in the food row 
     food_list                          = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['restaurant','pub'],radius=10000, limit = 5 ) 
     
-    food_language                      = ('For restaurants and other eating locations, ' + neighborhood + ' offers options such as ' +
+    food_language                      = ('For sit down restaurants, quick bites, and other eating locations, ' + neighborhood + ' offers limited multiple options such as ' +
 
                                          ', '.join(food_list) + 
-                                         '.'
+                                         ', and more.'
                                          
                                          )
     
