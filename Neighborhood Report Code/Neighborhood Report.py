@@ -3667,20 +3667,7 @@ def PopLanguage():
                                     ' residents.'
                                     )
     else:
-        population_description = ('As of the 2010 Census, ' + 
-                                   neighborhood             +
-                                   ' had a population of '  +
-                                    _2010_hood_pop          +
-                                    ' people and '          +
-                                    _2010_hood_hh           +
-                                    ' households. '         +
-                                    'Preliminary 2020 Census data shows its population has ' +
-                                     hood_pop_growth_or_contract                             +
-                                    ' by '                                                   +
-                                    hood_pop_growth                                          +
-                                    ' per year to '                                          +
-                                    current_hood_pop                                         +
-                                    ' residents.')
+        population_description = ("")
     
     pop_intro_language = (disclaimer_language + population_description)
 
