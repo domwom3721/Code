@@ -3855,11 +3855,12 @@ def TravelMethodLanguage():
 
 
         travel_method_language = ('In ' + neighborhood + ', the majority of residents ' + hood_largest_travel_category.lower()  + ' with ' +  "{:,.0f}%".format(hood_largest_travel_category_frac) + ' choosing to do so.' +
+                                 
                                  ' The second most popular method is ' + 
                                  second_most_common_category +
                                  ' with ' +
                                  "{:,.0f}%".format(second_most_common_frac) +
-                                 ' .'
+                                 '.'
                                 )
     except Exception as e:
         print(e,'problem creating travel method langauge')
