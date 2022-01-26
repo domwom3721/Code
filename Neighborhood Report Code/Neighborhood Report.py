@@ -3666,6 +3666,7 @@ def PopLanguage():
                                     current_hood_pop                                         +
                                     ' residents.'
                                     )
+    #We don't generate this langauge for custom areas becuase we don't have all the needed info yet
     else:
         population_description = ("")
     
