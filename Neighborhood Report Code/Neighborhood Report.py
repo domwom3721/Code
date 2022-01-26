@@ -798,20 +798,20 @@ def CreateDirectory():
         if hood_state == ('NY') and ((comparison_area == 'Brooklyn') or (comparison_area == 'Staten Island') or (comparison_area == 'The Bronx') or  (comparison_area == 'Manhattan') or (comparison_area == 'Queens')   ):
             
             if (comparison_area == 'Brooklyn'):
-                city_folder =  os.path.join(main_output_location,hood_state,'NYC','BK',comparison_area)
-                city_folder_map =  os.path.join(map_location,hood_state,'NYC','BK',comparison_area)
+                city_folder =  os.path.join(main_output_location,hood_state,'NYC','BK')
+                city_folder_map =  os.path.join(map_location,hood_state,'NYC','BK')
             elif (comparison_area == 'Staten Island'):
-                city_folder =  os.path.join(main_output_location,hood_state,'NYC','SI',comparison_area)
-                city_folder_map =  os.path.join(map_location,hood_state,'NYC','SI',comparison_area)
+                city_folder =  os.path.join(main_output_location,hood_state,'NYC','SI')
+                city_folder_map =  os.path.join(map_location,hood_state,'NYC','SI')
             elif (comparison_area == 'The Bronx'):
-                city_folder =  os.path.join(main_output_location,hood_state,'NYC','BX',comparison_area)
-                city_folder_map =  os.path.join(map_location,hood_state,'NYC','BX',comparison_area)
+                city_folder =  os.path.join(main_output_location,hood_state,'NYC','BX')
+                city_folder_map =  os.path.join(map_location,hood_state,'NYC','BX')
             elif (comparison_area == 'Manhattan'):
-                city_folder =  os.path.join(main_output_location,hood_state,'NYC','MA',comparison_area)
-                city_folder_map =  os.path.join(map_location,hood_state,'NYC','MA',comparison_area)
+                city_folder =  os.path.join(main_output_location,hood_state,'NYC','MA')
+                city_folder_map =  os.path.join(map_location,hood_state,'NYC','MA')
             elif (comparison_area == 'Queens'):
-                city_folder =  os.path.join(main_output_location,hood_state,'NYC','QU',comparison_area)
-                city_folder_map =  os.path.join(map_location,hood_state,'NYC','QU',comparison_area)
+                city_folder =  os.path.join(main_output_location,hood_state,'NYC','QU')
+                city_folder_map =  os.path.join(map_location,hood_state,'NYC','QU')
 
 
         
@@ -827,7 +827,7 @@ def CreateDirectory():
             os.mkdir(city_folder_map) 
 
 
-        hood_folder              = os.path.join(main_output_location,hood_state,comparison_area,neighborhood)
+        hood_folder              = os.path.join(main_output_location,hood_state,city_folder,neighborhood)
         hood_folder_map          = os.path.join(map_location,hood_state,city_folder_map,neighborhood)
 
 
