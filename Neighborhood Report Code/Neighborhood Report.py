@@ -3346,7 +3346,7 @@ def BusLanguage():
     if bus_lang != None:
         return(bus_lang)
     else:
-        return( neighborhood + ' does not have public bus service.' )  # ' [---- provides public bus service within ' + neighborhood + '.]'
+        return( neighborhood + ' does not have public bus service.' ) 
                 
 def TrainLanguage():
     print('Creating train Langauge')
@@ -3900,7 +3900,7 @@ def EducationLanguage():
 
 def FoodLanguage():
     #This function returns a string we will place in the community assets table in the food row 
-    food_list                          = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['restaurant','pub'],radius=10000, limit = 5 ) 
+    food_list                          = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['restaurant'],radius=10000, limit = 5 ) 
     
     food_language                      = ('For sit down restaurants, quick bites, and other eating locations, ' + neighborhood + ' offers limited multiple options such as ' +
 
