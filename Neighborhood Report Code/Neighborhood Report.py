@@ -1652,6 +1652,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         current_estimate_period = '2020 Census'
         current_hood_pop        = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = redistricting_total_pop_field,   operator = c.pl, aggregation_method = 'total')
         current_hood_hh         = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = redistricting_total_hh_field,    operator = c.pl, aggregation_method = 'total')
+
     
     elif hood_geographic_level == 'custom':
         current_estimate_period = 'Current Estimate'
