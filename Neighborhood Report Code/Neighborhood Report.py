@@ -4615,11 +4615,11 @@ def TransportationSection(document):
     #Employment and Transportation Section
     AddHeading(document = document, title = 'Transportation',                  heading_level = 1,heading_number='Heading 3',font_size=11)
 
-    #Travel time Lanaguage
-    AddDocumentParagraph(document = document,language_variable =  travel_time_language)
-
     #Travel method Lanaguage
     AddDocumentParagraph(document = document,language_variable =  travel_method_language)
+
+    #Travel time Lanaguage
+    AddDocumentParagraph(document = document,language_variable =  travel_time_language)
 
     #Insert Travel Time to Work graph
     AddDocumentPicture(document = document, image_path = os.path.join(hood_folder,'travel_time_graph.png'),citation ='U.S. Census Bureau')
