@@ -3924,7 +3924,7 @@ def FoodLanguage():
 def HospitalLanguage():
     #This function returns a string we will place in the community assets table in the hospital row 
     hospital_list                      = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['hospital'],radius=10000, limit = 5 ) 
-    
+    #most residents leave the Borough for nearby communities with clinics and hospitals. 
     hospital_language                  = ('For healthcare needs, residents of the community and region have access to a number of ' + 
 
                                          'medical facilities including ' +
