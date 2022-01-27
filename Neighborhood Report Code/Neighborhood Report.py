@@ -603,7 +603,7 @@ def PlaceFIPSToCountyFIPS(place_fips,state_fips):
     else:
         return(None)
 
-
+        
     return(county_fips)
 
 def PlaceNameToPlaceFIPS(place_name,state_code):
