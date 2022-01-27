@@ -602,8 +602,7 @@ def PlaceFIPSToCountyFIPS(place_fips,state_fips):
         county_fips                         = str(place_county_crosswalk_df['County_FIPS'].iloc[selected_county])[0:5]
     else:
         return(None)
-
-
+    
     return(county_fips)
 
 def PlaceNameToPlaceFIPS(place_name,state_code):
@@ -1662,7 +1661,7 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
 
 
     print('Successfully grabbed 2020 Population and HH count for hood')
-    assert current_hood_pop > 0
+    # assert current_hood_pop > 0
 
     #Table variables for comparison area
     print('Getting 2010 Population and Total Households for comparison area')
