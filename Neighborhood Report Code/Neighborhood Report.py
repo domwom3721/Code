@@ -3315,7 +3315,7 @@ def CarLanguage():
         if nearest_highway_language != None:
             return(nearest_highway_language)
         else:
-            return(neighborhood + ' does not have immediate access to any major highways or roads. ' + 'Local corridors include . ')
+            return(neighborhood + ' does not have immediate access to any major highways or roads. ' + 'Local corridors include ___________. ')
 
 def PlaneLanguage():
     print('Creating plane Langauge')
@@ -3355,7 +3355,7 @@ def BusLanguage():
     if bus_lang != None:
         return(bus_lang)
     else:
-        return( neighborhood + ' does not have public bus service.' ) 
+        return( neighborhood + ' does not have public bus service, but service is accesible in nearby ________.' ) 
                 
 def TrainLanguage():
     print('Creating train Langauge')
@@ -3954,11 +3954,11 @@ def RetailLanguage():
     #This function returns a string we will place in the community assets table in the retail row 
     retail_list                        = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['shop'],radius=10000, limit = 5 ) 
     
-    retail_language                    = ('Transit linkages that contribute to the appeal of ' +
+    retail_language                    = ('For shopping needs, ' +
                                          neighborhood + 
-                                         ' offer access to shopping options such as ' + 
+                                         ' offers ' + 
                                          ', '.join(retail_list) + 
-                                         '.'
+                                         ', and more.'
                                          
                                          ) 
     
