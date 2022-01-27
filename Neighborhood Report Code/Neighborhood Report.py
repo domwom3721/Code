@@ -691,7 +691,7 @@ def SubdivsionNameToFIPS(subdivision_name,state_code):
         print(place_county_crosswalk_df)
     
         try:
-            selected_county = int(input_with_timeout('There are more than 1 counties for this subdivision: enter the number of your choice',0))  
+            selected_county = int(input_with_timeout('There are more than 1 counties for this subdivision: enter the number of your choice',10))  
         
         except TimeoutExpired:
             selected_county = 0
