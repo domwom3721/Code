@@ -519,7 +519,7 @@ def ProcessCountySubdivisionFIPS(county_subdivision_fips):
     assert len(state) == 2
 
     return([suvdiv_fips,county_fips,name,state_fips,state_full_name,state,place_type])
-
+     
 def ProcessCountyTract(tract,county_fips):
     #Takes a user provided county fips code and a census tract number and returns a list of key variables
     county_fips               = county_fips.replace('-','').strip()
@@ -603,7 +603,7 @@ def PlaceFIPSToCountyFIPS(place_fips,state_fips):
     else:
         return(None)
 
-        
+
     return(county_fips)
 
 def PlaceNameToPlaceFIPS(place_name,state_code):
