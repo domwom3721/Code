@@ -4553,7 +4553,7 @@ def EducationSection(document):
 def PopulationSection(document):
     print('Writing Population Section')
     
-    AddHeading(document = document, title = 'Population',                                     heading_level = 1,heading_number='Heading 3',font_size=11)
+    AddHeading(document = document, title = 'Population and Households',                                     heading_level = 1,heading_number='Heading 3',font_size=11)
     AddDocumentParagraph(document = document,language_variable =  population_language)
     if neighborhood_level == 'custom':
         AddTableTitle(document = document, title = 'Population Growth')
