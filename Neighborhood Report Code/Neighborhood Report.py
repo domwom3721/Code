@@ -3935,7 +3935,7 @@ def ParkLangauge():
     
     park_language                      = (neighborhood + 
                                          
-                                         ' has access to outdoor recreational acitivites and several public parks in the area including ' + 
+                                         ' has access to outdoor recreational activities and several public parks in the area including ' + 
 
                                          ', '.join(park_list) + 
                                          '.'
