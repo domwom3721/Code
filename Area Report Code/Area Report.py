@@ -4589,7 +4589,7 @@ def InfrastructureLanguage():
             infrastructure_language.append(wikipedia_section)
 
     #Section 2: Create basic phrase we can insert if there is nothing from Wikipedia
-    infrastructure_boiler_plate = 'The '  + county + ' offers a variety of raodways and public transportation infrastructure. With access to multiple interstate systems, travel time to work is about average both within the state and nationally.'    
+    infrastructure_boiler_plate = 'The '  + county + ' offers a variety of roadways and public transportation infrastructure. With access to multiple interstate systems, travel time to work is about average both within the state and nationally.'    
     if infrastructure_language == []:
         infrastructure_language.append(infrastructure_boiler_plate)
 
