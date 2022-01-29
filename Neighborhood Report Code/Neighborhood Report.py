@@ -3592,7 +3592,7 @@ def HouseholdSizeLanguage():
 
     #Compare the average household size of the hood and comparison area
     if neighborhood_average_hh_size  > comparison_average_hh_size:
-        avg_hh_size_comparison  = 'Households in ' + neighborhood + ' tend to be larger similar than those in ' + comparison_area + '. '    
+        avg_hh_size_comparison  = 'Households in ' + neighborhood + ' tend to be LARGER SMALLER SIMILAR than those in ' + comparison_area + '. '    
         comp_smaller_larger     = 'smaller'         
     elif neighborhood_average_hh_size < comparison_average_hh_size:
         avg_hh_size_comparison  = 'Households in ' + neighborhood + ' tend to be smaller similar than those in ' + comparison_area + '. '  
