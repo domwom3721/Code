@@ -3392,7 +3392,7 @@ def OutlookLanguage():
 def HousingIntroLanguage():
     print('Creating housing intro Langauge')
     try:
-        housing_mix_description = ('[diverse with varying density, tenure status, and price points] [largely homogeneous with the majority of the housing stock being _____-occupied _____ homes]')
+        housing_mix_description = ('[diverse with varying density, tenure status, and price points but largely homogeneous with the majority of the housing stock consisting of ')
 
         housing_intro_language = ('Housing is one of the most identifiable characteristics of an area. Different factors, such as property type, ' +
             'renter/owner mix, housing age, and household characteristics play roles in how an area is defined. ' +
@@ -3449,9 +3449,7 @@ def HousingTypeTenureLanguage():
         housing_type_tenure_langugage = (#'Data from the the most recent American Community Survey indicates a presence of ' + 
                                         #available_housing_types_list                                             + 
                                         #'. '                                                                     +
-                                        most_common_category                                                     +  
-                                        ' are the most common form of housing in '                               +
-                                        neighborhood                                                             +
+                                        most_common_category                                                     +
                                         ', followed by '                                                         +
                                         second_most_common_category                                              + 
                                         ' and '                                                                  +
@@ -3460,7 +3458,7 @@ def HousingTypeTenureLanguage():
                                         "{:,.0f}%".format(hood_owner_occupied_fraction)                          +   
                                         ' of the housing units in '                                              + 
                                         neighborhood                                                             + 
-                                        ' are occupied by their owner. '                                        +
+                                        ' are occupied by their owner. '                                         +
                                         'This percentage of owner-occupation is '                                +
                                         hood_owner_ouccupied_higher_lower                                        + 
                                         ' the '                                                                  +
