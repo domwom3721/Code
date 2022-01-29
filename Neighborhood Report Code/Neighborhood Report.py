@@ -3460,7 +3460,7 @@ def HousingTypeTenureLanguage():
                                         "{:,.0f}%".format(hood_owner_occupied_fraction)                          +   
                                         ' of the housing units in '                                              + 
                                         neighborhood                                                             + 
-                                        ' were occupied by their owner. '                                        +
+                                        ' are occupied by their owner. '                                        +
                                         'This percentage of owner-occupation is '                                +
                                         hood_owner_ouccupied_higher_lower                                        + 
                                         ' the '                                                                  +
