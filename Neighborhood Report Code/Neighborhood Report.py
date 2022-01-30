@@ -591,19 +591,21 @@ def PlaceFIPSToCountyFIPS(place_fips,state_fips):
 
 
     #Restrict to observations that include the provieded place fips
-    place_county_crosswalk_df            = place_county_crosswalk_df.loc[(place_county_crosswalk_df['PLACEFP'] == str(place_fips)) & (place_county_crosswalk_df['STATEFP'] == str(state_fips))].reset_index()                 
+    place_county_crosswalk_df             = place_county_crosswalk_df.loc[(place_county_crosswalk_df['PLACEFP'] == str(place_fips)) & (place_county_crosswalk_df['STATEFP'] == str(state_fips))].reset_index()                 
+    assert len(place_county_crosswalk_df) == 1
+    county_fips                            = str(place_county_crosswalk_df['County_FIPS'].iloc[-1])[0:5]
     
-    #Return the last row if that's there's only one, otherwise ask user to choose
-    if len(place_county_crosswalk_df) == 1:
-        county_fips                         = str(place_county_crosswalk_df['County_FIPS'].iloc[-1])[0:5]
-    elif len(place_county_crosswalk_df) > 1:
-        print(place_county_crosswalk_df)
-        selected_county = int(input('There are more than 1 counties for this city: enter the number of your choice'))  
-        county_fips                         = str(place_county_crosswalk_df['County_FIPS'].iloc[selected_county])[0:5]
+    #When the city is in multiple counties, let the user select, if not, return the coutny fips
+    if place_county_crosswalk_df['Second_County'].iloc[-1] == '':
+        return(county_fips)
+
     else:
-        return(None)
-    
-    return(county_fips)
+        input_county_fips = str(input('The city/place is in more than 1 county, enter the desired comparison county FIPS'))
+        assert len(input_county_fips) == 5
+        return(input_county_fips)
+   
+
+
 
 def PlaceNameToPlaceFIPS(place_name,state_code):
     # print('Looking for place fips code')
