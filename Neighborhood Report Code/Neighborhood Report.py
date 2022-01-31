@@ -3450,7 +3450,7 @@ def HousingTypeTenureLanguage():
                                         second_most_common_category                                              + 
                                         ' and '                                                                  +
                                         third_most_common_category                                               +
-                                        'are the most common forms of housing in '                               +                                     
+                                        ' are the most common forms of housing in '                               +                                     
                                         neighborhood                                                             +
                                         '. '                                                                     +
                                         "{:,.0f}%".format(hood_owner_occupied_fraction)                          +   
