@@ -3433,13 +3433,10 @@ def HousingTypeTenureLanguage():
 
         if hood_owner_occupied_fraction > comparsion_owner_occupied_fraction:
             hood_owner_ouccupied_higher_lower   =  'higher than'
-            # own_or_rent = 'the majority of households own instead of rent.'
         elif hood_owner_occupied_fraction < comparsion_owner_occupied_fraction:
             hood_owner_ouccupied_higher_lower   =  'lower than'
-            # own_or_rent = 'the majority of households rent instead of own.'
         elif hood_owner_occupied_fraction > comparsion_owner_occupied_fraction:
             hood_owner_ouccupied_higher_lower   =  'equal to'
-            # own_or_rent = 'an equal share of households rent or own.'        
         else:
             hood_owner_ouccupied_higher_lower   =  '[lower than/higher than/equal to]'
         
@@ -3451,14 +3448,13 @@ def HousingTypeTenureLanguage():
             available_housing_types_list = ('single-family homes, some smaller multifamily properties, and some larger garden style properties')
 
 
-        housing_type_tenure_langugage = (#'Data from the the most recent American Community Survey indicates a presence of ' + 
-                                        #available_housing_types_list                                             + 
-                                        #'. '                                                                     +
-                                        most_common_category                                                     +
+        housing_type_tenure_langugage = (most_common_category                                                    +
                                         ', followed by '                                                         +
                                         second_most_common_category                                              + 
                                         ' and '                                                                  +
                                         third_most_common_category                                               +
+                                        'are the most common forms of housing in '                               +                                     
+                                        neighborhood                                                             +
                                         '. '                                                                     +
                                         "{:,.0f}%".format(hood_owner_occupied_fraction)                          +   
                                         ' of the housing units in '                                              + 
