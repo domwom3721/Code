@@ -3927,14 +3927,14 @@ def HospitalLanguage():
 
 def ParkLangauge():
     #This function returns a string we will place in the community assets table in the park row 
-    park_list                          = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['park','stadium','leisure'],radius=10000, limit = 5) 
+    park_list                          = LocationIQPOIList(lat = latitude, lon = longitude,  category = ['park','stadium'],radius=10000, limit = 4) 
     
-    park_language                      = (neighborhood + 
+    park_language                      = ('In ' + neighborhood + 
                                          
-                                         ' has access to outdoor recreational activities and several public parks in the area including ' + 
+                                         ' and the surrounding area, there are several public parks and facilities including ' + 
 
                                          ', '.join(park_list) + 
-                                         '.'
+                                         ', and a few others.'
                                          
                                          )
     
