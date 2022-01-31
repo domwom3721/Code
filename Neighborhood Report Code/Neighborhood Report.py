@@ -1910,6 +1910,9 @@ def FindNearestAirport(lat,lon):
         if airport_record.record['Fac_Use'] != 'PU':
             continue
 
+        #include international airports    
+        #if airport_record.record['Internatio'] != 'Y':
+
         airport_coord = airport.points
         airport_lat_lon = (airport_coord[0][1], airport_coord[0][0])
         dist = mpu.haversine_distance(airport_lat_lon, (lat, lon)) * 0.621371 #measure distance between airport and subject property   
