@@ -596,7 +596,7 @@ def PlaceFIPSToCountyFIPS(place_fips,state_fips):
     county_fips                            = str(place_county_crosswalk_df['County_FIPS'].iloc[-1])[0:5]
     
     #When the city is in multiple counties, let the user select, if not, return the coutny fips
-    if place_county_crosswalk_df['Second_County'].iloc[-1] == '':
+    if pd.isnull(place_county_crosswalk_df['Second_County'].iloc[-1]):
         return(county_fips)
 
     else:
@@ -604,9 +604,6 @@ def PlaceFIPSToCountyFIPS(place_fips,state_fips):
         assert len(input_county_fips) == 5
         return(input_county_fips)
    
-
-
-
 def PlaceNameToPlaceFIPS(place_name,state_code):
     # print('Looking for place fips code')
     #Takes place name and returns the 7 digit fips code for a city 
