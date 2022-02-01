@@ -12,7 +12,6 @@ from docx.oxml.ns import qn
 from docx.oxml.table import CT_Row, CT_Tc
 from docx.shared import Inches, Pt, RGBColor
 
-
 def AddOverviewTable(document,number_rows,number_cols,row_data,col_width): #Function we use to insert our overview table into the report document
 
     #Make sure each row has the same number of items 
@@ -125,7 +124,6 @@ def AddOverviewTable(document,number_rows,number_cols,row_data,col_width): #Func
                         font.bold = True
                         font.name = 'Avenir Next LT Pro Demi'
     
-
 def AddTable(document,row_data,col_width): #Function we use to insert our wide tables into report document 
     #Make sure each list in the list of lists have the same number of elements 
     for row in row_data:
@@ -134,8 +132,8 @@ def AddTable(document,row_data,col_width): #Function we use to insert our wide t
     number_rows = len(row_data)
     number_cols = len(row_data[0])
 
-
-    assert number_rows == len(row_data) #make sure the data has a list of inputs for each row
+    #Make sure the data has a list of inputs for each row
+    assert number_rows == len(row_data) 
 
     #create table object
     tab = document.add_table(rows=number_rows, cols=number_cols)
@@ -150,10 +148,8 @@ def AddTable(document,row_data,col_width): #Function we use to insert our wide t
         
         #loop through all cells in the current row
         for current_column,(cell,cell_data) in enumerate(zip(row.cells,row_data_list)):
-            if str(cell_data) == 'Manhattan - NY':
-                cell_data = 'Manhattan'
 
-            if ('2021 Q' in str(cell_data)) or ('2022 Q' in str(cell_data))  or ('2023 Q' in str(cell_data)):
+            if ('2022 Q' in str(cell_data)) or ('2023 Q' in str(cell_data))  or ('2024 Q' in str(cell_data)):
                 cell_data = cell_data[5:]
 
 
@@ -503,273 +499,6 @@ def CreateRowDataForWideTable(data_frame,data_frame2,data_frame3,data_frame4,var
                     assert len(list) == len(list2)
 
             return(list_of_lists)
-
-        
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-     # row_data = [ [],[],[] ] # list of lists we will fill with data for our table
-
-
-        # if current_quarter == 'Q1': #market Q1
-        #     #First row
-        #     row_data[0].append('')
-
-        #     for year in range(most_recent_year_less_10 ,most_recent_year):           
-        #         row_data[0].append(str(year))
-                
-        #     row_data[0].append(most_recent_period)
-        #     assert len(row_data[0]) == 12
-
-
-            
-        #     def fill_list(first_string,df,list_number): #Fills list with time series of variable values
-        #         row_data[list_number].append(first_string)
-        #         for year in range(most_recent_year_less_10 ,most_recent_year,):
-        #             df_temp    = df.loc[(df['Year'] == year) & (df['Quarter']=='Q4')]
-        #             try:
-        #                 current_year_var_value = df_temp[var1].iloc[0] #Value of the variable in the fourth quarter of the year
-        #                 if modifier == '%':
-        #                     row_data[list_number].append(str(current_year_var_value)+modifier)
-        #                 elif  modifier == '$':
-        #                     if var1 == 'Market Effective Rent/Unit':
-        #                         row_data[list_number].append( str("${:,.0f}".format(current_year_var_value)))
-        #                     else:
-        #                         row_data[list_number].append( str("${:,.2f}".format(current_year_var_value)))                            
-        #             except:
-        #                 row_data[list_number].append(str(''))
-
-        #         #Now that we have filled in the list for the previous years we fill in with the most recent value of the variable    
-                
-        #         if modifier == '%':
-        #             row_data[list_number].append( str(df[var1].iloc[-1]) + modifier     )
-        #         elif modifier == '$':
-        #             if var1 == 'Market Effective Rent/Unit':
-        #                 row_data[list_number].append(   str("${:,.0f}".format(df[var1].iloc[-1]))     )
-        #             else:                    
-        #                 row_data[list_number].append(   str("${:,.2f}".format(df[var1].iloc[-1]))     )
-        #         else:
-        #             row_data[list_number].append('')
-
-        #         assert len(row_data[list_number]) == 12 
-                
-                
-                
-        #     #Second Row (National)
-        #     fill_list('National',data_frame3,1)    
-
-            
-
-        #     #Third row
-        #     fill_list('Market',data_frame2,2)
-         
-            
-
-
-
-    
-
-        # else:#market not Q1
-        #     #First row
-        #     row_data[0].append('')
-
-        #     for year in range(most_recent_year_less_10 ,most_recent_year):           
-        #         row_data[0].append(str(year))
-
-        #     row_data[0].append(second_most_recent_period)    
-        #     row_data[0].append(most_recent_period)
-        #     assert len(row_data[0]) == 13
-
-
-            
-        #     def fill_list(first_string,df,list_number): #Fills list with time series of variable values
-        #         row_data[list_number].append(first_string)
-        #         for year in range(most_recent_year_less_10 ,most_recent_year,):
-        #             df_temp    = df.loc[(df['Year'] == year) & (df['Quarter']=='Q4')]
-        #             try:
-        #                 current_year_var_value = df_temp[var1].iloc[0] #Value of the variable in the fourth quarter of the year
-        #                 if modifier == '%':
-        #                     row_data[list_number].append(str(current_year_var_value)+modifier)
-        #                 elif  modifier == '$':
-        #                     if var1 == 'Market Effective Rent/Unit':
-        #                         row_data[list_number].append( str("${:,.0f}".format(current_year_var_value)))
-        #                     else:
-        #                         row_data[list_number].append( str("${:,.2f}".format(current_year_var_value)))                            
-        #             except:
-        #                 row_data[list_number].append(str(''))
-
-        #         #Now that we have filled in the list for the previous years we fill in with the most recent value of the variable    
-                
-        #         if modifier == '%':
-        #              row_data[list_number].append( str(df[var1].iloc[-2]) + modifier     )
-        #              row_data[list_number].append( str(df[var1].iloc[-1]) + modifier     )
-        #         elif modifier == '$':
-        #             if var1 == 'Market Effective Rent/Unit':
-        #                 row_data[list_number].append(   str("${:,.0f}".format(df[var1].iloc[-2]))     )
-        #                 row_data[list_number].append(   str("${:,.0f}".format(df[var1].iloc[-1]))     )
-        #             else:
-        #                 row_data[list_number].append(   str("${:,.2f}".format(df[var1].iloc[-2]))     )
-        #                 row_data[list_number].append(   str("${:,.2f}".format(df[var1].iloc[-1]))     )
-        #         else:
-        #             row_data[list_number].append('')
-        #             row_data[list_number].append('')
-
-        #         assert len(row_data[list_number]) == 13 
-                
-                
-                
-        #     #Second Row (National)
-        #     fill_list('National',data_frame3,1)    
-
-            
-
-        #     #Third row
-        #     fill_list('Market',data_frame2,2)
-
-        
-
-        # return(row_data)
-
-
-
-
-
-
-    #Submarkets
-    # else:
-        
-        # row_data = [ [],[],[],[] ]
-        
-        # if current_quarter == 'Q1': #Submarket, Q1
-        #     #First row
-        #     row_data[0].append('')
-
-        #     for year in range(most_recent_year_less_10 ,most_recent_year):
-        #         row_data[0].append(str(year))
-                
-        #     row_data[0].append(most_recent_period)
-        #     assert len(row_data[0]) == 12
-
-
-            
-        #     def fill_list(first_string,df,list_number):
-        #         row_data[list_number].append(first_string)
-        #         for year in range(most_recent_year_less_10 ,most_recent_year,):
-        #             df_temp    = df.loc[(df['Year'] == year) & (df['Quarter']=='Q4')]
-        #             try:
-        #                 current_year_var_value = df_temp[var1].iloc[0]
-        #                 if modifier == '%':
-        #                     row_data[list_number].append(str(current_year_var_value)+modifier)
-        #                 elif  modifier == '$':
-        #                     if var1 == 'Market Effective Rent/Unit':
-        #                         row_data[list_number].append( str("${:,.0f}".format(current_year_var_value))  )
-        #                     else:
-        #                         row_data[list_number].append( str("${:,.2f}".format(current_year_var_value))  )
-                             
-                        
-        #             except:
-        #                 row_data[list_number].append(str(''))
-                    
-        #         #row_data[list_number].append('')
-        #         if modifier == '%':
-        #             row_data[list_number].append( str(df[var1].iloc[-1]) + modifier     )
-        #         elif modifier == '$':
-        #             if var1 == 'Market Effective Rent/Unit':
-        #                 row_data[list_number].append(   str("${:,.0f}".format(df[var1].iloc[-1]))     )
-        #             else:
-        #                 row_data[list_number].append(   str("${:,.2f}".format(df[var1].iloc[-1]))     )
-        #         assert len(row_data[list_number]) == 12 
-                
-                
-                
-        #     #Second Row (National)
-        #     fill_list('National',data_frame3,1)    
-
-            
-
-        #     #Third row
-        #     fill_list('Market',data_frame2,2)
-
- 
-
-        #     #Fourth Row
-        #     fill_list('Submarket',data_frame,3)
-
- 
-        
-        # else: #Submarket, not Q1
-        #     row_data[0].append('')
-
-        #     for year in range(most_recent_year_less_10 ,most_recent_year):
-        #         row_data[0].append(str(year))
-        #     row_data[0].append(second_most_recent_period)    
-        #     row_data[0].append(most_recent_period)
-        #     assert len(row_data[0]) == 13
-
-
-            
-        #     def fill_list(first_string,df,list_number):
-        #         row_data[list_number].append(first_string)
-        #         for year in range(most_recent_year_less_10 ,most_recent_year,):
-        #             df_temp    = df.loc[(df['Year'] == year) & (df['Quarter']=='Q4')]
-        #             try:
-        #                 current_year_var_value = df_temp[var1].iloc[0]
-        #                 if modifier == '%':
-        #                     row_data[list_number].append(str(current_year_var_value)+modifier)
-        #                 elif  modifier == '$':
-        #                     if var1 == 'Market Effective Rent/Unit':
-        #                         row_data[list_number].append( str("${:,.0f}".format(current_year_var_value))  )
-        #                     else:
-        #                         row_data[list_number].append( str("${:,.2f}".format(current_year_var_value))  )
-                             
-                        
-        #             except:
-        #                 row_data[list_number].append(str(''))
-                    
-                
-        #         if modifier == '%':
-        #             row_data[list_number].append( str(df[var1].iloc[-2]) + modifier     )
-        #             row_data[list_number].append( str(df[var1].iloc[-1]) + modifier     )
-        #         elif modifier == '$':
-        #              if var1 == 'Market Effective Rent/Unit':
-        #                  row_data[list_number].append(   str("${:,.0f}".format(df[var1].iloc[-2]))     )
-        #                  row_data[list_number].append(   str("${:,.0f}".format(df[var1].iloc[-1]))     )
-        #              else:
-        #                 row_data[list_number].append(   str("${:,.2f}".format(df[var1].iloc[-2]))     )
-        #                 row_data[list_number].append(   str("${:,.2f}".format(df[var1].iloc[-1]))     )
-        #         assert len(row_data[list_number]) == 13
-                
-                
-                
-        #     #Second Row (National)
-        #     fill_list('National',data_frame3,1)    
-
-            
-
-        #     #Third row
-        #     fill_list('Market',data_frame2,2)
-
- 
-
-        #     #Fourth Row
-        #     fill_list('Submarket',data_frame,3)
-
-        # return(row_data)
 
 def AddMarketPerformanceTable(document,col_width,market_data_frame,sector): #Function we use to insert our wide tables into report document 
 
