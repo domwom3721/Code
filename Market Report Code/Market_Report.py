@@ -1049,7 +1049,7 @@ def CreateMarketReport():
         df_submarkets     = df.loc[(df['Geography Name'].isin(submarkets) == True) & (df['Period'] == latest_quarter)].copy()
         assert len(df_market_cut) > 0
         assert len(df_primary_market) > 0
-        assert len(df_nation) > 0
+        assert len(df_nation) == 41
 
         #Strip the primary market out of the submarket name
         if market != primary_market:
