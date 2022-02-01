@@ -630,7 +630,7 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
 
     #Get latest quarter and year
     latest_quarter                      = str(submarket_data_frame['Period'].iloc[-1])
-    latest_year                         = str(submarket_data_frame['Year'].iloc[-1])
+    latest_year                         = str(submarket_data_frame['Year'].iloc[-1])[0:4]
     previous_quarter                    = str(submarket_data_frame['Period'].iloc[-2])
 
     #Get the current vacancy rates
