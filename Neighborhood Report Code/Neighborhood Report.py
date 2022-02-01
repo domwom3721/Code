@@ -3448,11 +3448,9 @@ def HousingTypeTenureLanguage():
         housing_type_tenure_langugage = (most_common_category                                                    +
                                         ', followed by '                                                         +
                                         second_most_common_category                                              + 
-                                        ' and '                                                                  +
+                                        ' then '                                                                 +
                                         third_most_common_category                                               +
-                                        ' are the most common forms of housing in '                               +                                     
-                                        neighborhood                                                             +
-                                        '. '                                                                     +
+                                        ' . '                                                                    +                                     
                                         "{:,.0f}%".format(hood_owner_occupied_fraction)                          +   
                                         ' of the housing units in '                                              + 
                                         neighborhood                                                             + 
@@ -3518,7 +3516,7 @@ def HousingValueLanguage():
 def HousingYearBuiltLanguage():
     print('Creating House by Year Built Langauge')
     try:
-        year_built_categories       = ['in or after 2014','between 2010-2013','between 2000-2009','between 1990-1999','between 1980-1989','between 1970-1979','between 1960-1969','between 1950-1959','between 1940-1949','in or before 1939']
+        year_built_categories       = ['since 2014','since 2010','between 2000-2009','between 1990-1999','between 1980-1989','between 1970-1979','between 1960-1969','between 1950-1959','during WWII','before WWII']
         year_built_categories.reverse()
 
         #Largest cateorgies for hood and comparison area
