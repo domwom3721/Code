@@ -2232,7 +2232,7 @@ def ApartmentDotComSearchTerm():
     if neighborhood_level == 'place':
         search_term = 'https://www.apartments.com/' + '-'.join(neighborhood.lower().split(' ')) + '-' + hood_state.lower() + '/'
     elif neighborhood_level == 'custom':
-        search_term = 'https://www.apartments.com/' + neighborhood.lower() + '-' + '-'.join(comparison_area.lower().split(' ')) +  '-' + hood_state.lower() + '/'
+        search_term = 'https://www.apartments.com/' + '-'.join(neighborhood.lower().split(' ')) + '-' + '-'.join(comparison_area.lower().split(' ')) +  '-' + hood_state.lower() + '/'
     elif neighborhood_level == 'county subdivision':
         search_term = 'https://www.apartments.com/' + '-'.join(neighborhood.lower().split(' ')) + '-' + hood_state.lower() + '/'
     
