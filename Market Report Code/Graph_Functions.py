@@ -9,7 +9,7 @@ ppi = 96.85
 width_inches = 6.5
 height_inches = 3.3
 
-graph_width  = (width_inches - marginInches)   * ppi
+graph_width  = (width_inches - marginInches)   * ppi 
 graph_height = (height_inches  - marginInches) * ppi
 
 #Set scale for resolution 1 = no change, > 1 increases resolution. Very important for run time of main script. 
@@ -232,7 +232,6 @@ def CreateAssetValueGraph(submarket_data_frame,market_data_frame,natioanl_data_f
 def CreateAbsorptionGraph(submarket_data_frame,market_data_frame,natioanl_data_frame,folder,market_title,primary_market,sector):
     # Create figure with secondary y-axis
     fig = make_subplots(specs=[[{"secondary_y": True}]])
-
     if sector == 'Multifamily':
         absorption_var = 'Absorption Units'
         inventory_growth_var = 'Inventory Units Growth'
