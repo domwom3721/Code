@@ -592,6 +592,7 @@ def PlaceFIPSToCountyFIPS(place_fips,state_fips):
 
     #Restrict to observations that include the provieded place fips
     place_county_crosswalk_df             = place_county_crosswalk_df.loc[(place_county_crosswalk_df['PLACEFP'] == str(place_fips)) & (place_county_crosswalk_df['STATEFP'] == str(state_fips))].reset_index()                 
+    place_county_crosswalk_df             = place_county_crosswalk_df.loc[(place_county_crosswalk_df['TYPE'] != 'County Subdivision')].reset_index()                 
     assert len(place_county_crosswalk_df) == 1
     county_fips                            = str(place_county_crosswalk_df['County_FIPS'].iloc[-1])[0:5]
     
