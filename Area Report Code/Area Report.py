@@ -224,6 +224,21 @@ def input_with_timeout(prompt, timeout, timer=time.monotonic):
         time.sleep(0.04) # just to yield to other processes/threads
     raise TimeoutExpired
 
+def FindBLSEndYear():
+    #The "BLS.Series" method we use to gather employment data uses a start and end year paramter
+    #To avoid extra requests for years in the future, we pass a 5 year range. In February, the latest data will be from December 
+    #of the previous year. Therefore, we must pass in the previous year the end year. Every other month, we should use the current year as end year
+    current_year   = todays_date.year                      #For BLS\
+    current_month  = todays_date.month
+    current_day    = todays_date.day
+    previous_year  = current_year - 1
+    
+    #Once we are in March, the latest employment data will be from January so we can use current year as "end_year"
+    if current_month >= 3 and current_day >=2:
+        return(current_year)
+    else:
+        return(previous_year)
+
 #####################################################Data Related Functions####################################
 #County Data
 def GetCountyGDP(fips,observation_start):
@@ -279,7 +294,7 @@ def GetCountyUnemploymentRate(fips,start_year,end_year):
     print('Getting County UR')
     #Seasonally-adjusted unemployment rate
     series_name = 'LAUCN' + fips + '0000000003'
-    county_ur_df = bls.series(series_name,start_year=start_year) 
+    county_ur_df = bls.series(series_name,start_year=start_year, end_year= end_year) 
     county_ur_df['year']   = county_ur_df['year'].astype(str)
     county_ur_df['period'] =    county_ur_df['period'].str[1:3] + '/' +  county_ur_df['year'].str[2:4]      
     county_ur_df = county_ur_df.rename(columns={series_name: "unemployment_rate"})
@@ -292,7 +307,7 @@ def GetCountyEmployment(fips,start_year,end_year):
     print('Getting County Employment')
     #Total Employment
     series_name = 'LAUCN' + fips + '0000000005'
-    county_emp_df = bls.series(series_name,start_year=(start_year-1))
+    county_emp_df = bls.series(series_name,start_year=(start_year-1), end_year= end_year)
 
     county_emp_df['year']   =    county_emp_df['year'].astype(str)
     county_emp_df['period'] =    county_emp_df['period'].str[1:3] + '/' +  county_emp_df['year'].str[2:4] 
@@ -907,7 +922,7 @@ def GetMSAUnemploymentRate(cbsa,start_year,end_year):
             series_name = 'LAUMT' + cbsa_main_state_fips + necta_code + '00000003'
         
 
-        msa_ur_df = bls.series(series_name,start_year=start_year) 
+        msa_ur_df = bls.series(series_name,start_year=start_year, end_year= end_year) 
         msa_ur_df['year']   = msa_ur_df['year'].astype(str)
         msa_ur_df['period'] =    msa_ur_df['period'].str[1:3] + '/' +  msa_ur_df['year'].str[2:4]
         msa_ur_df = msa_ur_df.rename(columns={series_name: "unemployment_rate"})
@@ -928,7 +943,7 @@ def GetMSAUnemploymentRate(cbsa,start_year,end_year):
                     series_name = 'LAUMT' + state_fips_code + necta_code + '00000003'
                 
 
-                msa_ur_df = bls.series(series_name,start_year=start_year,) 
+                msa_ur_df = bls.series(series_name,start_year=start_year,end_year= end_year) 
                 msa_ur_df['year']   = msa_ur_df['year'].astype(str)
                 msa_ur_df['period'] =    msa_ur_df['period'].str[1:3] + '/' +  msa_ur_df['year'].str[2:4]
                 msa_ur_df = msa_ur_df.rename(columns={series_name: "unemployment_rate"})
@@ -948,7 +963,7 @@ def GetMSAEmployment(cbsa,start_year,end_year):
         else:
             series_name = 'LAUMT' + cbsa_main_state_fips + necta_code + '00000005'
 
-        msa_emp_df = bls.series(series_name,start_year=(start_year-1),) 
+        msa_emp_df = bls.series(series_name,start_year=(start_year-1), end_year= end_year) 
 
         msa_emp_df['year']   = msa_emp_df['year'].astype(str)
         msa_emp_df['period'] =    msa_emp_df['period'].str[1:3] + '/' +  msa_emp_df['year'].str[2:4]      
@@ -974,7 +989,7 @@ def GetMSAEmployment(cbsa,start_year,end_year):
                 else:
                     series_name = 'LAUMT' + state_fips_code + necta_code + '00000005'
 
-                msa_emp_df = bls.series(series_name,start_year=(start_year-1),) 
+                msa_emp_df = bls.series(series_name,start_year=(start_year-1), end_year= end_year) 
 
                 msa_emp_df['year']   = msa_emp_df['year'].astype(str)
                 msa_emp_df['period'] =    msa_emp_df['period'].str[1:3] + '/' +  msa_emp_df['year'].str[2:4]      
@@ -1259,7 +1274,7 @@ def GetStateUnemploymentRate(fips,start_year,end_year):
     print('Getting State UR')
     #Seasonally-adjusted unemployment rate
     series_name = 'LASST' + fips[0:2] + '0000000000003'
-    state_ur_df = bls.series(series_name,start_year=start_year) 
+    state_ur_df = bls.series(series_name,start_year=start_year, end_year= end_year) 
 
     state_ur_df['year']   = state_ur_df['year'].astype(str)
     state_ur_df['period'] =    state_ur_df['period'].str[1:3] + '/' +  state_ur_df['year'].str[2:4]      
@@ -1272,7 +1287,7 @@ def GetStateEmployment(fips,start_year,end_year):
     print('Getting State Employment')
     #Total Employment
     series_name = 'LASST' + fips[0:2] + '0000000000005'
-    state_emp_df = bls.series(series_name,start_year=(start_year-1)) 
+    state_emp_df = bls.series(series_name,start_year=(start_year-1), end_year= end_year) 
 
     state_emp_df['year']   = state_emp_df['year'].astype(str)
     state_emp_df['period'] =    state_emp_df['period'].str[1:3] + '/' +  state_emp_df['year'].str[2:4]      
@@ -1404,7 +1419,7 @@ def GetNationalEmployment(start_year,end_year):
     print('Getting National Employment')
     #Total Employment
     series_name = 'LNS12000000'
-    national_emp_df = bls.series(series_name,start_year=(start_year-1),)
+    national_emp_df = bls.series(series_name,start_year=(start_year-1), end_year= end_year)
 
     national_emp_df['year']   =    national_emp_df['year'].astype(str)
     national_emp_df['period'] =    national_emp_df['period'].str[1:3] + '/' +  national_emp_df['year'].str[2:4] 
@@ -3454,6 +3469,7 @@ def CreateGraphs():
     # CreateNationalUnemploymentGraph(folder=county_folder)
     # CreateNationalEmploymentGrowthGraph(folder=county_folder)
     # CreateNationalGDPGraph(folder = county_folder)
+    pass
 
 #####################################################Language Related Functions####################################
 def millify(n):
@@ -5913,8 +5929,8 @@ new_england_states      = ['MA','VT','RI','ME','NH','CT']
 
 #Set number of years we want to look back to calculate employment growth
 growth_period           = 5
-end_year                = 2022 #todays_date.year                      #For BLS
-start_year              = end_year - growth_period              #For BLS
+end_year                = FindBLSEndYear()
+start_year              = end_year - growth_period #For BLS Series 
 
 observation_start       = '01/01/' + str(start_year -1)   #For FRED
 observation_start_less1 = '01/01/' + str(start_year -2)   #For FRED for series 1 year behind the rest
