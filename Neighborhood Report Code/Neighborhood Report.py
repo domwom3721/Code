@@ -4725,6 +4725,10 @@ def CreateDirectoryCSV():
                            'Document Name': dropbox_document_names})
     dropbox_df = dropbox_df.sort_values(by=['State','Market Research Name'])
 
+    #Merge the dataframe with a list of states and the inital of who is assigned to complete them
+    assigned_to_df                          = pd.read_excel(os.path.join(general_data_location,'Administrative Data','Assigned To States.xlsx')) 
+    dropbox_df                              = pd.merge(dropbox_df,assigned_to_df, on=['State'],how = 'left') 
+
     csv_name = 'Dropbox Neighborhoods.csv'
     service_api_csv_name = f'Dropbox Neighborhoods-{datetime.now().timestamp()}.csv'
     dropbox_df.to_csv(os.path.join(main_output_location, csv_name),index=False)
