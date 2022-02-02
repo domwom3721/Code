@@ -1162,9 +1162,7 @@ def CreateDirectoryCSV():
                                 'Status':dropbox_statuses,
                                 'Document Name': dropbox_document_names})
 
-        #Merge the dataframe with a list of states and the inital of who is assigned to complete them
-        assigned_to_df                          = pd.read_excel(os.path.join(general_data_location,'Administrative Data','Assigned To States.xlsx')) 
-        dropbox_df                              = pd.merge(dropbox_df,assigned_to_df, on=['State'],how = 'left') 
+        
         
 
         #Create a version of market research name for merge without "SUB" when the submarket name matches the market name
@@ -1348,6 +1346,10 @@ def CreateDirectoryCSV():
 
         #Export the CoStar Markets export
         dropbox_df = dropbox_df.append(all_files_dropbox_df)
+        
+        #Merge the dataframe with a list of states and the inital of who is assigned to complete them
+        assigned_to_df                          = pd.read_excel(os.path.join(general_data_location,'Administrative Data','Assigned To States.xlsx')) 
+        dropbox_df                              = pd.merge(dropbox_df,assigned_to_df, on=['State'],how = 'left') 
 
         csv_name = 'CoStar Markets.csv'
         service_api_csv_name = f'CoStar Markets-{datetime.now().timestamp()}.csv'
