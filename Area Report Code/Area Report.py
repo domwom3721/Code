@@ -280,7 +280,6 @@ def GetCountyUnemploymentRate(fips,start_year,end_year):
     #Seasonally-adjusted unemployment rate
     series_name = 'LAUCN' + fips + '0000000003'
     county_ur_df = bls.series(series_name,start_year=start_year) 
-    print(county_ur_df)
     county_ur_df['year']   = county_ur_df['year'].astype(str)
     county_ur_df['period'] =    county_ur_df['period'].str[1:3] + '/' +  county_ur_df['year'].str[2:4]      
     county_ur_df = county_ur_df.rename(columns={series_name: "unemployment_rate"})
