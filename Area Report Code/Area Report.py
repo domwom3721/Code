@@ -279,8 +279,8 @@ def GetCountyUnemploymentRate(fips,start_year,end_year):
     print('Getting County UR')
     #Seasonally-adjusted unemployment rate
     series_name = 'LAUCN' + fips + '0000000003'
-    county_ur_df = bls.series(series_name,start_year=start_year,end_year=end_year) 
-
+    county_ur_df = bls.series(series_name,start_year=start_year) 
+    print(county_ur_df)
     county_ur_df['year']   = county_ur_df['year'].astype(str)
     county_ur_df['period'] =    county_ur_df['period'].str[1:3] + '/' +  county_ur_df['year'].str[2:4]      
     county_ur_df = county_ur_df.rename(columns={series_name: "unemployment_rate"})
@@ -293,7 +293,7 @@ def GetCountyEmployment(fips,start_year,end_year):
     print('Getting County Employment')
     #Total Employment
     series_name = 'LAUCN' + fips + '0000000005'
-    county_emp_df = bls.series(series_name,start_year=(start_year-1),end_year=end_year)
+    county_emp_df = bls.series(series_name,start_year=(start_year-1))
 
     county_emp_df['year']   =    county_emp_df['year'].astype(str)
     county_emp_df['period'] =    county_emp_df['period'].str[1:3] + '/' +  county_emp_df['year'].str[2:4] 
@@ -908,7 +908,7 @@ def GetMSAUnemploymentRate(cbsa,start_year,end_year):
             series_name = 'LAUMT' + cbsa_main_state_fips + necta_code + '00000003'
         
 
-        msa_ur_df = bls.series(series_name,start_year=start_year,end_year=end_year) 
+        msa_ur_df = bls.series(series_name,start_year=start_year) 
         msa_ur_df['year']   = msa_ur_df['year'].astype(str)
         msa_ur_df['period'] =    msa_ur_df['period'].str[1:3] + '/' +  msa_ur_df['year'].str[2:4]
         msa_ur_df = msa_ur_df.rename(columns={series_name: "unemployment_rate"})
@@ -929,7 +929,7 @@ def GetMSAUnemploymentRate(cbsa,start_year,end_year):
                     series_name = 'LAUMT' + state_fips_code + necta_code + '00000003'
                 
 
-                msa_ur_df = bls.series(series_name,start_year=start_year,end_year=end_year) 
+                msa_ur_df = bls.series(series_name,start_year=start_year,) 
                 msa_ur_df['year']   = msa_ur_df['year'].astype(str)
                 msa_ur_df['period'] =    msa_ur_df['period'].str[1:3] + '/' +  msa_ur_df['year'].str[2:4]
                 msa_ur_df = msa_ur_df.rename(columns={series_name: "unemployment_rate"})
@@ -949,7 +949,7 @@ def GetMSAEmployment(cbsa,start_year,end_year):
         else:
             series_name = 'LAUMT' + cbsa_main_state_fips + necta_code + '00000005'
 
-        msa_emp_df = bls.series(series_name,start_year=(start_year-1),end_year=end_year) 
+        msa_emp_df = bls.series(series_name,start_year=(start_year-1),) 
 
         msa_emp_df['year']   = msa_emp_df['year'].astype(str)
         msa_emp_df['period'] =    msa_emp_df['period'].str[1:3] + '/' +  msa_emp_df['year'].str[2:4]      
@@ -975,7 +975,7 @@ def GetMSAEmployment(cbsa,start_year,end_year):
                 else:
                     series_name = 'LAUMT' + state_fips_code + necta_code + '00000005'
 
-                msa_emp_df = bls.series(series_name,start_year=(start_year-1),end_year=end_year) 
+                msa_emp_df = bls.series(series_name,start_year=(start_year-1),) 
 
                 msa_emp_df['year']   = msa_emp_df['year'].astype(str)
                 msa_emp_df['period'] =    msa_emp_df['period'].str[1:3] + '/' +  msa_emp_df['year'].str[2:4]      
@@ -1260,7 +1260,7 @@ def GetStateUnemploymentRate(fips,start_year,end_year):
     print('Getting State UR')
     #Seasonally-adjusted unemployment rate
     series_name = 'LASST' + fips[0:2] + '0000000000003'
-    state_ur_df = bls.series(series_name,start_year=start_year,end_year=end_year) 
+    state_ur_df = bls.series(series_name,start_year=start_year) 
 
     state_ur_df['year']   = state_ur_df['year'].astype(str)
     state_ur_df['period'] =    state_ur_df['period'].str[1:3] + '/' +  state_ur_df['year'].str[2:4]      
@@ -1273,7 +1273,7 @@ def GetStateEmployment(fips,start_year,end_year):
     print('Getting State Employment')
     #Total Employment
     series_name = 'LASST' + fips[0:2] + '0000000000005'
-    state_emp_df = bls.series(series_name,start_year=(start_year-1),end_year=end_year) 
+    state_emp_df = bls.series(series_name,start_year=(start_year-1)) 
 
     state_emp_df['year']   = state_emp_df['year'].astype(str)
     state_emp_df['period'] =    state_emp_df['period'].str[1:3] + '/' +  state_emp_df['year'].str[2:4]      
@@ -1392,7 +1392,7 @@ def GetNationalUnemploymentRate(start_year,end_year):
     print('Getting National UR')
     #Seasonally-adjusted unemployment rate
     series_name = 'LNS14000000'
-    national_ur_df = bls.series(series_name,start_year=start_year,end_year=end_year) 
+    national_ur_df = bls.series(series_name,start_year=start_year,) 
 
     national_ur_df['year']   = national_ur_df['year'].astype(str)
     national_ur_df['period'] =    national_ur_df['period'].str[1:3] + '/' +  national_ur_df['year'].str[2:4]      
@@ -1405,7 +1405,7 @@ def GetNationalEmployment(start_year,end_year):
     print('Getting National Employment')
     #Total Employment
     series_name = 'LNS12000000'
-    national_emp_df = bls.series(series_name,start_year=(start_year-1),end_year=end_year)
+    national_emp_df = bls.series(series_name,start_year=(start_year-1),)
 
     national_emp_df['year']   =    national_emp_df['year'].astype(str)
     national_emp_df['period'] =    national_emp_df['period'].str[1:3] + '/' +  national_emp_df['year'].str[2:4] 
