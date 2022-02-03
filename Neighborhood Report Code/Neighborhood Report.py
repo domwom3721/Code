@@ -859,8 +859,8 @@ def DeclareAPIKeys():
     global zoneomics_api_key
     
     #Declare API Keys
-    # census_api_key                = random.choice(['dcb94abaa03f53bcd06d0435fe95c8923b77a5fe','18335344cf4a0242ae9f7354489ef2f8860a9f61'])
-    census_api_key                = 'dcb94abaa03f53bcd06d0435fe95c8923b77a5fe'
+    # census_api_key                = random.choice(['dcb94abaa03f53bcd06d0435fe95c8923b77a5fe','18335344cf4a0242ae9f7354489ef2f8860a9f61','dcdb8b4e42295322909cfa255dff42315f031e15'])
+    census_api_key                = 'dcdb8b4e42295322909cfa255dff42315f031e15'
     walkscore_api_key             = '057f7c0a590efb7ec06da5a8735e536d'
     google_maps_api_key           = 'AIzaSyBMcoRFOW2rxAGxURCpA4gk10MROVVflLs'
     yelp_client_id                = 'NY9c0_9kvOU4wfzmkkruOQ'
@@ -3411,7 +3411,7 @@ def HousingIntroLanguage():
 def HousingTypeTenureLanguage():
     print('Creating housing type and tenure Langauge')
     try:
-        number_units_categories = ['Single-family homes','Townhomes','Duplexes','3-4 unit properties','5-9 unit properties','10-19 unit properties','20-49 unit properties','properties with 50+ units']
+        number_units_categories = ['Single-family homes','Townhomes','Duplexes','3-4-unit properties','5-9-unit properties','10-19-unit properties','20-49-unit properties','properties with 50+ units']
         assert len(number_units_categories) == len(neighborhood_number_units_data)
         
         #We have a list of categories and a list of their respecitive employment shares. Covert to list, then sort from smallest to largest
@@ -3453,7 +3453,9 @@ def HousingTypeTenureLanguage():
                                         second_most_common_category                                              + 
                                         ' then '                                                                 +
                                         third_most_common_category                                               +
-                                        ' . '                                                                    +                                     
+                                        ' account for the most common forms of housing in '                      +
+                                        neighborhood                                                             +                                          
+                                        '. '                                                                     +                                     
                                         "{:,.0f}%".format(hood_owner_occupied_fraction)                          +   
                                         ' of the housing units in '                                              + 
                                         neighborhood                                                             + 
