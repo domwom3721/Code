@@ -141,7 +141,7 @@ def DropCBD(df): #drops rows that report data on the cbd geography type
     return(df)
 
 def KeepLast10Years(df,groupbylist): #Cut down to last 10 years
-    df = df.groupby(groupbylist).tail(41)
+    df = df.groupby(groupbylist).tail(40)
     return(df)
 
 def SortData(df): #Sorts by geography and quarter
