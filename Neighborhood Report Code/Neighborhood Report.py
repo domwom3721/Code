@@ -3386,7 +3386,7 @@ def OutlookLanguage():
                         ' well-served by [interstate highways, public transportation, and recreational amenities]. ' +
                         
                         #Growth sentance
-                        'It has seen ' +
+                        'It has experienced ' +
                         pop_growth_description +
                         ' population growth over the past decade, a trend that is expected to continue in the near-term.'
                         
