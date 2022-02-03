@@ -34,7 +34,7 @@ def FindMaxWithinRange(variable,df,start_quarter,end_quarter):
     return(value)
 
 def FindMaxPeriodWithinRange(variable,df,start_quarter,end_quarter):
-    #Function that takes a given variable name and period. It returns the period where the max value of that variable occured in that period
+    #Function that takes a given variable name and period. It returns the first period where the max value of that variable occured in that period
     
     #Make copy of the dataframe passed in by user
     temp_df = df.copy()
@@ -47,8 +47,7 @@ def FindMaxPeriodWithinRange(variable,df,start_quarter,end_quarter):
     max_value = temp_df[variable].max()
     temp_df = temp_df.loc[( temp_df[variable] == max_value)  ]
     
-    assert len(temp_df) == 1
-    value = temp_df['Period'].iloc[-1] 
+    value = temp_df['Period'].iloc[0] 
     return(value)
 
 def FindMinPeriodWithinRange(variable,df,start_quarter,end_quarter):
@@ -65,8 +64,7 @@ def FindMinPeriodWithinRange(variable,df,start_quarter,end_quarter):
     min_value = temp_df[variable].min()
     temp_df = temp_df.loc[( temp_df[variable] == min_value)  ]
     
-    assert len(temp_df) == 1
-    value = temp_df['Period'].iloc[-1] 
+    value = temp_df['Period'].iloc[0] 
     return(value)
 
 def FindMinWithinRange(variable,df,start_quarter,end_quarter):
@@ -244,6 +242,8 @@ def CreateOverviewLanguage(submarket_data_frame,market_data_frame,natioanl_data_
     current_sale_volume                 = submarket_data_frame['Total Sales Volume'].iloc[-1]
     current_transaction_count           = submarket_data_frame['Sales Volume Transactions'].iloc[-1]
     vacancy                             = submarket_data_frame['Vacancy Rate'].iloc[-1]
+    rent                                = submarket_data_frame[rent_var].iloc[-1]
+    sale_price                          = submarket_data_frame['Average Sale Price'].iloc[-1]
     vacancy_change                      = submarket_data_frame['YoY Vacancy Growth'].iloc[-1]
     avg_vacancy                         = submarket_data_frame['Vacancy Rate'].mean()
 
@@ -259,56 +259,119 @@ def CreateOverviewLanguage(submarket_data_frame,market_data_frame,natioanl_data_
     _2019_q4_sale_price                        = FindValueForQuarter(variable='Average Sale Price',df =submarket_data_frame,    quarter= '2019 Q4' )
     _2019_q4_caprate                           = FindValueForQuarter(variable='Market Cap Rate',   df =submarket_data_frame,    quarter= '2019 Q4' )
     
+    print(_2019_q4_vacancy)                           
+    print(_2019_q4_rent)                            
+    print(_2019_q4_sale_price)                        
+    print(_2019_q4_caprate)                           
+    print('2019 Values Done')
+    
     #Grab maximum value between 2021 Q1 and 2021 Q4
     _2020_q1_2021_q4_vacancy_max               = FindMaxWithinRange(variable='Vacancy Rate',      df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
     _2020_q1_2021_q4_rent_max                  = FindMaxWithinRange(variable=rent_var,            df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
     _2020_q1_2021_q4_sale_price_max            = FindMaxWithinRange(variable='Average Sale Price',df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
     _2020_q1_2021_q4_caprate_max               = FindMaxWithinRange(variable='Market Cap Rate',   df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
 
+    print('------------------------------')
+    print(_2020_q1_2021_q4_vacancy_max)                           
+    print(_2020_q1_2021_q4_rent_max)                            
+    print(_2020_q1_2021_q4_sale_price_max)                        
+    print(_2020_q1_2021_q4_caprate_max)                           
+    print('2021 Q1 and 2021 Q4 Max Values Done')
+    
+    
     #Grab period where maximum value between 2021 Q1 and 2021 Q4 occured
     _2020_q1_2021_q4_vacancy_max_period        = FindMaxPeriodWithinRange(variable='Vacancy Rate',      df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
     _2020_q1_2021_q4_rent_max_period           = FindMaxPeriodWithinRange(variable=rent_var,            df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
     _2020_q1_2021_q4_sale_price_max_period     = FindMaxPeriodWithinRange(variable='Average Sale Price',df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
     _2020_q1_2021_q4_caprate_max_period        = FindMaxPeriodWithinRange(variable='Market Cap Rate',   df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
     
+    print(_2020_q1_2021_q4_vacancy_max_period)                           
+    print(_2020_q1_2021_q4_rent_max_period)                            
+    print(_2020_q1_2021_q4_sale_price_max_period)                        
+    print(_2020_q1_2021_q4_caprate_max_period)                           
+    print('2021 Q1 and 2021 Q4 Max Period Done') 
+    print('------------------------------')
+
     #Grab minimum value between 2021 Q1 and 2021 Q4
-    _2020_q1_2021_q4_vacancy_min               = FindMinWithinRange(variable='Vacancy Rate',      df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
-    _2020_q1_2021_q4_rent_min                  = FindMinWithinRange(variable=rent_var,            df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
-    _2020_q1_2021_q4_sale_price_min            = FindMinWithinRange(variable='Average Sale Price',df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
-    _2020_q1_2021_q4_caprate_min               = FindMinWithinRange(variable='Market Cap Rate',   df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
+    _2020_q1_2021_q4_vacancy_min                   = FindMinWithinRange(variable='Vacancy Rate',      df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
+    _2020_q1_2021_q4_rent_min                      = FindMinWithinRange(variable=rent_var,            df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
+    _2020_q1_2021_q4_sale_price_min                = FindMinWithinRange(variable='Average Sale Price',df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
+    _2020_q1_2021_q4_caprate_min                   = FindMinWithinRange(variable='Market Cap Rate',   df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
     
+    print(_2020_q1_2021_q4_vacancy_min)                           
+    print(_2020_q1_2021_q4_rent_min)                            
+    print(_2020_q1_2021_q4_sale_price_min)                        
+    print(_2020_q1_2021_q4_caprate_min)    
+    print('2021 Q1 and 2021 Q4 Min Values Done') 
+    print('------------------------------')
+
     #Grab period where minimum value between 2021 Q1 and 2021 Q4 occured
-    _2020_q1_2021_q4_vacancy_min_period        = FindMinPeriodWithinRange(variable='Vacancy Rate',      df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
-    _2020_q1_2021_q4_rent_min_period           = FindMinPeriodWithinRange(variable=rent_var,            df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
-    _2020_q1_2021_q4_sale_price_min_period     = FindMinPeriodWithinRange(variable='Average Sale Price',df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
-    _2020_q1_2021_q4_caprate_min_period        = FindMinPeriodWithinRange(variable='Market Cap Rate',   df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
+    _2020_q1_2021_q4_vacancy_min_period            = FindMinPeriodWithinRange(variable='Vacancy Rate',      df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
+    _2020_q1_2021_q4_rent_min_period               = FindMinPeriodWithinRange(variable=rent_var,            df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
+    _2020_q1_2021_q4_sale_price_min_period         = FindMinPeriodWithinRange(variable='Average Sale Price',df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
+    _2020_q1_2021_q4_caprate_min_period            = FindMinPeriodWithinRange(variable='Market Cap Rate',   df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
+    
+    print(_2020_q1_2021_q4_vacancy_min_period)                           
+    print(_2020_q1_2021_q4_rent_min_period)                            
+    print(_2020_q1_2021_q4_sale_price_min_period)                        
+    print(_2020_q1_2021_q4_caprate_min_period)  
+    print('2021 Q1 and 2021 Q4 Min Period Done') 
+    print('------------------------------')  
     
     #Calculate difference between Max and Min values between 2020 Q1 - 2021 Q4
-    # _2020_q1_2021_q4_vacancy_min_max_diff      = BpsChange(var1=_2020_q1_2021_q4_vacancy_min , var2=_2020_q1_2021_q4_vacancy_max) 
-    # _2020_q1_2021_q4_rent_min_max_diff         = PercentageChange(var1=_2020_q1_2021_q4_rent_min , var2=_2020_q1_2021_q4_rent_max)
-    # _2020_q1_2021_q4_sale_price_min_max_diff   = PercentageChange(var1= _2020_q1_2021_q4_sale_price_min, var2=_2020_q1_2021_q4_sale_price_max)
-    # _2020_q1_2021_q4_caprate_min_max_diff      = BpsChange(var1= _2020_q1_2021_q4_caprate_min, var2=_2020_q1_2021_q4_caprate_max)
+    _2020_q1_2021_q4_vacancy_min_max_diff          = BpsChange(       var1=_2020_q1_2021_q4_vacancy_min,     var2=_2020_q1_2021_q4_vacancy_max) 
+    _2020_q1_2021_q4_rent_min_max_diff             = PercentageChange(var1=_2020_q1_2021_q4_rent_min,        var2=_2020_q1_2021_q4_rent_max)
+    _2020_q1_2021_q4_sale_price_min_max_diff       = PercentageChange(var1= _2020_q1_2021_q4_sale_price_min, var2=_2020_q1_2021_q4_sale_price_max)
+    _2020_q1_2021_q4_caprate_min_max_diff          = BpsChange(       var1= _2020_q1_2021_q4_caprate_min,    var2=_2020_q1_2021_q4_caprate_max)
     
-    # #Calculate difference between 2019 Q4 Value and Min values between 2020 Q1 - 2021 Q4
-    # _2019_q4_2020_q1_2021_q4_vacancy_min_diff      = BpsChange(var1=_2020_q1_2021_q4_vacancy_min,            var2=_2020_q1_2021_q4_vacancy_max) 
-    # _2019_q4_2020_q1_2021_q4_rent_min_diff         = PercentageChange(var1=_2020_q1_2021_q4_rent_min,        var2=_2020_q1_2021_q4_rent_max)
-    # _2019_q4_2020_q1_2021_q4_sale_price_min_diff   = PercentageChange(var1= _2020_q1_2021_q4_sale_price_min, var2=_2020_q1_2021_q4_sale_price_max)
-    # _2019_q4_2020_q1_2021_q4_caprate_min_diff      = BpsChange(var1= _2020_q1_2021_q4_caprate_min,           var2=_2020_q1_2021_q4_caprate_max)
+    print(_2020_q1_2021_q4_vacancy_min_max_diff)                           
+    print(_2020_q1_2021_q4_rent_min_max_diff)                            
+    print(_2020_q1_2021_q4_sale_price_min_max_diff)                        
+    print(_2020_q1_2021_q4_caprate_min_max_diff)    
+    print('2021 Q1 and 2021 Q4 Min Max Differcne Done') 
+    print('------------------------------')  
+
+    #Calculate difference between 2019 Q4 Value and Min values between 2020 Q1 - 2021 Q4
+    _2019_q4_2020_q1_2021_q4_vacancy_min_diff      = BpsChange(       var1=_2020_q1_2021_q4_vacancy_min,            var2=_2020_q1_2021_q4_vacancy_min) 
+    _2019_q4_2020_q1_2021_q4_rent_min_diff         = PercentageChange(var1=_2020_q1_2021_q4_rent_min,               var2=_2020_q1_2021_q4_rent_min)
+    _2019_q4_2020_q1_2021_q4_sale_price_min_diff   = PercentageChange(var1= _2020_q1_2021_q4_sale_price_min,        var2=_2020_q1_2021_q4_sale_price_min)
+    _2019_q4_2020_q1_2021_q4_caprate_min_diff      = BpsChange(       var1= _2020_q1_2021_q4_caprate_min,           var2=_2020_q1_2021_q4_caprate_min)
     
-    # #Calculate difference between 2019 Q4 Value and  Max values between 2020 Q1 - 2021 Q4
-    # _2019_q4_2020_q1_2021_q4_vacancy_max_diff      = BpsChange(var1= , var2=) 
-    # _2019_q4_2020_q1_2021_q4_rent_max_diff         = PercentageChange(var1= , var2=)
-    # _2019_q4_2020_q1_2021_q4_sale_price_max_diff   = PercentageChange(var1= , var2=)
-    # _2019_q4_2020_q1_2021_q4_caprate_max_diff      = BpsChange(var1= , var2)
+    print(_2019_q4_2020_q1_2021_q4_vacancy_min_diff)                           
+    print(_2019_q4_2020_q1_2021_q4_rent_min_diff)                            
+    print(_2019_q4_2020_q1_2021_q4_sale_price_min_diff)                        
+    print(_2019_q4_2020_q1_2021_q4_caprate_min_diff) 
+    print('2019 and 2021 Q1 and 2021 Q4 Min Differcne Done') 
+    print('------------------------------')  
     
-    # #Calculate difference between 2019 Q4 Value and current values 
-    # _2019_q4_current_vacancy_diff      = BpsChange(var1= , var2=) 
-    # _2019_q4_current_rent_diff         = PercentageChange(var1= , var2=)
-    # _2019_q4_current_sale_price_diff   = PercentageChange(var1= , var2=)
-    # _2019_q4_current_caprate_diff      = BpsChange(var1= , var2)
+    #Calculate difference between 2019 Q4 Value and Max values between 2020 Q1 - 2021 Q4
+    _2019_q4_2020_q1_2021_q4_vacancy_max_diff      = BpsChange(       var1=_2019_q4_vacancy,    var2 = _2020_q1_2021_q4_vacancy_max) 
+    _2019_q4_2020_q1_2021_q4_rent_max_diff         = PercentageChange(var1=_2019_q4_rent,       var2 = _2020_q1_2021_q4_rent_max)
+    _2019_q4_2020_q1_2021_q4_sale_price_max_diff   = PercentageChange(var1=_2019_q4_sale_price, var2 = _2020_q1_2021_q4_sale_price_max)
+    _2019_q4_2020_q1_2021_q4_caprate_max_diff      = BpsChange(       var1=_2019_q4_caprate,    var2 = _2020_q1_2021_q4_caprate_max)
+    
+    print(_2019_q4_2020_q1_2021_q4_vacancy_max_diff)                           
+    print(_2019_q4_2020_q1_2021_q4_rent_max_diff)                            
+    print(_2019_q4_2020_q1_2021_q4_sale_price_max_diff)                        
+    print(_2019_q4_2020_q1_2021_q4_caprate_max_diff)    
+    print('2019 and 2021 Q1 and 2021 Q4 Max Difference Done') 
+    print('------------------------------')  
+
+    #Calculate difference between 2019 Q4 Value and current values 
+    _2019_q4_current_vacancy_diff                 = BpsChange(       var1= _2019_q4_vacancy,    var2 = vacancy) 
+    _2019_q4_current_rent_diff                    = PercentageChange(var1= _2019_q4_rent,       var2 = rent)
+    _2019_q4_current_sale_price_diff              = PercentageChange(var1= _2019_q4_sale_price, var2 = sale_price)
+    _2019_q4_current_caprate_diff                 = BpsChange(       var1=_2019_q4_caprate ,    var2 = cap_rate )
+    
+    print(_2019_q4_current_vacancy_diff)                           
+    print(_2019_q4_current_rent_diff)                            
+    print(_2019_q4_current_sale_price_diff)                        
+    print(_2019_q4_current_caprate_diff)    
+    print('2019 and current value Difference Done') 
+    print('------------------------------')  
+
     
 
-    # print(_2019_q4_vacancy,_2020_q1_2021_q4_vacancy_max,_2020_q1_2021_q4_vacancy_max_period,_2020_q1_2021_q4_vacancy_min,_2020_q1_2021_q4_vacancy_min_period,_2020_q1_2021_q4_vacancy_min_max_diff)
     
     #Section 2: Begin making variables that are conditional upon the variables created from the data itself
 
