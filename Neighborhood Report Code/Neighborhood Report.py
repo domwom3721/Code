@@ -3625,8 +3625,9 @@ def HouseholdSizeLanguage():
                               ' in '                                                   +   
                               comparison_area                                          + 
                               '. '                                                     +
-                              hh_size_category_comparison                              +
-                              family_vs_individual_break_down                                              
+                              hh_size_category_comparison                              
+                            #   +
+                            #   family_vs_individual_break_down                                              
                             )
     
     return([household_size_language])
