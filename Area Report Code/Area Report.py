@@ -1406,7 +1406,7 @@ def GetNationalUnemploymentRate(start_year,end_year):
     print('Getting National UR')
     #Seasonally-adjusted unemployment rate
     series_name = 'LNS14000000'
-    national_ur_df = bls.series(series_name,start_year=start_year,) 
+    national_ur_df = bls.series(series_name,start_year=start_year,end_year=end_year) 
 
     national_ur_df['year']   = national_ur_df['year'].astype(str)
     national_ur_df['period'] =    national_ur_df['period'].str[1:3] + '/' +  national_ur_df['year'].str[2:4]      
