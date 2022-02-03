@@ -3813,7 +3813,7 @@ def IncomeLanguage():
 def TravelMethodLanguage():
     print('Creating Travel Method Langauge')
     try:
-        travel_method_categories = ['drive alone','car pool','use public transit','walking','work from home','biking','other']
+        travel_method_categories = ['drive alone','carpooling','use public transit','walking','work from home','biking','other']
         assert len(travel_method_categories) == len(neighborhood_method_to_work_distribution)
         
         #We have a list of categories and a list of their respecitive employment shares. Covert to list, then sort from smallest to largest
