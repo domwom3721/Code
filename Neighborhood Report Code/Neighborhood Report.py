@@ -3450,9 +3450,9 @@ def HousingTypeTenureLanguage():
 
         housing_type_tenure_langugage = (most_common_category                                                    +
                                         ', followed by '                                                         +
-                                        second_most_common_category                                              + 
+                                        second_most_common_category.lower()                                              + 
                                         ' then '                                                                 +
-                                        third_most_common_category                                               +
+                                        third_most_common_category.lower()                                               +
                                         ' account for the most common forms of housing in '                      +
                                         neighborhood                                                             +                                          
                                         '. '                                                                     +                                     
