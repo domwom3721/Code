@@ -4677,7 +4677,7 @@ def HousingLanguage():
         #Format variables
         current_county_mlp      = "${:,.0f}".format(current_county_mlp)
         
-        boiler_plate_housing_language = """Not only did the pandemic shock the economy, but it has had different economic effects on sectors and regions. For example, the residential housing market in the United States has been robust since the initial shutdown in Q1 and Q2 2020. Historically low mortgage rates, the desire for more space, and the ability to work from home have led to the highest number of home sales while historically low inventory levels have pushed values to record highs in most counties and metros across the Nation. """ 
+        boiler_plate_housing_language = """Historically low mortgage rates, the desire for more space, and the ability to work from home have led to the highest number of home sales while historically low inventory levels have pushed values to record highs in most counties and metros across the Nation. """ 
 
 
         #If we have the metro realtor data
