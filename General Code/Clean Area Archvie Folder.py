@@ -3,7 +3,7 @@
 #Date: 9/24/2021
 import os
 
-area_archive_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Market Analysis','Area','Archive','2021 Q2') 
+area_archive_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Market Analysis','Area','Archive','2021 Q4') 
 assert os.path.exists(area_archive_root)
 
 
@@ -13,7 +13,7 @@ for i in range(10):
         if dirnames == [] and filenames == [] and dirpath != area_archive_root :
             pass
             print('Deleting ',dirpath)
-            os.rmdir(dirpath)
+            # os.rmdir(dirpath)
 
 
 #After we cleaned up the archive folders, we can delete the files in the main area folders so we can preserve the folder structure
@@ -25,8 +25,8 @@ for (dirpath, dirnames, filenames) in os.walk(area_root):
     if 'Archive' in dirpath:
         continue
     for file in filenames:
-        if ('2021 Q4' in file):
+        if ('2022 Q1' in file):
             continue
         print('Deleting',file)
-        os.remove(os.path.join(dirpath,file))
+        # os.remove(os.path.join(dirpath,file))
         
