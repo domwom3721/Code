@@ -4382,7 +4382,8 @@ def ProductionLanguage(county_data_frame,msa_data_frame,state_data_frame):
             msa_or_state +
             '.' )
 
-    boiler_plate_econ_language = ('While the longest U.S. economic expansion since the end of WWII did come to an abrupt end with 2020 Q2 real GDP decreasing at an annualized rate of 31%, economic activity has rebounded sharply since. GDP increased at a historically fast annual rate of 6.7% in Q2 2021, according to data released by the Bureau of Economic Analysis. Growth of 6.7% in Q2 was up from the first quarter, when real GDP increased 6.3%. The increase in second quarter GDP reflected the continued economic recovery, reopening of establishments, and continued government response related to the COVID-19 pandemic. Supply chain issues as well as a slowdown in consumer spending growth slowed GDP growth down to 2% in the third quarter.')
+    boiler_plate_econ_language = ('Economic activity has slowed after historical annual growth of 6.7% in Q2 2021, softening to 2.3% for the third quarter. The slowdown in third quarter GDP reflected the continued economic impact of the COVID-19 pandemic. A resurgence of COVID-19 cases resulted in new restrictions and delays in the reopening of establishments in some parts of the country. ' +
+                            'Supply-chain disruptions such as delays at U.S. ports and international manufacturing issues contributed to a sharp increase in inflation and pose a risk to the economic outlook. Despite supply-side challenges, many economic observers expect that the economy regained momentum in the final months of the year. ')
     
     return[boiler_plate_econ_language, production_language]
 
@@ -4792,7 +4793,7 @@ def OutlookLanguage():
                                 
     national_economy_summary = (
                             'The United States economy continues to recover from the aftermath of the Covid-19 pandemic.' + 
-                            ' The labor market has restored almost 19 million of the 21 million jobs lost at the beginning of the pandemic, as measured by non-farm employment, bringing the unemployment rate to 4.8% as of December 2021.'+
+                            ' The labor market has restored almost 19 million of the 21 million jobs lost at the beginning of the pandemic, as measured by non-farm employment, bringing the unemployment rate to 3.9% as of December 2021.'+
                             'Employment growth continued in leisure and hospitality, in professional and business services, in retail trade, and in transportation and warehousing. ' + 
                             'After historical growth in Q2, GDP growth slowed to an annual rate of 2.3% in Q3 2021. ' + 
                             'The slowdown in third quarter GDP reflected the continued economic impact of the COVID-19 pandemic. A resurgence of COVID-19 cases resulted in new restrictions and delays in the reopening of establishments in some parts of the country. ' +
