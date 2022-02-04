@@ -5388,7 +5388,7 @@ def AddTitle(document):
     rFonts.set(qn("w:asciiTheme"), "Avenir Next LT Pro Light")
 
     above_map_paragraph = document.add_paragraph("The following analysis includes pertinent aspects of the surrounding region as it pertains to the subject property. " + 
-                                                'This report was compiled using data as of ' + current_quarter + ' unless otherwise noted. Data is from a number of sources including the U.S. Bureau of Labor Statistics, the U.S. Bureau of Economic Analysis, and the U.S. Census Bureau.')
+                                                'This report was compiled using data as of ' + current_quarter + ' unless otherwise noted. Data is from a number of sources including the U.S. Bureau of Labor Statistics ("BLS"), the U.S. Bureau of Economic Analysis ("BEA"), and the U.S. Census Bureau.')
     above_map_style = above_map_paragraph.style
     above_map_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
     above_map_style.font.size = Pt(9)
