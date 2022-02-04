@@ -3625,10 +3625,10 @@ def OverviewLanguage():
 
 
         covid_context_pargaraph = (
-            'The pandemic slowed the ' + county + ' area economy in 2020. At the onset of the pandemic, ' +
-            county + ' area employers shed over ' + "{:,.0f}".format(pandemic_job_losses) + ' jobs (' +  "{:,.1f}%".format(pandemic_job_losses_pct)   + ' of the labor market), as' +
+            'The COVID-19 pandemic slowed economic growth throughout the country, including here in ' + county + '. Between February 2020 and April, ' +
+            county + ' employers shed over ' + "{:,.0f}".format(pandemic_job_losses) + ' jobs (' +  "{:,.1f}%".format(pandemic_job_losses_pct)   + ' of the labor market), as' +
             ' social distancing protocols were put in place and operating restrictions were imposed. ' + 
-            'Growth returned in 2021. With the availability of vaccines, restrictions have eased, and the economy has reopened since.'
+            'With the availability of vaccines in early 2021, restrictions eased, and growth returned.'
                                 )
     except Exception as e:
         print(e,'unable to create covid context paragraph')
@@ -4383,7 +4383,7 @@ def ProductionLanguage(county_data_frame,msa_data_frame,state_data_frame):
             '.' )
 
     boiler_plate_econ_language = ('Economic activity has slowed after historical annual growth of 6.7% in Q2 2021, softening to 2.3% for the third quarter. The slowdown in third quarter GDP reflected the continued economic impact of the COVID-19 pandemic. A resurgence of COVID-19 cases resulted in new restrictions and delays in the reopening of establishments in some parts of the country. ' +
-                            'Supply-chain disruptions such as delays at U.S. ports and international manufacturing issues contributed to a sharp increase in inflation and pose a risk to the economic outlook. Despite supply-side challenges, many economic observers expect that the economy regained momentum in the final months of the year. ')
+                            'Supply-chain disruptions such as delays at U.S. ports and international manufacturing issues contributed to a sharp increase in inflation and pose a risk to the economic outlook. Despite supply-side challenges, many economic observers expect that the economy regained momentum in the final  and is well positioned for growth in 2022. ')
     
     return[boiler_plate_econ_language, production_language]
 
