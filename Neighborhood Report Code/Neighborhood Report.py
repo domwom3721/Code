@@ -217,62 +217,6 @@ def GetNeighborhoodShape():
         return(neighborhood_shape) 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        #     except Exception as e:
-        #         print(e,'problem getting shape from ' + comparison_area + ' geojson file')
-        #         print('Looking for exported kml file from my google maps')
-        #         #Method 2: Get bounds from my google maps custom layer export
-                
-        #         #Define file locations
-        #         kml_file_download_location         = os.path.join(os.environ['USERPROFILE'],'Downloads', 'Untitled layer.kml')
-        #         kml_file_location                  = os.path.join(data_location,'Neighborhood Shapes','Custom Hood Shapes',   'Untitled layer.kml')
-        #         new_geojson_file_location          = os.path.join(data_location,'Neighborhood Shapes','Custom Hood Shapes', 'custom_neighborhood_shape.geojson')
-                
-        #         #Step 1: Move the exported kml file from downloads to data folder 
-        #         if os.path.exists(kml_file_download_location) == True:
-        #             print('Moving KML file from downloads folder into data folder')
-        #             shutil.move(kml_file_download_location,kml_file_location)
-
-        #         #Step 2: Convert the exported google maps kmz file to geojson
-        #         print('Converting custom kml file into a geojson file')
-        #         my_shape_geojson = kml2geojson.main.convert(kml_file_location)
-
-        #         neighborhood_shape       = my_shape_geojson[0]['features'][0]['geometry']
-        #         print(neighborhood_shape)
-        #         neighborhood_custom_name = my_shape_geojson[0]['features'][0]['properties']['name']
-        #         input('We are using a downloaded file from google for custom bounds for ' + neighborhood_custom_name +  ' --- press enter to confirm!')
-        #         return(neighborhood_shape) 
-
-
-            # # srcDS                              = gdal.OpenEx(kml_file_location)
-            # # ds                                 = gdal.VectorTranslate(new_geojson_file_location, srcDS, format='GeoJSON')
-
-            # with open(new_geojson_file_location) as infile: 
-            #     print('Opened geojson file with custom boundraries')
-            #     my_shape_geojson = json.load(infile)
-            
-            # neighborhood_shape       = my_shape_geojson['features'][0]['geometry']
-            # neighborhood_custom_name = my_shape_geojson['features'][0]['properties']['Name']
-            # input('We are using a downloaded file from google for custom bounds for ' + neighborhood_custom_name +  ' --- press enter to confirm!')
-            # return(neighborhood_shape) 
-
     elif neighborhood_level == 'place':
         try:
             shapefile_location = os.path.join(neighborhood_shapes_location,'Census Place Shapes',('tl_2021_' + hood_state_fips + '_place'),('tl_2021_' + hood_state_fips + '_place.shp'))
@@ -4802,116 +4746,129 @@ def UserSelectsNeighborhoodLevel(batch_mode):
 
     
     #Each number corresponds to a different analysis level pair eg: place vs county, zip vs. place, etc
-    if analysis_type_number == 1: #Place  vs. County
-        neighborhood_level = 'place'
-        comparison_level   = 'county'
-    elif analysis_type_number == 2: #County Subdivison vs. County
-        neighborhood_level = 'county subdivision'
-        comparison_level   = 'county'
-    elif analysis_type_number == 3: #Custom vs. Place
-        neighborhood_level = 'custom'
-        comparison_level   = 'place'
-    elif analysis_type_number == 4: #Place vs. County Subdivison
-        neighborhood_level = 'place'
-        comparison_level   = 'county subdivision'
-    # elif analysis_type_number == 5: #Zip vs. Place
-    #     neighborhood_level = 'zip'
-    #     comparison_level   = 'place'
-    # elif analysis_type_number == 6: #Tract vs. Place
-    #   neighborhood_level = ''
-    #   comparison_level   = ''
-    # elif analysis_type_number == 7: #Tract vs. County
-    #   neighborhood_level = ''
-    #   comparison_level   = ''
-    # elif analysis_type_number == 8: #Tract vs. Zip
-      #   neighborhood_level = ''
-    #   comparison_level   = ''
-    # elif analysis_type_number == 9: #Tract vs. County Subdivison
-    #   neighborhood_level = ''
-    #   comparison_level   = ''
-    # elif analysis_type_number == 10: #Tract vs. Custom
-    #   neighborhood_level = ''
-    #   comparison_level   = ''
-    # elif analysis_type_number == 11: #Tract vs. None
-     #   neighborhood_level = ''
-    #   comparison_level   = ''
-    # elif analysis_type_number == 12: #Place  vs. Zip
-    #   neighborhood_level = ''
-    #   comparison_level   = ''
-    # elif analysis_type_number == 13: #Place  vs. Custom
-    #   neighborhood_level = ''
-    #   comparison_level   = ''
-    # elif analysis_type_number == 14: #Place  vs. Tract
-     #   neighborhood_level = ''
-    #   comparison_level   = ''
-    # elif analysis_type_number == 15: #Place  vs. None
-    #   neighborhood_level = ''
-    #   comparison_level   = ''
-    # elif analysis_type_number == 16: #County  vs. Place
-    #   neighborhood_level = ''
-    #   comparison_level   = ''
-    # elif analysis_type_number == 17: #County  vs. Tract
-    #   neighborhood_level = ''
-    #   comparison_level   = ''
-    # elif analysis_type_number == 18: #County vs. Zip
-     #   neighborhood_level = ''
-    #   comparison_level   = ''
-    # elif analysis_type_number == 19: #County vs. Custom
-    #   neighborhood_level = ''
-    #   comparison_level   = ''
-    # elif analysis_type_number == 20: #County vs. County Subdivison
-    #   neighborhood_level = ''
-    #   comparison_level   = ''
-    # elif analysis_type_number == 21: #County  vs. None
-     #   neighborhood_level = ''
-    #   comparison_level   = ''
-    # elif analysis_type_number == 22: #Zip vs. Tract
-     #   neighborhood_level = ''
-    #   comparison_level   = ''
-    # elif analysis_type_number == 23: #Zip vs. Custom
-        #   neighborhood_level = ''
-    #   comparison_level   = ''
-    # elif analysis_type_number == 24: #Zip vs. County Subdivison
-        #   neighborhood_level = ''
-    #   comparison_level   = ''
-    # elif analysis_type_number == 25: #Zip vs. County
-        #   neighborhood_level = ''
-    #   comparison_level   = ''
-    # elif analysis_type_number == 26: #Zip vs. None
-    #    #   neighborhood_level = ''
-    #   comparison_level   = ''
-    # elif analysis_type_number == 27: #County Subdivison vs. Place
-        #   neighborhood_level = ''
-    #   comparison_level   = ''
-    # elif analysis_type_number == 28: #County Subdivison vs. Custom
-        #   neighborhood_level = ''
-    #   comparison_level   = ''
-    # elif analysis_type_number == 29: #County Subdivison vs. Zip
-        #   neighborhood_level = ''
-    #   comparison_level   = ''
-    # elif analysis_type_number == 30: #County Subdivison vs. Tract
-        #   neighborhood_level = ''
-    #   comparison_level   = ''
-    # elif analysis_type_number == 31: #County Subdivison vs. None
-        #   neighborhood_level = ''
-    #   comparison_level   = ''
-    # elif analysis_type_number == 32: #Custom vs. Tract
-        #   neighborhood_level = ''
-    #   comparison_level   = ''
-    # elif analysis_type_number == 33 : #Custom vs. County Subdivison
-        #   neighborhood_level = ''
-    #   comparison_level   = ''
-    elif analysis_type_number == 34 : #Custom vs. County
-          neighborhood_level = 'custom'
-          comparison_level   = 'county'
-    # elif analysis_type_number == 35: #Custom vs. Zip
-       #   neighborhood_level = ''
-    #   comparison_level   = ''
-    # elif analysis_type_number == 36: #Custom  vs. None
-        #   neighborhood_level = ''
-    #   comparison_level   = ''
+    if analysis_type_number == 1:       #Place  vs. County
+        neighborhood_level              = 'place'
+        comparison_level                = 'county'
+    elif analysis_type_number == 2:     #County Subdivison vs. County
+        neighborhood_level              = 'county subdivision'
+        comparison_level                = 'county'
+    elif analysis_type_number == 3:     #Custom vs. Place
+        neighborhood_level              = 'custom'
+        comparison_level                = 'place'
+    elif analysis_type_number == 4:     #Place vs. County Subdivison
+        neighborhood_level              = 'place'
+        comparison_level                = 'county subdivision'
+    elif analysis_type_number == 5:     #Zip vs. Place
+        neighborhood_level              = 'zip'
+        comparison_level                = 'place'
+
+
+    elif analysis_type_number == 6:     #Tract vs. Place
+        neighborhood_level              = 'tract'
+        comparison_level                = 'place'
+    elif analysis_type_number == 7:     #Tract vs. County
+        neighborhood_level              = 'tract'
+        comparison_level                = 'county'
+    elif analysis_type_number == 8:     #Tract vs. Zip
+        neighborhood_level              = 'tract'
+        comparison_level                = 'zip'
+    elif analysis_type_number == 9:     #Tract vs. County Subdivison
+        neighborhood_level              = 'tract'
+        comparison_level                = 'county subdivision'
+    elif analysis_type_number == 10:    #Tract vs. Custom
+        neighborhood_level              = 'tract'
+        comparison_level                = 'custom'
+    elif analysis_type_number == 11:    #Tract vs. None
+        neighborhood_level              = 'tract'
+        comparison_level                = 'None'
+
+
+    elif analysis_type_number == 12:    #Place  vs. Zip
+        neighborhood_level              = 'place'
+        comparison_level                = 'zip'
+    elif analysis_type_number == 13:    #Place  vs. Custom
+        neighborhood_level              = 'place'
+        comparison_level                = 'custom'
+    elif analysis_type_number == 14:    #Place  vs. Tract
+        neighborhood_level              = 'place'
+        comparison_level                = 'tract'
+    elif analysis_type_number == 15:    #Place  vs. None
+        neighborhood_level              = 'place'
+        comparison_level                = 'None'
+
+
+    elif analysis_type_number == 16:    #County  vs. Place
+        neighborhood_level              = 'county'
+        comparison_level                = 'place'
+    elif analysis_type_number == 17:    #County  vs. Tract
+        neighborhood_level              = 'county'
+        comparison_level                = 'tract'
+    elif analysis_type_number == 18:    #County vs. Zip
+        neighborhood_level              = 'county'
+        comparison_level                = 'zip'
+    elif analysis_type_number == 19:    #County vs. Custom
+        neighborhood_level              = 'county'
+        comparison_level                = 'custom'
+    elif analysis_type_number == 20:    #County vs. County Subdivison
+        neighborhood_level              = 'county'
+        comparison_level                = 'county subdivision'
+    elif analysis_type_number == 21:    #County  vs. None
+        neighborhood_level              = 'county'
+        comparison_level                = 'None'
+
+
+    elif analysis_type_number == 22:    #Zip vs. Tract
+        neighborhood_level              = 'zip'
+        comparison_level                = 'tract'
+    elif analysis_type_number == 23:    #Zip vs. Custom
+        neighborhood_level              = 'zip'
+        comparison_level                = 'custom'
+    elif analysis_type_number == 24:    #Zip vs. County Subdivison
+        neighborhood_level              = 'zip'
+        comparison_level                = 'county subdivision'
+    elif analysis_type_number == 25:    #Zip vs. County
+        neighborhood_level              = 'zip'
+        comparison_level                = 'county'
+    elif analysis_type_number == 26:    #Zip vs. None
+        neighborhood_level              = 'zip'
+        comparison_level                = 'None'
+
+
+    elif analysis_type_number == 27:    #County Subdivison vs. Place
+        neighborhood_level              = 'county subdivision'
+        comparison_level                = 'place'
+    elif analysis_type_number == 28:    #County Subdivison vs. Custom
+        neighborhood_level              = 'county subdivision'
+        comparison_level                = 'custom'
+    elif analysis_type_number == 29:    #County Subdivison vs. Zip
+        neighborhood_level              = 'county subdivision'
+        comparison_level                = 'zip'
+    elif analysis_type_number == 30:    #County Subdivison vs. Tract
+        neighborhood_level              = 'county subdivision'
+        comparison_level                = 'tract'
+    elif analysis_type_number == 31:    #County Subdivison vs. None
+        neighborhood_level              = 'county subdivision'
+        comparison_level                = 'None'
+
+
+        
+    elif analysis_type_number == 32:    #Custom vs. Tract
+        neighborhood_level              = 'custom'
+        comparison_level                = 'tract'
+    elif analysis_type_number == 33 :   #Custom vs. County Subdivison
+        neighborhood_level              = 'custom'
+        comparison_level                = 'county subdivision'
+    elif analysis_type_number == 34 :   #Custom vs. County
+        neighborhood_level              = 'custom'
+        comparison_level                = 'county'
+    elif analysis_type_number == 35:    #Custom vs. Zip
+        neighborhood_level              = 'custom'
+        comparison_level                = 'zip'
+    elif analysis_type_number == 36:    #Custom  vs. None
+        neighborhood_level              = 'custom'
+        comparison_level                = 'None'
     else:
-            print('Not a supported level currently')
+        print('Not a supported level currently')
     return(int(analysis_type_number))
 
 def GetUserInputs():
