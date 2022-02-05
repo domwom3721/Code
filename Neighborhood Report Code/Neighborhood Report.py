@@ -105,6 +105,21 @@ def FindMedianCategory(frequency_list, category_list):
     median_category     = category_list[median_cat_index]
     return(median_category)
 
+def FilterDictionary(dictionary,desired_keys):
+    #This function takes a dictionary and a list of desired keys. 
+    # It loops through the dictionary keeping only the keys that are in our list
+    # Returns the dictionary without the unwanted items
+    assert type(dictionary) == dict
+
+    unwanted_keys = []          
+    for key in dictionary.keys():
+        if key not in desired_keys:
+            unwanted_keys.append(key)
+    
+    #Go through our list of unwanted keys and delete them
+    for unwanted_key in unwanted_keys:
+        del dictionary[unwanted_key]
+    return(dictionary)
 #####################################################Geographic Data Related Functions####################################
 def GetLatandLon():
     # Look up lat and lon of area with geocoding using google maps api
@@ -1049,8 +1064,11 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
             state_fips = comparison_state_fips
         
         try:
-            value = operator.state_place(fields = field,state_fips = state_fips,place=place_fips,year= year)[0][field]
-            return(value)
+            values = operator.state_place(fields = field,state_fips = state_fips,place=place_fips,year= year)[0] 
+            values = FilterDictionary(dictionary = values, desired_keys= field)
+            values = list(values.values())
+            return(values)
+        
         except Exception as e:
             print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area)
     
@@ -1064,8 +1082,10 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
             state_fips  = comparison_state_fips
         
         try:
-            value = operator.state_county(fields = field, state_fips = state_fips,county_fips = county_fips,year= year)[0][field]
-            return(value)
+            values = operator.state_county(fields = field, state_fips = state_fips,county_fips = county_fips,year= year)[0]
+            values = FilterDictionary(dictionary = values, desired_keys= field)
+            values = list(values.values())
+            return(values)
         except Exception as e:
             print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
 
@@ -1081,8 +1101,10 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
             state_fips = comparison_state_fips
         
         try:
-            value = operator.state_county_subdivision(fields=field,state_fips=state_fips,county_fips=county_fips,subdiv_fips=subdiv_fips,year = year)[0][field]
-            return(value)
+            values = operator.state_county_subdivision(fields=field,state_fips=state_fips,county_fips=county_fips,subdiv_fips=subdiv_fips,year = year)[0]
+            values = FilterDictionary(dictionary = values, desired_keys= field)
+            values = list(values.values())
+            return(values)
         except Exception as e:
             print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
 
@@ -1096,8 +1118,10 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
             state_fips = comparison_state_fips
 
         try:
-            value = operator.state_zipcode(fields=field,state_fips=state_fips,zcta=zcta,year= year)[0][field]
-            return(value)
+            values = operator.state_zipcode(fields=field,state_fips=state_fips,zcta=zcta,year= year)[0]
+            values = FilterDictionary(dictionary = values, desired_keys= field)
+            values = list(values.values())
+            return(values)
         except Exception as e:
             print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
 
@@ -1112,10 +1136,38 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
             county_fips = comparison_county_fips
             state_fips  = comparison_state_fips
         try:
-            value = operator.state_county_tract(fields=field, state_fips = state_fips,county_fips=county_fips,tract=tract,year= year)[0][field]
-            return(value)
+            values = operator.state_county_tract(fields=field, state_fips = state_fips,county_fips=county_fips,tract=tract,year= year)[0]
+            values = FilterDictionary(dictionary = values, desired_keys= field)
+            values = list(values.values())
+            return(values)
         except Exception as e:
             print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     elif geographic_level == 'custom':
         if operator == c.acs5:
@@ -1582,8 +1634,8 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     redistricting_total_f_field   = 'P1_035N'
 
     print('Getting 2010 Population and Total Households Estimate for Hood')
-    _2010_hood_pop = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = total_pop_field,        operator = c.sf1, aggregation_method = 'total')
-    _2010_hood_hh  = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = total_households_field, operator = c.sf1, aggregation_method = 'total')
+    _2010_hood_pop = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = total_pop_field,        operator = c.sf1, aggregation_method = 'total')[0]
+    _2010_hood_hh  = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = total_households_field, operator = c.sf1, aggregation_method = 'total')[0]
     # print(_2010_hood_pop,_2010_hood_hh)
     assert int(_2010_hood_pop) > 0
     assert int(_2010_hood_hh) > 0 
@@ -1594,14 +1646,14 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     #calculate table variables for hood
     if hood_geographic_level != 'custom':
         current_estimate_period = '2020 Census'
-        current_hood_pop        = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = redistricting_total_pop_field,   operator = c.pl, aggregation_method = 'total')
-        current_hood_hh         = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = redistricting_total_hh_field,    operator = c.pl, aggregation_method = 'total')
+        current_hood_pop        = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = redistricting_total_pop_field,   operator = c.pl, aggregation_method = 'total')[0]
+        current_hood_hh         = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = redistricting_total_hh_field,    operator = c.pl, aggregation_method = 'total')[0]
 
     
     elif hood_geographic_level == 'custom':
         current_estimate_period = 'Current Estimate'
-        current_hood_pop        = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = acs_total_pop_field,   operator = c.acs5, aggregation_method = 'total')
-        current_hood_hh         = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = acs_total_households_field,   operator = c.acs5, aggregation_method = 'total')
+        current_hood_pop        = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = acs_total_pop_field,   operator = c.acs5, aggregation_method = 'total')[0]
+        current_hood_hh         = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = acs_total_households_field,   operator = c.acs5, aggregation_method = 'total')[0]
 
 
 
@@ -1610,13 +1662,13 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
 
     #Table variables for comparison area
     print('Getting 2010 Population and Total Households for comparison area')
-    _2010_comparison_pop = GetCensusValue(geographic_level = comparison_level,   hood_or_comparison_area = 'comparison area',  field = total_pop_field,        operator = c.sf1, aggregation_method = 'total')
-    _2010_comparison_hh  = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area =  'comparison area', field = total_households_field, operator = c.sf1, aggregation_method = 'total')
+    _2010_comparison_pop = GetCensusValue(geographic_level = comparison_level,   hood_or_comparison_area = 'comparison area',  field = total_pop_field,        operator = c.sf1, aggregation_method = 'total')[0]
+    _2010_comparison_hh  = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area =  'comparison area', field = total_households_field, operator = c.sf1, aggregation_method = 'total')[0]
     
     print('Getting current Population and Total Households for comparison area')
     if comparison_geographic_level != 'custom':
-        current_comparison_pop    = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area', field = redistricting_total_pop_field,   operator = c.pl, aggregation_method = 'total')
-        current_comparison_hh     = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area', field = redistricting_total_hh_field,    operator = c.pl, aggregation_method = 'total')
+        current_comparison_pop    = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area', field = redistricting_total_pop_field,   operator = c.pl, aggregation_method = 'total')[0]
+        current_comparison_hh     = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area', field = redistricting_total_hh_field,    operator = c.pl, aggregation_method = 'total')[0]
 
     elif comparison_geographic_level == 'custom':
         #Custom vs. custom still not supported
@@ -2270,11 +2322,18 @@ def GetData():
     
     #Now grab single values for our language
     print('Getting median values for hood')
-    neighborhood_median_home_value                    = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'B25077_001E',operator = c.acs5,aggregation_method = 'mean')
-    neighborhood_median_year_built                    = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'B25035_001E',operator = c.acs5,aggregation_method = 'mean')
-    neighborhood_median_age                           = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'B01002_001E',operator = c.acs5,aggregation_method = 'mean')
-    neighborhood_median_hh_inc                        = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'B19013_001E',operator = c.acs5,aggregation_method = 'mean')
-    neighborhood_average_hh_size                      = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = 'H012001',    operator = c.sf1, aggregation_method = 'mean')
+    neighborhood_values                                 = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = ['B25077_001E','B25035_001E','B01002_001E','B19013_001E'],operator = c.acs5,aggregation_method = 'mean')
+    neighborhood_median_home_value                      = neighborhood_values[0]
+    neighborhood_median_year_built                      = neighborhood_values[1]
+    neighborhood_median_age                             = neighborhood_values[2]
+    neighborhood_median_hh_inc                          = neighborhood_values[3]
+    neighborhood_average_hh_size                        = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = ['H012001'],    operator = c.sf1, aggregation_method = 'mean')[0]
+
+    # print(neighborhood_median_home_value)                    
+    # print(neighborhood_median_year_built)                     
+    # print(neighborhood_median_age)                             
+    # print(neighborhood_median_hh_inc)                         
+    # print(neighborhood_average_hh_size)                       
 
     #Handle missing values 
     if neighborhood_median_year_built == '0':
@@ -2295,12 +2354,20 @@ def GetData():
     
     print('Getting median values for comparison area')
     #Now grab single values for our language
-    comparison_median_home_value                      = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'B25077_001E',operator = c.acs5,aggregation_method = 'mean')
-    comparison_median_year_built                      = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'B25035_001E',operator = c.acs5,aggregation_method = 'mean')
-    comparison_median_age                             = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'B01002_001E',operator = c.acs5,aggregation_method = 'mean')
-    comparison_median_hh_inc                          = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'B19013_001E',operator = c.acs5,aggregation_method = 'mean')
-    comparison_average_hh_size                        = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = 'H012001',    operator = c.sf1,aggregation_method  = 'mean')
     
+    comparison_values                                 = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = ['B25077_001E','B25035_001E','B01002_001E','B19013_001E'],operator = c.acs5,aggregation_method = 'mean')
+    comparison_median_home_value                      = comparison_values[0]
+    comparison_median_year_built                      = comparison_values[1]
+    comparison_median_age                             = comparison_values[2]
+    comparison_median_hh_inc                          = comparison_values[3]
+    comparison_average_hh_size                        = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = ['H012001'],    operator = c.sf1,aggregation_method  = 'mean')[0]
+    
+    # print(comparison_median_home_value)                    
+    # print(comparison_median_year_built)                     
+    # print(comparison_median_age)                             
+    # print(comparison_median_hh_inc)                         
+    # print(comparison_average_hh_size)            
+
     
     #Handle missing values 
     if comparison_median_year_built == '0':
