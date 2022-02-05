@@ -1143,32 +1143,6 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
         except Exception as e:
             print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     elif geographic_level == 'custom':
         if operator == c.acs5:
             operator = c_area.acs5
@@ -1177,45 +1151,65 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
 
         #Use this method when you want to average across census tracts
         if aggregation_method == 'mean':
-            try:
-                #Create empty list we will fill with values (one for each census tract within the custom shape/neighborhood)
-                neighborhood_tracts_data = []
+            for f in field:
+                custom_values = []
+                try:
+                    #Create empty list we will fill with values (one for each census tract within the custom shape/neighborhood)
+                    neighborhood_tracts_data = []
 
-                #Fetch census data for all relevant census tracts within the neighborhood
-                raw_census_data = operator.geo_tract(field, neighborhood_shape,year= year)
-                for tract_geojson, tract_data, tract_proportion in raw_census_data:
-                    tract_value = int(tract_data[field])
-                    if tract_value > 0:
-                        neighborhood_tracts_data.append((tract_value))
-                
-                #We take the simple mean of the census tracts in the area
-                assert(len(neighborhood_tracts_data) > 0)
-                value = mean(neighborhood_tracts_data)
+                    #Fetch census data for all relevant census tracts within the neighborhood
+                    raw_census_data = operator.geo_tract(f, neighborhood_shape,year = year)
+                    for tract_geojson, tract_data, tract_proportion in raw_census_data:
+                        tract_value = int(tract_data[field])
+                        if tract_value > 0:
+                            neighborhood_tracts_data.append((tract_value))
+                    
+                    #We take the simple mean of the census tracts in the area
+                    assert(len(neighborhood_tracts_data) > 0)
+                    value = mean(neighborhood_tracts_data)
 
-                return(value)
-            except Exception as e:
-                print(e,'Not able to get value using tracts')
-                return(0)
+                except Exception as e:
+                    print(e,'Not able to get mean value using tracts')
+                    value = 0
+                custom_values.append(value)
+            return(custom_values)
 
         #Use this method when adding all the values together
         elif aggregation_method == 'total':
-            try:
-                neighborhood_tracts_data = []
+            custom_values = []
+            for f in field:
+                try:
+                    neighborhood_tracts_data = []
 
-                #Fetch census data for all relevant census tracts within the neighborhood
-                raw_census_data = operator.geo_tract(field, neighborhood_shape,year = decennial_census_year)
+                    #Fetch census data for all relevant census tracts within the neighborhood
+                    raw_census_data = operator.geo_tract(f, neighborhood_shape,year = decennial_census_year)
+                    
+                    for tract_geojson, tract_data, tract_proportion in raw_census_data:
+                        neighborhood_tracts_data.append((tract_data))
+
+                    #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
+                    value_raw_data          = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = [field])
+                    value                   = value_raw_data[field]
+        
+                except Exception as e:
+                    print(e,'Not able to get total value using tracts')
+                    value = 0
                 
-                for tract_geojson, tract_data, tract_proportion in raw_census_data:
-                    neighborhood_tracts_data.append((tract_data))
+                custom_values.append(value)
+            
+            return(custom_values)
 
-                #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
-                value_raw_data          = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = [field])
-                value                   = value_raw_data[field]
-                return(value)
-    
-            except Exception as e:
-                print(e,'Not able to get value using tracts')
-                return(0)
+
+
+
+
+
+
+
+
+
+
+
 
         #Raise an error if passed an unsupported aggregation method
         else:
