@@ -1187,7 +1187,7 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
                     raw_census_data = operator.geo_tract(f, neighborhood_shape,year = decennial_census_year)
                     
                     for tract_geojson, tract_data, tract_proportion in raw_census_data:
-                        print(tract_data)
+                        # print(tract_data)
                         neighborhood_tracts_data.append(tract_data)
                     #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
                     value_raw_data          = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = [f])
@@ -3233,7 +3233,7 @@ def WikipediaTransitLanguage(category):
 
                 #If we find the section we're looking for, pull all the text from the paragraphs
                 if search_term in heading.text:
-                    print(heading.name + ' ' + heading.text.strip())
+                    # print(heading.name + ' ' + heading.text.strip())
                     para = heading.find_next_sibling('p')
                     langauge_paragraphs.append(para.text) #Once we have found the relevant section, add all the paragraphs into the list of paragraphs
 
