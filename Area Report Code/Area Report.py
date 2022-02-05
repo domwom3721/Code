@@ -4383,7 +4383,7 @@ def ProductionLanguage(county_data_frame,msa_data_frame,state_data_frame):
             '.' )
 
     boiler_plate_econ_language = ('Economic activity has slowed after historical annual growth of 6.7% in Q2 2021, softening to 2.3% for the third quarter. The slowdown in third quarter GDP reflected the continued economic impact of the COVID-19 pandemic. A resurgence of COVID-19 cases resulted in new restrictions and delays in the reopening of establishments in some parts of the country. ' +
-                            'Supply-chain disruptions such as delays at U.S. ports and international manufacturing issues contributed to a sharp increase in inflation and pose a risk to the economic outlook. Despite supply-side challenges, many economic observers expect that the economy regained momentum in the final  and is well positioned for growth in 2022. ')
+                            'Supply-chain disruptions such as delays at U.S. ports and international manufacturing issues contributed to a sharp increase in inflation and pose a risk to the economic outlook. Despite supply-side challenges, many economic observers expect that the economy regained momentum in the final quarter and is well positioned for growth in 2022. ')
     
     return[boiler_plate_econ_language, production_language]
 
