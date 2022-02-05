@@ -3614,7 +3614,7 @@ def PopLanguage():
                                   ' and '                             +
                                   comparison_area                     +
                                 " reflect "                            +
-                                "data from the 5-year American Community Survey (ACS) and the 2020 Census Redistricting Data Program, respectively.")
+                                "data from the most recent 5-year American Community Survey (ACS) and the 2020 Census Redistricting Data Program, respectively.")
 
     pop_intro_language = (disclaimer_language + population_description)
 
