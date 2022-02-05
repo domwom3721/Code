@@ -154,16 +154,28 @@ def GetNeighborhoodShape():
                     feature_hood_name = my_shape_geojson['features'][i]['properties']['name']
                     if feature_hood_name == neighborhood:
                         neighborhood_shape = my_shape_geojson['features'][i]['geometry']
-                        # print(neighborhood_shape)
                         print('Successfully pulled hood shape from stored geojson file')
                         
                         #Now that we have grabbed the coordinates for the area, export it as shapefile
                         try:
-                            coord_tuple_list = [tuple(l) for l in neighborhood_shape['coordinates'][0][0]]
-                            neighborhood_shape_polygon = Polygon(coord_tuple_list)
+                            # print(neighborhood_shape)
+                            coordinates = neighborhood_shape['coordinates'][0]
+                            # print(coordinates)
+                            neighborhood_shape_polygon = Polygon(coordinates)
+                            print('Created Polygon :)')
                             PolygonToShapeFile(poly = neighborhood_shape_polygon)
+
                         except Exception as e:
-                            print(e,'unable to export neighborhood polygon as shape')
+                            print(e,'unable to export neighborhood polygon as shape on first try')
+                            try:
+                                coord_tuple_list = [tuple(l) for l in neighborhood_shape['coordinates'][0][0]]
+                                print('Crated tuple list: ', coord_tuple_list)
+                            
+                                neighborhood_shape_polygon = Polygon(coord_tuple_list)
+                                PolygonToShapeFile(poly = neighborhood_shape_polygon)
+                                print('Created Polygon :)')
+                            except Exception as e:
+                                print(e,'unable to export neighborhood polygon as shape on second try, bummer ')
                         return(neighborhood_shape) 
                 
             except Exception as e:
