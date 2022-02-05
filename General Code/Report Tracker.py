@@ -31,7 +31,7 @@ hood_report_df                      = hood_report_df.groupby(['Assigned To','Ver
 
 #Restrict to latest version
 latest_market_verion = '2021 Q4'
-latest_area_verion   = '2021 Q3'
+latest_area_verion   = '2021 Q4'
 latest_hood_version  = 2022
 
 
