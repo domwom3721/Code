@@ -3606,8 +3606,16 @@ def PopLanguage():
                                     )
     #We don't generate this langauge for custom areas becuase we don't have all the needed info yet
     else:
-        population_description = ("")
-    
+        population_description = (" Population estimates for "        + 
+                                  neighborhood                        +
+                                  " reflect the sum of population estimates for census tracts with which it shares geographic boundaries. " +
+                                  "Current population estimates for " + 
+                                  neighborhood                        +
+                                  ' and '                             +
+                                  comparison_area                     +
+                                " reflect "                            +
+                                "data from the 5-year American Community Survey (ACS) and the 2020 Census Redistricting Data Program, respectively.")
+
     pop_intro_language = (disclaimer_language + population_description)
 
     return([pop_intro_language])
@@ -4851,7 +4859,7 @@ def UserSelectsNeighborhoodLevel(batch_mode):
         comparison_level                = 'None'
 
 
-        
+
     elif analysis_type_number == 32:    #Custom vs. Tract
         neighborhood_level              = 'custom'
         comparison_level                = 'tract'
