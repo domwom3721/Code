@@ -46,7 +46,7 @@ hood_report_df                      = hood_report_df.rename(columns={"Version": 
 
 
 #Merge the 3 dataframes together
-kpi_df                              = pd.merge(area_report_df,market_report_df, on=['Assigned To'],how = 'left') 
+kpi_df                              = pd.merge(market_report_df,area_report_df, on=['Assigned To'],how = 'left') 
 kpi_df                              = pd.merge(kpi_df,hood_report_df, on=['Assigned To'],how = 'left') 
 
 
