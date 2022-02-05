@@ -1162,18 +1162,8 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
                 return(value)
     
             except Exception as e:
-                neighborhood_tracts_data = []
-
-                #Fetch census data for all relevant census tracts within the neighborhood
-                raw_census_data = operator.geo_blockgroup(field, neighborhood_shape,year = decennial_census_year)
-            
-                for tract_geojson, tract_data, tract_proportion in raw_census_data:
-                    neighborhood_tracts_data.append((tract_data))
-
-                #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
-                value_raw_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = [field])
-                value = value_raw_data[field]
-                return(value)
+                print(e,'Not able to get value using tracts')
+                return(0)
 
         #Raise an error if passed an unsupported aggregation method
         else:
