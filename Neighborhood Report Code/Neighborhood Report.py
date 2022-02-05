@@ -899,7 +899,7 @@ def input_with_timeout(prompt, timeout, timer=time.monotonic):
 
 #####################################################Census Data Related Functions####################################
 def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fields_list,operator):
-    #A general function that takes a list of census variables that represent a set of all possible categoreis (eg: a list of home value categories)
+    #A general function that takes a list of census variables that represent a set of all possible categories (eg: a list of home value categories)
     #It then creates a list with the number of observations in each cateogry,
     #It then converts the total ammount elements to fractions of the total
     
@@ -914,85 +914,78 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
 
     #Speicify geographic level specific varaibles
     if geographic_level == 'place':
-        try:
+        if hood_or_comparison_area == 'hood':
+            place_fips = hood_place_fips
+            state_fips = hood_state_fips
+        
+        elif hood_or_comparison_area == 'comparison area':
+            place_fips = comparison_place_fips
+            state_fips = comparison_state_fips
 
-            if hood_or_comparison_area == 'hood':
-                place_fips = hood_place_fips
-                state_fips = hood_state_fips
-            
-            elif hood_or_comparison_area == 'comparison area':
-                place_fips = comparison_place_fips
-                state_fips = comparison_state_fips
-            
+        try:
             neighborhood_household_size_distribution_raw = operator.state_place(fields = fields_list,state_fips = state_fips,place=place_fips,year= year)[0]
         except Exception as e:
             print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area)
             return()
     
     elif geographic_level == 'county':
+        if hood_or_comparison_area == 'hood':
+            county_fips = hood_county_fips
+            state_fips  = hood_state_fips
+
+        elif hood_or_comparison_area == 'comparison area':
+            county_fips = comparison_county_fips
+            state_fips  = comparison_state_fips
         
         try:
-            if hood_or_comparison_area == 'hood':
-                county_fips = hood_county_fips
-                state_fips  = hood_state_fips
-
-            elif hood_or_comparison_area == 'comparison area':
-                county_fips = comparison_county_fips
-                state_fips  = comparison_state_fips
-
             neighborhood_household_size_distribution_raw =operator.state_county(fields = fields_list, state_fips = state_fips,county_fips = county_fips,year= year)[0]
-        
         except Exception as e:
             print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
             return()
 
     elif geographic_level == 'county subdivision':
+        if hood_or_comparison_area == 'hood':
+            county_fips = hood_county_fips
+            subdiv_fips = hood_suvdiv_fips
+            state_fips  = hood_state_fips
+
+        elif hood_or_comparison_area == 'comparison area':
+            county_fips = comparison_county_fips
+            subdiv_fips = comparison_suvdiv_fips
+            state_fips = comparison_state_fips
         try:
-            if hood_or_comparison_area == 'hood':
-                county_fips = hood_county_fips
-                subdiv_fips = hood_suvdiv_fips
-                state_fips  = hood_state_fips
-
-
-            elif hood_or_comparison_area == 'comparison area':
-                county_fips = comparison_county_fips
-                subdiv_fips = comparison_suvdiv_fips
-                state_fips = comparison_state_fips
-
             neighborhood_household_size_distribution_raw = operator.state_county_subdivision(fields=fields_list,state_fips=state_fips,county_fips=county_fips,subdiv_fips=subdiv_fips,year = year)[0]
         except Exception as e:
             print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
             return()
 
     elif geographic_level == 'zip':
+        if hood_or_comparison_area == 'hood':
+            zcta = hood_zip
+            state_fips  = hood_state_fips
+
+        elif hood_or_comparison_area == 'comparison area':
+            zcta       = comparison_zip
+            state_fips = comparison_state_fips
         try:
-            if hood_or_comparison_area == 'hood':
-                zcta = hood_zip
-                state_fips  = hood_state_fips
-
-            elif hood_or_comparison_area == 'comparison area':
-                zcta       = comparison_zip
-                state_fips = comparison_state_fips
-
             neighborhood_household_size_distribution_raw = operator.state_zipcode(fields=fields_list,state_fips=state_fips,zcta=zcta,year= year)[0]
         except Exception as e:
             print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
             return()
 
     elif geographic_level == 'tract':
-        try:
-            if hood_or_comparison_area == 'hood':
-                tract       = hood_tract 
-                county_fips = hood_county_fips
-                state_fips  = hood_state_fips
+        if hood_or_comparison_area == 'hood':
+            tract       = hood_tract 
+            county_fips = hood_county_fips
+            state_fips  = hood_state_fips
 
-            elif hood_or_comparison_area == 'comparison area':
-                tract       = comparison_tract
-                county_fips = comparison_county_fips
-                state_fips  = comparison_state_fips
-            
-            neighborhood_household_size_distribution_raw = operator.state_county_tract(fields=fields_list, state_fips = state_fips,county_fips=county_fips,tract=tract,year= year)[0]
+        elif hood_or_comparison_area == 'comparison area':
+            tract       = comparison_tract
+            county_fips = comparison_county_fips
+            state_fips  = comparison_state_fips
         
+        try:
+            neighborhood_household_size_distribution_raw = operator.state_county_tract(fields=fields_list, state_fips = state_fips,county_fips=county_fips,tract=tract,year= year)[0]
         except Exception as e:
             print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
             return()
@@ -1003,25 +996,9 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
         elif operator == c.sf1:
             operator = c_area.sf1
         
-        #First try using the smaller geographic level, if that fails use a larger one
+        
         try:
             #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
-            neighborhood_tracts_data = []
-
-            #Fetch census data for all relevant census tracts within the neighborhood
-            # raw_census_data = operator.geo_tract(fields_list, neighborhood_shape,year= year)
-            raw_census_data = operator.geo_blockgroup(fields_list, neighborhood_shape,year= year)
-            for tract_geojson, tract_data, tract_proportion in raw_census_data:
-                neighborhood_tracts_data.append((tract_data))
-                # print(tract_geojson)
-                # print(tract_data)
-                # print(tract_proportion)
-
-            #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
-            neighborhood_household_size_distribution_raw = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = fields_list )
-        except Exception as e:
-            print(e,'Data not available for blockgroup level, trying tract')
-             #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
             neighborhood_tracts_data = []
 
             #Fetch census data for all relevant census tracts within the neighborhood
@@ -1034,7 +1011,9 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
 
             #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
             neighborhood_household_size_distribution_raw = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = fields_list )
-    
+        except Exception as e:
+            print(e,'Unable to get distribtuion for custom area')
+
     #General data manipulation (same for all geographic levels)
     distribution = []
     for field in fields_list:
@@ -1061,89 +1040,80 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
 
     #Speicify geographic level specific varaibles
     if geographic_level == 'place':
+        if hood_or_comparison_area == 'hood':
+            place_fips = hood_place_fips
+            state_fips = hood_state_fips
+        
+        elif hood_or_comparison_area == 'comparison area':
+            place_fips = comparison_place_fips
+            state_fips = comparison_state_fips
+        
         try:
-
-            if hood_or_comparison_area == 'hood':
-                place_fips = hood_place_fips
-                state_fips = hood_state_fips
-            
-            elif hood_or_comparison_area == 'comparison area':
-                place_fips = comparison_place_fips
-                state_fips = comparison_state_fips
-            
             value = operator.state_place(fields = field,state_fips = state_fips,place=place_fips,year= year)[0][field]
             return(value)
         except Exception as e:
             print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area)
     
     elif geographic_level == 'county':
+        if hood_or_comparison_area == 'hood':
+            county_fips = hood_county_fips
+            state_fips  = hood_state_fips
+
+        elif hood_or_comparison_area == 'comparison area':
+            county_fips = comparison_county_fips
+            state_fips  = comparison_state_fips
         
         try:
-            if hood_or_comparison_area == 'hood':
-                county_fips = hood_county_fips
-                state_fips  = hood_state_fips
-
-            elif hood_or_comparison_area == 'comparison area':
-                county_fips = comparison_county_fips
-                state_fips  = comparison_state_fips
-
             value = operator.state_county(fields = field, state_fips = state_fips,county_fips = county_fips,year= year)[0][field]
             return(value)
-
         except Exception as e:
             print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
 
     elif geographic_level == 'county subdivision':
+        if hood_or_comparison_area == 'hood':
+            county_fips = hood_county_fips
+            subdiv_fips = hood_suvdiv_fips
+            state_fips  = hood_state_fips
+
+        elif hood_or_comparison_area == 'comparison area':
+            county_fips = comparison_county_fips
+            subdiv_fips = comparison_suvdiv_fips
+            state_fips = comparison_state_fips
+        
         try:
-            if hood_or_comparison_area == 'hood':
-                county_fips = hood_county_fips
-                subdiv_fips = hood_suvdiv_fips
-                state_fips  = hood_state_fips
-
-
-            elif hood_or_comparison_area == 'comparison area':
-                county_fips = comparison_county_fips
-                subdiv_fips = comparison_suvdiv_fips
-                state_fips = comparison_state_fips
-
             value = operator.state_county_subdivision(fields=field,state_fips=state_fips,county_fips=county_fips,subdiv_fips=subdiv_fips,year = year)[0][field]
             return(value)
-
         except Exception as e:
             print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
 
     elif geographic_level == 'zip':
+        if hood_or_comparison_area == 'hood':
+            zcta = hood_zip
+            state_fips  = hood_state_fips
+
+        elif hood_or_comparison_area == 'comparison area':
+            zcta       = comparison_zip
+            state_fips = comparison_state_fips
+
         try:
-            if hood_or_comparison_area == 'hood':
-                zcta = hood_zip
-                state_fips  = hood_state_fips
-
-            elif hood_or_comparison_area == 'comparison area':
-                zcta       = comparison_zip
-                state_fips = comparison_state_fips
-
             value = operator.state_zipcode(fields=field,state_fips=state_fips,zcta=zcta,year= year)[0][field]
             return(value)
-
         except Exception as e:
             print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
 
     elif geographic_level == 'tract':
-        try:
-            if hood_or_comparison_area == 'hood':
-                tract       = hood_tract 
-                county_fips = hood_county_fips
-                state_fips  = hood_state_fips
+        if hood_or_comparison_area == 'hood':
+            tract       = hood_tract 
+            county_fips = hood_county_fips
+            state_fips  = hood_state_fips
 
-            elif hood_or_comparison_area == 'comparison area':
-                tract       = comparison_tract
-                county_fips = comparison_county_fips
-                state_fips  = comparison_state_fips
-            
+        elif hood_or_comparison_area == 'comparison area':
+            tract       = comparison_tract
+            county_fips = comparison_county_fips
+            state_fips  = comparison_state_fips
+        try:
             value = operator.state_county_tract(fields=field, state_fips = state_fips,county_fips=county_fips,tract=tract,year= year)[0][field]
             return(value)
-
-        
         except Exception as e:
             print(e, 'Problem getting data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
 
@@ -1153,14 +1123,14 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
         elif operator == c.sf1:
             operator = c_area.sf1
 
-        #Use this method when you want to average across blockgroups
+        #Use this method when you want to average across census tracts
         if aggregation_method == 'mean':
             try:
                 #Create empty list we will fill with values (one for each census tract within the custom shape/neighborhood)
                 neighborhood_tracts_data = []
 
                 #Fetch census data for all relevant census tracts within the neighborhood
-                raw_census_data = operator.geo_blockgroup(field, neighborhood_shape,year= year)
+                raw_census_data = operator.geo_tract(field, neighborhood_shape,year= year)
                 for tract_geojson, tract_data, tract_proportion in raw_census_data:
                     tract_value = int(tract_data[field])
                     if tract_value > 0:
@@ -1172,26 +1142,8 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
 
                 return(value)
             except Exception as e:
-                try:
-                    print(e,'Data not avilable for blockgroup, using tract level')
-                    #Create empty list we will fill with values (one for each census tract within the custom shape/neighborhood)
-                    neighborhood_tracts_data = []
-
-                    #Fetch census data for all relevant census tracts within the neighborhood
-                    raw_census_data = operator.geo_tract(field, neighborhood_shape,year= year)
-                    for tract_geojson, tract_data, tract_proportion in raw_census_data:
-                        tract_value = int(tract_data[field])
-                        if tract_value > 0:
-                            neighborhood_tracts_data.append((tract_value))
-                    
-                    #We take the simple mean of the census tracts in the area
-                    assert(len(neighborhood_tracts_data) > 0)
-                    value = mean(neighborhood_tracts_data)
-
-                    return(value)
-                except Exception as e:
-                    print(e,'Not able to get value using tracts')
-                    return(0)
+                print(e,'Not able to get value using tracts')
+                return(0)
 
         #Use this method when adding all the values together
         elif aggregation_method == 'total':
