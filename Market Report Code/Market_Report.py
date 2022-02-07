@@ -1245,7 +1245,7 @@ def CreateDirectoryCSV():
                     
                     if file == 'CoStar Markets.csv':
                         continue
-                    if ('Archive' in dirpath) or ('Quality Control' in dirpath):
+                    if ('Legacy Archive' in dirpath) or ('Quality Control' in dirpath):
                         continue
                     
                     full_path = dirpath + '/' + file
@@ -1339,7 +1339,7 @@ def CreateDirectoryCSV():
                             'Version':dropbox_versions,
                             'Status':dropbox_statuses,
                             'Document Name': dropbox_document_names})
-        all_files_dropbox_df = all_files_dropbox_df.sort_values(by=['State','Market Research Name'])
+        all_files_dropbox_df = all_files_dropbox_df.sort_values(by=['State','Market Research Name','Version'],ascending = (True, True,False))
 
         #Drop the rows in this dataframe that are already in our main dropbox df
         all_files_dropbox_df = all_files_dropbox_df.loc[(all_files_dropbox_df['Dropbox Links'].isin(dropbox_df['Dropbox Links'])) == False   ]        
