@@ -4626,7 +4626,7 @@ def CreateDirectoryCSV():
                 
                 full_path = dirpath + '/' + file
 
-                if file == 'Dropbox Neighborhoods.csv' or ('Archive' in dirpath) or ('~' in file):
+                if file == 'Dropbox Neighborhoods.csv' or ('Legacy Archive' in dirpath) or ('~' in file):
                     continue
                 
                 if (os.path.exists(full_path.replace('_draft','_FINAL'))) and ('_draft' in full_path) or ('docx' not in full_path):
@@ -4670,7 +4670,7 @@ def CreateDirectoryCSV():
                            'Version':dropbox_versions,
                            'Status':dropbox_statuses,
                            'Document Name': dropbox_document_names})
-    dropbox_df = dropbox_df.sort_values(by=['State','Market Research Name'])
+    dropbox_df = dropbox_df.sort_values(by=['State','Market Research Name','Version'], ascending = (True, True,False))
 
     #Merge the dataframe with a list of states and the inital of who is assigned to complete them
     assigned_to_df                          = pd.read_excel(os.path.join(general_data_location,'Administrative Data','Assigned To States.xlsx')) 
