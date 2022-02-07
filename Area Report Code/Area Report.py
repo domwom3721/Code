@@ -4148,21 +4148,7 @@ def CountyEmploymentGrowthLanguage(county_industry_breakdown):
             slowest_growth_industry_5y_description +
             ' ' +
             slowest_growth_industry_5y +
-            ' over the previous five years.'
-             ' Over the past year, ' +
-             employment_loss_1year_all_most_some + 
-             ' industries have lost employees.' 
-            #  ' The ' +
-            #  slowest_growing_industry_1y +
-            #   ' sector saw the largest decline in employees and remains '+
-            #   slowest_growth_industry_1y +
-            #   ' ' + 
-            # 'below Q' +
-            #   qcew_qtr +
-            #   ' ' +
-            #   str(int(qcew_year) - 1) +
-            #   ' levels.'
-              )
+            ' over the previous five years.'              )
 
 
     return(county_emplopyment_growth_language)
@@ -4298,21 +4284,7 @@ def MSAEmploymentGrowthLanguage(msa_industry_breakdown):
                 slowest_growth_industry_5y_description +
                 ' ' +
                 slowest_growth_industry_5y +
-                ' over the previous five years.'
-                ' Over the past year, ' +
-                employment_loss_1year_all_most_some + 
-                ' industries have lost employees.' 
-                # ' The ' +
-                # slowest_growing_industry_1y +
-                # ' sector saw the largest decline in employees and remains '+
-                # slowest_growth_industry_1y +
-                # ' ' + 
-                # 'below Q' +
-                # qcew_qtr +
-                # ' ' +
-                # str(int(qcew_year) - 1) +
-                # ' levels.'
-                )
+                ' over the previous five years.')
     else:
         msa_emplopyment_growth_language = ''
 
