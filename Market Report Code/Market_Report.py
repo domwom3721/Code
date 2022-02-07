@@ -1245,7 +1245,7 @@ def CreateDirectoryCSV():
                     
                     if file == 'CoStar Markets.csv':
                         continue
-                    if ('Legacy Archive' in dirpath) or ('Quality Control' in dirpath):
+                    if ('Archive' in dirpath) or ('Quality Control' in dirpath):
                         continue
                     
                     full_path = dirpath + '/' + file
