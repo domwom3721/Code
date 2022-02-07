@@ -4793,7 +4793,7 @@ def OutlookLanguage():
                                 
     national_economy_summary = (
                             'The United States economy continues to recover from the aftermath of the Covid-19 pandemic.' + 
-                            ' The labor market has restored almost 19 million of the 21 million jobs lost at the beginning of the pandemic, as measured by non-farm employment, bringing the unemployment rate to 3.9% as of December 2021.'+
+                            ' The labor market has restored almost 19 million of the 21 million jobs lost at the beginning of the pandemic, as measured by non-farm employment, bringing the unemployment rate to 3.9% as of December 2021. '+
                             'Employment growth continued in leisure and hospitality, in professional and business services, in retail trade, and in transportation and warehousing. ' + 
                             'After historical growth in Q2, GDP growth slowed to an annual rate of 2.3% in Q3 2021. ' + 
                             'The slowdown in third quarter GDP reflected the continued economic impact of the COVID-19 pandemic. A resurgence of COVID-19 cases resulted in new restrictions and delays in the reopening of establishments in some parts of the country. ' +
@@ -4864,10 +4864,10 @@ def OutlookLanguage():
     county_10y_growth = county_resident_pop.iloc[-1]['Resident Population_10year_growth'] 
 
     if county_5y_growth < 0 and county_1y_growth < 0:
-        county_demographic_sentence = (county + ' continues to experience population loss with one and five year annual growth rates of ' +  "{:,.1f}%".format(county_1y_growth) + ' and ' + "{:,.1f}%".format(county_5y_growth) + '.'  )
+        county_demographic_sentence = (county + ' continues to experience population loss with one- and five-year annual growth rates of ' +  "{:,.1f}%".format(county_1y_growth) + ' and ' + "{:,.1f}%".format(county_5y_growth) + '.'  )
     
     elif county_5y_growth > 0 and county_1y_growth > 0:
-        county_demographic_sentence = (county + ' continues to experience population gains with one and five year annual growth rates of ' +  "{:,.1f}%".format(county_1y_growth) + ' and ' + "{:,.1f}%".format(county_5y_growth) + '.'  )
+        county_demographic_sentence = (county + ' continues to experience population gains with one- and five-year annual growth rates of ' +  "{:,.1f}%".format(county_1y_growth) + ' and ' + "{:,.1f}%".format(county_5y_growth) + '.'  )
 
 
     elif  county_5y_growth < 0 and county_1y_growth > 0:
