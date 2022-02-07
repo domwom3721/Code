@@ -3608,7 +3608,7 @@ def PopLanguage():
     else:
         population_description = (" Population estimates for "        + 
                                   neighborhood                        +
-                                  " reflect the sum of population estimates for census tracts with which it shares geographic boundaries. " +
+                                  " reflect the sum of population estimates for census tracts that overlap its geographic boundaries. " +
                                   "Current population estimates for " + 
                                   neighborhood                        +
                                   ' and '                             +
