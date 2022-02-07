@@ -5711,7 +5711,7 @@ def CreateDirectoryCSV():
         else:
             for file in filenames:
                     
-                if file == 'Dropbox Areas.csv' or '.docx' not in file or ('Archive' in dirpath):
+                if file == 'Dropbox Areas.csv' or '.docx' not in file or ('Legacy Archvie' in dirpath):
                     continue
                 full_path = dirpath + '/' + file
 
@@ -5754,7 +5754,7 @@ def CreateDirectoryCSV():
                            'Version':dropbox_versions,
                            'Status':dropbox_statuses,
                            'Document Name': dropbox_document_names})
-    dropbox_df = dropbox_df.sort_values(by=['State','Market Research Name'])
+    dropbox_df = dropbox_df.sort_values(by=['Version','State','Market Research Name'])
     
     assigned_to_df                          = pd.read_excel(os.path.join(general_data_location,'Administrative Data','Assigned To States.xlsx')) 
     dropbox_df                              = pd.merge(dropbox_df,assigned_to_df, on=['State'],how = 'left') 
