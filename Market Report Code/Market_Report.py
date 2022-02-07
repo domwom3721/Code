@@ -1254,32 +1254,32 @@ def CreateDirectoryCSV():
                     if (os.path.exists(full_path.replace('_draft','_FINAL'))) and ('_draft' in full_path) or ('docx' not in full_path):
                         continue
                     
-                    if """Market\Condo""" in full_path:
+                    if """\Condo""" in full_path:
                         prop_type ='Condo'
                         dropbox_prop_types.append(prop_type)
                         dropbox_prop_codes.append('C')
                     
-                    elif """Market\Single Family""" in full_path:
+                    elif """\Single Family""" in full_path:
                         prop_type ='Single Family'
                         dropbox_prop_types.append(prop_type)
                         dropbox_prop_codes.append('SF')
 
-                    elif """Market\Retail""" in full_path:
+                    elif """\Retail""" in full_path:
                         prop_type ='Retail'
                         dropbox_prop_types.append(prop_type)
                         dropbox_prop_codes.append('R')
 
-                    elif """Market\Multifamily""" in full_path:
+                    elif """\Multifamily""" in full_path:
                         prop_type ='Multifamily'
                         dropbox_prop_types.append(prop_type)
                         dropbox_prop_codes.append('MF')
                     
-                    elif """Market\Industrial""" in full_path:
+                    elif """\Industrial""" in full_path:
                         prop_type ='Industrial'
                         dropbox_prop_types.append(prop_type)
                         dropbox_prop_codes.append('I')
                     
-                    elif """Market\Office""" in full_path:
+                    elif """\Office""" in full_path:
                         prop_type ='Office'
                         dropbox_prop_types.append(prop_type)
                         dropbox_prop_codes.append('O')
