@@ -5754,7 +5754,8 @@ def CreateDirectoryCSV():
                            'Version':dropbox_versions,
                            'Status':dropbox_statuses,
                            'Document Name': dropbox_document_names})
-    dropbox_df = dropbox_df.sort_values(by=['Version','State','Market Research Name'])
+    dropbox_df = dropbox_df.sort_values(by=['State','Market Research Name','Version'], ascending = (True, True,False))
+
     
     assigned_to_df                          = pd.read_excel(os.path.join(general_data_location,'Administrative Data','Assigned To States.xlsx')) 
     dropbox_df                              = pd.merge(dropbox_df,assigned_to_df, on=['State'],how = 'left') 
