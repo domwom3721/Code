@@ -21,34 +21,55 @@ hood_report_df    = hood_report_df.loc[hood_report_df['Status'] == 'Final']
 
 
 #Collapse down each dataframe to the total done by each team member
-area_report_df['Total Area Reports']      = 1
-market_report_df['Total Market Reports']  = 1
-hood_report_df['Total Hood Reports']      = 1
+area_report_df['Total Reports']      = 1
+market_report_df['Total Reports']    = 1
+hood_report_df['Total Reports']      = 1
 
-area_report_df                      = area_report_df.groupby(['Assigned To','Version']).agg({'Total Area Reports': 'sum'}).reset_index()
-market_report_df                    = market_report_df.groupby(['Assigned To','Version']).agg({'Total Market Reports': 'sum'}).reset_index()
-hood_report_df                      = hood_report_df.groupby(['Assigned To','Version']).agg({'Total Hood Reports': 'sum'}).reset_index()
+area_report_df                      = area_report_df.groupby(['Assigned To','Version']).agg({'Total Reports': 'sum'}).reset_index()
+market_report_df                    = market_report_df.groupby(['Assigned To','Version']).agg({'Total Reports': 'sum'}).reset_index()
+hood_report_df                      = hood_report_df.groupby(['Assigned To','Version']).agg({'Total Reports': 'sum'}).reset_index()
 
-#Restrict to latest version
-latest_market_verion = '2021 Q4'
-latest_area_verion   = '2021 Q4'
-latest_hood_version  = 2022
-
-
-area_report_df    = area_report_df.loc[area_report_df['Version']     == latest_area_verion ]
-market_report_df  = market_report_df.loc[market_report_df['Version'] == latest_market_verion]
-hood_report_df    = hood_report_df.loc[hood_report_df['Version']     == latest_hood_version]
-
-#Rename verion variables
-area_report_df                      = area_report_df.rename(columns={"Version": "Area Report Version"})
-market_report_df                    = market_report_df.rename(columns={"Version": "Market Report Version"})
-hood_report_df                      = hood_report_df.rename(columns={"Version": "Hood Report Version"})
+area_report_df['Type']              = 'Area'
+market_report_df['Type']            = 'Market'
+hood_report_df['Type']              = 'Hood'
 
 
-#Merge the 3 dataframes together
-kpi_df                              = pd.merge(market_report_df,area_report_df, on=['Assigned To'],how = 'left') 
-kpi_df                              = pd.merge(kpi_df,hood_report_df, on=['Assigned To'],how = 'left') 
-
+#Append the 3 dataframes together
+kpi_df                              = pd.concat([area_report_df,market_report_df,hood_report_df])
+kpi_df                              = kpi_df.sort_values(by=['Type','Version','Assigned To',])
 
 print(kpi_df)
+#Export as csv file
 kpi_df.to_csv(os.path.join(main_output_location,'KPI.csv'),index=False)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# #Rename verion variables
+# area_report_df                      = area_report_df.rename(columns={"Version": "Area Report Version"})
+# market_report_df                    = market_report_df.rename(columns={"Version": "Market Report Version"})
+# hood_report_df                      = hood_report_df.rename(columns={"Version": "Hood Report Version"})
+
+# #Restrict to latest version
+# latest_market_verion = '2021 Q4'
+# latest_area_verion   = '2021 Q4'
+# latest_hood_version  = 2022
+
+
+# area_report_df    = area_report_df.loc[area_report_df['Version']     == latest_area_verion ]
+# market_report_df  = market_report_df.loc[market_report_df['Version'] == latest_market_verion]
+# hood_report_df    = hood_report_df.loc[hood_report_df['Version']     == latest_hood_version]
+
+#Append the 3 dataframes together
+# kpi_df                              = pd.merge(market_report_df,area_report_df, on=['Assigned To'],how = 'left') 
+# kpi_df                              = pd.merge(kpi_df,hood_report_df, on=['Assigned To'],how = 'left') 
