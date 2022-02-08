@@ -3496,12 +3496,12 @@ def OverviewLanguage():
                                                     dtype={
                                                         'CBSA_Code': object,
                                                         'metro_name': object,
-                                                        'overview': object,
-                                                        'economy': object,
+                                                        'Overview': object,
+                                                        'LaborMarketConditions': object,
                                                         'growth': object,
-                                                        'unique_aspects': object,
+                                                        'UniqueAspects': object,
                                                         'Infrastructure': object,
-                                                        'Colleges and Education': object
+                                                        'Education': object
                                                         }
                                             )
 
@@ -3512,13 +3512,13 @@ def OverviewLanguage():
         #If we have a cbsa/msa for the county, then use the excel file text
         if len(metro_area_language_df) == 1:   
             CBSA_overview_language       = metro_area_language_df['Overview'].iloc[-1]
-            # CBSA_economy_language        = metro_area_language_df['Economy'].iloc[-1]
+            CBSA_economy_language        = metro_area_language_df['LaborMarketConditions'].iloc[-1]
             # CBSA_infrastructure_language = metro_area_language_df['Infrastructure'].iloc[-1]
             # print('Getting Metro_Language from CSV')
         
         else:
             CBSA_overview_language         = ''
-            # CBSA_economy_language        = ''
+            CBSA_economy_language          = ''
             # CBSA_infrastructure_language = ''
     except Exception as e:
         print(e,'trouble getting cbsa overview language')
@@ -5455,7 +5455,7 @@ def AddMap(document):
                 browser.quit()
             except:
                 pass
-
+    Citation(document=document,text = 'Google Maps')
 def AddTwoColumnTable(document,pic_list,lang_list):
     #Insert the transit graphics(car, bus,plane, train)
     tab = document.add_table(rows=0, cols=2)
