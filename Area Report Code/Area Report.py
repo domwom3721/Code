@@ -244,10 +244,15 @@ def FindBLSEndYear():
 def GetCountyGDP(fips,observation_start):
     print('Getting County GDP')
     county_gdp_series_code = 'REALGDPALL' + fips
-    county_gdp_df = fred.get_series(series_id = county_gdp_series_code,observation_start = observation_start)
-    county_gdp_df = county_gdp_df.to_frame().reset_index()
-    county_gdp_df.columns = ['Period','GDP']
-    county_gdp_df['GDP'] = county_gdp_df['GDP'] * 1000
+    county_gdp_df          = fred.get_series(series_id = county_gdp_series_code,observation_start = observation_start)
+    county_gdp_df          = county_gdp_df.to_frame().reset_index()
+    
+    
+    county_gdp_df['GDP']                          = county_gdp_df['GDP'] * 1000
+    county_gdp_df['Lagged GDP']                   = county_gdp_df['GDP'].shift(1)
+    county_gdp_df['GDP Growth']                   = ((county_gdp_df['GDP'] / county_gdp_df['Lagged GDP']) - 1)  * 100
+    county_gdp_df.columns                         = ['Period','GDP','Lagged GDP','GDP Growth']
+    print(county_gdp_df)
 
     if data_export == True:
         county_gdp_df.to_csv(os.path.join(county_folder,'County GDP.csv'))
@@ -4296,12 +4301,13 @@ def MSAEmploymentGrowthLanguage(msa_industry_breakdown):
 def ProductionLanguage(county_data_frame,msa_data_frame,state_data_frame):
     print('Writing Production Langauge')
     county_data_frame['Period'] = county_data_frame['Period'].dt.strftime('%m/%d/%Y')
-    latest_period     = county_data_frame['Period'].iloc[-1]
-    latest_period     = latest_period[-4:]
-    latest_county_gdp       = county_data_frame['GDP'].iloc[-1]
-    latest_county_gdp       = millify(latest_county_gdp)
-    latest_county_gdp       = "$" + latest_county_gdp
-    latest_county_gdp_growth = ((county_data_frame['GDP'].iloc[-1]/county_data_frame['GDP'].iloc[-2]) - 1) * 100
+    latest_period               = county_data_frame['Period'].iloc[-1]
+    latest_period               = latest_period[-4:]
+    latest_county_gdp           = county_data_frame['GDP'].iloc[-1]
+    latest_county_gdp           = millify(latest_county_gdp)
+    latest_county_gdp           = "$" + latest_county_gdp
+    
+    latest_county_gdp_growth    = ((county_data_frame['GDP'].iloc[-1]/county_data_frame['GDP'].iloc[-2]) - 1) * 100
     
 
     #determine how to describe GDP growth 
