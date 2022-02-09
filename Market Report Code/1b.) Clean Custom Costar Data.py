@@ -176,7 +176,7 @@ def SortData(df): #Sorts by geography and quarter
     return(df)
 
 def KeepLast10Years(df,groupbylist): #Cut down to last 10 years
-    df = df.groupby(groupbylist).tail(41)
+    df = df.groupby(groupbylist).tail(40)
     return(df)
 
 def CreateYearAndQuarterVariables(df): #seperates the period variable into 2 components (year and quarter)
