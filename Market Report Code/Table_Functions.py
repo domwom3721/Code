@@ -126,79 +126,82 @@ def AddOverviewTable(document,number_rows,number_cols,row_data,col_width): #Func
     
 def AddTable(document,row_data,col_width): #Function we use to insert our wide tables into report document 
     #Make sure each list in the list of lists have the same number of elements 
-    for row in row_data:
-        for row2 in row_data:
-            assert len(row) == len(row2)
-    number_rows = len(row_data)
-    number_cols = len(row_data[0])
+    try:
+        for row in row_data:
+            for row2 in row_data:
+                assert len(row) == len(row2)
+        number_rows = len(row_data)
+        number_cols = len(row_data[0])
 
-    #Make sure the data has a list of inputs for each row
-    assert number_rows == len(row_data) 
+        #Make sure the data has a list of inputs for each row
+        assert number_rows == len(row_data) 
 
-    #create table object
-    tab = document.add_table(rows=number_rows, cols=number_cols)
-    tab.alignment     = WD_TABLE_ALIGNMENT.CENTER
+        #create table object
+        tab = document.add_table(rows=number_rows, cols=number_cols)
+        tab.alignment     = WD_TABLE_ALIGNMENT.CENTER
 
-    #loop through the rows in the table
-    for current_row ,(row,row_data_list) in enumerate(zip(tab.rows,row_data)): 
-        assert (len(row_data_list) == number_cols) and (isinstance(row_data_list, list)) #make sure there is an item for each column in this row
+        #loop through the rows in the table
+        for current_row ,(row,row_data_list) in enumerate(zip(tab.rows,row_data)): 
+            assert (len(row_data_list) == number_cols) and (isinstance(row_data_list, list)) #make sure there is an item for each column in this row
 
-       
-        row.height = Inches(0.17)
         
-        #loop through all cells in the current row
-        for current_column,(cell,cell_data) in enumerate(zip(row.cells,row_data_list)):
+            row.height = Inches(0.17)
+            
+            #loop through all cells in the current row
+            for current_column,(cell,cell_data) in enumerate(zip(row.cells,row_data_list)):
 
-            if ('2022 Q' in str(cell_data)) or ('2023 Q' in str(cell_data))  or ('2024 Q' in str(cell_data)):
-                cell_data = cell_data[5:]
+                if ('2022 Q' in str(cell_data)) or ('2023 Q' in str(cell_data))  or ('2024 Q' in str(cell_data)):
+                    cell_data = cell_data[5:]
 
 
-            cell.text = str(cell_data)
+                cell.text = str(cell_data)
 
-         
+            
+                
+
+                if current_row == 0:
+                    cell.vertical_alignment = WD_ALIGN_VERTICAL.BOTTOM
+
             
 
-            if current_row == 0:
-                cell.vertical_alignment = WD_ALIGN_VERTICAL.BOTTOM
 
-          
-
-
-            #add border to top row
-            if current_row == 1:
-                    tcPr = cell._element.tcPr
-                    tcBorders = OxmlElement("w:tcBorders")
-                    top = OxmlElement('w:top')
-                    top.set(qn('w:val'), 'single')
-                    tcBorders.append(top)
-                    tcPr.append(tcBorders)
+                #add border to top row
+                if current_row == 1:
+                        tcPr = cell._element.tcPr
+                        tcBorders = OxmlElement("w:tcBorders")
+                        top = OxmlElement('w:top')
+                        top.set(qn('w:val'), 'single')
+                        tcBorders.append(top)
+                        tcPr.append(tcBorders)
 
 
-            #loop through the paragraphs in the cell and set font and style
-            for paragraph in cell.paragraphs:
-                if current_column > 0:
-                    paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-                else:
-                     paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
-                    
-                paragraph.paragraph_format.space_after  = Pt(0)
-                paragraph.paragraph_format.space_before = Pt(0)
-
-                for run in paragraph.runs:
-                    font = run.font
-                    if current_row == 0:
-                        font.size= Pt(8)
+                #loop through the paragraphs in the cell and set font and style
+                for paragraph in cell.paragraphs:
+                    if current_column > 0:
+                        paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
                     else:
-                        font.size = Pt(7)
+                        paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                        
+                    paragraph.paragraph_format.space_after  = Pt(0)
+                    paragraph.paragraph_format.space_before = Pt(0)
 
-                    #make first row bold
-                    if current_row == 0: 
-                        font.bold = True
-                        font.name = 'Avenir Next LT Pro Demi'
-    #set column widths
-    for i in range(0,number_cols):
-        for cell in tab.columns[i].cells:
-            cell.width = Inches(col_width)
+                    for run in paragraph.runs:
+                        font = run.font
+                        if current_row == 0:
+                            font.size= Pt(8)
+                        else:
+                            font.size = Pt(7)
+
+                        #make first row bold
+                        if current_row == 0: 
+                            font.bold = True
+                            font.name = 'Avenir Next LT Pro Demi'
+        #set column widths
+        for i in range(0,number_cols):
+            for cell in tab.columns[i].cells:
+                cell.width = Inches(col_width)
+    except Exception as e:
+        print(e,'problem adding table')
 
 def AddHeading(document,title,heading_level): #Function we use to insert the headers other than the title header
             heading = document.add_heading(title,level=heading_level)
