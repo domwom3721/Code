@@ -5385,7 +5385,7 @@ def AddHeading(document,title,heading_level): #Function we use to insert the hea
 def Citation(document,text):
     citation_paragraph = document.add_paragraph()
     citation_paragraph.paragraph_format.space_after  = Pt(6)
-    citation_paragraph.paragraph_format.space_before = Pt(6)
+    citation_paragraph.paragraph_format.space_before = Pt(0)
     run = citation_paragraph.add_run('Source: ' + text)
     font = run.font
     font.name = primary_font
