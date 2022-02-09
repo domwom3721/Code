@@ -5455,7 +5455,7 @@ def AddMap(document):
                 browser.quit()
             except:
                 pass
-    Citation(document=document,text = 'Source: Google Maps')
+    Citation(document=document,text = 'Google Maps')
 
 def AddTwoColumnTable(document,pic_list,lang_list):
     #Insert the transit graphics(car, bus,plane, train)
