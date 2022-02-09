@@ -3717,7 +3717,7 @@ def IncomeLanguage():
         largest_income_cohort_comparison = (
                         'In '                                                          +                                
                        neighborhood                                                    + 
-                       ', the largest share of households have a household income of ' +
+                       ', the largest share of households has a household income of ' +
                        hood_largest_income_category                                    +
                        ', compared to '                                                +
                        comp_largest_income_category                                    +
@@ -3732,7 +3732,7 @@ def IncomeLanguage():
                        neighborhood                                                    +
                        ' and '                                                         +
                        comparison_area                                                 + 
-                       ', the largest share of households have a household income of ' +
+                       ', the largest share of households has a household income of ' +
                        hood_largest_income_category                                    +
                        '.'
                                                 )
