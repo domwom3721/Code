@@ -429,6 +429,9 @@ def ProcessPlaceFIPS(place_fips):
     place_name                      = place_name.split(',')[0].strip()
     place_type                      = place_name.split(' ')[len(place_name.split(' '))-1] #eg: village, city, etc
     place_name                      = ' '.join(place_name.split(' ')[0:len(place_name.split(' '))-1]).title()
+    place_name                      = place_name.replace("""\\""",'-')
+    place_name                      = place_name.replace("""/""",'-')
+
     
     #Name of State
     state                           = us.states.lookup(state_full_name) #convert the full state name to the 2 letter abbreviation
