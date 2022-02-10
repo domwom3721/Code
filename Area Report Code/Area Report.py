@@ -243,16 +243,14 @@ def FindBLSEndYear():
 #County Data
 def GetCountyGDP(fips,observation_start):
     print('Getting County GDP')
-    county_gdp_series_code = 'REALGDPALL' + fips
-    county_gdp_df          = fred.get_series(series_id = county_gdp_series_code,observation_start = observation_start)
-    county_gdp_df          = county_gdp_df.to_frame().reset_index()
-    
-    
+
+    county_gdp_series_code                        = 'REALGDPALL' + fips
+    county_gdp_df                                 = fred.get_series(series_id = county_gdp_series_code,observation_start = observation_start)
+    county_gdp_df                                 = county_gdp_df.to_frame().reset_index()
+    county_gdp_df.columns                         = ['Period','GDP']
     county_gdp_df['GDP']                          = county_gdp_df['GDP'] * 1000
     county_gdp_df['Lagged GDP']                   = county_gdp_df['GDP'].shift(1)
     county_gdp_df['GDP Growth']                   = ((county_gdp_df['GDP'] / county_gdp_df['Lagged GDP']) - 1)  * 100
-    county_gdp_df.columns                         = ['Period','GDP','Lagged GDP','GDP Growth']
-    print(county_gdp_df)
 
     if data_export == True:
         county_gdp_df.to_csv(os.path.join(county_folder,'County GDP.csv'))
