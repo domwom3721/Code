@@ -833,7 +833,9 @@ def DeclareAPIKeys():
     global zoneomics_api_key
     
     #Declare API Keys
-    census_api_key                = random.choice(['dcb94abaa03f53bcd06d0435fe95c8923b77a5fe','18335344cf4a0242ae9f7354489ef2f8860a9f61','dcdb8b4e42295322909cfa255dff42315f031e15','7edfea186b81b67ba23a95dc849602dd1a9a94d0'])
+    census_api_key                = random.choice(['dcb94abaa03f53bcd06d0435fe95c8923b77a5fe','18335344cf4a0242ae9f7354489ef2f8860a9f61',
+                                                   'dcdb8b4e42295322909cfa255dff42315f031e15','7edfea186b81b67ba23a95dc849602dd1a9a94d0',
+                                                   'a09f3af3f84f663b69538c0de2e5c6f586568a92'])
     walkscore_api_key             = '057f7c0a590efb7ec06da5a8735e536d'
     google_maps_api_key           = 'AIzaSyBMcoRFOW2rxAGxURCpA4gk10MROVVflLs'
     yelp_client_id                = 'NY9c0_9kvOU4wfzmkkruOQ'
