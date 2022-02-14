@@ -2254,15 +2254,32 @@ def GetData():
 
     #Start by getting our distributions for our graphs
     print('Getting distributions for hood')
+    sleep_time = 2
+    time.sleep(sleep_time)
     neighborhood_household_size_distribution          = GetHouseholdSizeData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Neighborhood households by size
+    time.sleep(sleep_time)
     neighborhood_tenure_distribution                  = GetHousingTenureData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Tenure (owner occupied/renter)
+    time.sleep(sleep_time)
     neighborhood_housing_value_data                   = GetHousingValues(         geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Owner Occupied housing units by value
+    time.sleep(sleep_time)
+    
     neighborhood_year_built_data                      = GetHouseYearBuiltData(    geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by year structure built
+    time.sleep(sleep_time)
+    
     neighborhood_method_to_work_distribution          = GetTravelMethodData(      geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Mode to Work
+    time.sleep(sleep_time)
+    
     neighborhood_household_income_data                = GetHouseholdIncomeValues( geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Households by household income data
+    time.sleep(sleep_time)
+    
     neighborhood_time_to_work_distribution            = GetTravelTimeData(        geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Travel Time to Work
+    time.sleep(sleep_time)
+    
     neighborhood_number_units_data                    = GetNumberUnitsData(       geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Units by units in building
+    time.sleep(sleep_time)
+    
     neighborhood_age_data                             = GetAgeData(               geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Population by age data
+    time.sleep(sleep_time)
     
     #Now grab single values for our language
     print('Getting median values for hood')
@@ -2271,6 +2288,7 @@ def GetData():
     neighborhood_median_year_built                      = neighborhood_values[1]
     neighborhood_median_age                             = neighborhood_values[2]
     neighborhood_median_hh_inc                          = neighborhood_values[3]
+    time.sleep(sleep_time)
     neighborhood_average_hh_size                        = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = ['H012001'],    operator = c.sf1, aggregation_method = 'mean')[0]
 
     # Handle missing values 
@@ -2282,13 +2300,21 @@ def GetData():
     #Start by getting our distributions for our graphs
     print('Getting distributions for comparison area')
     comparison_household_size_distribution            = GetHouseholdSizeData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    time.sleep(sleep_time)
     comparison_tenure_distribution                    = GetHousingTenureData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    time.sleep(sleep_time)
     comparison_housing_value_data                     = GetHousingValues(        geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
+    time.sleep(sleep_time)
     comparison_year_built_data                        = GetHouseYearBuiltData(   geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    time.sleep(sleep_time)
     comparison_household_income_data                  = GetHouseholdIncomeValues(geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')   
+    time.sleep(sleep_time)
     comparison_time_to_work_distribution              = GetTravelTimeData(       geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    time.sleep(sleep_time)
     comparison_age_data                               = GetAgeData(              geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
+    time.sleep(sleep_time)
     comparison_number_units_data                      = GetNumberUnitsData(      geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
+    time.sleep(sleep_time)
     
     print('Getting median values for comparison area')
     #Now grab single values for our language
@@ -2298,6 +2324,7 @@ def GetData():
     comparison_median_year_built                      = comparison_values[1]
     comparison_median_age                             = comparison_values[2]
     comparison_median_hh_inc                          = comparison_values[3]
+    time.sleep(sleep_time)
     comparison_average_hh_size                        = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = ['H012001'],    operator = c.sf1,aggregation_method  = 'mean')[0]
         
     # Handle missing values 
