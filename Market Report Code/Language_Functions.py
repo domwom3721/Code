@@ -2306,7 +2306,7 @@ def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_f
     elif vacancy_change < 0 and under_construction_share >= large_supply_pipeline_threshold:
         pipeline_sentence = ('However, a large supply pipeline could put upward pressure on vacancy rates. ' )
     elif vacancy_change > 0 and under_construction_share >= large_supply_pipeline_threshold:
-        pipeline_sentence = ('Furthermore, a large supply pipeline could put futher upward pressure on vacancy rates. ' )
+        pipeline_sentence = ('Furthermore, a large supply pipeline could put further upward pressure on vacancy rates. ' )
     elif vacancy_change < 0 and under_construction_share == 0:
         pipeline_sentence = ('Furthermore, an empty supply pipeline should allow for further vacancy rate compression. ' )
     else:
