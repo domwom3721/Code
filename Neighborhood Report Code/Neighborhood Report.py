@@ -4683,7 +4683,7 @@ def CreateDirectoryCSV():
                 
                 try:
                     hood_name     = file.split(' - ')[1].strip()
-                    research_name = state_name + ' - ' + file.split(' - ')[1].strip()
+                    research_name = state_name + ' - ' + file.split(' - ')[1].strip() + ' - ' + ' Hood'
                 
                 except:
                     hood_name     = 'FIX FILE FORMAT'
