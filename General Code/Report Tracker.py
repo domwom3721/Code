@@ -25,9 +25,9 @@ area_report_df['Total Reports']      = 1
 market_report_df['Total Reports']    = 1
 hood_report_df['Total Reports']      = 1
 
-area_report_df                      = area_report_df.groupby(['Assigned To','Version']).agg({'Total Reports': 'sum'}).reset_index()
-market_report_df                    = market_report_df.groupby(['Assigned To','Version']).agg({'Total Reports': 'sum'}).reset_index()
-hood_report_df                      = hood_report_df.groupby(['Assigned To','Version']).agg({'Total Reports': 'sum'}).reset_index()
+area_report_df                      = area_report_df.groupby(['Version']).agg({'Total Reports': 'sum'}).reset_index()
+market_report_df                    = market_report_df.groupby(['Version']).agg({'Total Reports': 'sum'}).reset_index()
+hood_report_df                      = hood_report_df.groupby(['Version']).agg({'Total Reports': 'sum'}).reset_index()
 
 area_report_df['Type']              = 'Area'
 market_report_df['Type']            = 'Market'
@@ -36,7 +36,7 @@ hood_report_df['Type']              = 'Hood'
 
 #Append the 3 dataframes together
 kpi_df                              = pd.concat([area_report_df,market_report_df,hood_report_df])
-kpi_df                              = kpi_df.sort_values(by=['Type','Version','Assigned To',])
+kpi_df                              = kpi_df.sort_values(by=['Type','Version'])
 
 print(kpi_df)
 #Export as csv file
