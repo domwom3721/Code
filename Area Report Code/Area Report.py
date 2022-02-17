@@ -5688,38 +5688,60 @@ def CreateDirectoryCSV():
         else:
             for file in filenames:
                     
-                if file == 'Dropbox Areas.csv' or '.docx' not in file or ('Legacy Archvie' in dirpath):
+                if (file == 'Dropbox Areas.csv') or ('.docx' not in file):
                     continue
                 full_path = dirpath + '/' + file
 
-                # #If there's a draft and final for a county, ignore the draft
+                #If there's a draft and final for a county, ignore the draft
                 if (os.path.exists(full_path.replace('_draft','_FINAL'))) and ('_draft' in full_path):
                     continue
-         
- 
-                dropbox_document_names.append(file)
-                dropbox_analysis_types.append('Area')
-                dropbox_link = dirpath.replace(dropbox_root,r'https://www.dropbox.com/home')
-                dropbox_link = dropbox_link.replace("\\",r'/')    
-                dropbox_links.append(dropbox_link)
-                dropbox_versions.append(file[0:7])
+                
+                #Create variables on the reports, then add to list
+                analyisis_type = 'Area'
+                dropbox_link   = dirpath.replace(dropbox_root,r'https://www.dropbox.com/home')
+                dropbox_link   = dropbox_link.replace("\\",r'/')    
                 if '_draft' in file:
                     file_status = 'Draft'
                 else:
                     file_status = 'Final'
 
-                dropbox_statuses.append(file_status)
-                state_name    = file[8:10]
-
-                first_dash_location       = file.find('- ') 
-                first_underscore_location = file.find('_')
-                county_name               = file[first_dash_location + 2:first_underscore_location]        
-                research_name             = state_name + ' - ' + county_name
-               
+                #For our more recent reports, we can parse the file name to grab key info
+                if 'Legacy Archvie' not in dirpath:
+                    version                   = file[0:7]
+                    state_name                = file[8:10]
+                    first_dash_location       = file.find('- ') 
+                    first_underscore_location = file.find('_')
+                    county_name               = file[first_dash_location + 2:first_underscore_location]        
+                    research_name             = state_name + ' - ' + county_name
                 
+                else:
+                    #Skip these subfolders
+                    if ('Unknown Period' in dirpath) or ("""Old Templates""" in dirpath) or ("""Source Data""" in dirpath):
+                        continue
+                    directory_path_split      = dirpath.split("""\\""")
+                    version                   = directory_path_split[10]
+                    state_name                = directory_path_split[11]
+                    if state_name == 'US':
+                        county_name               = 'United States' 
+                    elif state_name == 'DC':
+                        county_name               = 'Washington D.C.'  
+
+                    else:
+                        county_name               = directory_path_split[12]   
+                    research_name             = state_name + ' - ' + county_name
+
+                  
+
+                
+                dropbox_document_names.append(file)
+                dropbox_analysis_types.append(analyisis_type)
+                dropbox_links.append(dropbox_link)
+                dropbox_versions.append(version)
+                dropbox_statuses.append(file_status)
                 dropbox_county_names.append(county_name)
                 dropbox_research_names.append(research_name)
                 dropbox_states.append(state_name)
+                break
             
             
 
