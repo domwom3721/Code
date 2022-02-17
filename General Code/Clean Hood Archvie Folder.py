@@ -10,9 +10,10 @@ assert os.path.exists(hood_archive_root)
 #Loop through the folders in the archive folder and delete any empty ones
 for i in range(10):
     for (dirpath, dirnames, filenames) in os.walk(hood_archive_root):
+        print(dirpath)
         if dirnames == [] and filenames == [] and dirpath != hood_archive_root:
             print('Deleting ',dirpath)
-            os.rmdir(dirpath)
+        #     os.rmdir(dirpath)
     
 
 
