@@ -40,7 +40,7 @@ kpi_df                              = kpi_df.sort_values(by=['Type','Version'])
 
 print(kpi_df)
 #Export as csv file
-kpi_df.to_csv(os.path.join(main_output_location,'KPI.csv'),index=False)
+kpi_df.to_csv(os.path.join(dropbox_root,'Research','Projects','KPI','KPI.csv'),index=False)
 
 
 
