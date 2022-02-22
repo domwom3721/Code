@@ -3353,7 +3353,7 @@ def OutlookLanguage():
                         comparison_area + 
                         ', '            + 
                         comparison_state_full_name + 
-                        ' with limited/access to interstate highways, public transportation, a diverse housing stick, recreational amenities, and businesses for everyday use. ' +
+                        ' with limited/access to interstate highways, public transportation, a diverse housing stock, recreational amenities, and businesses for everyday use. ' +
                         
                         #Growth sentance
                         'Given the lack of access to/Despite access to/ these amenities,' + neighborhood + ' has experienced ' +
