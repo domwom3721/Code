@@ -3351,10 +3351,10 @@ def OutlookLanguage():
                         comparison_area + 
                         ', '            + 
                         comparison_state_full_name + 
-                        ' well-served by [interstate highways, public transportation, and recreational amenities]. ' +
+                        ' with limited/access to interstate highways, public transportation, a diverse housing stick, recreational amenities, and businesses for everyday use. ' +
                         
                         #Growth sentance
-                        neighborhood + ' has experienced ' +
+                        'Given the lack of access to/Despite access to/ these amenities,' + neighborhood + ' has experienced ' +
                         pop_growth_description +
                         ' population growth over the past decade, a trend that is expected to continue in the near-term.'
                         
