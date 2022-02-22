@@ -1906,7 +1906,7 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
 
     
     #MSA PCI is unavailable, but county is (or county is equal to msa)
-    elif ((isinstance(msa_data_frame, pd.DataFrame) == False)  and (isinstance(county_data_frame, pd.DataFrame) == True)) or (county_data_frame.equals(msa_data_frame)):
+    elif ((isinstance(msa_data_frame, pd.DataFrame) == False)  and (isinstance(county_data_frame, pd.DataFrame) == True)) :
         print('MSA PCI Unavailable, County PCI is available')
         #Add National Growth
         fig.add_trace( go.Bar(
