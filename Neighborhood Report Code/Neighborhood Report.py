@@ -4721,7 +4721,7 @@ def DecideIfWritingReport():
     #Give the user 10 seconds to decide if writing reports for metro areas or individual county entries
     try:
         if batch_mode == False:
-            report_creation = input_with_timeout('Create new report? y/n', 10).strip()
+            report_creation = input_with_timeout('Create new report? y/n', 30).strip()
         else:
             report_creation = 'y'
 
@@ -5134,7 +5134,7 @@ acs_5y_year           = 2019 #The year of the american community survey for our 
 
 #Let User Decide (on timer) if they want to use batch mode or not
 try:
-    batch_mode_input = int(input_with_timeout('Batch Mode: True (1) or False (0)',10))
+    batch_mode_input = int(input_with_timeout('Batch Mode: True (1) or False (0)',30))
     if batch_mode_input == 1:
         batch_mode = True
     elif batch_mode_input == 0:
@@ -5147,13 +5147,13 @@ if batch_mode == True:
     
     #Let user select batch number
     try:
-        batch_type_number =  int(input_with_timeout('Select batch type (1 = places, 2 = subdivisions, 3 = neighborhoods vs city, 34 = neighborhoods vs county )',10))  #controls what report type we are doing batches of
+        batch_type_number =  int(input_with_timeout('Select batch type (1 = places, 2 = subdivisions, 3 = neighborhoods vs city, 34 = neighborhoods vs county )',30))  #controls what report type we are doing batches of
     except:
         batch_type_number = 1 #controls what report type we are doing batches of
     
     #Let user select if doing batches from salesforce or user inputs
     try:
-        salesforce_batch_mode =  int(input_with_timeout('Select batch type (1 = salesforce list, 2 = user proivded county fips',10))  
+        salesforce_batch_mode =  int(input_with_timeout('Select batch type (1 = salesforce list, 2 = user proivded county fips',30))  
     except:
         salesforce_batch_mode = 1 #controls what report type we are doing batches of
     
