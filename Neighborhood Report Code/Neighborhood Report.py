@@ -453,6 +453,8 @@ def ProcessCountyFIPS(county_fips):
     name                     = c.sf1.state_county(fields=['NAME'], state_fips = state_fips, county_fips = county_fips)[0]['NAME']
     state_full_name          = name.split(',')[1].strip()
     name                     = name.split(',')[0].strip().title()
+    name                     = name.replace("""'S""","""'s""")
+
 
     #Change county name for NYC counties
     if county_fips == '061' and name == 'New York County':
