@@ -44,17 +44,14 @@ from shapely.geometry import LineString, MultiPoint, Point, shape,Polygon,mappin
 from shapely.ops import nearest_points
 from walkscore import WalkScoreAPI
 from yelpapi import YelpAPI
-# import kml2geojson
-# from osgeo import gdal,ogr #gdal can open the kml file from google maps 
-# import cartoframes
-# import fiona
+
 
 
 #Define file paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
 project_location               =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Projects', 'Research Report Automation Project') 
 # main_output_location           =  os.path.join(project_location,'Output','Neighborhood')                   #testing
-main_output_location           =  os.path.join(dropbox_root,'Research','Market Analysis','Neighborhood') #production
+main_output_location           =  os.path.join(dropbox_root,'Research','Market Analysis','Neighborhood')     #production
 data_location                  =  os.path.join(project_location,'Data','Neighborhood Reports Data')
 general_data_location          =  os.path.join(project_location,'Data','General Data')
 graphics_location              =  os.path.join(project_location,'Data','General Data','Graphics')
@@ -107,8 +104,8 @@ def FindMedianCategory(frequency_list, category_list):
 
 def FilterDictionary(dictionary,desired_keys):
     #This function takes a dictionary and a list of desired keys. 
-    # It loops through the dictionary keeping only the keys that are in our list
-    # Returns the dictionary without the unwanted items
+    #It loops through the dictionary keeping only the keys that are in our list
+    #Returns the dictionary without the unwanted items
     assert type(dictionary) == dict
 
     unwanted_keys = []          
@@ -122,7 +119,7 @@ def FilterDictionary(dictionary,desired_keys):
     return(dictionary)
 #####################################################Geographic Data Related Functions####################################
 def GetLatandLon():
-    # Look up lat and lon of area with geocoding using google maps api
+    #Look up lat and lon of area with geocoding using google maps api
     gmaps          = googlemaps.Client(key=google_maps_api_key) 
     
     if neighborhood_level == 'custom':
@@ -158,22 +155,16 @@ def GetNeighborhoodShape():
                         
                         #Now that we have grabbed the coordinates for the area, export it as shapefile
                         try:
-                            # print(neighborhood_shape)
-                            coordinates = neighborhood_shape['coordinates'][0]
-                            # print(coordinates)
+                            coordinates                = neighborhood_shape['coordinates'][0]
                             neighborhood_shape_polygon = Polygon(coordinates)
-                            print('Created Polygon :)')
-                            PolygonToShapeFile(poly = neighborhood_shape_polygon)
+                            PolygonToShapeFile(poly    = neighborhood_shape_polygon)
 
                         except Exception as e:
                             print(e,'unable to export neighborhood polygon as shape on first try')
                             try:
-                                coord_tuple_list = [tuple(l) for l in neighborhood_shape['coordinates'][0][0]]
-                                print('Crated tuple list: ', coord_tuple_list)
-                            
+                                coord_tuple_list           = [tuple(l) for l in neighborhood_shape['coordinates'][0][0]]
                                 neighborhood_shape_polygon = Polygon(coord_tuple_list)
-                                PolygonToShapeFile(poly = neighborhood_shape_polygon)
-                                print('Created Polygon :)')
+                                PolygonToShapeFile(poly    = neighborhood_shape_polygon)
                             except Exception as e:
                                 print(e,'unable to export neighborhood polygon as shape on second try, bummer ')
                         return(neighborhood_shape) 
@@ -182,8 +173,8 @@ def GetNeighborhoodShape():
                 print(e,'unable to get geography from the city geojson file even tho it exists')
         
         #If we don't have the geojson file downloaded for the comparison city        
-        print('Unable to find geography from the ' + comparison_area + ' geojson file') 
-        confirmation = input('Press enter to confirm you are using a hand drawn geography downloaded from online')
+        confirmation = input('Unable to find geography from the ' + comparison_area + ' geojson file. ' + 'Press enter to confirm you are using a hand drawn geography downloaded from online')
+        
         #Define file locations
         file_download_location             = os.path.join(os.environ['USERPROFILE'],'Downloads', 'map.geojson') #download from here: http://geojson.io/#map=5/34.071/-72.817
         new_geojson_file_location          = os.path.join(data_location,'Neighborhood Shapes','Custom Hood Shapes', 'map.geojson')
@@ -200,7 +191,6 @@ def GetNeighborhoodShape():
 
 
         neighborhood_shape = my_shape_geojson['features'][0]['geometry']
-        # print(neighborhood_shape)
         print('Successfully pulled hood shape from downloaded custom geojson file')
 
          #Now that we have grabbed the coordinates for the area, export it as shapefile
@@ -225,7 +215,6 @@ def GetNeighborhoodShape():
             #Open the shapefile
             place_map = shapefile.Reader(shapefile_location)
         
-
             #Loop through each place in the shape file
             for i in range(len(place_map)):
                 place_record = place_map.shapeRecord(i)
@@ -233,7 +222,7 @@ def GetNeighborhoodShape():
                 if place_record.record['PLACEFP'] != hood_place_fips:
                     continue
                 else:
-                    neighborhood_shape        =  place_map.shape(i)
+                    neighborhood_shape         =  place_map.shape(i)
                     neighborhood_shape_polygon = Polygon(neighborhood_shape.points)
                     print('Successfully pulled census shape from shapefile')
                     try:
@@ -250,10 +239,10 @@ def GetNeighborhoodShape():
     elif neighborhood_level == 'county subdivision':
         try:
             shapefile_location = os.path.join(neighborhood_shapes_location,'Census County Subdivision Shapes',('tl_2021_' + hood_state_fips + '_cousub'),('tl_2021_' + hood_state_fips + '_cousub.shp'))
-            assert os.path.exists(shapefile_location)
+            assert             os.path.exists(shapefile_location)
 
             #Open the shapefile
-            place_map = shapefile.Reader(shapefile_location)
+            place_map          = shapefile.Reader(shapefile_location)
 
         
 
@@ -264,7 +253,7 @@ def GetNeighborhoodShape():
                 if place_record.record['COUNTYFP'] != hood_county_fips or  place_record.record['COUSUBFP'] != hood_suvdiv_fips:
                     continue
                 else:
-                    neighborhood_shape        =  place_map.shape(i)
+                    neighborhood_shape         =  place_map.shape(i)
                     neighborhood_shape_polygon = Polygon(neighborhood_shape.points)
                     print('Successfully pulled census shape from shapefile')
                     try:
@@ -279,22 +268,19 @@ def GetNeighborhoodShape():
             print(e,'unable to get shape for census place')
 
 def PolygonToShapeFile(poly):
-        # WRITE TO SHAPEFILE USING PYSHP
+        #WRITE TO SHAPEFILE USING PYSHP
         target_file_path = os.path.join(hood_folder_map,'my.shp')
-        shapewriter = shapefile.Writer(target=target_file_path)
+        shapewriter      = shapefile.Writer(target=target_file_path)
         shapewriter.field("field1")
-        # print('created writer object')
 
-        # step1: convert shapely to pyshp using the function above
+        #step1: convert shapely to pyshp using the function above
         converted_shape = shapely_to_pyshp(poly)
-        # print('created converted shape')
+
         # step2: tell the writer to add the converted shape
-        
         shapewriter.shape(converted_shape)
         # add a list of attributes to go along with the shape
         shapewriter.record(["empty record"])
         # save it
-        # print('saved file')
         shapewriter.close()
 
 def shapely_to_pyshp(shapelygeom):
@@ -351,7 +337,7 @@ def GetListOfNeighborhoods(city):
         with open(os.path.join(data_location,'Neighborhood Shapes','Custom Hood Shapes',city + '.geojson')) as infile: #Open a geojson file with the city as the name the name of the file with the neighborhood boundries for that city
                     my_shape_geojson = json.load(infile)
                 
-        #Iterate through the features in the file (each feature is a negihborhood) and find the boundry of interest
+        #Iterate through the features in the file (each feature is a neighborhood) and find the boundry of interest
         feature_hood_names = []
         for i in range(len(my_shape_geojson['features'])):
             feature_hood_name = my_shape_geojson['features'][i]['properties']['name']
@@ -384,10 +370,8 @@ def DetermineNYCCommunityDistrict(lat,lon):
                     return(str(communtiy_district_number))
 
             except Exception as e:
-                # print(e)
                 continue
         
-        print('Area is not part of any NYC Community District')
         return('x')
 
 
@@ -401,12 +385,10 @@ def TransitAgencyIdToName(id):
     
     try:
         print('The ID is: ', id)
-        df = pd.read_excel(os.path.join(general_data_location,'Geographic Data','GTFS_NTM_Stops','2020 Agency Information.xlsx')) #from here: https://www.transit.dot.gov/ntd/data-product/2020-annual-database-agency-information
+        df           = pd.read_excel(os.path.join(general_data_location,'Geographic Data','GTFS_NTM_Stops','2020 Agency Information.xlsx')) #from here: https://www.transit.dot.gov/ntd/data-product/2020-annual-database-agency-information
         df['NTD ID'] = df['NTD ID'].astype(str)
-        # df['NTD ID'] = df['NTD ID'].zfill(6)
-        df = df.loc[df['NTD ID'] == id]
-        print(df)
-        agency_name = df['Agency Name'].iloc[0]    
+        df           = df.loc[df['NTD ID'] == id]
+        agency_name  = df['Agency Name'].iloc[0]    
         return(agency_name)
     except Exception as e:
         print(e,'Couldnt find Transit Agency name from ID number')
@@ -445,9 +427,9 @@ def ProcessCountyFIPS(county_fips):
     
     #Process the FIPS code provided by user
     county_fips               = county_fips.replace('-','').strip()
-    assert len(county_fips) == 5
-    state_fips               = county_fips[0:2]
-    county_fips              = county_fips[2:]
+    assert len(county_fips)   == 5
+    state_fips                = county_fips[0:2]
+    county_fips               = county_fips[2:]
 
     #Get name of county
     name                     = c.sf1.state_county(fields=['NAME'], state_fips = state_fips, county_fips = county_fips)[0]['NAME']
@@ -490,13 +472,16 @@ def ProcessCountySubdivisionFIPS(county_subdivision_fips):
     name             = name.split(',')[0].strip().title()
     place_type       = name.split(' ')[len(name.split(' '))-1] #eg: village, city, etc
     name             = ' '.join(name.split(' ')[0:len(name.split(' '))-1]).title()
-
+    
+    if place_type    == 'Township':
+        name = name + ' ' + place_type
+    
     #Name of State
     state            = us.states.lookup(state_full_name) #convert the full state name to the 2 letter abbreviation
     state            = state.abbr
     assert len(state) == 2
 
-    return([suvdiv_fips,county_fips,name,state_fips,state_full_name,state,place_type])
+    return([suvdiv_fips, county_fips, name, state_fips, state_full_name, state,place_type])
      
 def ProcessCountyTract(tract,county_fips):
     #Takes a user provided county fips code and a census tract number and returns a list of key variables
@@ -546,10 +531,10 @@ def ProcessZipCode(zip_code):
     #Name of State
     state                              = us.states.lookup(state_full_name) #convert the full state name to the 2 letter abbreviation
     state                              = state.abbr
-    assert                 len(state) == 2
+    assert                             len(state) == 2
 
 
-    return([county_fips, zip_code, name,state_full_name,state,state_fips])
+    return([county_fips, zip_code, name, state_full_name, state, state_fips])
 
 def PlaceFIPSToCountyFIPS(place_fips,state_fips):
     print('Looking for county fips code')
@@ -584,7 +569,6 @@ def PlaceFIPSToCountyFIPS(place_fips,state_fips):
         return(input_county_fips)
    
 def PlaceNameToPlaceFIPS(place_name,state_code):
-    # print('Looking for place fips code')
     #Takes place name and returns the 7 digit fips code for a city 
     
     #Open file with place fips code and county fips code
@@ -593,21 +577,21 @@ def PlaceNameToPlaceFIPS(place_name,state_code):
     place_county_crosswalk_df['PLACEFP']                 = place_county_crosswalk_df['PLACEFP'].astype(str)
     place_county_crosswalk_df['PLACEFP']                 = place_county_crosswalk_df['PLACEFP'].str.zfill(5)
 
-    place_county_crosswalk_df['State_Place_FP']                 = place_county_crosswalk_df['State_Place_FP'].astype(str)
-    place_county_crosswalk_df['State_Place_FP']                 = place_county_crosswalk_df['State_Place_FP'].str.zfill(7)
+    place_county_crosswalk_df['State_Place_FP']          = place_county_crosswalk_df['State_Place_FP'].astype(str)
+    place_county_crosswalk_df['State_Place_FP']          = place_county_crosswalk_df['State_Place_FP'].str.zfill(7)
 
 
     #Restrict to observations that include the provieded place fips
-    place_county_crosswalk_df            = place_county_crosswalk_df.loc[(place_county_crosswalk_df['Neighborhood_District'] == str(place_name)) & (place_county_crosswalk_df['STATE'] == str(state_code)) & (place_county_crosswalk_df['TYPE'] != 'County Subdivision') ].reset_index()                 
+    place_county_crosswalk_df                            = place_county_crosswalk_df.loc[(place_county_crosswalk_df['Neighborhood_District'] == str(place_name)) & (place_county_crosswalk_df['STATE'] == str(state_code)) & (place_county_crosswalk_df['TYPE'] != 'County Subdivision') ].reset_index()                 
     
     #Return the last row if that's there's only one, otherwise ask user to choose
     if len(place_county_crosswalk_df) == 1:
-        county_fips                         = str(place_county_crosswalk_df['State_Place_FP'].iloc[-1])[0:7]
+        county_fips                                      = str(place_county_crosswalk_df['State_Place_FP'].iloc[-1])[0:7]
     
     elif len(place_county_crosswalk_df) > 1:
         print(place_county_crosswalk_df)
         selected_county = int(input('There are more than 1 counties for this city: enter the number of your choice'))  
-        county_fips                         = str(place_county_crosswalk_df['State_Place_FP'].iloc[selected_county])[0:7]
+        county_fips                                      = str(place_county_crosswalk_df['State_Place_FP'].iloc[selected_county])[0:7]
     else:
         return(None)
 
@@ -615,13 +599,11 @@ def PlaceNameToPlaceFIPS(place_name,state_code):
     return(county_fips)
 
 def SubdivsionNameToFIPS(subdivision_name,state_code):
-    # print('Looking for place fips code')
     #Takes subdivision name and returns the 10 digit fips code for it
     
     #Open file with place fips code and county fips code
-    place_county_crosswalk_df                            = pd.read_csv(os.path.join(data_location,'Census Area Codes','national_cousub.csv'),encoding='latin-1') #read in crosswalk file
+    place_county_crosswalk_df                             = pd.read_csv(os.path.join(data_location,'Census Area Codes','national_cousub.csv'),encoding='latin-1') #read in crosswalk file
     
-
     place_county_crosswalk_df['COUSUBFP']                 = place_county_crosswalk_df['COUSUBFP'].astype(str)
     place_county_crosswalk_df['COUSUBFP']                 = place_county_crosswalk_df['COUSUBFP'].str.zfill(5)
 
@@ -636,7 +618,6 @@ def SubdivsionNameToFIPS(subdivision_name,state_code):
     place_county_crosswalk_df['COUSUBNAME']               = place_county_crosswalk_df['COUSUBNAME'].str.split(' ',-1)
     place_county_crosswalk_df['COUSUBNAMELEN']            = place_county_crosswalk_df['COUSUBNAME'].str.len()
 
-    # print(place_county_crosswalk_df[0:20])
     
     #Cut off the last word in each county subdivision name
     def drop_last_item(item):
@@ -647,9 +628,6 @@ def SubdivsionNameToFIPS(subdivision_name,state_code):
         
     place_county_crosswalk_df['COUSUBNAME'] = place_county_crosswalk_df['COUSUBNAME'].apply(drop_last_item)
     
-
-    # print(place_county_crosswalk_df[0:20])
- 
     #Restrict to observations that include the provieded place fips
     place_county_crosswalk_df            = place_county_crosswalk_df.loc[(place_county_crosswalk_df['COUSUBNAME'] == str(subdivision_name)) & (place_county_crosswalk_df['STATE'] == str(state_code))  ].reset_index()                 
     
@@ -673,8 +651,6 @@ def SubdivsionNameToFIPS(subdivision_name,state_code):
     else:
         return(None)
 	
-
-
     return(subdiv_fips)
 
 def SalesforcePlaceFIPSList():
@@ -682,12 +658,12 @@ def SalesforcePlaceFIPSList():
     #Open Salesforce Report
     salesforce_df              =  pd.read_csv(os.path.join(salesforce_report,'report.csv'))
     
-    place_fips_list = []
-    city_name_list                 = list(salesforce_df['Property: Neighborhood/District'])
-    state_code_list                = list(salesforce_df['Property: State'])
+    place_fips_list            = []
+    city_name_list             = list(salesforce_df['Property: Neighborhood/District'])
+    state_code_list            = list(salesforce_df['Property: State'])
         
-    for loop_city,sc in zip(city_name_list,state_code_list):
-        place_fips_list.append(PlaceNameToPlaceFIPS(place_name= loop_city,state_code = sc))  
+    for loop_city,sc in zip(city_name_list, state_code_list):
+        place_fips_list.append(PlaceNameToPlaceFIPS(place_name = loop_city, state_code = sc))  
 
     return(place_fips_list)     
 
@@ -729,24 +705,23 @@ def CountyInputSubdivisionFIPSList(county_fips):
     print('Getting list of subdivision fips within ' + county_fips)
 
     #Open file with place fips code and county fips code
-    place_county_crosswalk_df                                   = pd.read_csv(os.path.join(data_location,'Census Area Codes','national_cousub.csv'),encoding='latin-1',dtype={'STATEFP':str,'COUNTYFP':str,'COUSUBFP':str}) #read in crosswalk file
+    place_county_crosswalk_df                            = pd.read_csv(os.path.join(data_location,'Census Area Codes','national_cousub.csv'),encoding='latin-1',dtype={'STATEFP':str,'COUNTYFP':str,'COUSUBFP':str}) #read in crosswalk file
     
     place_county_crosswalk_df['STATEFP']                 = place_county_crosswalk_df['STATEFP'].astype(str)
     place_county_crosswalk_df['STATEFP']                 = place_county_crosswalk_df['STATEFP'].str.zfill(2)
     
-    place_county_crosswalk_df['COUNTYFP']                 = place_county_crosswalk_df['COUNTYFP'].astype(str)
-    place_county_crosswalk_df['COUNTYFP']                 = place_county_crosswalk_df['COUNTYFP'].str.zfill(3)
-    place_county_crosswalk_df['COUNTYFP']                 = place_county_crosswalk_df['STATEFP'] + place_county_crosswalk_df['COUNTYFP']
+    place_county_crosswalk_df['COUNTYFP']                = place_county_crosswalk_df['COUNTYFP'].astype(str)
+    place_county_crosswalk_df['COUNTYFP']                = place_county_crosswalk_df['COUNTYFP'].str.zfill(3)
+    place_county_crosswalk_df['COUNTYFP']                = place_county_crosswalk_df['STATEFP'] + place_county_crosswalk_df['COUNTYFP']
 
-    place_county_crosswalk_df['COUSUBFP']                 = place_county_crosswalk_df['COUSUBFP'].astype(str)
-    place_county_crosswalk_df['COUSUBFP']                 = place_county_crosswalk_df['COUSUBFP'].str.zfill(5)
+    place_county_crosswalk_df['COUSUBFP']                = place_county_crosswalk_df['COUSUBFP'].astype(str)
+    place_county_crosswalk_df['COUSUBFP']                = place_county_crosswalk_df['COUSUBFP'].str.zfill(5)
 
-    place_county_crosswalk_df['SUBDIVFIPS']               = place_county_crosswalk_df['COUNTYFP'] + place_county_crosswalk_df['COUSUBFP'] 
+    place_county_crosswalk_df['SUBDIVFIPS']              = place_county_crosswalk_df['COUNTYFP'] + place_county_crosswalk_df['COUSUBFP'] 
 
     #Restrict to observations that fall within the county fips provided
-    place_county_crosswalk_df                                   = place_county_crosswalk_df.loc[(place_county_crosswalk_df['COUNTYFP'] == str(county_fips)) ].reset_index()                 
+    place_county_crosswalk_df                            = place_county_crosswalk_df.loc[(place_county_crosswalk_df['COUNTYFP'] == str(county_fips)) ].reset_index()                 
 
-    # print(place_county_crosswalk_df)
     return(list(place_county_crosswalk_df['SUBDIVFIPS']))
 
 #####################################################Misc Functions####################################
@@ -769,26 +744,30 @@ def CreateDirectory():
         if hood_state == ('NY') and ((comparison_area == 'Brooklyn') or (comparison_area == 'Staten Island') or (comparison_area == 'The Bronx') or  (comparison_area == 'Manhattan') or (comparison_area == 'Queens')   ):
             
             if (comparison_area == 'Brooklyn'):
-                city_folder =  os.path.join(main_output_location,hood_state,'NYC','BK')
+                city_folder     =  os.path.join(main_output_location,hood_state,'NYC','BK')
                 city_folder_map =  os.path.join(map_location,hood_state,'NYC','BK')
+
             elif (comparison_area == 'Staten Island'):
-                city_folder =  os.path.join(main_output_location,hood_state,'NYC','SI')
+                city_folder     =  os.path.join(main_output_location,hood_state,'NYC','SI')
                 city_folder_map =  os.path.join(map_location,hood_state,'NYC','SI')
+
             elif (comparison_area == 'The Bronx'):
-                city_folder =  os.path.join(main_output_location,hood_state,'NYC','BX')
+                city_folder     =  os.path.join(main_output_location,hood_state,'NYC','BX')
                 city_folder_map =  os.path.join(map_location,hood_state,'NYC','BX')
+            
             elif (comparison_area == 'Manhattan'):
-                city_folder =  os.path.join(main_output_location,hood_state,'NYC','MA')
+                city_folder     =  os.path.join(main_output_location,hood_state,'NYC','MA')
                 city_folder_map =  os.path.join(map_location,hood_state,'NYC','MA')
+            
             elif (comparison_area == 'Queens'):
-                city_folder =  os.path.join(main_output_location,hood_state,'NYC','QU')
+                city_folder     =  os.path.join(main_output_location,hood_state,'NYC','QU')
                 city_folder_map =  os.path.join(map_location,hood_state,'NYC','QU')
 
 
         
         
         else:
-            city_folder =  os.path.join(main_output_location,hood_state,comparison_area)
+            city_folder     =  os.path.join(main_output_location,hood_state,comparison_area)
             city_folder_map =  os.path.join(map_location,hood_state,comparison_area)
 
         if os.path.exists(city_folder) == False:
@@ -807,9 +786,7 @@ def CreateDirectory():
         hood_folder_map          = os.path.join(map_location,hood_state,neighborhood)
     
 
-
-
-    for folder in [state_folder,hood_folder,state_folder_map,hood_folder_map]:
+    for folder in [state_folder, hood_folder, state_folder_map, hood_folder_map]:
          if os.path.exists(folder):
             pass 
          else:
@@ -822,18 +799,14 @@ def FindZipCodeDictionary(zip_code_data_dictionary_list,zcta,state_fips):
     #This function takes a list of dictionaries, where each zip code gets its own dictionary. Takes a zip code and state fips code and finds and returns just that dictionary.
     #We need to use this, because the census api is causing an error that requires us to retrive data for all zip codes in the country
     for zcta_dictionary in  zip_code_data_dictionary_list:
-    
         if zcta_dictionary['zip code tabulation area'] == zcta and zcta_dictionary['state'] == state_fips:
             return(zcta_dictionary)
-        
-
     print('Could not find dictionary for given zip code: ', zcta )
 
 #Data Gathering Related Functions
 def DeclareAPIKeys():
-    global census_api_key,walkscore_api_key,google_maps_api_key,yelp_api_key,yelp_api,yelp_client_id,location_iq_api_key
-    global c,c_area,walkscore_api
-    global zoneomics_api_key
+    global census_api_key, walkscore_api_key, google_maps_api_key, yelp_api_key, yelp_api, yelp_client_id, location_iq_api_key
+    global c, c_area, walkscore_api, zoneomics_api_key
     
     #Declare API Keys
     census_api_key_df             = pd.read_csv(  os.path.join(data_location,'API Keys','CensusAPIKeys.csv') )
@@ -847,10 +820,10 @@ def DeclareAPIKeys():
     location_iq_api_key           = 'pk.8937271b8b15004065ca62552e7d06f7'
     zoneomics_api_key             = 'd69b3eee92f8d3cec8c71893b340faa8cb52e1b8'
 
+    c                             = Census(census_api_key)     #Census API wrapper package
+    c_area                        = CensusArea(census_api_key) #Census API package, sepearete extension of main package that allows for custom boundries
     yelp_api                      = YelpAPI(yelp_api_key)
     walkscore_api                 = WalkScoreAPI(api_key = walkscore_api_key)
-    c                             = Census(census_api_key) #Census API wrapper package
-    c_area                        = CensusArea(census_api_key) #Census API package, sepearete extension of main package that allows for custom boundries
 
 #Data Gathering Related Functions
 def DeclareFormattingParameters():
@@ -882,7 +855,7 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
     #It then creates a list with the number of observations in each cateogry,
     #It then converts the total ammount elements to fractions of the total
     
-    #The basic mechanics are this ['men','women'] ----> [30,70] ----> [.30,.70]
+    #The basic mechanics are this ['men','women'] ----> [20,20] ----> [50,50]
 
     if operator == c.sf1:
         year = decennial_census_year
@@ -931,7 +904,7 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
         elif hood_or_comparison_area == 'comparison area':
             county_fips = comparison_county_fips
             subdiv_fips = comparison_suvdiv_fips
-            state_fips = comparison_state_fips
+            state_fips  = comparison_state_fips
         try:
             neighborhood_household_size_distribution_raw = operator.state_county_subdivision(fields=fields_list,state_fips=state_fips,county_fips=county_fips,subdiv_fips=subdiv_fips,year = year)[0]
         except Exception as e:
@@ -940,12 +913,12 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
 
     elif geographic_level == 'zip':
         if hood_or_comparison_area == 'hood':
-            zcta = hood_zip
+            zcta        = hood_zip
             state_fips  = hood_state_fips
 
         elif hood_or_comparison_area == 'comparison area':
-            zcta       = comparison_zip
-            state_fips = comparison_state_fips
+            zcta        = comparison_zip
+            state_fips  = comparison_state_fips
         try:
             neighborhood_household_size_distribution_raw = operator.state_zipcode(fields=fields_list,state_fips=state_fips,zcta=zcta,year= year)[0]
         except Exception as e:
@@ -971,10 +944,9 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
 
     elif geographic_level == 'custom':
         if operator == c.acs5:
-            operator = c_area.acs5
+            operator  = c_area.acs5
         elif operator == c.sf1:
-            operator = c_area.sf1
-        
+            operator  = c_area.sf1
         
         try:
             #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
@@ -984,9 +956,6 @@ def GetCensusFrequencyDistribution(geographic_level,hood_or_comparison_area,fiel
             raw_census_data = operator.geo_tract(fields_list, neighborhood_shape,year= year)
             for tract_geojson, tract_data, tract_proportion in raw_census_data:
                 neighborhood_tracts_data.append((tract_data))
-                # print(tract_geojson)
-                # print(tract_data)
-                # print(tract_proportion)
 
             #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
             neighborhood_household_size_distribution_raw = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = fields_list )
@@ -1062,7 +1031,7 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
         elif hood_or_comparison_area == 'comparison area':
             county_fips = comparison_county_fips
             subdiv_fips = comparison_suvdiv_fips
-            state_fips = comparison_state_fips
+            state_fips  = comparison_state_fips
         
         try:
             values = operator.state_county_subdivision(fields=field,state_fips=state_fips,county_fips=county_fips,subdiv_fips=subdiv_fips,year = year)[0]
@@ -1151,7 +1120,6 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
                     raw_census_data = operator.geo_tract(f, neighborhood_shape,year = decennial_census_year)
                     
                     for tract_geojson, tract_data, tract_proportion in raw_census_data:
-                        # print(tract_data)
                         neighborhood_tracts_data.append(tract_data)
                     #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
                     value_raw_data          = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = [f])
@@ -1231,15 +1199,15 @@ def GetAgeData(geographic_level,hood_or_comparison_area):
     if geographic_level == 'place':
         try:
             if hood_or_comparison_area == 'hood':
-                place_fips = hood_place_fips
-                state_fips = hood_state_fips
+                place_fips  = hood_place_fips
+                state_fips  = hood_state_fips
 
 
             elif hood_or_comparison_area == 'comparison area':
-                place_fips = comparison_place_fips
-                state_fips = comparison_state_fips
+                place_fips  = comparison_place_fips
+                state_fips  = comparison_state_fips
 
-            male_age_data = c.acs5.state_place(fields=male_fields_list, state_fips=state_fips,place=place_fips,year=acs_5y_year)[0]
+            male_age_data   = c.acs5.state_place(fields=male_fields_list, state_fips=state_fips,place=place_fips,year=acs_5y_year)[0]
             female_age_data = c.acs5.state_place(fields=female_fields_list,state_fips=state_fips,place=place_fips,year=acs_5y_year)[0]
         except Exception as e:
             print(e, 'Problem getting age data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
@@ -1276,8 +1244,8 @@ def GetAgeData(geographic_level,hood_or_comparison_area):
                 state_fips  = comparison_state_fips
 
 
-            male_age_data   = c.acs5.state_county_subdivision(fields=male_fields_list,state_fips=state_fips,county_fips=county_fips,subdiv_fips=subdiv_fips,year=acs_5y_year)[0]
-            female_age_data = c.acs5.state_county_subdivision(fields=female_fields_list,state_fips=state_fips,county_fips=county_fips,subdiv_fips=subdiv_fips,year=acs_5y_year)[0]
+            male_age_data   = c.acs5.state_county_subdivision(fields = male_fields_list, state_fips = state_fips, county_fips = county_fips, subdiv_fips = subdiv_fips, year = acs_5y_year)[0]
+            female_age_data = c.acs5.state_county_subdivision(fields = female_fields_list, state_fips = state_fips, county_fips = county_fips, subdiv_fips = subdiv_fips, year = acs_5y_year)[0]
         except Exception as e:
             print(e, 'Problem getting age data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
             return()
@@ -1290,8 +1258,8 @@ def GetAgeData(geographic_level,hood_or_comparison_area):
                 elif hood_or_comparison_area == 'comparison area':
                     zcta = comparison_zip
             
-                male_age_data       = c.acs5.zipcode(fields = male_fields_list, zcta = '*',year=acs_5y_year)
-                male_age_data       = FindZipCodeDictionary(zip_code_data_dictionary_list =   male_age_data  , zcta = zcta, state_fips = state_fips )
+                male_age_data         = c.acs5.zipcode(fields = male_fields_list, zcta = '*',year=acs_5y_year)
+                male_age_data         = FindZipCodeDictionary(zip_code_data_dictionary_list =   male_age_data  , zcta = zcta, state_fips = state_fips )
 
                 female_age_data       = c.acs5.zipcode(fields = female_fields_list, zcta = '*',year=acs_5y_year)
                 female_age_data       = FindZipCodeDictionary(zip_code_data_dictionary_list =   female_age_data  , zcta = zcta, state_fips = state_fips )
@@ -1306,13 +1274,12 @@ def GetAgeData(geographic_level,hood_or_comparison_area):
                 tract       = hood_tract 
                 county_fips = hood_county_fips
 
-
             elif hood_or_comparison_area == 'comparison area':
                 tract       = comparison_tract
                 county_fips = comparison_county_fips
 
-            male_age_data = c.acs5.state_county_tract(fields=male_fields_list,state_fips=state_fips,county_fips=county_fips, tract=tract,year=acs_5y_year)[0]
-            female_age_data = c.acs5.state_county_tract(fields=female_fields_list,state_fips=state_fips,county_fips=county_fips, tract=tract,year=acs_5y_year)[0]
+            male_age_data   = c.acs5.state_county_tract(fields = male_fields_list, state_fips = state_fips, county_fips = county_fips, tract = tract, year = acs_5y_year)[0]
+            female_age_data = c.acs5.state_county_tract(fields = female_fields_list, state_fips = state_fips, county_fips = county_fips, tract = tract, year = acs_5y_year)[0]
         except Exception as e:
             print(e, 'Problem getting age data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
             return()
@@ -1622,10 +1589,6 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         pass
 
     print('Successfully grabbed 2020 Population and HH count for comparison area')
-    
-
-
-
 
     #Set growth periods
     if hood_geographic_level == 'custom':
@@ -1640,7 +1603,6 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     #Calculate growth rates
     hood_pop_growth        = (((int(current_hood_pop)/int(_2010_hood_pop)) - 1) * 100 )/pop_growth_period
     
-
     #Total Households not available in american community survey
     if hood_geographic_level != 'custom':
         hood_hh_growth         = (((int(current_hood_hh)/int(_2010_hood_hh))   - 1) * 100)/hh_growth_period
@@ -1648,7 +1610,6 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         current_hood_hh        = "{:,.0f}".format(int(current_hood_hh))
     else:
         hood_hh_growth         = 'NA'
-
 
     comparsion_pop_growth  =  ((int(current_comparison_pop)/int(_2010_comparison_pop) - 1) * 100)/pop_growth_period
     comparsion_hh_growth   =  ((int(current_comparison_hh)/int(_2010_comparison_hh)   - 1) * 100)/hh_growth_period
@@ -1712,10 +1673,7 @@ def GetWalkScore(lat,lon):
     lon = str(lon)
     url = """https://api.walkscore.com/score?format=json&address=None&""" + """lat=""" + lat + """&lon=""" + lon + """&transit=1&bike=1&wsapikey=""" + walkscore_api_key
     print('Getting Walk Score: ', url)
-   
-    
     walkscore_response = requests.get(url).json()
-    # print(walkscore_response)
     
     #Get Walk score from response
     try:
@@ -1806,8 +1764,6 @@ def FindAirport():
         if airport_info_list == []:
             return(None)
         
-        
-        
         if len(airport_info_list) > 1:
             airport_sentence = (neighborhood + ' is served by the following facilities: ')
 
@@ -1819,11 +1775,6 @@ def FindAirport():
 
         elif len(airport_info_list) == 1:
             airport_sentence = (neighborhood + ' is served by ' + (airport_info_list[0]['name'].title()) + ' '  + (airport_info_list[0]['type'].title()) +'.')
-
-
-
-
-
 
         return(airport_sentence)
     except Exception as e:
@@ -1847,12 +1798,10 @@ def FindNearestAirport(lat,lon):
         #Don't consider heliports, seaplane bases etc
         if airport_record.record['Fac_Type'] != 'AIRPORT':
             continue
+
         #Don't consider private airports
         if airport_record.record['Fac_Use'] != 'PU':
             continue
-
-        #include international airports    
-        #if airport_record.record['Internatio'] != 'Y':
 
         airport_coord = airport.points
         airport_lat_lon = (airport_coord[0][1], airport_coord[0][0])
@@ -1917,9 +1866,7 @@ def FindNearestHighways():
                     repeat = 0
                 if repeat == 1:
                     continue
-                    
-           
-            
+                        
             highway_type          = highway_record.record['ADMIN'].title()
             highway_dict          = {'name':highway_name,'type':highway_type,'number':highway_number}
             highway_info_list.append(highway_dict)
@@ -1962,7 +1909,6 @@ def FindTrainLines():
         #Specify the file path to the shape file
         map_location = os.path.join(general_data_location,'Geographic Data','GTFS_NTM_Shapes (Non Bus)','GTFS_NTM_Shapes.shp')
 
-        # print('Opened Trasnit File')
         #Open the shapefile
         map = shapefile.Reader(map_location)
         index_list = [] #Create empty list that we will fill with numbers that correspond to routes within the subject area
@@ -1973,7 +1919,6 @@ def FindTrainLines():
             if neighborhood_shape_polygon.intersects(highway_coords):
                 index_list.append(i)
 
-        # print('Created Train Route Index List')
         #Now loop through our list of index numbers, for each index number, create a dictionary with key info (name, etc), append that dictionary to empty list
         i = 0
         info_list = []    
@@ -1997,7 +1942,6 @@ def FindTrainLines():
             info_list.append(info_dict)
             i+=1
             
-        # print('Created Train Route Info Dict List')
         #When there are more than 1 routes
         if len(info_list) > 2:
             sentence = (neighborhood + ' is served by the following transit routes: ')
@@ -2026,7 +1970,6 @@ def FindTrainLines():
         elif len(info_list) == 0:
             sentence = None
         
-        # print('Created Train sentence')
         return(sentence)
     except Exception as e:
         print(e,'Unable to locate transit routes inside the neighborhood area')
@@ -2037,7 +1980,6 @@ def FindBusLines():
         #Specify the file path to the shape file
         map_location = os.path.join(general_data_location,'Geographic Data','GTFS_NTM_Stops','GTFS_NTM_Stops.shp')
 
-        # print('Opened Transit Stops File')
         #Open the shapefile
         map = shapefile.Reader(map_location)
         index_list = [] #Create empty list that we will fill with numbers that correspond to routes within the subject area
@@ -2049,7 +1991,6 @@ def FindBusLines():
             if neighborhood_shape_polygon.contains(coords):
                 index_list.append(i)
 
-        # print('Created Transit Stop Index List')
         #Now loop through our list of index numbers, for each index number, create a dictionary with key info (name, etc), append that dictionary to empty list
         i = 0
         info_list = []    
@@ -2072,36 +2013,15 @@ def FindBusLines():
             info_list.append(info_dict)
             i+=1
             
-        # print('Created Transit Stop Info Dict List')
         #When there are more than 1 routes
         if len(info_list) > 0:
             agency_id = str(info_list[0]['agency_id'])
-            # print(agency_id)
             agency_name = TransitAgencyIdToName(id = agency_id)
             sentence = (agency_name + ' provides public bus service within ' + neighborhood + '.')
-
-            
-
-
-
-        # #When we only have 1 major road in our list
-        # elif len(info_list) == 1:
-        #     if agency != '':
-        #         sentence = (info_list[0]['agency'] + """'s""" + info_list[0]['name'] + ' line is the main ' + info_list[0]['type'] + ' route connecting ' + neighborhood + '.')
-        #     else:
-        #         sentence = ('The ' + info_list[0]['name'] + ' line is the main ' + info_list[0]['type'].lower() + ' route connecting ' + neighborhood + '.')
-
-
-        # elif len(info_list) == 2:
-           
-        #     sentence = ((info_list[0]['name']) + ' ('  + (info_list[0]['type'])   + ') ' + 'and '  + 
-        #                 (info_list[1]['name']) + ' ('  + (info_list[1]['type'])   + ') '
-        #                 + ' are the main transit routes connecting ' + neighborhood + '.')
 
         elif len(info_list) == 0:
             sentence = None
         
-        # print('Created Train sentence')
         return(sentence)
     except Exception as e:
         print(e,'Unable to locate bus Stop inside the neighborhood area')
@@ -2112,10 +2032,7 @@ def SearchGreatSchoolDotOrg():
     if os.path.exists(os.path.join(hood_folder_map,'education_map.png')): #If we already have a map for this area skip it 
         return()
    
-    
-
     try:
-
         if neighborhood_level == 'custom':
             search_term = (neighborhood + ', ' + comparison_area)
         else:
@@ -2143,10 +2060,7 @@ def SearchGreatSchoolDotOrg():
         for i in range(1):
            pyautogui.click()
            time.sleep(1)
-
-
         time.sleep(3)
-
 
         if 'Leahy' in os.environ['USERPROFILE']: #differnet machines have different screen coordinates
             print('Using Mikes coordinates for screenshot')
@@ -2180,7 +2094,6 @@ def ApartmentDotComSearchTerm():
     elif neighborhood_level == 'county subdivision':
         search_term = 'https://www.apartments.com/' + '-'.join(neighborhood.lower().split(' ')) + '-' + hood_state.lower() + '/'
     
-
     return(search_term)
 
 def ApartmentsDotComSearch():
@@ -2219,7 +2132,7 @@ def Zoneomics(address):
     url = 'https://www.zoneomics.com/api/get_zone_screen_shot?address=address&api_key=api_key&map_zoom_level=17'
 
     data = {
-    'key': zoneomics_api_key,
+    'key':     zoneomics_api_key,
     'address': address
         }
 
@@ -2258,11 +2171,13 @@ def GetData():
     #Start by getting our distributions for our graphs
     print('Getting distributions for hood')
     sleep_time = 2
-    time.sleep(sleep_time)
+    
     neighborhood_household_size_distribution          = GetHouseholdSizeData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Neighborhood households by size
     time.sleep(sleep_time)
+    
     neighborhood_tenure_distribution                  = GetHousingTenureData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Housing Tenure (owner occupied/renter)
     time.sleep(sleep_time)
+    
     neighborhood_housing_value_data                   = GetHousingValues(         geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Owner Occupied housing units by value
     time.sleep(sleep_time)
     
@@ -2294,13 +2209,13 @@ def GetData():
     time.sleep(sleep_time)
     neighborhood_average_hh_size                        = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = ['H012001'],    operator = c.sf1, aggregation_method = 'mean')[0]
 
-    # Handle missing values 
+    #Handle missing values 
     if neighborhood_median_year_built == '0':
         neighborhood_median_year_built = 'NA'
     
 
-    print('Getting Data For ' + comparison_area)
     #Start by getting our distributions for our graphs
+    print('Getting Data For ' + comparison_area)
     print('Getting distributions for comparison area')
     comparison_household_size_distribution            = GetHouseholdSizeData(    geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')
     time.sleep(sleep_time)
@@ -2349,40 +2264,38 @@ def SetGraphFormatVariables():
     global main_graph_font_size
 
     #Set graph size and format variables
-    marginInches = 1/18
-    ppi = 96.85 
-    width_inches = 6.5
+    marginInches  = 1/18
+    ppi           = 96.85 
+    width_inches  = 6.5
     height_inches = 3.3
-    fig_width                     = 4.5 #width for the pngs (graph images) we insert into report document
-
-
-    graph_width  = (width_inches - marginInches)   * ppi
-    graph_height = (height_inches  - marginInches) * ppi
+    fig_width     = 4.5 #width for the pngs (graph images) we insert into report document
+    graph_width   = (width_inches - marginInches)   * ppi
+    graph_height  = (height_inches  - marginInches) * ppi
 
     #Set scale for resolution 1 = no change, > 1 increases resolution. Very important for run time of main script. 
-    scale = 7
+    scale         = 7
 
     #Set tick font size (also controls legend font size)
-    tickfont_size = 14 
+    tickfont_size        = 14 
     main_graph_font_size = 14
 
     #Set Margin parameters/legend location
-    left_margin   = 0
-    right_margin  = 0
-    top_margin    = 75
-    bottom_margin = 10
-    legend_position = 1.05
+    left_margin           = 0
+    right_margin          = 0
+    top_margin            = 75
+    bottom_margin         = 10
+    legend_position       = 1.05
 
     #Paper color
     paper_backgroundcolor = 'white'
 
     #Title Position
-    title_position = .95    
+    title_position        = .95    
 
 def CreateHouseholdSizeHistogram():
     print('Creating Household size graph')
 
-    household_size_categories = ['1','2','3','4','5','6','7+']
+    household_size_categories = ['1', '2', '3', '4', '5', '6', '7+']
     fig = make_subplots(specs=[[{"secondary_y": False}]])
     
     #Add Bars with neighborhood household size distribution
@@ -2393,6 +2306,7 @@ def CreateHouseholdSizeHistogram():
            marker_color="#4160D3")
             ,secondary_y=False
             )
+
     fig.add_trace(
     go.Bar(y=comparison_household_size_distribution,
            x=household_size_categories,
@@ -2417,30 +2331,29 @@ def CreateHouseholdSizeHistogram():
     # #Set Legend Layout
     fig.update_layout(
     legend=dict(
-        orientation="h",
-        yanchor="bottom",
-        y=legend_position ,
-        xanchor="center",
-        x=0.5,
-        font_size = tickfont_size
+        orientation = "h",
+        yanchor     = "bottom",
+        y           = legend_position ,
+        xanchor     = "center",
+        x           = 0.5,
+        font_size   = tickfont_size
                 )
-
                       )
     
     fig.update_yaxes(title=None)
 
     #Set Font and Colors
     fig.update_layout(
-    font_family="Avenir Next LT Pro",
-    font_color='#262626',
-    font_size = main_graph_font_size,
-    paper_bgcolor=paper_backgroundcolor,
-    plot_bgcolor ="White"
+    font_family   = "Avenir Next LT Pro",
+    font_color    = '#262626',
+    font_size     = main_graph_font_size,
+    paper_bgcolor = paper_backgroundcolor,
+    plot_bgcolor  = "White"
                      )
 
     #Set size and margin
     fig.update_layout(
-    margin=dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin),
+    margin=dict(l = left_margin, r = right_margin, t = top_margin, b = bottom_margin),
     height    = graph_height,
     width     = graph_width,
         
@@ -2456,22 +2369,23 @@ def CreateHouseholdTenureHistogram():
     print('Creating Household tenure graph')
     fig = make_subplots(specs=[[{"secondary_y": False}]])
 
-    tenure_categories = ['Renter Occupied','Owner Occupied']
+    tenure_categories = ['Renter Occupied', 'Owner Occupied']
     
     #Add Bars with neighborhood household size distribution
     fig.add_trace(
-    go.Bar(y=neighborhood_tenure_distribution,
-           x=tenure_categories,
-           name=neighborhood,
-           marker_color="#4160D3")
-            ,secondary_y=False
+    go.Bar(y             = neighborhood_tenure_distribution,
+           x             = tenure_categories,
+           name          = neighborhood,
+           marker_color  = "#4160D3")
+           ,secondary_y  = False
             )
+    #Add Comparison Bars
     fig.add_trace(
-    go.Bar(y=comparison_tenure_distribution,
-           x=tenure_categories,
-           name=comparison_area,
-           marker_color="#B3C3FF")
-            ,secondary_y=False
+    go.Bar(y             = comparison_tenure_distribution,
+           x             = tenure_categories,
+           name          = comparison_area,
+           marker_color  = "#B3C3FF")
+           ,secondary_y  = False
             )
     
     
@@ -2490,12 +2404,12 @@ def CreateHouseholdTenureHistogram():
     # #Set Legend Layout
     fig.update_layout(
     legend=dict(
-        orientation="h",
-        yanchor="bottom",
-        y=legend_position ,
-        xanchor="center",
-        x=0.5,
-        font_size = tickfont_size
+        orientation = "h",
+        yanchor     = "bottom",
+        y           = legend_position ,
+        xanchor     = "center",
+        x           = 0.5,
+        font_size   = tickfont_size
                 )
 
                       )
@@ -2504,22 +2418,18 @@ def CreateHouseholdTenureHistogram():
 
     #Set Font and Colors
     fig.update_layout(
-    font_family="Avenir Next LT Pro",
-    font_color='#262626',
-    font_size = main_graph_font_size,
-    paper_bgcolor=paper_backgroundcolor,
-    plot_bgcolor ="White"
+    font_family   = "Avenir Next LT Pro",
+    font_color    = '#262626',
+    font_size     = main_graph_font_size,
+    paper_bgcolor = paper_backgroundcolor,
+    plot_bgcolor  = "White"
                      )
 
     #Set size and margin
     fig.update_layout(
-    margin=dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin),
-    height    = graph_height,
-    width     = graph_width,
-        
-                    )
-
-
+    margin = dict(l = left_margin, r = right_margin, t = top_margin, b = bottom_margin),
+                  height    = graph_height,
+                  width     = graph_width, )
 
     #Add % to  axis ticks
     fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.0f',secondary_y=False)    
