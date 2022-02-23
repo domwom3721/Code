@@ -4,9 +4,11 @@
     #Loops through these 4 files, loops through each of the markets and submarkets (geographic areas) and creates a directory and word document
     #The word document is a report that reports tables and graphs generated from the data files
 
+from ensurepip import version
 import os
 from pydoc import doc
 import time
+from numpy import full
 import pandas as pd
 from tkinter import *
 from tkinter import ttk
@@ -1242,93 +1244,110 @@ def CreateDirectoryCSV():
                 continue
             else:
                 for file in filenames:
-                    
-                    if file == 'CoStar Markets.csv':
-                        continue
-                    if ('Archive' in dirpath) or ('Quality Control' in dirpath):
-                        continue
-                    
                     full_path = dirpath + '/' + file
                     
+                    if '.docx' not in file:
+                        continue
+                    
+                    #Skip the folders in the legacy archive outside the quarter folders
+                    if ("""Legacy Archive""" in full_path):
+                        if ("""Legacy Archive\\2""" in full_path):
+                            pass
+                        else:
+                            continue
+
+
                     #Parse sector and other info from file path string
                     if (os.path.exists(full_path.replace('_draft','_FINAL'))) and ('_draft' in full_path) or ('docx' not in full_path):
                         continue
                     
                     if """\Condo""" in full_path:
                         prop_type ='Condo'
-                        dropbox_prop_types.append(prop_type)
-                        dropbox_prop_codes.append('C')
-                    
+                        prop_code = 'C'
+
                     elif """\Single Family""" in full_path:
                         prop_type ='Single Family'
-                        dropbox_prop_types.append(prop_type)
-                        dropbox_prop_codes.append('SF')
+                        prop_code = 'SF'
 
                     elif """\Retail""" in full_path:
                         prop_type ='Retail'
-                        dropbox_prop_types.append(prop_type)
-                        dropbox_prop_codes.append('R')
+                        prop_code = 'R'
 
                     elif """\Multifamily""" in full_path:
                         prop_type ='Multifamily'
-                        dropbox_prop_types.append(prop_type)
-                        dropbox_prop_codes.append('MF')
+                        prop_code = 'MF'
                     
                     elif """\Industrial""" in full_path:
                         prop_type ='Industrial'
-                        dropbox_prop_types.append(prop_type)
-                        dropbox_prop_codes.append('I')
+                        prop_code = 'I'
                     
                     elif """\Office""" in full_path:
                         prop_type ='Office'
-                        dropbox_prop_types.append(prop_type)
-                        dropbox_prop_codes.append('O')
-                    
+                        prop_code = 'O'
+
                     elif """Market\Other""" in full_path:
                         prop_type = dirpath.split('Other\\')[1]
                         first_slash_position = prop_type.find('\\') 
                         if first_slash_position != -1:
                             prop_type = prop_type[0:first_slash_position]
+                        prop_code = prop_type
 
-                        dropbox_prop_types.append(prop_type)
-                        dropbox_prop_codes.append(prop_type)
-            
                     else:
                         prop_type = ''
-                        dropbox_prop_types.append(prop_type)
-                        dropbox_prop_codes.append('')
+                        prop_code = ''
 
 
-
-                    dropbox_document_names.append(file)
-                    dropbox_analysis_types.append('Market')
+                    #Get Dropbox link
                     dropbox_link = dirpath.replace(dropbox_root,r'https://www.dropbox.com/home')
                     dropbox_link = dropbox_link.replace("\\",r'/')    
-                    dropbox_links.append(dropbox_link)
-                    dropbox_versions.append(file[0:7])
+                    
+                    #Determine version and state name
+                    if """Legacy Archive\\20""" in full_path:
+                        full_path_split =  full_path.split("""\\""")
+                        version         = full_path_split[9]
+                        state_name      = full_path_split[10]
+
+                    else:
+                        version       = file[0:7]
+                        state_name    = file[8:10]
+                    
+                    #Determine Status
                     if '_draft' in file:
                         file_status = 'Draft'
                     else:
                         file_status = 'Final'
 
-                    dropbox_statuses.append(file_status)
 
-                    
-                    state_name    = file[8:10]
-                    
+                    #Get Market Name
                     try:
                         market     = file.split(' - ')[1].strip()
                         research_name = state_name + ' - ' + market + ' - ' + prop_type
                     
                     except:
                         market         = 'FIX FILE FORMAT'
-                        research_name = 'FIX FILE FORMAT'
-                    
+                        research_name  = 'FIX FILE FORMAT'
+
+                    #Add our variables to the lists that will create the dataframe
+                    dropbox_prop_types.append(prop_type)
+                    dropbox_prop_codes.append(prop_code)
+                    dropbox_statuses.append(file_status)
+                    dropbox_versions.append(version)
+                    dropbox_links.append(dropbox_link)
+                    dropbox_document_names.append(file)
+                    dropbox_analysis_types.append('Market')
                     dropbox_markets.append(market)
                     dropbox_research_names.append(research_name)
                     dropbox_states.append(state_name)
                 
         
+
+
+
+
+
+
+
+
         all_files_dropbox_df = pd.DataFrame({'Market Research Name':dropbox_research_names,
                                 'Market':dropbox_markets,
                             'Analysis Type': dropbox_analysis_types,
