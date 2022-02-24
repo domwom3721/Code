@@ -404,7 +404,9 @@ def ProcessPlaceFIPS(place_fips):
     place_fips                      = place_fips[2:]
 
     #Get name of the hood using the FIPS code provided
-    place_name                      = c.sf1.state_place(fields=['NAME'], state_fips = state_fips, place = place_fips)[0]['NAME']
+    place_name                      = c.sf1.state_place(fields=['NAME'], state_fips = state_fips, place = place_fips)
+    assert                          place_name != []
+    place_name                      = place_name[0]['NAME']
     state_full_name                 = place_name.split(',')[1].strip()
     place_name                      = place_name.split(',')[0].strip()
     place_type                      = place_name.split(' ')[len(place_name.split(' '))-1] #eg: village, city, etc
