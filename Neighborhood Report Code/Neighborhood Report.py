@@ -381,10 +381,8 @@ def DetermineNYCCommunityDistrict(lat,lon):
 
 def TransitAgencyIdToName(id):
     #Takes a National Transit Database agency ID number and returns the name of the transit agency
-    #Open the ID to name crosswalk file with agency info
-    
     try:
-        print('The ID is: ', id)
+        #Open the ID to name crosswalk file with agency info
         df           = pd.read_excel(os.path.join(general_data_location,'Geographic Data','GTFS_NTM_Stops','2020 Agency Information.xlsx')) #from here: https://www.transit.dot.gov/ntd/data-product/2020-annual-database-agency-information
         df['NTD ID'] = df['NTD ID'].astype(str)
         df           = df.loc[df['NTD ID'] == id]
