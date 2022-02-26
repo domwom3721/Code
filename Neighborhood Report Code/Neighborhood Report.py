@@ -777,13 +777,13 @@ def CreateDirectory():
             os.mkdir(city_folder_map) 
 
 
-        hood_folder              = os.path.join(main_output_location,hood_state,city_folder,neighborhood)
-        hood_folder_map          = os.path.join(map_location,hood_state,city_folder_map,neighborhood)
+        hood_folder              = os.path.join(main_output_location,hood_state,city_folder,neighborhood).replace('/','-')
+        hood_folder_map          = os.path.join(map_location,hood_state,city_folder_map,neighborhood).replace('/','-')
 
 
     else:
-        hood_folder              = os.path.join(main_output_location,hood_state,neighborhood)
-        hood_folder_map          = os.path.join(map_location,hood_state,neighborhood)
+        hood_folder              = os.path.join(main_output_location,hood_state,neighborhood).replace('/','-')
+        hood_folder_map          = os.path.join(map_location,hood_state,neighborhood).replace('/','-')
     
 
     for folder in [state_folder, hood_folder, state_folder_map, hood_folder_map]:
