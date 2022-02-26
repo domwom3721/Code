@@ -792,8 +792,9 @@ def CreateDirectory():
          else:
             os.mkdir(folder) 
     
-    report_path = os.path.join(hood_folder,current_year + ' ' + hood_state + ' - ' + neighborhood  + ' - hood' + '_draft')[:255] 
+    report_path = os.path.join(hood_folder,current_year + ' ' + hood_state + ' - ' + neighborhood.replace('/','-')  + ' - hood' + '_draft')[:255] 
     report_path = report_path + '.docx'
+
 
 def FindZipCodeDictionary(zip_code_data_dictionary_list,zcta,state_fips):
     #This function takes a list of dictionaries, where each zip code gets its own dictionary. Takes a zip code and state fips code and finds and returns just that dictionary.
