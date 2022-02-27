@@ -3758,7 +3758,7 @@ def TravelTimeLanguage():
     hood_largest_time_category = travel_time_categories[neighborhood_time_to_work_distribution.index(max(neighborhood_time_to_work_distribution))] #get the most common income category
     comp_largest_time_category = travel_time_categories[comparison_time_to_work_distribution.index(max(comparison_time_to_work_distribution))]
 
-    time_language = ('The time it takes to commute to work from ' + neighborhood + ' varies considerably. Commuters in ' + neighborhood + 
+    time_language = ('Commuters in ' + neighborhood + 
                        ' have a median commute time of about '                      + 
                         "{:,.0f} minutes".format(hood_median_time)                   +
                        '. '                     +
