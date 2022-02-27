@@ -1251,6 +1251,7 @@ def CreateDirectoryCSV():
                     
                     #Skip the folders in the legacy archive outside the quarter folders
                     if ("""Legacy Archive""" in full_path):
+                        continue
                         if ("""Legacy Archive\\2""" in full_path):
                             pass
                         else:
