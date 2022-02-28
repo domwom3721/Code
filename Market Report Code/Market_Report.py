@@ -1246,14 +1246,13 @@ def CreateDirectoryCSV():
                 for file in filenames:
                     full_path = dirpath + '/' + file
                     
-                    if '.docx' not in file:
+                    if ('.docx' not in file) and ('.dotm' not in file):
                         continue
                     
                     #Skip the folders in the legacy archive outside the quarter folders
                     if ("""Archive""" in full_path):
-                        continue
+                        pass
                         if ("""Legacy Archive""" in full_path):
-                            continue
                             if ("""Legacy Archive\\2""" in full_path):
                                 pass
                             else:
