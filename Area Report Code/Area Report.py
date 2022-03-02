@@ -5706,7 +5706,7 @@ def CreateDirectoryCSV():
                     file_status = 'Final'
 
                 #For our more recent reports, we can parse the file name to grab key info
-                if 'Legacy Archvie' not in dirpath:
+                if 'Legacy' not in dirpath :
                     version                   = file[0:7]
                     state_name                = file[8:10]
                     first_dash_location       = file.find('- ') 
