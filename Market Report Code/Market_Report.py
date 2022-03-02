@@ -538,13 +538,14 @@ def MakeCoStarDisclaimer():
 
 def CleanUpPNGs():
     #Report writing done, delete figures
-    try:
-        files = os.listdir(output_directory)
-        for image in files:
-            if image.endswith(".png"):
-                os.remove(os.path.join(output_directory, image))
-                
-    except Exception as e: print(e)
+    files = os.listdir(output_directory)
+    for image in files:
+        if image.endswith(".png"):
+            while os.path.exists(os.path.join(output_directory, image)):
+                try:
+                    os.remove(os.path.join(output_directory, image))
+                except Exception as e: 
+                    print(e)
    
 def AddMap():
     
