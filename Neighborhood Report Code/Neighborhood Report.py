@@ -3137,7 +3137,10 @@ def WikipediaTransitLanguage(category):
                 if search_term in heading.text:
                     # print(heading.name + ' ' + heading.text.strip())
                     para = heading.find_next_sibling('p')
-                    langauge_paragraphs.append(para.text) #Once we have found the relevant section, add all the paragraphs into the list of paragraphs
+                    para_text = para.text
+                    para_text = para.text
+                    para_text = re.sub('\[\d+\]', '',para_text) #remove wikipedia citations
+                    langauge_paragraphs.append(para_text) #Once we have found the relevant section, add all the paragraphs into the list of paragraphs
 
                     #We found the first paragraph and added it to our list with text paragraphs, now keep looking in case there are multiple paragraphs in the section we wanted
                     while True:
@@ -3466,7 +3469,7 @@ def EmploymentLanguage():
 def HouseholdSizeLanguage():
     print('Creating Household by Size Langauge')
 
-    household_size_categories = ['1 person','2 people','3 people','4 people','5 people','6 people','7 or more people']
+    household_size_categories = ['1 person','2 person','3 person','4 person','5 person','6 person','7 or more people']
 
     #Largest cateogy for hood and comparsion area
     hood_largest_size_category = household_size_categories[neighborhood_household_size_distribution.index(max(neighborhood_household_size_distribution))] #get the most common household size category
@@ -3500,9 +3503,9 @@ def HouseholdSizeLanguage():
                              'Households in '                                          +
                                neighborhood                                            + 
                               ' have an average size of '                              + 
-                              "{:,.1f} people".format(neighborhood_average_hh_size)    +
+                              "{:,.2f} people".format(neighborhood_average_hh_size)    +
                               ', compared to '                                         +
-                              "{:,.1f} people".format(comparison_average_hh_size)      +
+                              "{:,.2f} people".format(comparison_average_hh_size)      +
                               ' in '                                                   +   
                               comparison_area                                          + 
                               '. '                                                     +
