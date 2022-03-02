@@ -1,10 +1,8 @@
-from markupsafe import re
-import numpy as np
 import math
 import os
 from bs4 import BeautifulSoup
 
-def FindValueForQuarter(variable,df,quarter):
+def FindValueForQuarter(variable, df, quarter):
     #Function that takes a given variable name and quarter. It returns the value of that variable in that quarter
     
     #Make copy of the dataframe passed in by user
@@ -19,7 +17,7 @@ def FindValueForQuarter(variable,df,quarter):
 
     return(value)
 
-def FindMaxWithinRange(variable,df,start_quarter,end_quarter):
+def FindMaxWithinRange(variable, df, start_quarter, end_quarter):
     #Function that takes a given variable name and period. It returns the max value of that variable in that period
     
     #Make copy of the dataframe passed in by user
@@ -33,14 +31,14 @@ def FindMaxWithinRange(variable,df,start_quarter,end_quarter):
     value = temp_df[variable].max()
     return(value)
 
-def FindMaxPeriodWithinRange(variable,df,start_quarter,end_quarter):
+def FindMaxPeriodWithinRange(variable, df, start_quarter, end_quarter):
     #Function that takes a given variable name and period. It returns the first period where the max value of that variable occured in that period
     
     #Make copy of the dataframe passed in by user
     temp_df = df.copy()
     
     #Restrict to quarter of interest
-    temp_df = temp_df.loc[( temp_df['Period'] >= start_quarter) & (temp_df['Period'] <= end_quarter)  ]
+    temp_df = temp_df.loc[( temp_df['Period'] >= start_quarter) & (temp_df['Period'] <= end_quarter)]
     assert len(temp_df) > 0    
 
     #Restrict to observations where the value is equal to the max value
@@ -50,24 +48,24 @@ def FindMaxPeriodWithinRange(variable,df,start_quarter,end_quarter):
     value = temp_df['Period'].iloc[0] 
     return(value)
 
-def FindMinPeriodWithinRange(variable,df,start_quarter,end_quarter):
+def FindMinPeriodWithinRange(variable, df,start_quarter, end_quarter):
     #Function that takes a given variable name and period. It returns the period where the min value of that variable occured in that period
     
     #Make copy of the dataframe passed in by user
-    temp_df = df.copy()
+    temp_df    = df.copy()
     
     #Restrict to quarter of interest
-    temp_df = temp_df.loc[( temp_df['Period'] >= start_quarter) & (temp_df['Period'] <= end_quarter)  ]
-    assert len(temp_df) > 0    
+    temp_df    = temp_df.loc[( temp_df['Period'] >= start_quarter) & (temp_df['Period'] <= end_quarter)  ]
+    assert     len(temp_df) > 0    
 
     #Restrict to observations where the value is equal to the min value
     min_value = temp_df[variable].min()
-    temp_df = temp_df.loc[( temp_df[variable] == min_value)  ]
+    temp_df   = temp_df.loc[( temp_df[variable] == min_value)]
     
-    value = temp_df['Period'].iloc[0] 
+    value     = temp_df['Period'].iloc[0] 
     return(value)
 
-def FindMinWithinRange(variable,df,start_quarter,end_quarter):
+def FindMinWithinRange(variable, df, start_quarter, end_quarter):
     #Function that takes a given variable name and period. It returns the min value of that variable in that period
   
     #Make copy of the dataframe passed in by user
@@ -78,20 +76,20 @@ def FindMinWithinRange(variable,df,start_quarter,end_quarter):
     assert len(temp_df) > 0    
 
     #Now that we have restricted the date to our range of interest for the variable of interest, we can grab the min value
-    value = temp_df[variable].min()
+    value   = temp_df[variable].min()
     return(value)
 
-def PercentageChange(var1,var2):
-    return( ((var2-var1)/(var1)) * 100 )
+def PercentageChange(var1, var2):
+    return( ((var2 - var1)/(var1)) * 100 )
 
-def BpsChange(var1,var2):
-    value = ((var2 - var1)*100)
+def BpsChange(var1, var2):
+    value = ((var2 - var1) * 100)
     value = round(value)
     return(value)
 
-#Function that takes a number as input and writes it in words (eg: 5,000,000 ---> '5 million')
-def millify(n,modifier):
-    millnames = ['','k',' million',' billion',' trillion']
+def millify(n, modifier):
+    #Function that takes a number as input and writes it in words (eg: 5,000,000 ---> '5 million')
+    millnames = ['', 'k', ' million', ' billion', ' trillion']
     
     try:
         n = float(n)
@@ -106,7 +104,7 @@ def millify(n,modifier):
             n =  modifier + '{:.1f}{}'.format(n / 10**(3 * millidx), millnames[millidx])
 
         #Do this to avoid .0 in numbers
-        n = n.replace('.0','',1)
+        n = n.replace('.0', '', 1)
         return(n)
 
         
@@ -114,78 +112,30 @@ def millify(n,modifier):
         print(e)
         return(n)
 
-#Function that reads in the write up from the saved html file in the CoStar Write Ups folder within the data folder
-def PullCoStarWriteUp(section_names,writeup_directory):
+def PullCoStarWriteUp(section_names, writeup_directory):
+    #Function that reads in the write up from the saved html file in the CoStar Write Ups folder within the data folder
 
-
-    #Pull writeup from the CoStar Html page if we have one saved
-    html_file = os.path.join(writeup_directory,'CoStar - Markets & Submarkets.html')
+    #Pull writeup from the CoStar HTML page if we have one saved
+    html_file = os.path.join(writeup_directory, 'CoStar - Markets & Submarkets.html')
     if  os.path.exists(html_file):
         try:
-            with open(html_file,encoding='utf8') as fp:
-                soup = BeautifulSoup(fp, 'html.parser',)
+            with open(html_file, encoding='utf8') as fp:
+                soup = BeautifulSoup(fp, 'html.parser')
 
             narrative_bodies = soup.find_all("div", {"class": "cscc-narrative-text"})
             narrative_titles = soup.find_all("div", {"class": "cscc-detail-narrative__title"})
 
             master_narrative = []
-            for narrative,title in zip(narrative_bodies,narrative_titles):
+            
+            for narrative,title in zip(narrative_bodies, narrative_titles):
                 title_text = title.text 
                 for section_name in section_names:
                     if section_name in title_text:
-                        for count,p in enumerate(narrative.find_all("p")):
+                        for p in narrative.find_all("p"):
                             text  = p.get_text()
-                            text = text.replace(' 3, & 4 & 5 Star',' Class A, B, and C')
-                            text = text.replace('1 & 2 and 3 Star','Class C and below') 
-                            text = text.replace(' 1, & 2 & 3 Star',' Class C and below')
-                            text = text.replace(' 1, 2, and 3 Star',' Class C and below')
-                            text = text.replace(' 4 & 5 Star ',' Class A and B ')
-                            text = text.replace('4 & 5 Stars','Class A and B')
-                            text = text.replace(' 4 and 5-star  ',' Class A and B ')   
-                            text = text.replace(' 4 and 5 Star ',' Class A and B ')
-                            text = text.replace('4 and 5 Star ',' Class A and B ')
-                            text = text.replace(' 4 or 5 Star ',' Class A and B ')
-                            text = text.replace(' 4 & 5 Star',' Class A and B')
-                            text = text.replace('4&5 Star','Class A and B')
-                            text = text.replace('4 & 5 Star','Class A and B')
-                            text = text.replace('1 to 3 Star','Class C')
-                            text = text.replace('1 & 2 Star','Class C')
-                            text = text.replace('2 & 3 Star','Class C')
-                            text = text.replace('a 4 Star,','a Class B,')
-                            text = text.replace(' 4 Star ',' Class B ')
-                            text = text.replace('4 Star','Class B')
-                            text = text.replace('4-Star','Class B')
-                            text = text.replace(' 5 Star ',' Class A ')
-                            text = text.replace('5 Star','Class A')
-                            text = text.replace('5-Star','Class A')
-                            text = text.replace('5-star','Class A')
-                            text = text.replace(' 3 Star ',' Class C ')
-                            text = text.replace('3 Star','Class C')
-                            text = text.replace('3-Star','Class C')
-                            text = text.replace(' 2 Star ',' Class C ')
-                            text = text.replace('2 Stars','Class C')
-                            text = text.replace('2 Star','Class C')
-                            text = text.replace(' 1 Star ',' Class C ')
-                            text = text.replace('1 Star','Class C')
-                            text = text.replace('20Q1','2020 Q1')
-                            text = text.replace('20Q2','2020 Q2')
-                            text = text.replace('20Q3','2020 Q3')
-                            text = text.replace('20Q4','2020 Q4')
-                            text = text.replace('21Q1','2021 Q1')
-                            text = text.replace('21Q2','2021 Q2')
-                            text = text.replace('21Q3','2021 Q3')
-                            text = text.replace('21Q4','2021 Q4')
-                            text = text.replace('amount','number')
-                            text = text.replace('2021q1','2021 Q1')
-                            text = text.replace('2021q2','2021 Q2')
-                            text = text.replace('2021q3','2021 Q3')
-                            text = text.replace('2021q4','2021 Q4')
-
-                            #Now remove bad characters
-                            for char in ['ï','»','¿','â','€']:
-                                text = text.replace(char,'')
                             master_narrative.append(text)
-
+            
+            master_narrative = EditCoStarWriteUp(master_narrative)
             return(master_narrative)
             
         
@@ -198,11 +148,72 @@ def PullCoStarWriteUp(section_names,writeup_directory):
     else:
         return([])
 
+def EditCoStarWriteUp(paragraph_list):
+    #This function edits the language pulled from the CoStar HTML page
+    new_paragraph_list = []
+
+    #Loops through each paragraph from the CoStar writeup and replaces selected substrings
+    for text in paragraph_list:
+        text = text.replace(' 3, & 4 & 5 Star',' Class A, B, and C')
+        text = text.replace('1 & 2 and 3 Star','Class C and below') 
+        text = text.replace(' 1, & 2 & 3 Star',' Class C and below')
+        text = text.replace(' 1, 2, and 3 Star',' Class C and below')
+        text = text.replace(' 4 & 5 Star ',' Class A and B ')
+        text = text.replace('4 & 5 Stars','Class A and B')
+        text = text.replace(' 4 and 5-star  ',' Class A and B ')   
+        text = text.replace(' 4 and 5 Star ',' Class A and B ')
+        text = text.replace('4 and 5 Star ',' Class A and B ')
+        text = text.replace(' 4 or 5 Star ',' Class A and B ')
+        text = text.replace(' 4 & 5 Star',' Class A and B')
+        text = text.replace('4&5 Star','Class A and B')
+        text = text.replace('4 & 5 Star','Class A and B')
+        text = text.replace('1 to 3 Star','Class C')
+        text = text.replace('1 & 2 Star','Class C')
+        text = text.replace('2 & 3 Star','Class C')
+        text = text.replace('a 4 Star,','a Class B,')
+        text = text.replace(' 4 Star ',' Class B ')
+        text = text.replace('4 Star','Class B')
+        text = text.replace('4-Star','Class B')
+        text = text.replace(' 5 Star ',' Class A ')
+        text = text.replace('5 Star','Class A')
+        text = text.replace('5-Star','Class A')
+        text = text.replace('5-star','Class A')
+        text = text.replace(' 3 Star ',' Class C ')
+        text = text.replace('3 Star','Class C')
+        text = text.replace('3-Star','Class C')
+        text = text.replace(' 2 Star ',' Class C ')
+        text = text.replace('2 Stars','Class C')
+        text = text.replace('2 Star','Class C')
+        text = text.replace(' 1 Star ',' Class C ')
+        text = text.replace('1 Star','Class C')
+        text = text.replace('20Q1','2020 Q1')
+        text = text.replace('20Q2','2020 Q2')
+        text = text.replace('20Q3','2020 Q3')
+        text = text.replace('20Q4','2020 Q4')
+        text = text.replace('21Q1','2021 Q1')
+        text = text.replace('21Q2','2021 Q2')
+        text = text.replace('21Q3','2021 Q3')
+        text = text.replace('21Q4','2021 Q4')
+        text = text.replace('amount','number')
+        text = text.replace('2021q1','2021 Q1')
+        text = text.replace('2021q2','2021 Q2')
+        text = text.replace('2021q3','2021 Q3')
+        text = text.replace('2021q4','2021 Q4')
+        #Now remove bad characters
+        for char in ['ï','»','¿','â','€']:
+            text = text.replace(char,'')
+        
+        #Add the edited element to our new list
+        new_paragraph_list.append(text)
+    
+    return(new_paragraph_list)
+
 #Langauge for overview section
-def CreateOverviewLanguage(submarket_data_frame,market_data_frame,natioanl_data_frame,market_title,primary_market,sector,writeup_directory):
+def CreateOverviewLanguage(submarket_data_frame, market_data_frame, natioanl_data_frame, market_title, primary_market, sector, writeup_directory):
 
     #Pull writeup from the CoStar Html page if we have one saved
-    CoStarWriteUp = PullCoStarWriteUp(section_names= ['Summary'],writeup_directory = writeup_directory)
+    CoStarWriteUp = PullCoStarWriteUp(section_names = ['Summary'], writeup_directory = writeup_directory)
+   
     #Section 1: Begin making variables for the overview language that come from the data: 
     if sector == 'Multifamily':
         rent_var                        = 'Market Effective Rent/Unit'
@@ -213,8 +224,8 @@ def CreateOverviewLanguage(submarket_data_frame,market_data_frame,natioanl_data_
         asset_value                     = submarket_data_frame['Asset Value/Unit'].iloc[-1]         #Get current asset value
         asset_value_change              = submarket_data_frame['YoY Asset Value/Unit Growth'].iloc[-1]
         net_absorption_var_name         = 'Absorption Units'
-        submarket_inventory            = submarket_data_frame['Inventory Units'].iloc[-1]
-        market_inventory               = market_data_frame['Inventory Units'].iloc[-1]
+        submarket_inventory             = submarket_data_frame['Inventory Units'].iloc[-1]
+        market_inventory                = market_data_frame['Inventory Units'].iloc[-1]
         unit_or_sqft                    = 'unit'
         unit_or_sqft_singular           = 'unit'
         extra_s                         = 's'
@@ -227,11 +238,13 @@ def CreateOverviewLanguage(submarket_data_frame,market_data_frame,natioanl_data_
         qoq_rent_growth                 = submarket_data_frame['QoQ Rent Growth'].iloc[-1]
         under_construction              = submarket_data_frame['Under Construction SF'].iloc[-1]
         under_construction_share        = submarket_data_frame['Under Construction %'].iloc[-1]
+        
         #Get current asset value
         asset_value                     = submarket_data_frame['Asset Value/Sqft'].iloc[-1]
         asset_value_change              = submarket_data_frame['YoY Asset Value/Sqft Growth'].iloc[-1]
         net_absorption_var_name         = 'Net Absorption SF'
-        #Get Submarket and market inventory and the fraction of the inventory the submarket makes up
+        
+        #Get submarket and market inventory and the fraction of the inventory the submarket makes up
         submarket_inventory             = submarket_data_frame['Inventory SF'].iloc[-1]
         market_inventory                = market_data_frame['Inventory SF'].iloc[-1]
         unit_or_sqft                    = 'square feet'
@@ -253,49 +266,49 @@ def CreateOverviewLanguage(submarket_data_frame,market_data_frame,natioanl_data_
     cap_rate_yoy_change                 = submarket_data_frame['YoY Market Cap Rate Growth'].iloc[-1]
 
     #Get Key Pre-Pandemic Values from 2019 Q4
-    _2019_q4_vacancy                               = FindValueForQuarter(variable='Vacancy Rate',      df =submarket_data_frame,    quarter= '2019 Q4' )
-    _2019_q4_rent                                  = FindValueForQuarter(variable=rent_var,            df =submarket_data_frame,    quarter= '2019 Q4' )
-    _2019_q4_caprate                               = FindValueForQuarter(variable='Market Cap Rate',   df =submarket_data_frame,    quarter= '2019 Q4' )
+    _2019_q4_vacancy                               = FindValueForQuarter(variable = 'Vacancy Rate',      df = submarket_data_frame,    quarter= '2019 Q4' )
+    _2019_q4_rent                                  = FindValueForQuarter(variable = rent_var,            df = submarket_data_frame,    quarter= '2019 Q4' )
+    _2019_q4_caprate                               = FindValueForQuarter(variable = 'Market Cap Rate',   df = submarket_data_frame,    quarter= '2019 Q4' )
     
     #Grab maximum value between 2021 Q1 and 2021 Q4
-    _2020_q1_2021_q4_vacancy_max                   = FindMaxWithinRange(variable='Vacancy Rate',      df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
-    _2020_q1_2021_q4_rent_max                      = FindMaxWithinRange(variable=rent_var,            df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
-    _2020_q1_2021_q4_caprate_max                   = FindMaxWithinRange(variable='Market Cap Rate',   df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
+    _2020_q1_2021_q4_vacancy_max                   = FindMaxWithinRange(variable = 'Vacancy Rate',      df = submarket_data_frame,    start_quarter = '2020 Q1', end_quarter = '2021 Q4' )
+    _2020_q1_2021_q4_rent_max                      = FindMaxWithinRange(variable = rent_var,            df = submarket_data_frame,    start_quarter = '2020 Q1', end_quarter = '2021 Q4' )
+    _2020_q1_2021_q4_caprate_max                   = FindMaxWithinRange(variable = 'Market Cap Rate',   df = submarket_data_frame,    start_quarter = '2020 Q1', end_quarter = '2021 Q4' )
 
     #Grab period where maximum value between 2021 Q1 and 2021 Q4 occured
-    _2020_q1_2021_q4_vacancy_max_period            = FindMaxPeriodWithinRange(variable='Vacancy Rate',      df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
-    _2020_q1_2021_q4_rent_max_period               = FindMaxPeriodWithinRange(variable=rent_var,            df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
-    _2020_q1_2021_q4_caprate_max_period            = FindMaxPeriodWithinRange(variable='Market Cap Rate',   df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
+    _2020_q1_2021_q4_vacancy_max_period            = FindMaxPeriodWithinRange(variable = 'Vacancy Rate',      df = submarket_data_frame,    start_quarter = '2020 Q1',end_quarter = '2021 Q4' )
+    _2020_q1_2021_q4_rent_max_period               = FindMaxPeriodWithinRange(variable = rent_var,            df = submarket_data_frame,    start_quarter = '2020 Q1',end_quarter = '2021 Q4' )
+    _2020_q1_2021_q4_caprate_max_period            = FindMaxPeriodWithinRange(variable = 'Market Cap Rate',   df = submarket_data_frame,    start_quarter = '2020 Q1',end_quarter = '2021 Q4' )
     
     #Grab minimum value between 2021 Q1 and 2021 Q4
-    _2020_q1_2021_q4_vacancy_min                   = FindMinWithinRange(variable='Vacancy Rate',      df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
-    _2020_q1_2021_q4_rent_min                      = FindMinWithinRange(variable=rent_var,            df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
-    _2020_q1_2021_q4_caprate_min                   = FindMinWithinRange(variable='Market Cap Rate',   df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
+    _2020_q1_2021_q4_vacancy_min                   = FindMinWithinRange(variable = 'Vacancy Rate',      df = submarket_data_frame,    start_quarter = '2020 Q1', end_quarter = '2021 Q4' )
+    _2020_q1_2021_q4_rent_min                      = FindMinWithinRange(variable = rent_var,            df = submarket_data_frame,    start_quarter = '2020 Q1', end_quarter = '2021 Q4' )
+    _2020_q1_2021_q4_caprate_min                   = FindMinWithinRange(variable = 'Market Cap Rate',   df = submarket_data_frame,    start_quarter = '2020 Q1', end_quarter = '2021 Q4' )
 
     #Grab period where minimum value between 2021 Q1 and 2021 Q4 occured
-    _2020_q1_2021_q4_vacancy_min_period            = FindMinPeriodWithinRange(variable='Vacancy Rate',      df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
-    _2020_q1_2021_q4_rent_min_period               = FindMinPeriodWithinRange(variable=rent_var,            df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
-    _2020_q1_2021_q4_caprate_min_period            = FindMinPeriodWithinRange(variable='Market Cap Rate',   df =submarket_data_frame,    start_quarter= '2020 Q1',end_quarter = '2021 Q4' )
+    _2020_q1_2021_q4_vacancy_min_period            = FindMinPeriodWithinRange(variable = 'Vacancy Rate',      df = submarket_data_frame,    start_quarter = '2020 Q1', end_quarter = '2021 Q4' )
+    _2020_q1_2021_q4_rent_min_period               = FindMinPeriodWithinRange(variable = rent_var,            df = submarket_data_frame,    start_quarter = '2020 Q1', end_quarter = '2021 Q4' )
+    _2020_q1_2021_q4_caprate_min_period            = FindMinPeriodWithinRange(variable = 'Market Cap Rate',   df = submarket_data_frame,    start_quarter = '2020 Q1', end_quarter = '2021 Q4' )
     
     #Calculate difference between Max and Min values between 2020 Q1 - 2021 Q4
-    _2020_q1_2021_q4_vacancy_min_max_diff          = BpsChange(       var1=_2020_q1_2021_q4_vacancy_min,     var2=_2020_q1_2021_q4_vacancy_max) 
-    _2020_q1_2021_q4_rent_min_max_diff             = PercentageChange(var1=_2020_q1_2021_q4_rent_min,        var2=_2020_q1_2021_q4_rent_max)
-    _2020_q1_2021_q4_caprate_min_max_diff          = BpsChange(       var1= _2020_q1_2021_q4_caprate_min,    var2=_2020_q1_2021_q4_caprate_max)
+    _2020_q1_2021_q4_vacancy_min_max_diff          = BpsChange(       var1 = _2020_q1_2021_q4_vacancy_min,     var2 = _2020_q1_2021_q4_vacancy_max) 
+    _2020_q1_2021_q4_rent_min_max_diff             = PercentageChange(var1 = _2020_q1_2021_q4_rent_min,        var2 = _2020_q1_2021_q4_rent_max)
+    _2020_q1_2021_q4_caprate_min_max_diff          = BpsChange(       var1 =  _2020_q1_2021_q4_caprate_min,    var2 = _2020_q1_2021_q4_caprate_max)
     
     #Calculate difference between 2019 Q4 Value and Min values between 2020 Q1 - 2021 Q4
-    _2019_q4_2020_q1_2021_q4_vacancy_min_diff      = BpsChange(       var1=_2019_q4_vacancy,            var2=_2020_q1_2021_q4_vacancy_min) 
-    _2019_q4_2020_q1_2021_q4_rent_min_diff         = PercentageChange(var1=_2019_q4_rent,               var2=_2020_q1_2021_q4_rent_min)
-    _2019_q4_2020_q1_2021_q4_caprate_min_diff      = BpsChange(       var1= _2019_q4_caprate,           var2=_2020_q1_2021_q4_caprate_min)
+    _2019_q4_2020_q1_2021_q4_vacancy_min_diff      = BpsChange(       var1 = _2019_q4_vacancy,            var2 = _2020_q1_2021_q4_vacancy_min) 
+    _2019_q4_2020_q1_2021_q4_rent_min_diff         = PercentageChange(var1 = _2019_q4_rent,               var2 = _2020_q1_2021_q4_rent_min)
+    _2019_q4_2020_q1_2021_q4_caprate_min_diff      = BpsChange(       var1 = _2019_q4_caprate,           var2 = _2020_q1_2021_q4_caprate_min)
     
     #Calculate difference between 2019 Q4 Value and Max values between 2020 Q1 - 2021 Q4
-    _2019_q4_2020_q1_2021_q4_vacancy_max_diff      = BpsChange(       var1=_2019_q4_vacancy,    var2 = _2020_q1_2021_q4_vacancy_max) 
-    _2019_q4_2020_q1_2021_q4_rent_max_diff         = PercentageChange(var1=_2019_q4_rent,       var2 = _2020_q1_2021_q4_rent_max)
-    _2019_q4_2020_q1_2021_q4_caprate_max_diff      = BpsChange(       var1=_2019_q4_caprate,    var2 = _2020_q1_2021_q4_caprate_max)
+    _2019_q4_2020_q1_2021_q4_vacancy_max_diff      = BpsChange(       var1 = _2019_q4_vacancy,    var2 = _2020_q1_2021_q4_vacancy_max) 
+    _2019_q4_2020_q1_2021_q4_rent_max_diff         = PercentageChange(var1 = _2019_q4_rent,       var2 = _2020_q1_2021_q4_rent_max)
+    _2019_q4_2020_q1_2021_q4_caprate_max_diff      = BpsChange(       var1 = _2019_q4_caprate,    var2 = _2020_q1_2021_q4_caprate_max)
     
     #Calculate difference between 2019 Q4 Value and current values 
-    _2019_q4_current_vacancy_diff                  = BpsChange(       var1= _2019_q4_vacancy,    var2 = vacancy) 
-    _2019_q4_current_rent_diff                     = PercentageChange(var1= _2019_q4_rent,       var2 = rent)
-    _2019_q4_current_caprate_diff                  = BpsChange(       var1=_2019_q4_caprate ,    var2 = cap_rate )
+    _2019_q4_current_vacancy_diff                  = BpsChange(       var1 = _2019_q4_vacancy,    var2 = vacancy) 
+    _2019_q4_current_rent_diff                     = PercentageChange(var1 = _2019_q4_rent,       var2 = rent)
+    _2019_q4_current_caprate_diff                  = BpsChange(       var1 = _2019_q4_caprate ,   var2 = cap_rate )
         
     #Section 2: Begin making variables that are conditional upon the variables created from the data itself
 
@@ -332,7 +345,6 @@ def CreateOverviewLanguage(submarket_data_frame,market_data_frame,natioanl_data_
         if year_ago_cap_rate > avg_cap_rate:
             cap_rate_above_below_average = 'remaining above'
             
-
         #Cap Rate a year ago was below the historical average
         elif year_ago_cap_rate < avg_cap_rate:
             cap_rate_above_below_average = 'moving above'
@@ -730,7 +742,7 @@ def CreateOverviewLanguage(submarket_data_frame,market_data_frame,natioanl_data_
     return(overview_language)    
     
 #Language for Supply and Demand Section
-def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_frame,market_title,primary_market,sector,writeup_directory):
+def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_frame, market_title, primary_market, sector, writeup_directory):
     
     #Pull writeup from the CoStar Html page if we have one saved
     CoStarWriteUp = PullCoStarWriteUp(section_names= ['Vacancy','Supply and Demand', 'Leasing'],writeup_directory = writeup_directory)
@@ -1264,7 +1276,7 @@ def CreateDemandLanguage(submarket_data_frame,market_data_frame,natioanl_data_fr
     return(demand_language)
                                              
 #Language for rent section
-def CreateRentLanguage(submarket_data_frame,market_data_frame,natioanl_data_frame,market_title,primary_market,sector,writeup_directory):
+def CreateRentLanguage(submarket_data_frame, market_data_frame, natioanl_data_frame, market_title, primary_market, sector, writeup_directory):
 
     #Pull writeup from the CoStar Html page if we have one saved
     CoStarWriteUp = PullCoStarWriteUp(section_names= ['Rent',],writeup_directory = writeup_directory)
@@ -1711,7 +1723,7 @@ def CreateConstructionLanguage(submarket_data_frame, market_data_frame, natioanl
     return(construction_language)
 
 #Language for sales section
-def CreateSaleLanguage(submarket_data_frame,market_data_frame,natioanl_data_frame,market_title,primary_market,sector,writeup_directory):
+def CreateSaleLanguage(submarket_data_frame,market_data_frame, natioanl_data_frame, market_title, primary_market, sector, writeup_directory):
     #Pull writeup from the CoStar Html page if we have one saved
     CoStarWriteUp = PullCoStarWriteUp(section_names= ['Sales','Capital Markets'],writeup_directory = writeup_directory)
 
@@ -1929,7 +1941,7 @@ def CreateSaleLanguage(submarket_data_frame,market_data_frame,natioanl_data_fram
     return(sales_language)
 
 #Language for outlook section
-def CreateOutlookLanguage(submarket_data_frame,market_data_frame,natioanl_data_frame,market_title,primary_market,sector,writeup_directory):
+def CreateOutlookLanguage(submarket_data_frame, market_data_frame, natioanl_data_frame, market_title, primary_market, sector, writeup_directory):
 
     #Section 1: Begin making variables for the overview language that come from the data:
     if sector == "Multifamily":
