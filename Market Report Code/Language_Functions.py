@@ -745,7 +745,6 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_
         inventory_var_name              = 'Inventory Units'
         net_absorption                  =  submarket_data_frame['Absorption Units'].iloc[-1]
         previous_quarter_net_absorption =  submarket_data_frame['Absorption Units'].iloc[-2]
-        covid_quarter_net_absorption    =  submarket_data_frame['Absorption Units'].iloc[-6] #change_each_Q
 
 
     else:
@@ -754,13 +753,12 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_
         inventory_var_name              = 'Inventory SF'
         net_absorption                  =  submarket_data_frame['Net Absorption SF'].iloc[-1]
         previous_quarter_net_absorption =  submarket_data_frame['Net Absorption SF'].iloc[-2]
-        covid_quarter_net_absorption    =  submarket_data_frame['Net Absorption SF'].iloc[-6] #change_each_Q
 
-    #inventory levels
+    #Inventory levels
     submarket_inventory                 = submarket_data_frame[inventory_var_name].iloc[-1]
     decade_ago_inventory                = submarket_data_frame[inventory_var_name].iloc[0]
     ten_year_inventory_growth           = submarket_inventory - decade_ago_inventory       
-    inventory_growth_pct                = round(((ten_year_inventory_growth)/decade_ago_inventory)  * 100,2)
+    inventory_growth_pct                = round(((ten_year_inventory_growth)/decade_ago_inventory)  * 100, 2)
 
 
     #Get latest quarter and year
@@ -791,13 +789,7 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_
 
 
     #Track 10 year growth in vacancy 
-    try:
-        lag_ammount                     = -41
-        lagged_submarket_vacancy        = submarket_data_frame['Vacancy Rate'].iloc[lag_ammount]
-    except:
-        lag_ammount                     = 0 #if therere arent 10 years of observations, use the first available
-        lagged_submarket_vacancy        = submarket_data_frame['Vacancy Rate'].iloc[lag_ammount]
-
+    lagged_submarket_vacancy            = submarket_data_frame['Vacancy Rate'].iloc[0]
     ten_year_growth                     = (abs(submarket_vacancy -  lagged_submarket_vacancy)) * 100
     
 
@@ -823,20 +815,20 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_
 
     #Get the word to decribe the quarter (first, 2nd, third, fourth)
     if 'Q1' in latest_quarter:
-        quarter = 'first'
+        quarter            = 'first'
         number_of_quarters = 'the first quarter of '
         
     elif 'Q2' in latest_quarter:
-        quarter = '2nd'
+        quarter            = '2nd'
         number_of_quarters = 'the first two quarters of ' 
 
     elif 'Q3' in latest_quarter:
-        quarter = 'third'
+        quarter            = 'third'
         number_of_quarters = 'the first three quarters of ' 
 
     elif 'Q4' in latest_quarter:
-        quarter = 'fourth'
-        number_of_quarters = 'the course of ' #' + latest_year + '. 
+        quarter             = 'fourth'
+        number_of_quarters = 'the course of ' 
 
     #Describe change in vacancy over the past year
     if yoy_submarket_vacancy_growth > 0:
@@ -850,10 +842,8 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_
     #Describe change in vacancy over the past quarter
     if qoq_submarket_vacancy_growth > 0:
         qoq_submarket_vacancy_growth_description = 'expanded'
-            
     elif qoq_submarket_vacancy_growth < 0:
         qoq_submarket_vacancy_growth_description = 'compressed'
-
     else:
         qoq_submarket_vacancy_growth_description = 'remained flat'
 
@@ -863,15 +853,11 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_
         market_or_submarket = 'Market'
         
         if natioanl_data_frame['Geography Name'].iloc[0]  == 'New York - NY' :
-            market_or_national  = 'New York Metro' 
-        
+            market_or_national    = 'New York Metro' 
         elif natioanl_data_frame['Geography Name'].iloc[0]  == 'United States of America':
             market_or_national    = 'National'
-
         else:
             market_or_national    = natioanl_data_frame['Geography Name'].iloc[0] 
-
-
 
         if market_vacancy > national_vacancy:
             above_or_below  = 'above'
@@ -879,7 +865,6 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_
             above_or_below  = 'below'
         else:
             above_or_below  = 'at'
-
 
         market_submarket_differnce = abs(market_vacancy - national_vacancy) * 100
 
@@ -895,8 +880,8 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_
 
         market_submarket_differnce  = abs(market_vacancy - submarket_vacancy) * 100
 
-    #Check if vacancy is above or below the historical average
 
+    #Check if vacancy is above or below the historical average
     #Submarket current vacancy above historical average
     if submarket_vacancy > submarket_avg_vacancy:
         #Last year's vacacany rate below historical average
@@ -942,13 +927,10 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_
             avg_relationship_description = 'remained at'
 
 
-
-        avg_relationship_description = 'at'
-
     #Calculate total net absorption so far for the current year and how it compares to the same period last year
     data_frame_current_year  = submarket_data_frame.loc[submarket_data_frame['Year'] == (submarket_data_frame['Year'].max())]
     data_frame_previous_year = submarket_data_frame.loc[submarket_data_frame['Year'] == (submarket_data_frame['Year'].max() -1 )]
-    data_frame_previous_year = data_frame_previous_year.iloc[0:len(data_frame_current_year)] #make sure we are comparing the same period from the currnet year to the period from last year
+    data_frame_previous_year = data_frame_previous_year.iloc[0:len(data_frame_current_year)] #make sure we are comparing the same period from the current year to the period from last year
     assert (list(data_frame_previous_year['Quarter'])) ==  list((data_frame_current_year['Quarter']))
 
     current_year_total_net_absorption  = data_frame_current_year[net_absorption_var_name].sum()
@@ -1023,7 +1005,7 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_
                 leasing_activity_intro_clause = 'Vacancy rates have '
 
         else:
-            leasing_activity_intro_clause = 'Vacancy rates have '
+            leasing_activity_intro_clause     = 'Vacancy rates have '
 
     #Inventory contracted over the past year
     elif inventory_change < 0:
@@ -1048,6 +1030,7 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_
 
         #Vacancy decreased
         elif yoy_submarket_vacancy_growth < 0:
+
             #12m net absorption grew over past year
             if leasing_change > 0:
                 leasing_activity_intro_clause = 'With falling inventory levels and growing demand, vacancy rates have '
@@ -1078,7 +1061,7 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_
                 leasing_activity_intro_clause = 'Despite falling inventory levels and no change in demand, vacancy rates have '
         
         else:
-            leasing_activity_intro_clause = 'Vacancy rates have '
+            leasing_activity_intro_clause     = 'Vacancy rates have '
 
     #Inventory flat over the past year
     elif inventory_change == 0:
@@ -1148,7 +1131,8 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_
     #Section 3: Format Variables
     net_absorption                      = millify(abs(net_absorption),'')
     previous_quarter_net_absorption     = millify(previous_quarter_net_absorption,'')
-    covid_quarter_net_absorption        = "{:,.0f}".format(covid_quarter_net_absorption)
+    current_year_total_net_absorption   = millify(current_year_total_net_absorption,'')
+    submarket_inventory                 = millify(submarket_inventory,'')
     yoy_submarket_vacancy_growth        = "{:,.0f}".format(abs(yoy_submarket_vacancy_growth))
     yoy_market_vacancy_growth           = "{:,.0f}".format(abs(yoy_market_vacancy_growth))
     qoq_submarket_vacancy_growth        = "{:,.0f}".format(abs(qoq_submarket_vacancy_growth))
@@ -1162,8 +1146,6 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_
     market_vacancy                      = "{:,.1f}%".format(market_vacancy)
     national_vacancy                    = "{:,.1f}%".format(national_vacancy)
     market_submarket_differnce          = "{:,.0f}".format(market_submarket_differnce)
-    current_year_total_net_absorption   = millify(current_year_total_net_absorption,'')
-    submarket_inventory                 = millify(submarket_inventory,'')
 
     #Section 4: Put together the variables we have created into the supply and demand language and return it
     demand_language = [
@@ -1179,16 +1161,16 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_
             sector.lower()                                              +
             ' space,'                                                   + 
             ' and developers have '                                     +
-            "{growth_description}".format(growth_description = "added, net of demolitions," if ten_year_inventory_growth >= 0  else "demolished") +     
+            "{growth_description}".format(growth_description = "added, net of demolitions," if ten_year_inventory_growth >= 0  else "demolished")    +     
             ' '                                                         +
-            millify(abs(ten_year_inventory_growth),'')                       +
+            millify(abs(ten_year_inventory_growth),'')                  +
             ' '                                                         +
             unit_or_sqft                                                +
             ' over the past ten years. '                                +
             'These '                                                    +
             "{development_or_demolitions}".format(development_or_demolitions = "developments" if ten_year_inventory_growth >= 0  else "demolitions") +     
-            ' have '                                                     +
-            "{expanded_or_reduced}".format(expanded_or_reduced = "expanded" if inventory_growth_pct >= 0  else "reduced") +     
+            ' have '                                                    +
+            "{expanded_or_reduced}".format(expanded_or_reduced = "expanded" if inventory_growth_pct >= 0  else "reduced")                            +     
             ' inventory by '                                            +
             "{:,.1f}%".format(abs(inventory_growth_pct))                +
             '. '                                                        +
@@ -1213,11 +1195,13 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_
             ' the '                                                     +
             market_or_national                                          +     
             ' average'                                                  +
-            "{by_bps}".format(by_bps = "" if market_submarket_differnce == '0'  else ( ' by ' + market_submarket_differnce + ' bps.') )) 
-            ,     
+            "{by_bps}".format(by_bps = "" if market_submarket_differnce == '0'  else ( ' by ' + market_submarket_differnce + ' bps.') )
+            ),     
+
+            #Paragarph 2 starts here:
 
             #Sentence 3
-            ('In the '                                                 +
+            ('In the '                                                  +
             quarter                                                     +
             ' quarter, '                                                +
             sector.lower()                                              + 
@@ -1261,8 +1245,9 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_
             current_year_total_net_absorption                           +
             ' '                                                         +
             unit_or_sqft                                                +
-            '. ') ]
-
+            '. ') 
+                    ]
+    #Add the CoStar Writeup language to our generated langauge
     demand_language = CoStarWriteUp + demand_language
     return(demand_language)
                                              
@@ -1270,7 +1255,7 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_
 def CreateRentLanguage(submarket_data_frame, market_data_frame, natioanl_data_frame, market_title, primary_market, sector, writeup_directory):
 
     #Pull writeup from the CoStar Html page if we have one saved
-    CoStarWriteUp = PullCoStarWriteUp(section_names= ['Rent',],writeup_directory = writeup_directory)
+    CoStarWriteUp = PullCoStarWriteUp(section_names = ['Rent', ], writeup_directory = writeup_directory)
 
     #Section 1: Begin making variables for the overview language that come from the data: 
     if sector == "Multifamily":
@@ -1285,28 +1270,28 @@ def CreateRentLanguage(submarket_data_frame, market_data_frame, natioanl_data_fr
         unit_or_sqft            = 'SF'
 
     #Get current rents for submarket, market, and nation
-    current_rent                     = submarket_data_frame[rent_var].iloc[-1]
-    primary_market_rent              = market_data_frame[rent_var].iloc[-1]
-    national_market_rent             = natioanl_data_frame[rent_var].iloc[-1]
+    current_rent                          = submarket_data_frame[rent_var].iloc[-1]
+    primary_market_rent                   = market_data_frame[rent_var].iloc[-1]
+    national_market_rent                  = natioanl_data_frame[rent_var].iloc[-1]
     
     #See how these rents compare to one another 
-    primary_rent_discount            = round((((current_rent/primary_market_rent) -1 ) * -1) * 100,1)
-    national_rent_discount           = round((((current_rent/national_market_rent) -1 ) * -1) * 100,1)
-    market_starting_rent             =  market_data_frame[rent_var].iloc[0]
-    market_yoy_growth                =  submarket_data_frame[rent_growth_var].iloc[-1]
-    market_decade_rent_growth        = round(((primary_market_rent/market_starting_rent) - 1) * 100,1)
-    market_decade_rent_growth_annual = market_decade_rent_growth/10
-    current_period                   = str(submarket_data_frame['Period'].iloc[-1]) #Get most recent quarter
+    primary_rent_discount                 = round((((current_rent/primary_market_rent) -1 ) * -1) * 100,1)
+    national_rent_discount                = round((((current_rent/national_market_rent) -1 ) * -1) * 100,1)
+    market_starting_rent                  = market_data_frame[rent_var].iloc[0]
+    market_yoy_growth                     = submarket_data_frame[rent_growth_var].iloc[-1]
+    market_decade_rent_growth             = round(((primary_market_rent/market_starting_rent) - 1) * 100,1)
+    market_decade_rent_growth_annual      = market_decade_rent_growth/10
+    current_period                        = str(submarket_data_frame['Period'].iloc[-1]) #Get most recent quarter
 
     #Calcuate rent growth for submarket, market, and national average over past 10 years
-    submarket_starting_rent                =  submarket_data_frame[rent_var].iloc[0]
-    submarket_previous_quarter_yoy_growth  =  submarket_data_frame[rent_growth_var].iloc[-2]
-    submarket_yoy_growth                   =  submarket_data_frame[rent_growth_var].iloc[-1]
-    submarket_qoq_growth                   =  submarket_data_frame[qoq_rent_growth_var].iloc[-1]
-    submarket_year_ago_yoy_growth          =  submarket_data_frame[rent_growth_var].iloc[-5]
+    submarket_starting_rent                = submarket_data_frame[rent_var].iloc[0]
+    submarket_previous_quarter_yoy_growth  = submarket_data_frame[rent_growth_var].iloc[-2]
+    submarket_yoy_growth                   = submarket_data_frame[rent_growth_var].iloc[-1]
+    submarket_qoq_growth                   = submarket_data_frame[qoq_rent_growth_var].iloc[-1]
+    submarket_year_ago_yoy_growth          = submarket_data_frame[rent_growth_var].iloc[-5]
     submarket_decade_rent_growth           = round(((current_rent/submarket_starting_rent) - 1) * 100,1)
     submarket_decade_rent_growth_annual    = submarket_decade_rent_growth/10
-    national_starting_rent                 =  natioanl_data_frame[rent_var].iloc[0]
+    national_starting_rent                 = natioanl_data_frame[rent_var].iloc[0]
     national_decade_rent_growth            = round(((national_market_rent/national_starting_rent) - 1) * 100,1)
     national_decade_rent_growth_annual     = national_decade_rent_growth/10
     
@@ -1381,7 +1366,6 @@ def CreateRentLanguage(submarket_data_frame, market_data_frame, natioanl_data_fr
         elif submarket_2019Q4_yoy_growth == submarket_pre_2020_average_yoy_rent_growth: #equal to historical average
             submarket_pre_pandemic_yoy_growth_description = 'accelerated above the previous quarter, and was in line with the historical average,'
 
-    
     elif submarket_2019Q4_yoy_growth < submarket_2019Q3_yoy_growth: #rent growth softend
         if submarket_2019Q4_yoy_growth > submarket_pre_2020_average_yoy_rent_growth:  #above historical average
             submarket_pre_pandemic_yoy_growth_description = 'softened below the previous quarter, but was above the historical average,'
@@ -1392,7 +1376,6 @@ def CreateRentLanguage(submarket_data_frame, market_data_frame, natioanl_data_fr
         elif submarket_2019Q4_yoy_growth == submarket_pre_2020_average_yoy_rent_growth: #equal to historical average
             submarket_pre_pandemic_yoy_growth_description = 'softened below the previous quarter, but was in line with the historical average,'
 
-    
     elif submarket_2019Q4_yoy_growth == submarket_2019Q3_yoy_growth: #rent growth constant
         if submarket_2019Q4_yoy_growth > submarket_pre_2020_average_yoy_rent_growth:  #above historical average
             submarket_pre_pandemic_yoy_growth_description = 'remained stable, and was above the historical average,'
@@ -1402,15 +1385,14 @@ def CreateRentLanguage(submarket_data_frame, market_data_frame, natioanl_data_fr
 
         elif submarket_2019Q4_yoy_growth == submarket_pre_2020_average_yoy_rent_growth: #equal to historical average
             submarket_pre_pandemic_yoy_growth_description = 'remained stable and in line with the historical average'
-    else: submarket_pre_pandemic_yoy_growth_description = '[accelerated/softend/remained stable]'
 
-
+    else: submarket_pre_pandemic_yoy_growth_description   = '[accelerated/softend/remained stable]'
 
     if submarket_data_frame.equals(market_data_frame): #Market
         market_or_submarket = 'Market'
 
         if natioanl_data_frame['Geography Name'].iloc[0]  == 'New York - NY' :
-            market_or_nation  = 'New York Metro average' 
+            market_or_nation    = 'New York Metro average' 
         
         elif natioanl_data_frame['Geography Name'].iloc[0]  == 'United States of America':
             market_or_nation    = 'National average'
@@ -1421,9 +1403,9 @@ def CreateRentLanguage(submarket_data_frame, market_data_frame, natioanl_data_fr
         if market_decade_rent_growth_annual > national_decade_rent_growth_annual:
               ten_year_growth_inline_or_exceeding = 'exceeding'
         elif market_decade_rent_growth_annual < national_decade_rent_growth_annual:
-            ten_year_growth_inline_or_exceeding = 'falling short of'
+            ten_year_growth_inline_or_exceeding   = 'falling short of'
         else:
-            ten_year_growth_inline_or_exceeding = 'in line with'
+            ten_year_growth_inline_or_exceeding   = 'in line with'
     else:
         market_or_submarket = 'Submarket'
         market_or_nation    = 'Market'
@@ -1432,10 +1414,9 @@ def CreateRentLanguage(submarket_data_frame, market_data_frame, natioanl_data_fr
         if submarket_decade_rent_growth_annual > market_decade_rent_growth_annual:
               ten_year_growth_inline_or_exceeding = 'exceeding'
         elif submarket_decade_rent_growth_annual < market_decade_rent_growth_annual:
-            ten_year_growth_inline_or_exceeding = 'falling short of'
+            ten_year_growth_inline_or_exceeding   = 'falling short of'
         else:
-            ten_year_growth_inline_or_exceeding = 'in line with'
-
+            ten_year_growth_inline_or_exceeding   = 'in line with'
 
 
 
@@ -1485,120 +1466,161 @@ def CreateRentLanguage(submarket_data_frame, market_data_frame, natioanl_data_fr
     
 
     #Section 4: Put togther our rent langauge for either a market or submarket and return it
-    if market_or_submarket == 'Market': #Market
-        rent_langauge = [( 'At ' +
-            current_rent +
-            '/' +
-            unit_or_sqft +
-            ', the rents in the ' +
-            market_or_submarket + 
-            ' are '             +
+
+    #Rent langauge for markets, put together sentences
+    if market_or_submarket == 'Market': 
+        rent_langauge = [
+            #Sentence 1
+            ( 'At '                                         +
+            current_rent                                    +
+            '/'                                             +
+            unit_or_sqft                                    +
+            ', the rents in the '                           +
+            market_or_submarket                             + 
+            ' are '                                         +
             "{market_nation_rent_relationship}".format(market_nation_rent_relationship = "equal to " if (primary_market_rent == national_market_rent )  else   ('roughly ' + national_rent_discount + ' ' + cheaper_or_more_expensive_national + ' than ')) +
-            'the ' +
-            market_or_nation +            
-            "{national_rent_level}".format(national_rent_level = "" if (primary_market_rent == national_market_rent)  else     (' where rents sit at ' + national_market_rent + '/' + unit_or_sqft )) +
-            '. ' +
-            'Rents in the ' +
-            market_or_submarket +
-            ' have ' +
-            market_annual_growth_description +
-            ' '                             +
-            market_decade_rent_growth_annual +
-            ' per annum over the past decade, '+
-            ten_year_growth_inline_or_exceeding +
-            ' the ' +
-            market_or_nation +
-            ', where rents ' +
-            'expanded ' +
-            national_decade_rent_growth_annual +
+            'the '                                          +
+            market_or_nation                                +            
+            "{national_rent_level}".format(national_rent_level = "" if (primary_market_rent == national_market_rent)  else     (' where rents sit at ' + national_market_rent + '/' + unit_or_sqft ))                                                       +
+            '. '                                            +
+
+            #Sentence 2
+            'Rents in the '                                 +
+            market_or_submarket                             +
+            ' have '                                        +
+            market_annual_growth_description                +
+            ' '                                             +
+            market_decade_rent_growth_annual                +
+            ' per annum over the past decade, '             +
+            ten_year_growth_inline_or_exceeding             +
+            ' the '                                         +
+            market_or_nation                                +
+            ', where rents '                                +
+            'expanded '                                     +
+            national_decade_rent_growth_annual              +
             ' per annum during that time. ' ),
             
-            ('In 2019 Q4, annual rent growth in the '+
-            market_or_submarket +
-            ' ' +
-            submarket_pre_pandemic_yoy_growth_description + 
-            ' with annual growth of '+
-            submarket_2019Q4_yoy_growth +
-            '. '                        +
-            'In 2020 Q2, quarterly rent growth '              +
-            "{growth_description}".format(growth_description = "reached " if submarket_2020Q2_qoq_growth >= submarket_2020Q1_qoq_growth  else "fell to ") +
-            "{:,.1f}%".format(submarket_2020Q2_qoq_growth) +
+
+
+            #Paragraph 2 begins here
+            #Sentence 3
+            (
+            'In 2019 Q4, annual rent growth in the '        +
+            market_or_submarket                             +
+            ' '                                             +
+            submarket_pre_pandemic_yoy_growth_description   +  
+            ' with annual growth of '                       +
+            submarket_2019Q4_yoy_growth                     +
+            '. '                                            +
             
+
+
+            #Sentence 4
+            'In 2020 Q2, quarterly rent growth '            +
+            "{growth_description}".format(growth_description = "reached " if submarket_2020Q2_qoq_growth >= submarket_2020Q1_qoq_growth  else "fell to ")                                                                                                   +
+            "{:,.1f}%".format(submarket_2020Q2_qoq_growth)  +
+            
+
+
+            #Sentence 5
             '. By the end of 2020, rents had '             +
-            "{growth_description}".format(growth_description = "grown " if  submarket_2020Q4_yoy_growth >= 0  else "fallen ") +                                           
-            "{:,.1f}%".format(abs(submarket_2020Q4_yoy_growth)) +
+            "{growth_description}".format(growth_description = "grown " if  submarket_2020Q4_yoy_growth >= 0  else "fallen ")                                                                                                                                +                                           
+            "{:,.1f}%".format(abs(submarket_2020Q4_yoy_growth))                                                                                                                                                                                              +
             ' from the 2019 Q4 rent level of '             +
             submarket_2019Q4_rent                          +
             '/'                                            +
-            unit_or_sqft +
-            '. '
-            'Quarterly growth in '                     +
-            current_period                              +
-            ' reached ' +
-            submarket_qoq_growth +
-            ', '                 +
-           qoq_pushing_or_contracting_annual_growth +
-           ' ' +
-            market_yoy_growth +
-            '.' 
-            )   ]
+            unit_or_sqft                                   +
+            '. '                                           +
+            
 
+            #Sentence 6
+            'Quarterly growth in '                         +
+            current_period                                 +
+            ' reached '                                    +
+            submarket_qoq_growth                           +
+            ', '                                           +
+           qoq_pushing_or_contracting_annual_growth        +
+           ' '                                             +
+            market_yoy_growth                              +
+            '.' 
+            )   
+                ]
+
+    #Rent langauge for submarkets, put together sentences
     elif market_or_submarket == 'Submarket':
-        rent_langauge = [( 'At ' +
-            current_rent +
-            '/' +
-            unit_or_sqft +
-            ', rents in the ' +
+        rent_langauge = [
+            
+            #Sentence 1
+            ( 'At '             +
+            current_rent        +
+            '/'                 +
+            unit_or_sqft        +
+            ', rents in the '   +
             market_or_submarket + 
             ' are '             +
             "{submarket_market_rent_relationship}".format(submarket_market_rent_relationship = "equal to " if (current_rent == primary_market_rent)  else   ('roughly ' + primary_rent_discount + ' ' + cheaper_or_more_expensive_primary + ' than ')) +
-            'the ' +
-            market_or_nation +
+            'the '              +
+            market_or_nation    +
             "{market_rent_level}".format(market_rent_level = "" if (current_rent == primary_market_rent)  else     (' where rents sit at ' + primary_market_rent + '/' + unit_or_sqft )) +
-            '. ' +
+            '. '                +
             
-            
-            'Rents in the ' +
-            market_or_submarket +
-            ' have ' +
-            submarket_annual_growth_description +
-            ' '  +
-            submarket_decade_rent_growth_annual +
-           ' per annum over the past decade, ' +
-           ten_year_growth_inline_or_exceeding +
-           ' the ' +
-            market_or_nation +
-            ', where rents expanded ' +
-            market_decade_rent_growth_annual +
-            ' per annum during that time. ' ),
-            ('In 2019 Q4, annual rent growth in the '+
-            market_or_submarket +
-            ' ' +
+            #Sentence 2
+            'Rents in the '                              +
+            market_or_submarket                          +
+            ' have '                                     +
+            submarket_annual_growth_description          +
+            ' '                                          +
+            submarket_decade_rent_growth_annual          +
+           ' per annum over the past decade, '           +
+           ten_year_growth_inline_or_exceeding           +
+           ' the '                                       +
+            market_or_nation                             +
+            ', where rents expanded '                    +
+            market_decade_rent_growth_annual             +
+            ' per annum during that time. ' 
+            ),
+
+
+            #Second paragraph begins here            
+            #Sentence 3
+            (
+            'In 2019 Q4, annual rent growth in the '      +
+            market_or_submarket                           +
+            ' '                                           +
             submarket_pre_pandemic_yoy_growth_description +  
             ' with annual growth of '                     +
             submarket_2019Q4_yoy_growth                   +   
             '. '                                          +
+            
+            #Sentence 4
             'In 2020 Q2, quarterly rent growth '              +
             "{growth_description}".format(growth_description = "reached " if submarket_2020Q2_qoq_growth >= submarket_2020Q1_qoq_growth  else "fell to ") +
             "{:,.1f}%".format(submarket_2020Q2_qoq_growth) +
             
+            #Sentence 5
             '. By the end of 2020, rents had '             +
             "{growth_description}".format(growth_description = "grown " if  submarket_2020Q4_yoy_growth >= 0  else "fallen ") +                                           
             "{:,.1f}%".format(abs(submarket_2020Q4_yoy_growth)) +
             ' from the 2019 Q4 rent level of '             +
             submarket_2019Q4_rent                          +
             '/'                                            +
-            unit_or_sqft +
-            '. '
-            'Quarterly growth in ' +
-            current_period          +
-            ' reached ' +
-            submarket_qoq_growth +
-            ', '                 +
-            qoq_pushing_or_contracting_annual_growth +
-             ' ' +
-            submarket_yoy_growth +
-            '.' )  ]
+            unit_or_sqft                                   +
+            '. '                                           +
+
+            #Sentence 6                   
+            'Quarterly growth in '                         +
+            current_period                                 +
+            ' reached '                                    +
+            submarket_qoq_growth                           +
+            ', '                                           +
+            qoq_pushing_or_contracting_annual_growth       +
+             ' '                                           +
+            submarket_yoy_growth                           +
+            '.' 
+            )  
+                ]
+
+    #Combine the CoStar Writeup with our generated langauge
     rent_langauge = CoStarWriteUp +  rent_langauge
     return(rent_langauge) 
         
@@ -1612,6 +1634,7 @@ def CreateConstructionLanguage(submarket_data_frame, market_data_frame, natioanl
         unit_or_sqft                        = 'units'
         under_construction                  = submarket_data_frame['Under Construction Units'].iloc[-1]
         median_construction_level           = submarket_data_frame['Under Construction Units'].median()
+        max_construction_level              = submarket_data_frame['Under Construction Units'].max()
         under_construction_share            = round(submarket_data_frame['Under Construction %'].iloc[-1],2)
         current_inventory                   = submarket_data_frame['Inventory Units'].iloc[-1]
         decade_ago_inventory                = submarket_data_frame['Inventory Units'].iloc[0]
@@ -1622,13 +1645,14 @@ def CreateConstructionLanguage(submarket_data_frame, market_data_frame, natioanl
         unit_or_sqft                        = 'square feet'
         under_construction                  = submarket_data_frame['Under Construction SF'].iloc[-1]
         median_construction_level           = submarket_data_frame['Under Construction SF'].median()
-        under_construction_share            = round(submarket_data_frame['Under Construction %'].iloc[-1],2)
+        max_construction_level              = submarket_data_frame['Under Construction Units'].max()
+        under_construction_share            = round(submarket_data_frame['Under Construction %'].iloc[-1], 2)
         current_inventory                   = submarket_data_frame['Inventory SF'].iloc[-1]
         decade_ago_inventory                = submarket_data_frame['Inventory SF'].iloc[0]
         delivered_inventory                 = submarket_data_frame['Gross Delivered SF'].sum()
         demolished_inventory                = submarket_data_frame['Demolished SF'].sum()
     
-    yoy_submarket_vacancy_growth        = submarket_data_frame['YoY Vacancy Growth'].iloc[-1]
+    yoy_submarket_vacancy_growth            = submarket_data_frame['YoY Vacancy Growth'].iloc[-1]
 
     if submarket_data_frame.equals(market_data_frame):
         market_or_submarket                 = 'Market'
@@ -1636,7 +1660,7 @@ def CreateConstructionLanguage(submarket_data_frame, market_data_frame, natioanl
         market_or_submarket                 = 'Submarket'
 
     inventory_growth                        = current_inventory - decade_ago_inventory
-    inventory_growth_pct                    = round((inventory_growth/decade_ago_inventory)  * 100,2)
+    inventory_growth_pct                    = round((inventory_growth/decade_ago_inventory)  * 100, 2)
     
     #Section 2: Begin making varaiables that are conditional on the variables we have created in section 1
 
@@ -1646,71 +1670,85 @@ def CreateConstructionLanguage(submarket_data_frame, market_data_frame, natioanl
     #Determine if developers are historically active here
     #If theres at least 1 deliverable per quarter, active
     if median_construction_level >= 1:
-        developers_historically_active_or_inactive = ('Developers have been active for much of the past ten years. In fact, they have added ' + 
-                                        millify(delivered_inventory,'')  +
-                                        ' '                 +
-                                        unit_or_sqft        +
-                                        ' to the '          +
-                                         market_or_submarket + 
-                                        ' over that time, '  +
-                                        "{inventory_expand_contract}".format(inventory_expand_contract = "expanding inventory by " if  inventory_growth_pct >= 0  else "but inventory contracted by ") +                                           
-                                         "{:,.1f}%".format(abs(inventory_growth_pct)) +
-                                          '. '
-                                        )
+        developers_historically_active_or_inactive = ('Developers have been active for much of the past ten years. In fact, they have added '   + 
+                                                      millify(delivered_inventory,'')                                                           +
+                                                      ' '                                                                                       +
+                                                      unit_or_sqft                                                                              +
+                                                      ' to the '                                                                                +
+                                                      market_or_submarket                                                                       + 
+                                                      ' over that time, '                                                                       +
+                                                      "{inventory_expand_contract}".format(inventory_expand_contract = "expanding inventory by " if  inventory_growth_pct >= 0  else "but inventory contracted by ") +                                           
+                                                      "{:,.1f}%".format(abs(inventory_growth_pct))                                              +
+                                                      '. '
+                                                     )
     #Inactive devlopers
     else:
-        developers_historically_active_or_inactive = ('Developers have been inactive for much of the past ten years. ')
+        developers_historically_active_or_inactive     = ('Developers have been inactive for much of the past ten years. ')
         
+        if max_construction_level == 0:
+            developers_historically_active_or_inactive = ('Developers have been inactive for the past ten years. ')
+            
+
         #If they've added to inventory, add a sentance about that
         if delivered_inventory > 0:
             developers_historically_active_or_inactive = developers_historically_active_or_inactive +  (
-                                        'In fact, they have added just ' + 
-                                        millify(delivered_inventory,'') + 
-                                        ' '                 +
-                                        unit_or_sqft        +
-                                        ' to the '          +
-                                        market_or_submarket + 
-                                        ' over that time. '
+                                                        'In fact, they have added just ' + 
+                                                        millify(delivered_inventory,'')  + 
+                                                        ' '                              +
+                                                        unit_or_sqft                     +
+                                                        ' to the '                       +
+                                                        market_or_submarket              +    
+                                                        ' over that time. '
                                                                                                         )
             #If they've demolished space, add a sentance about that
             if demolished_inventory > 0:
                 developers_historically_active_or_inactive = developers_historically_active_or_inactive + ('Developers have also removed space for higher and better use, removing ' + 
-                                            millify(demolished_inventory,'') + 
-                                            ' ' +
-                                            unit_or_sqft + 
-                                            '. '
-                                            )
+                                                                                                            millify(demolished_inventory,'')                                         + 
+                                                                                                            ' '                                                                      +
+                                                                                                            unit_or_sqft                                                             + 
+                                                                                                            '. '
+                                                                                                             )
         #If developers haven't added to inventory, we don't add that sentance
         else:
 
             #If they've demolished space, add a sentance about that
             if demolished_inventory > 0:
                 developers_historically_active_or_inactive = developers_historically_active_or_inactive +  ('They have removed space for higher and better use, removing ' + 
-                                            millify(demolished_inventory,'') + 
-                                            ' ' +
-                                            unit_or_sqft + 
-                                            '. '
-                                            )
+                                                                                                            millify(demolished_inventory, '')                              + 
+                                                                                                            ' '                                                            +
+                                                                                                            unit_or_sqft                                                   + 
+                                                                                                            '. '
+                                                                                                           )
 
 
 
     
     
     #Determine if the supply pipeline is active or not    
+    
+    #Active pipelines
     if under_construction > 0:
         currently_active_or_inactive = 'Developers are currently active in the ' + market_or_submarket + ' with ' + millify(under_construction,'') + ' ' + unit_or_sqft + ', or the equivalent of ' + "{:,.1f}%".format(under_construction_share)   + ' of existing inventory, underway. '
+        
+        #Vacancy rates have expanded over the past year
         if yoy_submarket_vacancy_growth > 0:
             pipeline_vacancy_pressure    = 'The active pipeline will likely add upward pressure to vacancy rates in the near term.'
+        
+        #Vacancy rates have contracted or stayed flat over the past year
         elif yoy_submarket_vacancy_growth <= 0:
             pipeline_vacancy_pressure    = 'Demand in the ' + market_or_submarket + ' has outpaced new deliverables but could slow in the near term due to seasonal trends.'
 
+    #Inactive pipeline
     elif under_construction <= 0 :
         currently_active_or_inactive = 'Developers are not currently active in the ' + market_or_submarket + '. ' 
         pipeline_vacancy_pressure    = 'The empty pipeline will likely limit supply pressure on vacancies, boding well for fundamentals in the near term. '
 
-    
+    #Put together the generated sentences into a single list 
     construction_language = [(developers_historically_active_or_inactive + currently_active_or_inactive + pipeline_vacancy_pressure)]
+    
+    #Combine the CoStar Writeup with our generated langauge
     construction_language = CoStarWriteUp + construction_language
+    
     return(construction_language)
 
 #Language for sales section
@@ -1756,7 +1794,7 @@ def CreateSaleLanguage(submarket_data_frame,market_data_frame, natioanl_data_fra
  
 
     data_frame_annual                   = data_frame_annual.loc[data_frame_annual['n'] == 4] #keep only years where we have 4 full quarters
-    data_frame_annual                   = data_frame_annual.iloc[[-1,-2,-3]]          #keep the last 3 (full) years
+    data_frame_annual                   = data_frame_annual.iloc[[-1,-2,-3]]                 #keep the last 3 (full) years
     three_year_avg_sale_volume          = round(data_frame_annual['sale_volume'].mean())
     three_year_avg_transaction_count    = round(data_frame_annual['transaction_count'].mean())
 
@@ -1859,9 +1897,9 @@ def CreateSaleLanguage(submarket_data_frame,market_data_frame, natioanl_data_fra
 
 
     over_last_year_sale_volume       = millify(over_last_year_sale_volume,'$')
-    over_last_year_transactions      = "{:,.0f}".format(over_last_year_transactions,'$')
     over_last_year_units             = millify(over_last_year_units,'')
     three_year_avg_sale_volume       = millify(three_year_avg_sale_volume,'$')
+    over_last_year_transactions      = "{:,.0f}".format(over_last_year_transactions,'$')
     three_year_avg_transaction_count = "{:,.0f}".format(three_year_avg_transaction_count)
     asset_value                      = "${:,.0f}".format(asset_value)
 
@@ -1871,64 +1909,84 @@ def CreateSaleLanguage(submarket_data_frame,market_data_frame, natioanl_data_fra
 
 
     #Section 4: Put together our variables into a pargaraph and return the sales language
-    sales_language = [(investors_active_or_inactive                      +
-            'Going back three years, investors have closed, on average, ' +
-            three_year_avg_transaction_count                 +
-            ' '                                              +
-            three_year_avg_transaction_or_transactions       +
-            ' per year'                                      +
-            ' with an annual average sales volume of '       +
-            three_year_avg_sale_volume                       +
-            '. '                                             +
-           'Over the past year, there '                      +
-            over_last_year_was_or_were                       +
-           ' '                                               +
-            over_last_year_transactions                      +
-            ' closed '                                        + 
-            over_last_year_transactions_or_transaction       +
-            ' across '                                       +
-            over_last_year_units                             +
-            ' '                                              +
-           unit_or_sqft                                      +
-           ', representing '                                 +
-           over_last_year_sale_volume                        +
-           ' in dollar volume.'                              +
-            ' In '                                           +
-            current_period                                   +
-            ', there '                                       + 
-            sales_count_was_or_were                          +
-             ' '                                             +
-            current_transaction_count                        +
-            ' '                                              +
-            sales_count_sale_or_sales                        +
-            "{recorded}".format(recorded = " recorded" if current_transaction_count == 'no'  else "") +
-            for_a_sale_volume_of                             +
-            '.'                                             ),
-            
-            #Second paragraph
-            ('Market pricing, based on the estimated price movement of all properties in the ' +
-            submarket_or_market                              +
-            ', sat at '                                      +
-            asset_value                                      +
-            '/'                                              +
-            unit_or_sqft_singular                            +
-            ' and has '                                      +
-            asset_value_change_description                   +
-            ' '                                              +
-            asset_value_change                               + 
-            ' over the past year, '                          +
-            'while the market cap rate has '                 +
-            cap_rate_change_description                      +
-            ' '                                              +
-             cap_rate_change                                 +
-            ' over the past year '                           +
-           cap_rate_change_description_to_or_at              +
-           ' '                                               +
-            cap_rate                                         +
-            '.'                                              +
-            ' Although capital markets have held up relatively well, uncertainty still remains.' +
-            ' Some investors may need to see signs of sustained economic growth before engaging. ')]
+    sales_language = [
+                      #Paragraph 1
+
+                      #Sentence 1
+                      (investors_active_or_inactive                                     +   
+                       
+
+                       #Sentence 2
+                       'Going back three years, investors have closed, on average, '    +
+                       three_year_avg_transaction_count                                 +
+                       ' '                                                              +
+                       three_year_avg_transaction_or_transactions                       +
+                       ' per year'                                                      +
+                       ' with an annual average sales volume of '                       +
+                       three_year_avg_sale_volume                                       +
+                       '. '                                                             +
+                       
+                       #Sentence 3
+                       'Over the past year, there '                                     +
+                        over_last_year_was_or_were                                      +
+                        ' '                                                             +
+                       over_last_year_transactions                                      +
+                       ' closed '                                                       +    
+                       over_last_year_transactions_or_transaction                       +
+                       ' across '                                                       +
+                       over_last_year_units                                             +
+                       ' '                                                              +
+                       unit_or_sqft                                                     +
+                       ', representing '                                                +
+                       over_last_year_sale_volume                                       +
+                       ' in dollar volume.'                                             +
+                    
+                     #Sentence 4
+                     ' In '                                                             +
+                     current_period                                                     +
+                     ', there '                                                         + 
+                     sales_count_was_or_were                                            +
+                     ' '                                                                +
+                     current_transaction_count                                          +
+                     ' '                                                                +
+                     sales_count_sale_or_sales                                          +
+                     "{recorded}".format(recorded = " recorded" if current_transaction_count == 'no'  else "") +
+                     for_a_sale_volume_of                                               +
+                     '.'                                             ),
+                    
+
+
+                    #Second paragraph
+                    #Sentence 5
+                    ('Market pricing, based on the estimated price movement of all properties in the ' +
+                    submarket_or_market                                                 +
+                    ', sat at '                                                         +
+                    asset_value                                                         +
+                    '/'                                                                 +
+                    unit_or_sqft_singular                                               +  
+                    ' and has '                                                         +
+                    asset_value_change_description                                      +
+                    ' '                                                                 +
+                    asset_value_change                                                  + 
+                    ' over the past year, '                                             +
+                    'while the market cap rate has '                                    +
+                    cap_rate_change_description                                         +
+                    ' '                                                                 +
+                    cap_rate_change                                                     +
+                    ' over the past year '                                              +
+                    cap_rate_change_description_to_or_at                                +
+                    ' '                                                                 +
+                    cap_rate                                                            +
+                    '.'                                                                 +
+                    
+                    #Sentence 6
+                    ' Although capital markets have held up relatively well, uncertainty still remains.' +
+                    ' Some investors may need to see signs of sustained economic growth before engaging. ')
+                ]
+
+    #Combine CoStar writeup with our generated langauge            
     sales_language = CoStarWriteUp + sales_language
+
     return(sales_language)
 
 #Language for outlook section
@@ -1977,13 +2035,6 @@ def CreateOutlookLanguage(submarket_data_frame, market_data_frame, natioanl_data
     submarket_previous_quarter_yoy_growth  =  submarket_data_frame[rent_growth_var].iloc[-2]
     
     #Section 2: Begin making varaiables that are conditional on the variables we have created in section 1
-    #Describe YoY change in asset values
-    if asset_value_change > 0:
-        asset_value_change_description = 'expanded'
-    elif asset_value_change < 0:
-        asset_value_change_description = 'compressed'
-    else:
-        asset_value_change_description = 'remained steady'
     
     #Describe relationship between quarterly growth and annual rent growth
     if submarket_previous_quarter_yoy_growth > submarket_yoy_growth:
@@ -1997,79 +2048,26 @@ def CreateOutlookLanguage(submarket_data_frame, market_data_frame, natioanl_data
     else:
         qoq_pushing_or_contracting_annual_growth = '[contracting/pushing] annual growth to'
 
-    #Determine change in cap rate
-    if cap_rate_change > 0:
-        cap_rate_change_description  = 'expanded ' + "{:,.0f} bps".format(abs(cap_rate_change)) + ' to a rate of '            
-    elif cap_rate_change < 0:
-        cap_rate_change_description  = 'compressed ' + "{:,.0f} bps".format(abs(cap_rate_change)) + ' to a rate of '       
-    else:
-        cap_rate_change_description  = 'remained stable at '
-    
-    
-    #Relationship betweeen current cap rate and the historical average
-    #Cap Rate Below historical average
-    if cap_rate < avg_cap_rate:
-        
-        #Cap Rate a year ago was above the historical average
-        if year_ago_cap_rate > avg_cap_rate:
-            cap_rate_above_below_average = 'falling below'
-
-        #Cap Rate a year ago was below the historical average
-        elif year_ago_cap_rate < avg_cap_rate:
-            cap_rate_above_below_average = 'remaining below'
-        
-        #Cap Rate a year ago was equal to the historical average
-        elif year_ago_cap_rate == avg_cap_rate:
-            cap_rate_above_below_average = 'falling below'
-
-    #Cap Rate above historical average
-    elif cap_rate > avg_cap_rate:
-                
-        #Cap Rate a year ago was above the historical average
-        if year_ago_cap_rate > avg_cap_rate:
-            cap_rate_above_below_average = 'remaining above'
-            
-
-        #Cap Rate a year ago was below the historical average
-        elif year_ago_cap_rate < avg_cap_rate:
-            cap_rate_above_below_average = 'moving above'
-            
-        #Cap Rate a year ago was equal to the historical average
-        elif year_ago_cap_rate == avg_cap_rate:
-            cap_rate_above_below_average = 'moving above'
-            
-    #Cap equals  historical average
-    elif  cap_rate == avg_cap_rate:
-        #Cap Rate a year ago was above the historical average
-        if year_ago_cap_rate > avg_cap_rate:
-            cap_rate_above_below_average = 'falling to'
-
-        #Cap Rate a year ago was below the historical average
-        elif year_ago_cap_rate < avg_cap_rate:
-            cap_rate_above_below_average = 'moving to'
-        
-        #Cap Rate a year ago was equal to the historical average
-        elif year_ago_cap_rate == avg_cap_rate:
-            cap_rate_above_below_average = 'remaining at'
-
    
     #Describe out change in fundamentals
     if submarket_yoy_growth >= 0     and vacancy_change <= 0: #if rent is growing (or flat) and vacancy is falling (or flat) we call fundamentals improving
-        fundamentals_change = 'improving'
+        fundamentals_change  = 'improving'
         values_likely_change = 'expand'
-    elif submarket_yoy_growth < 0 and vacancy_change > 0 : #if rent is falling and vacancy is rising we call fundamentals softening
-        fundamentals_change = 'softening'
+
+    elif submarket_yoy_growth < 0 and vacancy_change > 0 :    #if rent is falling and vacancy is rising we call fundamentals softening
+        fundamentals_change  = 'softening'
         values_likely_change = 'compress'
+    
     elif (submarket_yoy_growth > 0   and vacancy_change  > 0) or (submarket_yoy_growth < 0 and vacancy_change < 0 ) : #if rents are falling but vacancy is also falling OR vice versa, then mixed
-        fundamentals_change = 'mixed'
+        fundamentals_change  = 'mixed'
         values_likely_change = 'stabilize'
 
     elif (submarket_yoy_growth == 0 and vacancy_change == 0): #no change in rent or vacancy
-        fundamentals_change = 'stable'
+        fundamentals_change  = 'stable'
         values_likely_change = 'stabilize'
         
     else:
-        fundamentals_change = '[improving/softening/mixed/stable]'
+        fundamentals_change  = '[improving/softening/mixed/stable]'
         values_likely_change = '[expand/compress/stabilize]'
 
     
@@ -2251,6 +2249,7 @@ def CreateOutlookLanguage(submarket_data_frame, market_data_frame, natioanl_data
 
             else:
                 fundamentals_clause = ''            
+        
         #Vacancy flat
         elif vacancy_change == 0:
 
@@ -2285,11 +2284,11 @@ def CreateOutlookLanguage(submarket_data_frame, market_data_frame, natioanl_data
                                           
     elif sector == "Office":
         sector_specific_outlook_language=("""While office demand does remain below prepandemic levels for many markets, the U.S. office sector strengthened as a whole over the second half of 2021. Despite an improved outlook, much of the sector's performance depends on case counts and how tenants will utilize office space if and when they return to the office.""" + 
-        ' If COVID cases wane during the first quarter, office usage and demand will likely improve. If a new variant emergees, the recovery for the sector will likely be extended. Many office markets will likely contend with elevated vacancy rates and limited rent growth over the near term. ')
+                                          ' If COVID cases wane during the first quarter, office usage and demand will likely improve. If a new variant emergees, the recovery for the sector will likely be extended. Many office markets will likely contend with elevated vacancy rates and limited rent growth over the near term. ')
 
     elif sector == "Retail":
         sector_specific_outlook_language=('The retail sector is recovering relatively well from the pandemics major disruptions.  Retail sales and foot traffic surged throughout the year and leasing activity among many tenant segments remains strong. ' + 
-        'With developers focused primarily on industrial and multifamily projects, the retail pipeline will remain modest in 2022, aiding improvement.' + ' Still, Property performance continues to vary significantly by subtype, location, class, and tenant composition. ') 
+                                          'With developers focused primarily on industrial and multifamily projects, the retail pipeline will remain modest in 2022, aiding improvement.' + ' Still, Property performance continues to vary significantly by subtype, location, class, and tenant composition. ') 
     
     elif sector == "Industrial":
         sector_specific_outlook_language=("""On the heels of record transaction volume and rent growth amid extremely tight supply and high demand, the industrial real estate market will remain very strong in 2022. The expansion of E-commerce will fuel the need for more warehouse space, as will the growing economy, population migration, and onshoring.""")
@@ -2315,51 +2314,36 @@ def CreateOutlookLanguage(submarket_data_frame, market_data_frame, natioanl_data
     else:
         pipeline_sentence = (' ')
 
-
-
-    capital_markets_summary = (
-                'With fundamentals '              +
-                fundamentals_change                +
-                 ' for '                           +
-                 sector.lower()                    +
-                 ' properties in the '             +
-                 market_or_submarket               +
-                ', values have '                   +
-                asset_value_change_description     +
-                ' over the past year to '          +
-                "${:,.0f}/". format(asset_value)   + 
-                unit_or_sqft_singular              +
-                ' and cap rates have '             +
-                cap_rate_change_description        +
-                "{:,.1f}%".format(cap_rate)        +
-                ', '                               +
-                cap_rate_above_below_average       +
-                ' the long-term average.'
-                                    )
-
     
-    general_outlook_language = (sector                      +    
-                            ' fundamentals in the '         +
-                            market_or_submarket             +
-                            ' indicate '                     + 
-                            fundamentals_clause             +
-                            ' quarterly growth in ' + current_period + ' reached ' +  "{:,.1f}%".format(submarket_qoq_growth) + ', ' + qoq_pushing_or_contracting_annual_growth + ' ' +  "{:,.1f}%".format(submarket_yoy_growth) + '. ')
+    general_outlook_language = (sector                                  +    
+                            ' fundamentals in the '                     +
+                            market_or_submarket                         +
+                            ' indicate '                                +    
+                            fundamentals_clause                         +
+                            ' quarterly growth in '                     +
+                             current_period + ' reached '               +
+                            "{:,.1f}%".format(submarket_qoq_growth)     +
+                             ', '                                       + 
+                             qoq_pushing_or_contracting_annual_growth   +
+                            ' '                                         +
+                            "{:,.1f}%".format(submarket_yoy_growth)     + 
+                            '. '
+                               )
                             
-    outlook_conclusion_language =  (
-                            'Looking ahead to the ' +
-                            'near-term' + 
-                            ', it is likely that demand will ' +
-                            demand_future_path +
-                            ' with rents ' +
-                            rent_future_path +
-                            ' further. ' +
-                            pipeline_sentence +
-                            'With fundamentals ' +
-                            fundamentals_change +
-                            ', values will likely ' +
-                            values_likely_change+
-                            '.'
-                            )
+    outlook_conclusion_language =  ('Looking ahead to the '             +
+                                    'near-term'                         + 
+                                    ', it is likely that demand will '  +
+                                    demand_future_path                  +
+                                    ' with rents '                      +
+                                    rent_future_path                    +
+                                    ' further. '                        +
+                                    pipeline_sentence                   +
+                                    'With fundamentals '                +
+                                    fundamentals_change                 +
+                                    ', values will likely '             +
+                                    values_likely_change                +
+                                    '.'
+                                    )
 
 
     #Section 5: Combine sentences and return the conclusion langage
