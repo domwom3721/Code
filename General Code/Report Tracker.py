@@ -6,6 +6,9 @@ import os
 import pandas as pd
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
+from docx import Document
+from docx.shared import Inches, Pt
+
 
 #Define file paths
 dropbox_root                        =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
@@ -257,3 +260,12 @@ def MarketGraph():
 HoodGraph()
 AreaGraph()
 MarketGraph()
+
+#Create word document with the png files inserted
+document = Document()
+fig = document.add_picture(os.path.join(kpi_location,'area reports.png'), width = Inches(4.5))
+fig = document.add_picture(os.path.join(kpi_location,'hood reports.png'), width = Inches(4.5))
+fig = document.add_picture(os.path.join(kpi_location,'market reports.png'), width = Inches(4.5))
+
+
+document.save(os.path.join(kpi_location,'KPI.docx'))  
