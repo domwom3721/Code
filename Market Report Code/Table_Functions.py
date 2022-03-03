@@ -1,18 +1,13 @@
-import os
-from numpy import insert
-
+#This file holds the functions used for producing tables in market and submarket reports
 import pandas as pd
-from docx import Document
-from docx.dml.color import ColorFormat
+from docx.enum.table import WD_ALIGN_VERTICAL, WD_TABLE_ALIGNMENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.enum.table import WD_ALIGN_VERTICAL
-from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
-from docx.oxml.table import CT_Row, CT_Tc
 from docx.shared import Inches, Pt, RGBColor
+import re
 
-def AddOverviewTable(document,number_rows,number_cols,row_data,col_width): #Function we use to insert our overview table into the report document
+def AddOverviewTable(document, number_rows, number_cols, row_data, col_width): #Function we use to insert our overview table into the report document
 
     #Make sure each row has the same number of items 
     for row in row_data:
@@ -30,21 +25,16 @@ def AddOverviewTable(document,number_rows,number_cols,row_data,col_width): #Func
     for current_row ,(row,row_data_list) in enumerate(zip(tab.rows,row_data)): 
         assert (len(row_data_list) == number_cols) and (isinstance(row_data_list, list)) #make sure there is an item for each column in this row
         
+        #Set height for row
         row.height = Inches(0.17)
         
         #loop through all cells in the current row
         for current_column,(cell,cell_data) in enumerate(zip(row.cells,row_data_list)):
-            if str(cell_data) == 'Manhattan - NY':
-                cell_data = 'Manhattan'
-            elif str(cell_data) == 'United States of America':
-                cell_data = 'National'
 
             cell.text = str(cell_data)
 
             if current_row == 0:
                 cell.vertical_alignment = WD_ALIGN_VERTICAL.BOTTOM
-
-        
 
             #set column widths
             if current_column == 0:
@@ -70,38 +60,13 @@ def AddOverviewTable(document,number_rows,number_cols,row_data,col_width): #Func
 
             #add border to top row
             if current_row == 1:
-                    tcPr = cell._element.tcPr
-
+                    tcPr      = cell._element.tcPr
                     tcBorders = OxmlElement("w:tcBorders")
-                
-                    top = OxmlElement('w:top')
+                    top       = OxmlElement('w:top')
                     top.set(qn('w:val'), 'single')
-                
-                # left = OxmlElement('w:left')
-                # left.set(qn('w:val'), 'nil')
-                
-                # bottom = OxmlElement('w:bottom')
-                # bottom.set(qn('w:val'), 'nil')
-                # bottom.set(qn('w:sz'), '4')
-                # bottom.set(qn('w:space'), '0')
-                # bottom.set(qn('w:color'), 'auto')
-
-                # right = OxmlElement('w:right')
-                # right.set(qn('w:val'), 'nil')
 
                     tcBorders.append(top)
-                # tcBorders.append(left)
-                # tcBorders.append(bottom)
-                # tcBorders.append(right)
                     tcPr.append(tcBorders)
-
-                     
-
-
-
-                            
-                
-                
 
             #loop through the paragraphs in the cell and set font and style
             for paragraph in cell.paragraphs:
@@ -109,24 +74,26 @@ def AddOverviewTable(document,number_rows,number_cols,row_data,col_width): #Func
                     paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
                 else:
                      paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                
+                #Paragaph spacing before and after
                 paragraph.paragraph_format.space_after  = Pt(0)
                 paragraph.paragraph_format.space_before = Pt(0)
                 
                 for run in paragraph.runs:
-                    font = run.font
-                    font.size= Pt(7)
+                    font          = run.font
+                    font.size     = Pt(7)
                     run.alignment = WD_ALIGN_PARAGRAPH.RIGHT
                     
                     #make first row bold
                     if current_row == 0: 
-                        font = run.font
-                        font.size= Pt(8)
+                        font      = run.font
+                        font.size = Pt(8)
                         font.bold = True
                         font.name = 'Avenir Next LT Pro Demi'
     
-def AddTable(document,row_data,col_width): #Function we use to insert our wide tables into report document 
-    #Make sure each list in the list of lists have the same number of elements 
+def AddTable(document, row_data, col_width): #Function we use to insert our wide tables into report document 
     try:
+        #Make sure each list in the list of lists have the same number of elements 
         for row in row_data:
             for row2 in row_data:
                 assert len(row) == len(row2)
@@ -137,11 +104,11 @@ def AddTable(document,row_data,col_width): #Function we use to insert our wide t
         assert number_rows == len(row_data) 
 
         #create table object
-        tab = document.add_table(rows=number_rows, cols=number_cols)
+        tab               = document.add_table(rows=number_rows, cols=number_cols)
         tab.alignment     = WD_TABLE_ALIGNMENT.CENTER
 
         #loop through the rows in the table
-        for current_row ,(row,row_data_list) in enumerate(zip(tab.rows,row_data)): 
+        for current_row, (row, row_data_list) in enumerate(zip(tab.rows, row_data)): 
             assert (len(row_data_list) == number_cols) and (isinstance(row_data_list, list)) #make sure there is an item for each column in this row
 
         
@@ -150,26 +117,17 @@ def AddTable(document,row_data,col_width): #Function we use to insert our wide t
             #loop through all cells in the current row
             for current_column,(cell,cell_data) in enumerate(zip(row.cells,row_data_list)):
 
-                if ('2022 Q' in str(cell_data)) or ('2023 Q' in str(cell_data))  or ('2024 Q' in str(cell_data)):
-                    cell_data = cell_data[5:]
-
-
-                cell.text = str(cell_data)
-
-            
-                
-
+                cell.text =  re.sub('202[0-9] ', '', str(cell_data)) 
+        
                 if current_row == 0:
                     cell.vertical_alignment = WD_ALIGN_VERTICAL.BOTTOM
-
-            
 
 
                 #add border to top row
                 if current_row == 1:
-                        tcPr = cell._element.tcPr
-                        tcBorders = OxmlElement("w:tcBorders")
-                        top = OxmlElement('w:top')
+                        tcPr        = cell._element.tcPr
+                        tcBorders   = OxmlElement("w:tcBorders")
+                        top         = OxmlElement('w:top')
                         top.set(qn('w:val'), 'single')
                         tcBorders.append(top)
                         tcPr.append(tcBorders)
@@ -188,7 +146,7 @@ def AddTable(document,row_data,col_width): #Function we use to insert our wide t
                     for run in paragraph.runs:
                         font = run.font
                         if current_row == 0:
-                            font.size= Pt(8)
+                            font.size = Pt(8)
                         else:
                             font.size = Pt(7)
 
@@ -201,54 +159,56 @@ def AddTable(document,row_data,col_width): #Function we use to insert our wide t
             for cell in tab.columns[i].cells:
                 cell.width = Inches(col_width)
     except Exception as e:
-        print(e,'problem adding table')
+        print(e,'problem adding wide table')
 
-def AddHeading(document,title,heading_level): #Function we use to insert the headers other than the title header
-            heading = document.add_heading(title,level=heading_level)
-            heading.style = document.styles['Heading 3']
-            heading_style =  heading.style
-            heading_style.font.name = "Avenir Next LT Pro"
-            heading_style.font.size = Pt(11)
-            heading_style.font.bold = False
+def AddHeading(document, title, heading_level): #Function we use to insert the table title headers other than the first one in the report for the overview table
+            heading                               = document.add_heading(title,level=heading_level)
+            heading.style                         = document.styles['Heading 3']
+            heading_style                         = heading.style
+            heading_style.font.name               = "Avenir Next LT Pro"
+            heading_style.font.size               = Pt(11)
+            heading_style.font.bold               = False
             heading.paragraph_format.space_after  = Pt(6)
             heading.paragraph_format.space_before = Pt(6)
 
             #Color
             heading_style.font.color.rgb = RGBColor.from_string('3F65AB')            
             heading_style.element.xml
-            rFonts = heading_style.element.rPr.rFonts
+            rFonts                       = heading_style.element.rPr.rFonts
             rFonts.set(qn("w:asciiTheme"), "Avenir Next LT Pro")
 
-def CreateRowDataForTable(data_frame,data_frame2,data_frame3,var1,var2,var3,modifier1,modifier2,modifier3,title): #Returns a list which will populate a row in the overview table
+def CreateRowDataForTable(data_frame, data_frame2, data_frame3, var1, var2, var3, modifier1, modifier2, modifier3, title): #Returns a list which will populate a row in the overview table
     
+    #National
     if data_frame.equals(data_frame2) and data_frame.equals(data_frame3):
         row_data_list = [title,
-        data_frame[var1].iloc[-1],
-        data_frame[var2].iloc[-1],
-        data_frame[var3].iloc[-1],
-        ]
+                        data_frame[var1].iloc[-1],
+                        data_frame[var2].iloc[-1],
+                        data_frame[var3].iloc[-1],
+                        ]
 
     #Market
     elif data_frame.equals(data_frame2):
         row_data_list = [title,
-        data_frame[var1].iloc[-1],
-        data_frame[var2].iloc[-1],
-        data_frame[var3].iloc[-1],
-        data_frame3[var1].iloc[-1],
-        data_frame3[var2].iloc[-1],
-        data_frame3[var3].iloc[-1]]
+                        data_frame[var1].iloc[-1],
+                        data_frame[var2].iloc[-1],
+                        data_frame[var3].iloc[-1],
+                        data_frame3[var1].iloc[-1],
+                        data_frame3[var2].iloc[-1],
+                        data_frame3[var3].iloc[-1]
+                        ]
     
     
-
     #Submarket
     else:
         row_data_list = [title,
-        data_frame[var1].iloc[-1],
-        data_frame[var2].iloc[-1],
-        data_frame[var3].iloc[-1],
-        data_frame2[var1].iloc[-1],
-        data_frame2[var2].iloc[-1],
-        data_frame2[var3].iloc[-1]]
+                        data_frame[var1].iloc[-1],
+                        data_frame[var2].iloc[-1],
+                        data_frame[var3].iloc[-1],
+                        data_frame2[var1].iloc[-1],
+                        data_frame2[var2].iloc[-1],
+                        data_frame2[var3].iloc[-1]
+                        ]
 
     
     #Add modifiers to variables ($,%,bps)
@@ -309,7 +269,7 @@ def CreateRowDataForTable(data_frame,data_frame2,data_frame3,var1,var2,var3,modi
             row_data_list[count] = 'NA'
     return(row_data_list)
 
-def CreateRowDataForWideTable(data_frame,data_frame2,data_frame3,data_frame4,var1,modifier,sector): #Returns list of lists with data we use to fill rows in the wide table
+def CreateRowDataForWideTable(data_frame, data_frame2, data_frame3, data_frame4, var1, modifier, sector): #Returns list of lists with data we use to fill rows in the wide table
     #This function takes a variable and returns a list of lists of that variables value over time in the market, submarket, and nation, 
     #and if we are doing a market the different quality slices. Each list in the list represents a row in a table for either rent or vacancy
 
@@ -322,16 +282,6 @@ def CreateRowDataForWideTable(data_frame,data_frame2,data_frame3,data_frame4,var
         level_3_name = 'National'
     elif level_3_name == 'New York - NY':
         level_3_name = 'Metro'
-
-    # if data_frame.equals(data_frame3) == False and level_1_name != 'Manhattan - NY' and level_2_name != 'Manhattan - NY':
-    #     level_3_name = 'National'
-    # else:
-    #     if level_1_name != 'United States of America':
-    #         level_3_name = 'Metro'
-
-
-
-
 
     if data_frame.equals(data_frame2):
         market_or_submarket = 'market'
@@ -442,9 +392,9 @@ def CreateRowDataForWideTable(data_frame,data_frame2,data_frame3,data_frame4,var
             
             #Since it's a market, we are going to add a row for each slice we have in our slice data
             for slice in data_frame4['Slice'].unique():
-                data_frame_temp = data_frame4.loc[(data_frame4['Slice'] == slice)]
-                data_frame_temp = data_frame_temp.reset_index()
-                slice_list_to_add = data_frame_temp[var1].tolist()
+                data_frame_temp     = data_frame4.loc[(data_frame4['Slice'] == slice)]
+                data_frame_temp     = data_frame_temp.reset_index()
+                slice_list_to_add   = data_frame_temp[var1].tolist()
                 slice_list_to_add.insert(0,slice)
                 list_of_lists.append(slice_list_to_add)
 
@@ -461,7 +411,6 @@ def CreateRowDataForWideTable(data_frame,data_frame2,data_frame3,data_frame4,var
 
         #remove extra row for national report
         if level_1_name == 'United States of America':
-            # print(list_of_lists)
             del list_of_lists[2]
 
 
@@ -474,7 +423,8 @@ def CreateRowDataForWideTable(data_frame,data_frame2,data_frame3,data_frame4,var
                     data_frame3[var1].tolist(),
                     data_frame2[var1].tolist(),
                     data_frame[var1].tolist()]
-                        #make sure each list (row) in the list of lists (rows) have same number of items
+            
+            #make sure each list (row) in the list of lists (rows) have same number of items
             for list in list_of_lists:
                 for list2 in list_of_lists:
                     assert len(list) == len(list2)
@@ -483,8 +433,8 @@ def CreateRowDataForWideTable(data_frame,data_frame2,data_frame3,data_frame4,var
         
 
         except:
-            #In some cases, the submarket does not have a full 10 years of data. To handle this, we make sure we display data for quarters  we
-            # coverage and make the market and nation rows blank
+            #In some cases, the submarket does not have a full 10 years of data. To handle this, we make sure we display data for quarters we
+            #coverage and make the market and nation rows blank
             submarket_period_list = data_frame['Period'].tolist()
             submarket_list        =  data_frame[var1].tolist()
             
@@ -503,7 +453,7 @@ def CreateRowDataForWideTable(data_frame,data_frame2,data_frame3,data_frame4,var
 
             return(list_of_lists)
 
-def AddMarketPerformanceTable(document,col_width,market_data_frame,sector): #Function we use to insert our wide tables into report document 
+def AddMarketPerformanceTable(document, col_width, market_data_frame, sector): #Function we use to insert our wide tables into report document 
 
     #Convert market dataframe into a (mostly) annual dataset for a handful of variables
     
@@ -553,9 +503,6 @@ def AddMarketPerformanceTable(document,col_width,market_data_frame,sector): #Fun
                 cell.text = var_name
                 cell.vertical_alignment = WD_ALIGN_VERTICAL.BOTTOM
                 
-                
-                
-
             else:
                 current_variable = variables_of_interest[current_column]
                 data = market_data_frame[current_variable].iloc[current_row-1] #look up the data value for the right period for the current variable
@@ -579,8 +526,6 @@ def AddMarketPerformanceTable(document,col_width,market_data_frame,sector): #Fun
                 cell.text = data
                 
 
-            
-
             #set column widths
             if current_column == 0:
                 cell.width = Inches(1.25)
@@ -590,15 +535,12 @@ def AddMarketPerformanceTable(document,col_width,market_data_frame,sector): #Fun
             
             #add border to top row
             if current_row == 1:
-                tcPr = cell._element.tcPr
+                tcPr      = cell._element.tcPr
                 tcBorders = OxmlElement("w:tcBorders")
-                top = OxmlElement('w:top')
+                top       = OxmlElement('w:top')
                 top.set(qn('w:val'), 'single')
             
                 tcBorders.append(top)
-                # tcBorders.append(left)
-                # tcBorders.append(bottom)
-                # tcBorders.append(right)
                 tcPr.append(tcBorders)
 
             #loop through the paragraphs in the cell and set font and style
@@ -623,7 +565,7 @@ def AddMarketPerformanceTable(document,col_width,market_data_frame,sector): #Fun
                         font.bold = True
                         font.name = 'Avenir Next LT Pro Demi'
 
-def AddSubmarketsPerformanceTable(document,col_width,submarkets_data_frame,sector): #Function we use to insert our wide tables into report document 
+def AddSubmarketsPerformanceTable(document, col_width, submarkets_data_frame, sector): #Function we use to insert our wide tables into report document 
     if len(submarkets_data_frame) == 0:
         return() #If there are no submarkets, do nothing
 
@@ -656,14 +598,14 @@ def AddSubmarketsPerformanceTable(document,col_width,submarkets_data_frame,secto
     number_rows = len(submarkets_data_frame) + 1 #we add extra row for variable names at the top
     number_cols = len(submarkets_data_frame.columns)
 
-    tab = document.add_table(rows=number_rows, cols=number_cols)
+    tab               = document.add_table(rows=number_rows, cols=number_cols)
     tab.alignment     = WD_TABLE_ALIGNMENT.CENTER
     for current_row,row in enumerate(tab.rows): 
         for current_column,cell in enumerate(row.cells):
             
             if current_row == 0:
-                var_name = str(variables_of_interest[current_column])
-                cell.text = var_name
+                var_name                = str(variables_of_interest[current_column])
+                cell.text               = var_name
                 cell.vertical_alignment = WD_ALIGN_VERTICAL.BOTTOM
                 
                 
@@ -692,8 +634,6 @@ def AddSubmarketsPerformanceTable(document,col_width,submarkets_data_frame,secto
                 cell.text = data
                 
 
-            
-
             #set column widths
             if current_column == 0:
                 cell.width = Inches(1.25)
@@ -703,15 +643,12 @@ def AddSubmarketsPerformanceTable(document,col_width,submarkets_data_frame,secto
             
             #add border to top row
             if current_row == 1:
-                tcPr = cell._element.tcPr
+                tcPr      = cell._element.tcPr
                 tcBorders = OxmlElement("w:tcBorders")
-                top = OxmlElement('w:top')
+                top       = OxmlElement('w:top')
                 top.set(qn('w:val'), 'single')
             
                 tcBorders.append(top)
-                # tcBorders.append(left)
-                # tcBorders.append(bottom)
-                # tcBorders.append(right)
                 tcPr.append(tcBorders)
 
             #loop through the paragraphs in the cell and set font and style
@@ -737,3 +674,4 @@ def AddSubmarketsPerformanceTable(document,col_width,submarkets_data_frame,secto
                         font.name = 'Avenir Next LT Pro Demi'
                     if current_column == 0 and current_row != 0:
                         font.italic = False
+
