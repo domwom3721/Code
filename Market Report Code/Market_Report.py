@@ -4,11 +4,8 @@
     #Loops through these 4 files, loops through each of the markets and submarkets (geographic areas) and creates a directory and word document
     #The word document is a report that reports tables and graphs generated from the data files
 
-from ensurepip import version
 import os
-from pydoc import doc
 import time
-from numpy import full
 import pandas as pd
 from tkinter import *
 from tkinter import ttk
@@ -20,11 +17,8 @@ from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
 import json
-
 from docx import Document
-from docx.dml.color import ColorFormat
-from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING,WD_BREAK
-from docx.oxml import OxmlElement
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING, WD_BREAK
 from docx.oxml.ns import qn
 from docx.shared import Inches, Pt, RGBColor
 
@@ -35,28 +29,17 @@ from Table_Functions import *
 #Used to track runtime of script
 start_time = time.time() 
 
-#Define file pre paths
-dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
-project_location               =  os.path.join(dropbox_root,'Research','Projects','Research Report Automation Project')                       #Main Folder that stores all output, code, and documentation
+#Define file pre-paths
+dropbox_root                   = os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
+project_location               = os.path.join(dropbox_root,'Research','Projects','Research Report Automation Project')                        #Main Folder that stores all output, code, and documentation
+output_location                = os.path.join(project_location,'Output','Market')                                                             #The folder where we store our current reports, testing folder
 output_location                = os.path.join(dropbox_root,'Research','Market Analysis','Market')                                             #The folder where we store our current reports, production
-# output_location                = os.path.join(project_location,'Output','Market')                                                           #The folder where we store our current reports, testing folder
 map_location                   = os.path.join(project_location,'Data','Market Reports Data','CoStar Maps')                                    #Folders with maps png files  
-general_data_location          =  os.path.join(project_location,'Data','General Data')
+general_data_location          = os.path.join(project_location,'Data','General Data')
 costar_data_location           = os.path.join(project_location,'Data','Market Reports Data','CoStar Data')                                    #Folder with clean CoStar CSV files
 costar_writeup_location        = os.path.join(project_location,'Data','Market Reports Data','CoStar Writeups')                                #Folder with html files downloaded from CoStar.com
 
-#If we have any custom data, read it in as a dataframe so we can append it to our primary data
-custom_data_file_location      = os.path.join(costar_data_location,'Clean Data','Clean Custom CoStar Data.xlsx')
-if os.path.exists(custom_data_file_location):
-    df_custom                 = pd.read_excel(custom_data_file_location)
-
-
-#Function used to set global values for variables that set formatting preferences such as font
-def SetGlobalFormattingParamters():
-    global primary_font, primary_space_after_paragraph
-    #Set formatting paramaters for reports
-    primary_font                    = 'Avenir Next LT Pro Light' 
-    primary_space_after_paragraph   = 6
+#Define functions
 
 #GUI for user to select if they want to write reports, or update the database/CoStar Markets CSV file
 def user_selects_reports_or_not():
@@ -74,11 +57,11 @@ def user_selects_reports_or_not():
 
     options = ['y','n']
 
-    # setting variable for Integers
+    #setting variable for Integers
     variable = StringVar()
     variable.set('Write Reports?')
 
-    # creating widget
+    #creating widget
     dropdown = OptionMenu(
         ws,
         variable,
@@ -86,10 +69,10 @@ def user_selects_reports_or_not():
         command=select_sector
     )
 
-    # positioning widget
+    #positioning widget
     dropdown.pack(expand=True)
 
-    # infinite loop 
+    #infinite loop 
     ws.mainloop()
 
 #GUI for user to select sector
@@ -98,6 +81,10 @@ def user_selects_sector():
     global df_multifamily, df_office, df_retail, df_industrial
     global df_multifamily_slices, df_office_slices, df_retail_slices, df_industrial_slices
 
+    #If we have any custom data, read it in as a dataframe so we can append it to our primary data
+    custom_data_file_location      = os.path.join(costar_data_location,'Clean Data','Clean Custom CoStar Data.xlsx')
+    if os.path.exists(custom_data_file_location):
+        df_custom                 = pd.read_excel(custom_data_file_location)
 
     #Don't make the user select a sector if they are not trying to write reports
     if write_reports_yes_or_no == 'n':
@@ -131,11 +118,11 @@ def user_selects_sector():
 
     sectors = ['Multifamily','Office', 'Retail','Industrial','All']
 
-    # setting variable for Integers
+    #setting variable for Integers
     variable = StringVar()
     variable.set('Select a sector')
 
-    # creating widget
+    #creating widget
     dropdown = OptionMenu(
         ws,
         variable,
@@ -143,10 +130,10 @@ def user_selects_sector():
         command=select_sector
     )
 
-    # positioning widget
+    #positioning widget
     dropdown.pack(expand=True)
 
-    # infinite loop 
+    #infinite loop 
     ws.mainloop()
 
     if selected_sector == 'All':
@@ -310,9 +297,9 @@ def CleanMarketName(market_name):
     return(clean_market_name)
 
 def UniqueZipCodes(list1):
-    # insert the list to the set
+    #insert the list to the set
     list_set = set(list1)
-    # convert the set to the list
+    #convert the set to the list
     unique_list = (list(list_set))
     
     #convert from string to int
@@ -1102,7 +1089,7 @@ def CreateMarketReport():
                 if 'Manhattan - NY' in paragraph.text:
                     paragraph.text = paragraph.text.replace('Manhattan - NY','Manhattan')
 
-            # Save report
+            #Save report
             document.save(report_path)
 
         
@@ -1381,7 +1368,47 @@ def CreateDirectoryCSV():
         if output_location == os.path.join(dropbox_root,'Research','Market Analysis','Market'):
             dropbox_df.to_csv(os.path.join(output_location, service_api_csv_name), index=False)
 
-SetGlobalFormattingParamters()
+def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
+    if type == None:
+        return
+    print(f'Updating service database: {report_type}')
+    
+    #We only want to update the database when we are in the production folder and the user is not trying to create a report
+    if output_location != os.path.join(dropbox_root,'Research','Market Analysis','Market') or write_reports_yes_or_no != 'n':
+        return()
+
+    try:
+        url = f'http://market-research-service.bowery.link/api/v1/update/{report_type}'
+        dropbox_path = f'{dropbox_dir}{csv_name}'
+        payload = { 'location': dropbox_path }
+
+        retry_strategy = Retry(
+            total=3,
+            status_forcelist=[400, 404, 409, 500, 503, 504],
+            allowed_methods=["POST"],
+            backoff_factor=5,
+            raise_on_status=False
+        )
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        http = requests.Session()
+        http.mount("https://", adapter)
+        http.mount("http://", adapter)
+
+        response = http.post(url, json=payload)
+        response.raise_for_status()
+        print('Service successfully updated')
+    except HTTPError as e:
+        print(f'Request failed with status code {response.status_code}')
+        json_error = json.loads(response.content)
+        print(json.dumps(json_error, indent=2))
+        print('Service DB did not successfully update. Please run the script again after fixing the error.')
+    finally:
+        print(f'Deleting temporary CSV: ', csv_path)
+        os.remove(csv_path)           
+
+#Set formatting paramaters for reports
+primary_font                    = 'Avenir Next LT Pro Light' 
+primary_space_after_paragraph   = 6
 
 #Decide if you want to create report documents or create our csv output and update the database
 user_selects_reports_or_not()
@@ -1446,47 +1473,11 @@ for df,df2,sector in zip(      df_list,
 #Now call our function that creates a csv with all the current market reports
 CreateDirectoryCSV()        
 
-def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
-    if type == None:
-        return
-    print(f'Updating service database: {report_type}')
-
-    try:
-        url = f'http://market-research-service.bowery.link/api/v1/update/{report_type}'
-        dropbox_path = f'{dropbox_dir}{csv_name}'
-        payload = { 'location': dropbox_path }
-
-        retry_strategy = Retry(
-            total=3,
-            status_forcelist=[400, 404, 409, 500, 503, 504],
-            allowed_methods=["POST"],
-            backoff_factor=5,
-            raise_on_status=False
-        )
-        adapter = HTTPAdapter(max_retries=retry_strategy)
-        http = requests.Session()
-        http.mount("https://", adapter)
-        http.mount("http://", adapter)
-
-        response = http.post(url, json=payload)
-        response.raise_for_status()
-        print('Service successfully updated')
-    except HTTPError as e:
-        print(f'Request failed with status code {response.status_code}')
-        json_error = json.loads(response.content)
-        print(json.dumps(json_error, indent=2))
-        print('Service DB did not successfully update. Please run the script again after fixing the error.')
-    finally:
-        print(f'Deleting temporary CSV: ', csv_path)
-        os.remove(csv_path)           
-
-#We only want to update the database when we are in the production folder and the user is not trying to create a report
-if output_location == os.path.join(dropbox_root,'Research','Market Analysis','Market') and write_reports_yes_or_no == 'n':
-    # Post an update request to the Market Research Docs Service to update the database
-    UpdateServiceDb(report_type='markets', 
-                    csv_name=service_api_csv_name, 
-                    csv_path=os.path.join(output_location, service_api_csv_name),
-                    dropbox_dir='https://www.dropbox.com/home/Research/Market Analysis/Market/')
+#Post an update request to the Market Research Docs Service to update the database
+UpdateServiceDb(report_type = 'markets', 
+                csv_name    = service_api_csv_name, 
+                csv_path    = os.path.join(output_location, service_api_csv_name),
+                dropbox_dir = 'https://www.dropbox.com/home/Research/Market Analysis/Market/')
 
 print('Finished, you rock ',"--- %s seconds ---" % (time.time() - start_time))        
 
