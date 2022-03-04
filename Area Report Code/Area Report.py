@@ -285,7 +285,7 @@ def GetCountyResidentPopulation(fips,observation_start):
     
     county_pop_series_code = resident_population_series_names['Series ID'].iloc[0]
     
-    county_pop_df = fred.get_series(series_id = county_pop_series_code,observation_start=observation_start)
+    county_pop_df = fred.get_series(series_id = county_pop_series_code, observation_start = observation_start)
     county_pop_df = county_pop_df.to_frame().reset_index()
     county_pop_df.columns = ['Period','Resident Population']
     county_pop_df['Resident Population'] = county_pop_df['Resident Population'] * 1000
@@ -819,7 +819,7 @@ def GetCountyData():
     
     #County Population 
     try:
-        county_resident_pop           = GetCountyResidentPopulation(fips = fips,observation_start=('01/01/' + str(end_year -11)))
+        county_resident_pop           = GetCountyResidentPopulation(fips = fips,observation_start=('01/01/' + str(end_year -12)))
     except Exception as e:
         print(e,' Unable to Get County Population Data')
         county_resident_pop           = ''
@@ -856,7 +856,7 @@ def GetCountyData():
     county_shape = GetCountyShape(fips = fips)
 
 #MSA Data
-def GetMSAGDP(cbsa,observation_start):
+def GetMSAGDP(cbsa, observation_start):
     print('Getting MSA GDP')
     msa_gdp_series_code = 'RGMP' + cbsa
     msa_gdp_df = fred.get_series(series_id = msa_gdp_series_code,observation_start = observation_start)
@@ -867,7 +867,7 @@ def GetMSAGDP(cbsa,observation_start):
         msa_gdp_df.to_csv(os.path.join(county_folder,'MSA GDP.csv'))
     return(msa_gdp_df)
 
-def GetMSAResidentPopulation(cbsa,observation_start):
+def GetMSAResidentPopulation(cbsa, observation_start):
     print('Getting MSA Population')
     try:
         #Resident Population 
@@ -881,7 +881,7 @@ def GetMSAResidentPopulation(cbsa,observation_start):
         msa_pop_series_code = input('enter the FRED series code for resident population for MSA')
 
     
-    msa_pop_df = fred.get_series(series_id = msa_pop_series_code,observation_start=observation_start)
+    msa_pop_df = fred.get_series(series_id = msa_pop_series_code, observation_start = observation_start)
     msa_pop_df = msa_pop_df.to_frame().reset_index()
     msa_pop_df.columns = ['Period','Resident Population']
     msa_pop_df['Resident Population'] = msa_pop_df['Resident Population'] * 1000
@@ -1218,11 +1218,11 @@ def GetMSAData():
             msa_industry_growth_breakdown   = ''
     else:
         print('Getting MSA Data')
-        msa_gdp                         = GetMSAGDP(cbsa = cbsa,observation_start=observation_start_less1)
-        msa_pci                         = GetMSAPCI(cbsa = cbsa,observation_start=observation_start_less1 )
-        msa_unemployment_rate           = GetMSAUnemploymentRate(cbsa = cbsa,start_year=start_year,end_year=end_year)
-        msa_employment                  = GetMSAEmployment(cbsa = cbsa,start_year=start_year,end_year=end_year)
-        msa_resident_pop                = GetMSAResidentPopulation(cbsa = cbsa,observation_start=('01/01/' + str(end_year -11)))
+        msa_gdp                         = GetMSAGDP(cbsa = cbsa, observation_start = observation_start_less1)
+        msa_pci                         = GetMSAPCI(cbsa = cbsa, observation_start = observation_start_less1)
+        msa_unemployment_rate           = GetMSAUnemploymentRate(cbsa = cbsa, start_year = start_year, end_year = end_year)
+        msa_employment                  = GetMSAEmployment(cbsa = cbsa, start_year = start_year, end_year = end_year)
+        msa_resident_pop                = GetMSAResidentPopulation(cbsa = cbsa, observation_start = ('01/01/' + str(end_year -12)))
 
         #Median list price
         try:
@@ -1233,8 +1233,8 @@ def GetMSAData():
 
 
         
-        msa_industry_breakdown            = GetMSAIndustryBreakdown(      cbsa=cbsa, year = qcew_year, qtr = qcew_qtr)    
-        msa_industry_growth_breakdown     = GetMSAIndustryGrowthBreakdown(cbsa=cbsa, year = qcew_year, qtr = qcew_qtr)
+        msa_industry_breakdown            = GetMSAIndustryBreakdown(      cbsa = cbsa, year = qcew_year, qtr = qcew_qtr)    
+        msa_industry_growth_breakdown     = GetMSAIndustryGrowthBreakdown(cbsa = cbsa, year = qcew_year, qtr = qcew_qtr)
 
 #State Data
 def GetStateGDP(state,observation_start):
@@ -1259,11 +1259,11 @@ def GetStatePCI(state, observation_start):
         state_pci_df.to_csv(os.path.join(county_folder,'State Per Capita Personal Income.csv'))
     return(state_pci_df)
 
-def GetStateResidentPopulation(state,observation_start):
+def GetStateResidentPopulation(state, observation_start):
     print('Getting State Population')
     #Resident Population 
     state_pop_series_code = state + 'POP'
-    state_pop_df = fred.get_series(series_id = state_pop_series_code,observation_start=observation_start)
+    state_pop_df = fred.get_series(series_id = state_pop_series_code, observation_start = observation_start)
     state_pop_df = state_pop_df.to_frame().reset_index()
     state_pop_df.columns = ['Period','Resident Population']
     state_pop_df['Resident Population'] = state_pop_df['Resident Population'] * 1000
@@ -1363,7 +1363,7 @@ def GetStateData():
     state_unemployment_rate          = GetStateUnemploymentRate(fips = fips,start_year=start_year,end_year=end_year)
     state_employment                 = GetStateEmployment(fips = fips,start_year=start_year,end_year=end_year)
     state_pci                        = GetStatePCI(state = state, observation_start = observation_start_less1)
-    state_resident_pop               = GetStateResidentPopulation(state = state,observation_start=('01/01/' + str(end_year -11)))
+    state_resident_pop               = GetStateResidentPopulation(state = state, observation_start = ('01/01/' + str(end_year -12)))
     state_edu                        = GetStateEducationLevels(observation_start = observation_start_less1)
 
 #National Data
@@ -1383,7 +1383,7 @@ def GetNationalResidentPopulation(observation_start):
     print('Getting National Population')
     #Resident Population 
     usa_pop_series_code = 'POP'
-    usa_pop_df = fred.get_series(series_id = usa_pop_series_code,observation_start=observation_start,frequency = 'a')
+    usa_pop_df = fred.get_series(series_id = usa_pop_series_code, observation_start = observation_start,frequency = 'a')
     usa_pop_df = usa_pop_df.to_frame().reset_index()
     usa_pop_df.columns = ['Period','Resident Population']
     usa_pop_df['Resident Population'] = usa_pop_df['Resident Population'] * 1000
@@ -1453,7 +1453,7 @@ def GetNationalData():
     global national_employment
     global national_gdp
     national_pci                       = GetNationalPCI(observation_start = observation_start)
-    national_resident_pop              = GetNationalResidentPopulation(observation_start=('01/01/' + str(end_year -11)))
+    national_resident_pop              = GetNationalResidentPopulation(observation_start=('01/01/' + str(end_year - 12)))
     national_mlp                       = GetNationalMedianListPrice(observation_start=observation_start)
     national_unemployment              = GetNationalUnemploymentRate(start_year = start_year, end_year=end_year)
     national_employment                = GetNationalEmployment(start_year = start_year, end_year=end_year)
@@ -2196,31 +2196,34 @@ def CreateGDPGraph(county_data_frame,msa_data_frame,state_data_frame,folder):
     # fig.update_yaxes(automargin = True)  
     fig.write_image(os.path.join(folder,'gdp.png'),engine='kaleido',scale=scale)
 
-def CreatePopulationOverTimeWithGrowthGraph(county_resident_pop,state_resident_pop,msa_resident_pop,national_resident_pop,folder):
-    print('Creating Population Graph')
-    # Create figure with secondary y-axis
+def CreatePopulationOverTimeWithGrowthGraph(county_resident_pop, state_resident_pop, msa_resident_pop, national_resident_pop, folder):
+    print('Creating population over time with growth bar graph')
+    
+    #Create figure with secondary y-axis
     fig = make_subplots(specs=[[{"secondary_y": True}, {"secondary_y": False}]],rows=1, cols=2,subplot_titles=("Population", "Annualized Population Growth"),horizontal_spacing = horizontal_spacing)
 
     #County Population
     fig.add_trace(
-    go.Scatter(x=county_resident_pop['Period'],
-            y=county_resident_pop['Resident Population'],
-            name=county + ' (L)',
-            line=dict(color="#4160D3", width = 1,dash = 'dash'),
-            showlegend=False
-                                    )      
-    ,secondary_y=False,row=1, col=1,)
+        go.Scatter(x = county_resident_pop['Period'],
+                y = county_resident_pop['Resident Population'],
+                name = county + ' (L)',
+                line = dict(color="#4160D3", width = 1,dash = 'dash'),
+                showlegend= False
+                ),      
+        secondary_y = False, row = 1, col = 1
+                 )
     
     #MSA Population if applicable
     if (cbsa != '') and (msa_resident_pop.equals(county_resident_pop) == False):
         fig.add_trace(
-        go.Scatter(x=msa_resident_pop['Period'],
-                y=msa_resident_pop['Resident Population'],
-                name=cbsa_name + ' (MSA)' + ' (R)',
-                line=dict(color ="#B3C3FF", width = 1),
-                showlegend=False
-                )
-        ,secondary_y=True,row=1, col=1,)
+            go.Scatter(x = msa_resident_pop['Period'],
+                    y = msa_resident_pop['Resident Population'],
+                    name = cbsa_name + ' (MSA)' + ' (R)',
+                    line = dict(color ="#B3C3FF", width = 1),
+                    showlegend = False
+                      ),
+            secondary_y = True, row = 1, col = 1
+                     )
     else:
         #State Population
         fig.add_trace(
@@ -2229,22 +2232,23 @@ def CreatePopulationOverTimeWithGrowthGraph(county_resident_pop,state_resident_p
                 name=state_name + ' (R)',
                 line = dict(color="#A6B0BF", width = 1),
                 showlegend=False
-                )
-        ,secondary_y=True,row=1, col=1,)   
+                ),
+        secondary_y=True,row=1, col=1,)   
 
-    
+
     #Calculate annualized growth rates for the county, msa (if available), and state dataframes
+    assert len(county_resident_pop) >= 11
     county_resident_pop['Resident Population_1year_growth'] =  (((county_resident_pop['Resident Population']/county_resident_pop['Resident Population'].shift(1))  - 1) * 100)/1
     county_resident_pop['Resident Population_5year_growth'] =  (((county_resident_pop['Resident Population']/county_resident_pop['Resident Population'].shift(5))   - 1) * 100)/5
     county_resident_pop['Resident Population_10year_growth'] =  (((county_resident_pop['Resident Population']/county_resident_pop['Resident Population'].shift(10)) - 1) * 100)/10
 
-    # print(county_resident_pop)
     county_1y_growth  = county_resident_pop.iloc[-1]['Resident Population_1year_growth'] 
     county_5y_growth  = county_resident_pop.iloc[-1]['Resident Population_5year_growth'] 
     county_10y_growth = county_resident_pop.iloc[-1]['Resident Population_10year_growth']
 
     if cbsa != '':
         #Make sure we are comparing same years for calculating growth rates for county and msa
+        assert len(msa_resident_pop) >= 11
         msa_resident_pop = msa_resident_pop.loc[msa_resident_pop['Period'] <= (county_resident_pop['Period'].max())]
         msa_resident_pop['Resident Population_1year_growth'] =  (((msa_resident_pop['Resident Population']/msa_resident_pop['Resident Population'].shift(1))  - 1) * 100)/1
         msa_resident_pop['Resident Population_5year_growth'] =  (((msa_resident_pop['Resident Population']/msa_resident_pop['Resident Population'].shift(5))   - 1) * 100)/5
@@ -2255,6 +2259,7 @@ def CreatePopulationOverTimeWithGrowthGraph(county_resident_pop,state_resident_p
         msa_10y_growth = msa_resident_pop.iloc[-1]['Resident Population_10year_growth']
 
     #Make sure we are comparing same years for calculating growth rates for county and state
+    assert len(state_resident_pop) >= 11
     state_resident_pop = state_resident_pop.loc[state_resident_pop['Period'] <= (county_resident_pop['Period'].max())]
     state_resident_pop['Resident Population_1year_growth'] =  (((state_resident_pop['Resident Population']/state_resident_pop['Resident Population'].shift(1))  - 1) * 100)/1
     state_resident_pop['Resident Population_5year_growth'] =  (((state_resident_pop['Resident Population']/state_resident_pop['Resident Population'].shift(5))   - 1) * 100)/5
