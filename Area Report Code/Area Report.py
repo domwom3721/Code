@@ -309,8 +309,8 @@ def GetCountyUnemploymentRate(fips,start_year,end_year):
 def GetCountyEmployment(fips,start_year,end_year): 
     print('Getting County Employment')
     #Total Employment
-    series_name = 'LAUCN' + fips + '0000000005'
-    county_emp_df = bls.series(series_name,start_year=(start_year-1), end_year= end_year)
+    series_name   = 'LAUCN' + fips + '0000000005'
+    county_emp_df = bls.series(series_name, start_year = (start_year - 1), end_year = end_year)
 
     county_emp_df['year']   =    county_emp_df['year'].astype(str)
     county_emp_df['period'] =    county_emp_df['period'].str[1:3] + '/' +  county_emp_df['year'].str[2:4] 
@@ -320,8 +320,8 @@ def GetCountyEmployment(fips,start_year,end_year):
     county_emp_df['Lagged Employment']       = county_emp_df['Employment'].shift(12)
     county_emp_df['Employment Growth']       =  round(((county_emp_df['Employment']/county_emp_df['Lagged Employment']) - 1 ) * 100,2 )
 
-    #Drop the extra year we needed to calculate growth rates
-    county_emp_df    = county_emp_df.loc[county_emp_df['year'] != str(start_year-1)]
+    assert len(county_emp_df) > 60
+    
     if data_export == True:
         county_emp_df.to_csv(os.path.join(county_folder,'County Total Employment.csv'))
     return(county_emp_df)
@@ -976,8 +976,6 @@ def GetMSAEmployment(cbsa,start_year,end_year):
         msa_emp_df['Lagged Employment']       = msa_emp_df['Employment'].shift(12)
         msa_emp_df['Employment Growth']       =  round(((msa_emp_df['Employment']/msa_emp_df['Lagged Employment']) - 1 ) * 100,2 )
 
-        #Drop the extra year we needed to calculate growth rates
-        msa_emp_df    = msa_emp_df.loc[msa_emp_df['year'] != str(start_year-1)]
 
         if data_export == True:
             msa_emp_df.to_csv(os.path.join(county_folder,'MSA Total Employment.csv'))
@@ -1301,8 +1299,6 @@ def GetStateEmployment(fips,start_year,end_year):
     state_emp_df['Employment Growth']       =  round(((state_emp_df['Employment']/state_emp_df['Lagged Employment']) - 1 ) * 100,2 )
 
     
-    #Drop the extra year we needed to calculate growth rates
-    state_emp_df    = state_emp_df.loc[state_emp_df['year'] != str(start_year-1)]
 
     if data_export == True:
         state_emp_df.to_csv(os.path.join(county_folder,'State Total Employment.csv'))
@@ -1432,8 +1428,6 @@ def GetNationalEmployment(start_year,end_year):
     national_emp_df['Lagged Employment']       = national_emp_df['Employment'].shift(12)
     national_emp_df['Employment Growth']       =  round(((national_emp_df['Employment']/national_emp_df['Lagged Employment']) - 1 ) * 100,2 )
 
-    #Drop the extra year we needed to calculate growth rates
-    national_emp_df    = national_emp_df.loc[national_emp_df['year'] != str(start_year-1)]
 
     if data_export == True:
         national_emp_df.to_csv(os.path.join(county_folder,'National Total Employment.csv'))
@@ -1473,8 +1467,8 @@ def CreateUnemploymentRateEmploymentGrowthGraph(folder):
 
     #County unemployment rate
     fig.add_trace(
-    go.Scatter(x=county_unemployment_rate['period'],
-            y=county_unemployment_rate['unemployment_rate'],
+    go.Scatter(x = county_unemployment_rate['period'].iloc[-60:],
+            y = county_unemployment_rate['unemployment_rate'].iloc[-60:],
             name=county,
             line=dict(color="#4160D3", width = 1,dash = 'dash'))
     ,secondary_y=False,row=1, col=1)
@@ -1482,17 +1476,17 @@ def CreateUnemploymentRateEmploymentGrowthGraph(folder):
     #MSA unemployment rate if applicable
     if (cbsa != '') and (msa_unemployment_rate.equals(county_unemployment_rate) == False):
         fig.add_trace(
-        go.Scatter(x=msa_unemployment_rate['period'],
-                y=msa_unemployment_rate['unemployment_rate'],
-                name=cbsa_name + ' (MSA)',
-                line=dict(color="#B3C3FF", width = 1))
+        go.Scatter(x    = msa_unemployment_rate['period'].iloc[-60:],
+                   y    = msa_unemployment_rate['unemployment_rate'].iloc[-60:],
+                   name = cbsa_name + ' (MSA)',
+                   line = dict(color="#B3C3FF", width = 1))
         ,secondary_y=False,row=1, col=1)
 
     #State unemployment rate
     if state != 'DC':
         fig.add_trace(
-        go.Scatter(x=state_unemployment_rate['period'],
-                y=state_unemployment_rate['unemployment_rate'],
+        go.Scatter(x=state_unemployment_rate['period'].iloc[-60:],
+                y=state_unemployment_rate['unemployment_rate'].iloc[-60:],
                 name=state_name,
                 line=dict(color="#A6B0BF", width = 1))
         ,secondary_y=False,row=1, col=1)
@@ -1500,8 +1494,8 @@ def CreateUnemploymentRateEmploymentGrowthGraph(folder):
     
     #County employment growth 
     fig.add_trace(
-    go.Scatter(x=county_employment['period'],
-            y=county_employment['Employment Growth'],
+    go.Scatter(x=county_employment['period'].iloc[-60:],
+            y=county_employment['Employment Growth'].iloc[-60:],
             name=county,
             line=dict(color="#4160D3", width = 1,dash = 'dash'),showlegend=False)
     ,secondary_y=False,row=1, col=2,)
@@ -1509,8 +1503,8 @@ def CreateUnemploymentRateEmploymentGrowthGraph(folder):
     #MSA employment growth
     if (cbsa != '') and (msa_employment.equals(county_employment) == False):
         fig.add_trace(
-        go.Scatter(x=msa_employment['period'],
-                y=msa_employment['Employment Growth'],
+        go.Scatter(x=msa_employment['period'].iloc[-60:],
+                y=msa_employment['Employment Growth'].iloc[-60:],
                 name=cbsa_name + ' (MSA)',
                 line=dict(color="#B3C3FF", width = 1),showlegend=False)
         ,secondary_y=False,row=1, col=2,)
@@ -1518,8 +1512,8 @@ def CreateUnemploymentRateEmploymentGrowthGraph(folder):
     #State employment growth
     if state != 'DC':
         fig.add_trace(
-    go.Scatter(x=state_employment['period'],
-            y=state_employment['Employment Growth'],
+    go.Scatter(x=state_employment['period'].iloc[-60:],
+            y=state_employment['Employment Growth'].iloc[-60:],
             name=state_name,
             line=dict(color="#A6B0BF", width = 1),showlegend=False)
     ,secondary_y=False,row=1, col=2,)
@@ -1575,7 +1569,6 @@ def CreateUnemploymentRateEmploymentGrowthGraph(folder):
         ticktext = quarter_list_text,
         tickfont = dict(size=tickfont_size),
         tickangle = 0,
-        # linecolor = 'black' 
         )
 
     #Set size
@@ -4862,7 +4855,6 @@ def OutlookLanguage():
 
     #County Economy Summary
     county_economy_summary = (
-                            # 'The outlook for the ' + county + ' economy is ' + '[positive/poor]' + '. ' + 
                             county_gdp_sentence + 
                             county_unemployment_sentence + 
                             county_demographic_sentence 
@@ -4963,6 +4955,7 @@ def GetDataAndLanguageForOverviewTable():
     
     #Get most recent County values and get county values from 5 years ago
     try:
+        assert len(county_employment) > (growth_period * 12) 
         current_county_employment = county_employment['Employment'].iloc[-1]
         lagged_county_employment  = county_employment['Employment'].iloc[-1 - (growth_period * 12)] #the employment data is monthly
         print('successfully got county employment for overview')
