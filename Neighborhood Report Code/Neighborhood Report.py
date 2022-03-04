@@ -3,15 +3,17 @@
 #Summary: This script creates reports on neighborhoods/cities for Bowery
 
 import json
-import random
 import msvcrt
-from operator import ne
 import os
+import random
+import re
 import shutil
 import sys
 import time
 from datetime import date, datetime
+from operator import ne
 from statistics import mean
+
 import googlemaps
 import mpu
 import pandas as pd
@@ -22,15 +24,13 @@ import shapefile
 import us
 import wikipedia
 from bs4 import BeautifulSoup
-import re
 from census import Census
 from census_area import Census as CensusArea
 from docx import Document
 from docx.enum.table import WD_ALIGN_VERTICAL, WD_TABLE_ALIGNMENT
-from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING, WD_BREAK
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK, WD_LINE_SPACING
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
-from docx.oxml.table import CT_Row, CT_Tc
 from docx.shared import Inches, Pt, RGBColor
 from PIL import Image, ImageOps
 from plotly.subplots import make_subplots
@@ -38,27 +38,23 @@ from requests.adapters import HTTPAdapter
 from requests.exceptions import HTTPError
 from requests.packages.urllib3.util.retry import Retry
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from shapely.geometry import LineString, MultiPoint, Point, shape,Polygon,mapping
+from shapely.geometry import LineString, Point, Polygon
 from shapely.ops import nearest_points
 from walkscore import WalkScoreAPI
 from yelpapi import YelpAPI
 
-
-
 #Define file paths
-dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
+dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)')               
 project_location               =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Projects', 'Research Report Automation Project') 
-# main_output_location           =  os.path.join(project_location,'Output','Neighborhood')                   #testing
-main_output_location           =  os.path.join(dropbox_root,'Research','Market Analysis','Neighborhood')     #production
-data_location                  =  os.path.join(project_location,'Data','Neighborhood Reports Data')
-general_data_location          =  os.path.join(project_location,'Data','General Data')
-graphics_location              =  os.path.join(project_location,'Data','General Data','Graphics')
-map_location                   =  os.path.join(project_location,'Data','Neighborhood Reports Data','Neighborhood Maps')
-nyc_cd_map_location            =  os.path.join(project_location,'Data','Neighborhood Reports Data','NYC_CD Maps')
-neighborhood_shapes_location   =  os.path.join(data_location,'Neighborhood Shapes')
-salesforce_report              =  os.path.join(project_location,'Data','Neighborhood Reports Data','Salesforce') 
+main_output_location           =  os.path.join(project_location,'Output', 'Neighborhood')                     #testing
+main_output_location           =  os.path.join(dropbox_root,'Research', 'Market Analysis','Neighborhood')     #production
+data_location                  =  os.path.join(project_location,'Data', 'Neighborhood Reports Data')
+general_data_location          =  os.path.join(project_location,'Data', 'General Data')
+graphics_location              =  os.path.join(project_location,'Data', 'General Data','Graphics')
+map_location                   =  os.path.join(project_location,'Data', 'Neighborhood Reports Data','Neighborhood Maps')
+nyc_cd_map_location            =  os.path.join(project_location,'Data', 'Neighborhood Reports Data','NYC_CD Maps')
+neighborhood_shapes_location   =  os.path.join(data_location, 'Neighborhood Shapes')
+salesforce_report              =  os.path.join(project_location,'Data', 'Neighborhood Reports Data','Salesforce') 
 
 #Data Manipulation functions
 def ConvertListElementsToFractionOfTotal(raw_list):
@@ -79,7 +75,7 @@ def AggregateAcrossDictionaries(neighborhood_tracts_data, fields_list):
 
         #Add up all the values from each dictionary
         for d in neighborhood_tracts_data:
-            value = d[field]
+            value       = d[field]
             total_value = total_value + int(value)
         
         #Add the current field to the new aggregate_dict
@@ -139,6 +135,7 @@ def GetNeighborhoodShape():
         
         #If we have the geojson file downloaded for the comparison city
         if os.path.exists(city_geo_json_file_path):
+            
             #Method 1: Pull geojson from file with city name
             with open(city_geo_json_file_path) as infile: #Open a geojson file with the city as the name the name of the file with the neighborhood boundries for that city
                 my_shape_geojson = json.load(infile)
@@ -155,9 +152,9 @@ def GetNeighborhoodShape():
                         
                         #Now that we have grabbed the coordinates for the area, export it as shapefile
                         try:
-                            coordinates                = neighborhood_shape['coordinates'][0]
-                            neighborhood_shape_polygon = Polygon(coordinates)
-                            PolygonToShapeFile(poly    = neighborhood_shape_polygon)
+                            coordinates                    = neighborhood_shape['coordinates'][0]
+                            neighborhood_shape_polygon     = Polygon(coordinates)
+                            PolygonToShapeFile(poly        = neighborhood_shape_polygon)
 
                         except Exception as e:
                             print(e,'unable to export neighborhood polygon as shape on first try')
@@ -269,31 +266,36 @@ def GetNeighborhoodShape():
 
 def PolygonToShapeFile(poly):
         #WRITE TO SHAPEFILE USING PYSHP
-        target_file_path = os.path.join(hood_folder_map,'my.shp')
-        shapewriter      = shapefile.Writer(target=target_file_path)
+        target_file_path = os.path.join(hood_folder_map, 'my.shp')
+        shapewriter      = shapefile.Writer(target = target_file_path)
         shapewriter.field("field1")
 
         #step1: convert shapely to pyshp using the function above
         converted_shape = shapely_to_pyshp(poly)
 
-        # step2: tell the writer to add the converted shape
+        #step2: tell the writer to add the converted shape
         shapewriter.shape(converted_shape)
-        # add a list of attributes to go along with the shape
+        
+        #add a list of attributes to go along with the shape
         shapewriter.record(["empty record"])
-        # save it
+        
+        #save it
         shapewriter.close()
 
 def shapely_to_pyshp(shapelygeom):
-    # first convert shapely to geojson
+    #first convert shapely to geojson
     try:
         shapelytogeojson = shapely.geometry.mapping
     except:
         import shapely.geometry
         shapelytogeojson = shapely.geometry.mapping
+    
     geoj = shapelytogeojson(shapelygeom)
-    # create empty pyshp shape
+    
+    #create empty pyshp shape
     record = shapefile.Shape()
-    # set shapetype
+    
+    #set shapetype
     if geoj["type"] == "Null":
         pyshptype = 0
     elif geoj["type"] == "Point":
@@ -309,7 +311,8 @@ def shapely_to_pyshp(shapelygeom):
     elif geoj["type"] == "MultiPolygon":
         pyshptype = 5
     record.shapeType = pyshptype
-    # set points and parts
+    
+    #set points and parts
     if geoj["type"] == "Point":
         record.points = geoj["coordinates"]
         record.parts = [0]
@@ -432,10 +435,10 @@ def ProcessCountyFIPS(county_fips):
     county_fips               = county_fips[2:]
 
     #Get name of county
-    name                     = c.sf1.state_county(fields=['NAME'], state_fips = state_fips, county_fips = county_fips)[0]['NAME']
-    state_full_name          = name.split(',')[1].strip()
-    name                     = name.split(',')[0].strip().title()
-    name                     = name.replace("""'S""","""'s""")
+    name                      = c.sf1.state_county(fields=['NAME'], state_fips = state_fips, county_fips = county_fips)[0]['NAME']
+    state_full_name           = name.split(',')[1].strip()
+    name                      = name.split(',')[0].strip().title()
+    name                      = name.replace("""'S""","""'s""")
 
 
     #Change county name for NYC counties
@@ -451,10 +454,10 @@ def ProcessCountyFIPS(county_fips):
         name = 'The Bronx'
 
     #Name of State
-    state                   = us.states.lookup(state_full_name) #convert the full state name to the 2 letter abbreviation
-    state                   = state.abbr
+    state                      = us.states.lookup(state_full_name) #convert the full state name to the 2 letter abbreviation
+    state                      = state.abbr
 
-    assert len(state)       == 2
+    assert len(state)          == 2
 
     return[county_fips, state_fips, name, state_full_name, state]
 
@@ -474,7 +477,7 @@ def ProcessCountySubdivisionFIPS(county_subdivision_fips):
     name             = ' '.join(name.split(' ')[0:len(name.split(' '))-1]).title()
     
     if place_type    == 'Township':
-        name = name + ' ' + place_type
+        name         = name + ' ' + place_type
     
     #Name of State
     state            = us.states.lookup(state_full_name) #convert the full state name to the 2 letter abbreviation
@@ -554,10 +557,10 @@ def PlaceFIPSToCountyFIPS(place_fips,state_fips):
 
 
     #Restrict to observations that include the provieded place fips
-    place_county_crosswalk_df             = place_county_crosswalk_df.loc[(place_county_crosswalk_df['PLACEFP'] == str(place_fips)) & (place_county_crosswalk_df['STATEFP'] == str(state_fips))].reset_index()                 
-    place_county_crosswalk_df             = place_county_crosswalk_df.loc[(place_county_crosswalk_df['TYPE'] != 'County Subdivision')].reset_index()                 
-    assert len(place_county_crosswalk_df) == 1
-    county_fips                            = str(place_county_crosswalk_df['County_FIPS'].iloc[-1])[0:5]
+    place_county_crosswalk_df                            = place_county_crosswalk_df.loc[(place_county_crosswalk_df['PLACEFP'] == str(place_fips)) & (place_county_crosswalk_df['STATEFP'] == str(state_fips))].reset_index()                 
+    place_county_crosswalk_df                            = place_county_crosswalk_df.loc[(place_county_crosswalk_df['TYPE'] != 'County Subdivision')].reset_index()                 
+    assert len(place_county_crosswalk_df)                == 1
+    county_fips                                          = str(place_county_crosswalk_df['County_FIPS'].iloc[-1])[0:5]
     
     #When the city is in multiple counties, let the user select, if not, return the coutny fips
     if pd.isnull(place_county_crosswalk_df['Second_County'].iloc[-1]):
@@ -629,7 +632,7 @@ def SubdivsionNameToFIPS(subdivision_name,state_code):
     place_county_crosswalk_df['COUSUBNAME'] = place_county_crosswalk_df['COUSUBNAME'].apply(drop_last_item)
     
     #Restrict to observations that include the provieded place fips
-    place_county_crosswalk_df            = place_county_crosswalk_df.loc[(place_county_crosswalk_df['COUSUBNAME'] == str(subdivision_name)) & (place_county_crosswalk_df['STATE'] == str(state_code))  ].reset_index()                 
+    place_county_crosswalk_df               = place_county_crosswalk_df.loc[(place_county_crosswalk_df['COUSUBNAME'] == str(subdivision_name)) & (place_county_crosswalk_df['STATE'] == str(state_code))  ].reset_index()                 
     
     #Return the last row if that's there's only one, otherwise ask user to choose
     if len(place_county_crosswalk_df['COUNTYFP'].unique()) == 1:
@@ -762,13 +765,11 @@ def CreateDirectory():
             elif (comparison_area == 'Queens'):
                 city_folder     =  os.path.join(main_output_location,hood_state,'NYC','QU')
                 city_folder_map =  os.path.join(map_location,hood_state,'NYC','QU')
-
-
         
         
         else:
-            city_folder     =  os.path.join(main_output_location,hood_state,comparison_area)
-            city_folder_map =  os.path.join(map_location,hood_state,comparison_area)
+            city_folder         =  os.path.join(main_output_location,hood_state,comparison_area)
+            city_folder_map     =  os.path.join(map_location,hood_state,comparison_area)
 
         if os.path.exists(city_folder) == False:
             os.mkdir(city_folder) 
@@ -841,7 +842,7 @@ def input_with_timeout(prompt, timeout, timer=time.monotonic):
     sys.stdout.write(prompt)
     sys.stdout.flush()
     endtime = timer() + timeout
-    result = []
+    result  = []
     while timer() < endtime:
         if msvcrt.kbhit():
             result.append(msvcrt.getwche()) #XXX can it block on multibyte characters?
@@ -1141,14 +1142,14 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
 #Households by number of memebrs
 def GetHouseholdSizeData(geographic_level,hood_or_comparison_area):
     print('Getting household size data for: ',hood_or_comparison_area)
-    neighborhood_household_size_distribution       = GetCensusFrequencyDistribution(geographic_level = geographic_level, hood_or_comparison_area = hood_or_comparison_area,fields_list=['H013002','H013003','H013004','H013005','H013006','H013007','H013008'],operator=c.sf1)          #Neighborhood households by size
+    neighborhood_household_size_distribution       = GetCensusFrequencyDistribution(geographic_level = geographic_level, hood_or_comparison_area = hood_or_comparison_area, fields_list=['H013002','H013003','H013004','H013005','H013006','H013007','H013008'],operator=c.sf1)          #Neighborhood households by size
     return(neighborhood_household_size_distribution)
     
 #Household Tenure (owner-occupied vs renter-occupied)
 def GetHousingTenureData(geographic_level,hood_or_comparison_area):
     #Occupied Housing Units by Tenure
     print('Getting tenure data for: ',hood_or_comparison_area)
-    neighborhood_tenure_distribution  = GetCensusFrequencyDistribution(     geographic_level = geographic_level, hood_or_comparison_area = hood_or_comparison_area,fields_list = ['H004004','H004003','H004002'],operator=c.sf1) 
+    neighborhood_tenure_distribution  = GetCensusFrequencyDistribution(     geographic_level = geographic_level, hood_or_comparison_area = hood_or_comparison_area, fields_list = ['H004004','H004003','H004002'],operator=c.sf1) 
 
     #add together the owned free and clear percentage with the owned with a mortgage percentage to simply an owner-occupied fraction
     neighborhood_tenure_distribution[1] = neighborhood_tenure_distribution[1] +  neighborhood_tenure_distribution[2]
@@ -2265,16 +2266,16 @@ def SetGraphFormatVariables():
     global main_graph_font_size
 
     #Set graph size and format variables
-    marginInches  = 1/18
-    ppi           = 96.85 
-    width_inches  = 6.5
-    height_inches = 3.3
-    fig_width     = 4.5 #width for the pngs (graph images) we insert into report document
-    graph_width   = (width_inches - marginInches)   * ppi
-    graph_height  = (height_inches  - marginInches) * ppi
+    marginInches         = 1/18
+    ppi                  = 96.85 
+    width_inches         = 6.5
+    height_inches        = 3.3
+    fig_width            = 4.5 #width for the pngs (graph images) we insert into report document
+    graph_width          = (width_inches - marginInches)   * ppi
+    graph_height         = (height_inches  - marginInches) * ppi
 
     #Set scale for resolution 1 = no change, > 1 increases resolution. Very important for run time of main script. 
-    scale         = 7
+    scale                = 7
 
     #Set tick font size (also controls legend font size)
     tickfont_size        = 14 
@@ -2301,50 +2302,55 @@ def CreateHouseholdSizeHistogram():
     
     #Add Bars with neighborhood household size distribution
     fig.add_trace(
-    go.Bar(y=neighborhood_household_size_distribution,
-           x=household_size_categories,
-           name=neighborhood,
-           marker_color="#4160D3")
-            ,secondary_y=False
-            )
+        go.Bar(        
+            y            = neighborhood_household_size_distribution,
+            x            = household_size_categories,
+            name         = neighborhood,
+            marker_color = "#4160D3"),
+        secondary_y=False
+                )
 
     fig.add_trace(
-    go.Bar(y=comparison_household_size_distribution,
-           x=household_size_categories,
-           name=comparison_area,
-           marker_color="#B3C3FF")
-            ,secondary_y=False
+        go.Bar(
+            y            = comparison_household_size_distribution,
+            x            = household_size_categories,
+            name         = comparison_area,
+            marker_color = "#B3C3FF"
+             ),
+        secondary_y=False
             )
     
     
     #Set Title
-    fig.update_layout(
+    fig.update_layout (
     title_text="Households by Household Size",    
 
-    title={
-        'y':title_position,
-        'x':0.5,
+    title = {
+        'y': title_position,
+        'x': 0.5,
         'xanchor': 'center',
-        'yanchor': 'top'},
+        'yanchor': 'top'
+          },
                     
-                    )
-    
-    # #Set Legend Layout
-    fig.update_layout(
-    legend=dict(
-        orientation = "h",
-        yanchor     = "bottom",
-        y           = legend_position ,
-        xanchor     = "center",
-        x           = 0.5,
-        font_size   = tickfont_size
-                )
-                      )
-    
-    fig.update_yaxes(title=None)
 
-    #Set Font and Colors
-    fig.update_layout(
+    legend = dict(
+                orientation = "h",
+                yanchor     = "bottom",
+                y           = legend_position ,
+                xanchor     = "center",
+                x           = 0.5,
+                font_size   = tickfont_size
+                  ),
+
+    margin  = dict(
+                l = left_margin, 
+                r = right_margin, 
+                t = top_margin, 
+                b = bottom_margin
+                    ),
+
+    height        = graph_height,
+    width         = graph_width,
     font_family   = "Avenir Next LT Pro",
     font_color    = '#262626',
     font_size     = main_graph_font_size,
@@ -2352,19 +2358,11 @@ def CreateHouseholdSizeHistogram():
     plot_bgcolor  = "White"
                      )
 
-    #Set size and margin
-    fig.update_layout(
-    margin=dict(l = left_margin, r = right_margin, t = top_margin, b = bottom_margin),
-    height    = graph_height,
-    width     = graph_width,
-        
-                    )
-
-
-    #Add % to  axis ticks
-    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.0f',secondary_y=False)
-    fig.update_xaxes(tickfont = dict(size=tickfont_size))       
-    fig.write_image(os.path.join(hood_folder,'household_size_graph.png'),engine='kaleido',scale=scale)
+    #Add % to y-axis ticks
+    fig.update_yaxes(title = None)
+    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size = tickfont_size), tickformat = '.0f', secondary_y = False)
+    fig.update_xaxes(tickfont = dict(size = tickfont_size))       
+    fig.write_image(os.path.join(hood_folder, 'household_size_graph.png'), engine = 'kaleido',scale = scale)
 
 def CreateHouseholdTenureHistogram():
     print('Creating Household tenure graph')
@@ -2764,7 +2762,8 @@ def CreatePopulationByIncomeHistogram():
                          '$100,000-124,999',
                          '$125,000-149,999',
                          '$150,000-199,999',
-                         '> $200,000']
+                         '> $200,000'
+                        ]
 
     assert len(income_categories) == len(neighborhood_household_income_data) == len(comparison_household_income_data)
     
