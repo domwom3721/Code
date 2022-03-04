@@ -1283,8 +1283,8 @@ def CreateDirectoryCSV():
                         prop_code = prop_type
 
                     else:
-                        prop_type = ''
-                        prop_code = ''
+                        prop_type = 'Unknown'
+                        prop_code = 'UK'
 
 
                     #Get Dropbox link
