@@ -35,7 +35,7 @@ project_location               = os.path.join(dropbox_root,'Research','Projects'
 output_location                = os.path.join(project_location,'Output','Market')                                                             #The folder where we store our current reports, testing folder
 output_location                = os.path.join(dropbox_root,'Research','Market Analysis','Market')                                             #The folder where we store our current reports, production
 map_location                   = os.path.join(project_location,'Data','Market Reports Data','CoStar Maps')                                    #Folders with maps png files  
-general_data_location          = os.path.join(project_location,'Data','General Data')
+general_data_location          = os.path.join(project_location,'Data','General Data')                                                         #Folder with data for all report types
 costar_data_location           = os.path.join(project_location,'Data','Market Reports Data','CoStar Data')                                    #Folder with clean CoStar CSV files
 costar_writeup_location        = os.path.join(project_location,'Data','Market Reports Data','CoStar Writeups')                                #Folder with html files downloaded from CoStar.com
 
@@ -67,7 +67,7 @@ def user_selects_reports_or_not():
         variable,
         *options,
         command=select_sector
-    )
+                         )
 
     #positioning widget
     dropdown.pack(expand=True)
@@ -77,18 +77,19 @@ def user_selects_reports_or_not():
 
 #GUI for user to select sector
 def user_selects_sector():
-    global   df_list, df_slices_list,sector_name_list,selected_sector
+    global df_list, df_slices_list,sector_name_list,selected_sector
     global df_multifamily, df_office, df_retail, df_industrial
     global df_multifamily_slices, df_office_slices, df_retail_slices, df_industrial_slices
 
     #If we have any custom data, read it in as a dataframe so we can append it to our primary data
     custom_data_file_location      = os.path.join(costar_data_location,'Clean Data','Clean Custom CoStar Data.xlsx')
     if os.path.exists(custom_data_file_location):
-        df_custom                 = pd.read_excel(custom_data_file_location)
+        df_custom                  = pd.read_excel(custom_data_file_location)
 
     #Don't make the user select a sector if they are not trying to write reports
     if write_reports_yes_or_no == 'n':
         selected_sector = 'All'
+        
         #Import cleaned data from 1.) Clean Costar Data.py
         df_multifamily                 = pd.read_csv(os.path.join(costar_data_location,'Clean Data','mf_clean.csv')) 
         df_office                      = pd.read_csv(os.path.join(costar_data_location,'Clean Data','office_clean.csv'))
@@ -100,23 +101,23 @@ def user_selects_sector():
         df_retail_slices               = pd.read_csv(os.path.join(costar_data_location,'Clean Data','retail_slices_clean.csv'))
         df_industrial_slices           = pd.read_csv(os.path.join(costar_data_location,'Clean Data','industrial_slices_clean.csv')) 
 
-        df_list         = [df_multifamily, df_office, df_retail, df_industrial]
-        df_slices_list   = [df_multifamily_slices, df_office_slices, df_retail_slices, df_industrial_slices]
-        sector_name_list =  ['Multifamily','Office','Retail','Industrial']
+        df_list                        = [df_multifamily, df_office, df_retail, df_industrial]
+        df_slices_list                 = [df_multifamily_slices, df_office_slices, df_retail_slices, df_industrial_slices]
+        sector_name_list               = ['Multifamily','Office','Retail','Industrial']
         return('')
 
     #GUI that lets user specify which sectors they want to run
     ws = Tk()
     ws.title('Research Automation Project - Market Reports')
     ws.geometry('400x300')
-    ws.config(bg='#404858')
+    ws.config(bg = '#404858')
 
     def select_sector(choice):
         global selected_sector
         selected_sector = variable.get()
         
 
-    sectors = ['Multifamily','Office', 'Retail','Industrial','All']
+    sectors = ['Multifamily', 'Office', 'Retail', 'Industrial', 'All']
 
     #setting variable for Integers
     variable = StringVar()
@@ -127,8 +128,8 @@ def user_selects_sector():
         ws,
         variable,
         *sectors,
-        command=select_sector
-    )
+        command = select_sector
+                        )
 
     #positioning widget
     dropdown.pack(expand=True)
@@ -138,28 +139,28 @@ def user_selects_sector():
 
     if selected_sector == 'All':
         #Import cleaned data from 1.) Clean Costar Data.py
-        df_multifamily                 = pd.read_csv(os.path.join(costar_data_location,'Clean Data','mf_clean.csv')) 
-        df_office                      = pd.read_csv(os.path.join(costar_data_location,'Clean Data','office_clean.csv'))
-        df_retail                      = pd.read_csv(os.path.join(costar_data_location,'Clean Data','retail_clean.csv'))
-        df_industrial                  = pd.read_csv(os.path.join(costar_data_location,'Clean Data','industrial_clean.csv')) 
+        df_multifamily                 = pd.read_csv(os.path.join(costar_data_location, 'Clean Data', 'mf_clean.csv')) 
+        df_office                      = pd.read_csv(os.path.join(costar_data_location, 'Clean Data', 'office_clean.csv'))
+        df_retail                      = pd.read_csv(os.path.join(costar_data_location, 'Clean Data', 'retail_clean.csv'))
+        df_industrial                  = pd.read_csv(os.path.join(costar_data_location, 'Clean Data', 'industrial_clean.csv')) 
 
-        df_multifamily_slices          = pd.read_csv(os.path.join(costar_data_location,'Clean Data','mf_slices_clean.csv')) 
-        df_office_slices               = pd.read_csv(os.path.join(costar_data_location,'Clean Data','office_slices_clean.csv'))
-        df_retail_slices               = pd.read_csv(os.path.join(costar_data_location,'Clean Data','retail_slices_clean.csv'))
-        df_industrial_slices           = pd.read_csv(os.path.join(costar_data_location,'Clean Data','industrial_slices_clean.csv')) 
+        df_multifamily_slices          = pd.read_csv(os.path.join(costar_data_location, 'Clean Data', 'mf_slices_clean.csv')) 
+        df_office_slices               = pd.read_csv(os.path.join(costar_data_location, 'Clean Data', 'office_slices_clean.csv'))
+        df_retail_slices               = pd.read_csv(os.path.join(costar_data_location, 'Clean Data', 'retail_slices_clean.csv'))
+        df_industrial_slices           = pd.read_csv(os.path.join(costar_data_location, 'Clean Data', 'industrial_slices_clean.csv')) 
 
         #Import supplemental data as pandas data frames. This is data we store for ourselves on the differnet markets and submarkets (we will merge into our main data dfs)
-        df_multifamily_supplemental   = pd.read_csv(os.path.join(costar_data_location,'Supplemental Data','mf_supplemental.csv'),dtype={'Town': object,}) 
-        df_office_supplemental        = pd.read_csv(os.path.join(costar_data_location,'Supplemental Data','office_supplemental.csv') ,dtype={'Town': object,})      
-        df_retail_supplemental        = pd.read_csv(os.path.join(costar_data_location,'Supplemental Data','retail_supplemental.csv') ,dtype={'Town': object,})
-        df_industrial_supplemental    = pd.read_csv(os.path.join(costar_data_location,'Supplemental Data','industrial_supplemental.csv'),dtype={'Town': object,})  	
+        df_multifamily_supplemental   = pd.read_csv(os.path.join(costar_data_location,'Supplemental Data', 'mf_supplemental.csv'),         dtype={'Town': object,}) 
+        df_office_supplemental        = pd.read_csv(os.path.join(costar_data_location,'Supplemental Data', 'office_supplemental.csv') ,    dtype={'Town': object,})      
+        df_retail_supplemental        = pd.read_csv(os.path.join(costar_data_location,'Supplemental Data', 'retail_supplemental.csv') ,    dtype={'Town': object,})
+        df_industrial_supplemental    = pd.read_csv(os.path.join(costar_data_location,'Supplemental Data', 'industrial_supplemental.csv'), dtype={'Town': object,})  	
 
 
         #Merge in our supplemental data into our main data frames
-        df_multifamily                = pd.merge(df_multifamily, df_multifamily_supplemental,      on=['Geography Name','Geography Type'], how = 'left')
-        df_office                     = pd.merge(df_office,      df_office_supplemental,           on=['Geography Name','Geography Type'], how = 'left')
-        df_retail                     = pd.merge(df_retail,      df_retail_supplemental,           on=['Geography Name','Geography Type'], how = 'left')
-        df_industrial                 = pd.merge(df_industrial,  df_industrial_supplemental,       on=['Geography Name','Geography Type'], how = 'left')
+        df_multifamily                = pd.merge(df_multifamily, df_multifamily_supplemental,      on=['Geography Name', 'Geography Type'], how = 'left')
+        df_office                     = pd.merge(df_office,      df_office_supplemental,           on=['Geography Name', 'Geography Type'], how = 'left')
+        df_retail                     = pd.merge(df_retail,      df_retail_supplemental,           on=['Geography Name', 'Geography Type'], how = 'left')
+        df_industrial                 = pd.merge(df_industrial,  df_industrial_supplemental,       on=['Geography Name', 'Geography Type'], how = 'left')
 
         #Do this because we don't have the towns for most of the market so this prevents errors
         df_multifamily['Town']        = df_multifamily['Town'].fillna('')
@@ -168,23 +169,20 @@ def user_selects_sector():
         df_industrial['Town']         = df_industrial['Town'].fillna('')
 
 
-
-        df_list         = [df_multifamily, df_office, df_retail, df_industrial]
-        df_slices_list   = [df_multifamily_slices, df_office_slices, df_retail_slices, df_industrial_slices]
-        sector_name_list =  ['Multifamily','Office','Retail','Industrial']
-
-
+        df_list                       = [df_multifamily, df_office, df_retail, df_industrial]
+        df_slices_list                = [df_multifamily_slices, df_office_slices, df_retail_slices, df_industrial_slices]
+        sector_name_list              = ['Multifamily', 'Office', 'Retail', 'Industrial']
 
 
 
     elif selected_sector == 'Office':
 
         #Import cleaned data from 1.) Clean Costar Data.py
-        df_office                      = pd.read_csv(os.path.join(costar_data_location,'Clean Data','office_clean.csv'))
-        df_office_slices               = pd.read_csv(os.path.join(costar_data_location,'Clean Data','office_slices_clean.csv'))
+        df_office                      = pd.read_csv(os.path.join(costar_data_location,'Clean Data', 'office_clean.csv'))
+        df_office_slices               = pd.read_csv(os.path.join(costar_data_location,'Clean Data', 'office_slices_clean.csv'))
 
         #Import supplemental data as pandas data frames. This is data we store for ourselves on the differnet markets and submarkets (we will merge into our main data dfs)
-        df_office_supplemental        = pd.read_csv(os.path.join(costar_data_location,'Supplemental Data','office_supplemental.csv') ,dtype={'Town': object,})      
+        df_office_supplemental        = pd.read_csv(os.path.join(costar_data_location, 'Supplemental Data', 'office_supplemental.csv'), dtype = {'Town': object,})      
 
         #Merge in our supplemental data into our main data frames
         df_office                     = pd.merge(df_office,      df_office_supplemental,           on=['Geography Name','Geography Type'], how = 'left')
@@ -196,9 +194,9 @@ def user_selects_sector():
             df_office  = df_office.append(df_custom) #Add the custom data to the main data file
         except:
             pass
-        df_list         = [df_office]
-        df_slices_list   = [df_office_slices]
-        sector_name_list =  ['Office']
+        df_list                        = [df_office]
+        df_slices_list                 = [df_office_slices]
+        sector_name_list               = ['Office']
 
 
     elif selected_sector == 'Retail':
@@ -210,43 +208,44 @@ def user_selects_sector():
         df_retail_supplemental        = pd.read_csv(os.path.join(costar_data_location,'Supplemental Data','retail_supplemental.csv') ,dtype={'Town': object,})
 
         #Merge in our supplemental data into our main data frames
-        df_retail                     = pd.merge(df_retail,      df_retail_supplemental,           on=['Geography Name','Geography Type'], how = 'left')
+        df_retail                     = pd.merge(df_retail,      df_retail_supplemental, on = ['Geography Name', 'Geography Type'], how = 'left')
 
         #Do this because we don't have the towns for most of the market so this prevents errors
         df_retail['Town']             = df_retail['Town'].fillna('')
 
         try:
-            df_retail  = df_retail.append(df_custom) #Add the custom data to the main data file
+            df_retail                  = df_retail.append(df_custom) #Add the custom data to the main data file
         except:
             pass
-        df_list         = [df_retail]
-        df_slices_list   = [df_retail_slices]
-        sector_name_list =  ['Retail']
+        
+        df_list                        = [df_retail]
+        df_slices_list                 = [df_retail_slices]
+        sector_name_list               = ['Retail']
 
 
     elif selected_sector == 'Multifamily':
 
         #Import cleaned data from 1.) Clean Costar Data.py
-        df_multifamily                 = pd.read_csv(os.path.join(costar_data_location,'Clean Data','mf_clean.csv')) 
-        df_multifamily_slices          = pd.read_csv(os.path.join(costar_data_location,'Clean Data','mf_slices_clean.csv')) 
+        df_multifamily                 = pd.read_csv(os.path.join(costar_data_location, 'Clean Data', 'mf_clean.csv')) 
+        df_multifamily_slices          = pd.read_csv(os.path.join(costar_data_location, 'Clean Data', 'mf_slices_clean.csv')) 
 
         #Import supplemental data as pandas data frames. This is data we store for ourselves on the differnet markets and submarkets (we will merge into our main data dfs)
-        df_multifamily_supplemental   = pd.read_csv(os.path.join(costar_data_location,'Supplemental Data','mf_supplemental.csv'),dtype={'Town': object,}) 
+        df_multifamily_supplemental   = pd.read_csv(os.path.join(costar_data_location, 'Supplemental Data', 'mf_supplemental.csv'), dtype={'Town': object,}) 
 
         #Merge in our supplemental data into our main data frames
-        df_multifamily                = pd.merge(df_multifamily, df_multifamily_supplemental,      on=['Geography Name','Geography Type'], how = 'left')
+        df_multifamily                = pd.merge(df_multifamily, df_multifamily_supplemental,      on=['Geography Name', 'Geography Type'], how = 'left')
 
         #Do this because we don't have the towns for most of the market so this prevents errors
         df_multifamily['Town']        = df_multifamily['Town'].fillna('')
 
         try:
-            df_multifamily  = df_multifamily.append(df_custom) #Add the custom data to the main data file
+            df_multifamily            = df_multifamily.append(df_custom) #Add the custom data to the main data file
         except:
             pass
-        df_list          = [df_multifamily]
-        df_slices_list   = [df_multifamily_slices]
-        sector_name_list =  ['Multifamily']
-
+        
+        df_list                       = [df_multifamily]
+        df_slices_list                = [df_multifamily_slices]
+        sector_name_list              = ['Multifamily']
 
 
 
@@ -265,12 +264,13 @@ def user_selects_sector():
         df_industrial['Town']         = df_industrial['Town'].fillna('')
        
         try:
-            df_industrial   = df_industrial.append(df_custom) #Add the custom data to the main data file
+            df_industrial             = df_industrial.append(df_custom) #Add the custom data to the main data file
         except:
             pass
-        df_list          = [df_industrial]
-        df_slices_list   = [df_industrial_slices]
-        sector_name_list =  ['Industrial']
+        
+        df_list                       = [df_industrial]
+        df_slices_list                = [df_industrial_slices]
+        sector_name_list              = ['Industrial']
     
 #Define functions used to handle the clean CoStar data and help write our repots
 def CreateMarketDictionary(df): #Creates a dictionary where each key is a market and the items are lists of its submarkets
@@ -291,14 +291,17 @@ def CleanMarketName(market_name):
     clean_market_name = market_name.replace("""/""",' ')
     clean_market_name = clean_market_name.replace(""":""",'')
     clean_market_name = clean_market_name.replace("""'""",'')
+    
     if clean_market_name[-1] == '.':
         clean_market_name = clean_market_name.replace(""".""",'')
+    
     clean_market_name = clean_market_name.strip()
     return(clean_market_name)
 
 def UniqueZipCodes(list1):
     #insert the list to the set
     list_set = set(list1)
+    
     #convert the set to the list
     unique_list = (list(list_set))
     
@@ -309,8 +312,8 @@ def UniqueZipCodes(list1):
     return(unique_list)
 
 def CreateEmptySalesforceLists():
-    global  dropbox_primary_markets,dropbox_markets,dropbox_sectors, dropbox_sectors_codes
-    global dropbox_links,dropbox_research_names,dropbox_analysis_types,dropbox_states,dropbox_versions,dropbox_statuses,dropbox_document_names
+    global dropbox_primary_markets, dropbox_markets, dropbox_sectors, dropbox_sectors_codes
+    global dropbox_links, dropbox_research_names, dropbox_analysis_types, dropbox_states, dropbox_versions, dropbox_statuses, dropbox_document_names
     dropbox_primary_markets        = []
     dropbox_markets                = []
     dropbox_sectors                = []
@@ -326,6 +329,7 @@ def CreateEmptySalesforceLists():
 def UpdateSalesforceMarketList(markets_list, submarkets_list, sector_list, sector_code_list, dropbox_links_list):
     #Add to lists that track our markets and submarkets for salesforce
     markets_list.append(state + '-' + primary_market_name_for_file)
+    
     if market == primary_market:
         submarkets_list.append('')
         dropbox_analysis_types.append('Market')
@@ -357,8 +361,8 @@ def UpdateSalesforceMarketList(markets_list, submarkets_list, sector_list, secto
             dropbox_research_names.append(state + ' - ' + market_title + ' - ' + sector )
 
     #If the report is already marked final, record that in our list
-    if  os.path.exists(report_path.replace('_draft','_FINAL',1)) or os.path.exists(report_path.replace('_draft','- FINAL',1)) or os.path.exists(report_path.replace('_draft',' - FINAL',1)):
-        dropbox_document_names.append(report_file_title.replace('_draft','_FINAL',1))
+    if  os.path.exists(report_path.replace('_draft','_FINAL',1)) or os.path.exists(report_path.replace('_draft','- FINAL',1)) or os.path.exists(report_path.replace('_draft', ' - FINAL', 1)):
+        dropbox_document_names.append(report_file_title.replace('_draft', '_FINAL', 1))
         dropbox_statuses.append('Final')
     
     else:
@@ -408,9 +412,9 @@ def CreateWriteupDirectory():
     market_folder_writeup           = os.path.join(state_folder_writeup,primary_market_name_for_file)
 
     if market == primary_market:
-        writeup_directory        = market_folder_writeup                #Folder where we store map for market or submarket
+        writeup_directory           = market_folder_writeup                #Folder where we store map for market or submarket
     else:
-        writeup_directory        = os.path.join(market_folder_writeup,str(market_title))
+        writeup_directory           = os.path.join(market_folder_writeup,str(market_title))
     
     #Check if output,map, and summary folder already exists, and if it doesnt, make it
     for folder in [sector_folder,state_folder_writeup,market_folder_writeup,writeup_directory]:
@@ -426,10 +430,10 @@ def CreateReportFilePath():
     #Create report
     if market == primary_market:
         market_file_name = primary_market_name_for_file
-        macro_or_sub = 'Market'
+        macro_or_sub     = 'Market'
     else:
         market_file_name = market_title
-        macro_or_sub = 'Submarket'
+        macro_or_sub     = 'Submarket'
     
     if sector == "Multifamily":
         sector_code = "MF"
@@ -458,9 +462,8 @@ def SetPageMargins():
         section.right_margin  = Inches(1)
 
 def SetStyle():
-    #Style
-    style = document.styles['Normal']
-    font = style.font
+    style     = document.styles['Normal']
+    font      = style.font
     font.name = 'Avenir Next LT Pro Light'
     font.size = Pt(9)
 
@@ -470,57 +473,50 @@ def MakeReportTitle():
         title = document.add_heading(market_title + ': ' + sector + ' Market Analysis'    + ' DRAFTDRAFTDRAFT',level=1)
     else:
         title = document.add_heading(market_title + ': ' + sector + ' Submarket Analysis' + ' DRAFTDRAFTDRAFT',level=1)
-    title.style = document.styles['Heading 2']
-    title.paragraph_format.space_after  = Pt(6)
-    title.paragraph_format.space_before = Pt(12)
+    
+    title.style                           = document.styles['Heading 2']
+    title.paragraph_format.space_after    = Pt(6)
+    title.paragraph_format.space_before   = Pt(12)
     title.paragraph_format.keep_with_next = True
-    # title.paragraph_style.widow_control = True
-    title_style = title.style
-    title_style.font.name = "Avenir Next LT Pro Light"
-    title_style.font.size = Pt(14)
-    title_style.font.bold = False
-    title_style.font.color.rgb = RGBColor.from_string('3F65AB')
+    title_style                           = title.style
+    title_style.font.name                 = "Avenir Next LT Pro Light"
+    title_style.font.size                 = Pt(14)
+    title_style.font.bold                 = False
+    title_style.font.color.rgb            = RGBColor.from_string('3F65AB')
     title_style.element.xml
     rFonts = title_style.element.rPr.rFonts
     rFonts.set(qn("w:asciiTheme"), "Avenir Next LT Pro Light")
 
 def MakeCoStarDisclaimer():
-    #Write Costar disclaimer as of '  + latest_quarter + ' 
+    #Write Costar disclaimer: "as of '  + latest_quarter + '"" 
     if market == primary_market:
-        disclaimer = document.add_paragraph('The information contained in this report was provided using ' 
-                                            + latest_quarter + 
-                                            ' CoStar data for the ' + 
-                                            market + 
-                                            ' ' + 
-                                            sector + 
-                                            """ Market ("Market").""")
+        disclaimer = document.add_paragraph('The information contained in this report was provided using ' +
+                                             latest_quarter                                                + 
+                                            ' CoStar data for the '                                        + 
+                                            market                                                         + 
+                                            ' '                                                            + 
+                                            sector                                                         + 
+                                            """ Market ("Market")."""
+                                            )
     #Submarket disclaimer
     else:
-        towns = df_market_cut['Town'].iloc[-1]
-        if towns == '':
-            towns = '[..........]'
         disclaimer = document.add_paragraph('The information contained in this report was provided using ' +
-                                            latest_quarter + 
-                                            ' CoStar data for the ' + 
-                                            market_title + 
-                                            ' ' + 
-                                            sector + 
-                                            """ Submarket ("Submarket") """ +
-                                            'located in the ' +
-                                            primary_market + 
+                                            latest_quarter                                                 + 
+                                            ' CoStar data for the '                                        + 
+                                            market_title                                                   + 
+                                            ' '                                                            + 
+                                            sector                                                         + 
+                                            """ Submarket ("Submarket") """                                +
+                                            'located in the '                                              +
+                                            primary_market                                                 + 
                                             """ Market ("Market"). """
-                                            #'The Submarket includes the ' + 
-                                            #'neighborhoods/towns' + 
-                                            #' of ' + 
-                                            #towns + '.'
                                             )                
     
-    
-    disclaimer.style.font.name = primary_font
-    disclaimer.style.font.size = Pt(9)
-    disclaimer.paragraph_format.space_after  = Pt(6)
-    disclaimer.paragraph_format.space_before = Pt(0)
-    disclaimer.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    disclaimer.style.font.name                = primary_font
+    disclaimer.style.font.size                = Pt(9)
+    disclaimer.paragraph_format.space_after   = Pt(6)
+    disclaimer.paragraph_format.space_before  = Pt(0)
+    disclaimer.alignment                      = WD_ALIGN_PARAGRAPH.JUSTIFY
     disclaimer.paragraph_format.keep_together = True
 
 def CleanUpPNGs():
@@ -538,24 +534,26 @@ def AddMap():
     
     #Add image of map if there is one in the appropriate map folder
     if os.path.exists(os.path.join(map_directory,'map.png')):
-        map = document.add_picture(os.path.join(map_directory,'map.png'), width=Inches(6.5) )
+        map = document.add_picture(os.path.join(map_directory,'map.png'), width=Inches(6.5))
     else:
         map = document.add_paragraph('')
 
-    last_paragraph = document.paragraphs[-1] 
+    last_paragraph           = document.paragraphs[-1] 
     last_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
 
 def AddDocumentPicture(document,image_path):
     if os.path.exists(image_path):
-        fig = document.add_picture(os.path.join(image_path),width=Inches(6.5))
-        last_paragraph = document.paragraphs[-1] 
-        last_paragraph.paragraph_format.space_after       = Pt(0)
-
-        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        fig                                         = document.add_picture(os.path.join(image_path),width = Inches(6.5))
+        last_paragraph                              = document.paragraphs[-1] 
+        last_paragraph.paragraph_format.space_after = Pt(0)
+        last_paragraph.alignment                    = WD_ALIGN_PARAGRAPH.CENTER
 
 def AddDocumentParagraph(document,language_variable):
     assert type(language_variable) == list
+
     for paragraph in language_variable:
+        
+        #Skip blank paragraphs
         if paragraph == '':
             continue
         par                                               = document.add_paragraph(str(paragraph))
@@ -564,46 +562,48 @@ def AddDocumentParagraph(document,language_variable):
         par.paragraph_format.space_before                 = Pt(primary_space_after_paragraph)
         summary_format                                    = document.styles['Normal'].paragraph_format
         summary_format.line_spacing_rule                  = WD_LINE_SPACING.SINGLE
-        style = document.styles['Normal']
-        font = style.font
-        font.name = 'Avenir Next LT Pro Light'
-        par.style = document.styles['Normal']
+        style                                             = document.styles['Normal']
+        font                                              = style.font
+        font.name                                         = 'Avenir Next LT Pro Light'
+        par.style                                         = document.styles['Normal']
 
 def AddTableTitle(document,title):
-    table_title_paragraph = document.add_paragraph(title)
-    table_title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    table_title_paragraph                               = document.add_paragraph(title)
+    table_title_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.CENTER
     table_title_paragraph.paragraph_format.space_after  = Pt(6)
     table_title_paragraph.paragraph_format.space_before = Pt(12)
-    table_title_paragraph.keep_with_next = True
-    table_title_paragraph.keep_together  = True
+    table_title_paragraph.keep_with_next                = True
+    table_title_paragraph.keep_together                 = True
+    
+    #Set font
     for run in table_title_paragraph.runs:
-                    font = run.font
+                    font      = run.font
                     font.name = 'Avenir Next LT Pro Medium'
 
 def OverviewSection():
 
     #Overview Heading
-    AddHeading(document,'Overview',2)
+    AddHeading(document, 'Overview', 2)
     
     #Overview Paragraph
     AddDocumentParagraph(document = document, language_variable = overview_language)
 
     #Overview table title
-    AddTableTitle(document = document,title ='Sector Fundamentals')
+    AddTableTitle(document = document, title = 'Sector Fundamentals')
     
     #Overview table
     if sector == 'Multifamily':
         if market == 'United States of America':
-            AddOverviewTable(document,8,4,data_for_overview_table,1.2)
+            AddOverviewTable(document, 8, 4, data_for_overview_table, 1.2)
 
         else:
-            AddOverviewTable(document,8,7,data_for_overview_table,1.2)
+            AddOverviewTable(document, 8, 7, data_for_overview_table, 1.2)
     else:
         if market == 'United States of America':
-            AddOverviewTable(document,9,4,data_for_overview_table,1.2)
+            AddOverviewTable(document, 9, 4, data_for_overview_table, 1.2)
 
         else:
-            AddOverviewTable(document,9,7,data_for_overview_table,1.2)
+            AddOverviewTable(document, 9, 7, data_for_overview_table, 1.2)
 
 
     #Preamble to historical performance table
@@ -613,14 +613,15 @@ def OverviewSection():
         market_or_submarket = 'Submarket'
     
     preamble_language = ('Supply and demand indicators, including inventory levels, absorption, vacancy, and rental rates for ' +
-                         sector.lower() +
-                         ' space in the ' +
-                         market_or_submarket +
-                         ' are presented in the ensuing table.')
+                         sector.lower()                                                                                         +
+                         ' space in the '                                                                                       +
+                         market_or_submarket                                                                                    +
+                         ' are presented in the ensuing table.'
+                         )
 
 
-    table_preamble = document.add_paragraph(preamble_language)
-    table_preamble.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    table_preamble                               = document.add_paragraph(preamble_language)
+    table_preamble.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
     table_preamble.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
     table_preamble.paragraph_format.space_before = Pt(6)
 
@@ -634,22 +635,22 @@ def OverviewSection():
         if primary_market == 'Manhattan - NY':
             if len(df_slices) > 0:
                 for slice in df_slices['Slice'].unique():
-                    df_slices_temp =df_slices.loc[df_slices['Slice'] == slice]
+                    df_slices_temp = df_slices.loc[df_slices['Slice'] == slice]
 
                     if market == primary_market:
-                        AddTableTitle(document = document,title =('Historical ' + slice + ' ' + sector  + ' Performance: ' +  market_title + ' Market' ))
+                        AddTableTitle(document = document, title =('Historical ' + slice + ' ' + sector  + ' Performance: ' +  market_title + ' Market' ))
                     else:
-                        AddTableTitle(document = document,title =('Historical ' + slice + ' ' + sector  + ' Performance: ' +  market_title + ' Submarket'))
+                        AddTableTitle(document = document, title =('Historical ' + slice + ' ' + sector  + ' Performance: ' +  market_title + ' Submarket'))
 
 
-                    AddMarketPerformanceTable(document = document,market_data_frame = df_slices_temp,col_width = 1.2,sector=sector)
+                    AddMarketPerformanceTable(document = document, market_data_frame = df_slices_temp, col_width = 1.2, sector=sector)
                     document.add_paragraph('')
 
     
     #Submarket market performance table
     else:
-        AddTableTitle(document = document,title =('Historical ' + sector  + ' Performance: ' +  market_title + ' Submarket'))
-        AddMarketPerformanceTable(document = document,market_data_frame = df_market_cut ,col_width = 1.2,sector=sector)
+        AddTableTitle(document = document, title =('Historical ' + sector  + ' Performance: ' +  market_title + ' Submarket'))
+        AddMarketPerformanceTable(document = document, market_data_frame = df_market_cut ,col_width = 1.2,sector=sector)
         document.add_paragraph('')
 
 def SupplyDemandSection():
@@ -685,7 +686,7 @@ def RentSecton():
         AddDocumentParagraph(document = document, language_variable = [rent_language[1]])
 
     #Insert rent growth graph
-    AddDocumentPicture(document=document,image_path=os.path.join(output_directory,'rent_growth.png'))
+    AddDocumentPicture(document=document, image_path = os.path.join(output_directory, 'rent_growth.png'))
     
 def ConstructionSection():
     #Construction Section
@@ -694,7 +695,7 @@ def ConstructionSection():
     AddDocumentParagraph(document = document, language_variable = construction_languge)
 
     #Insert construction graph
-    AddDocumentPicture(document=document,image_path=os.path.join(output_directory,'construction_volume.png'))
+    AddDocumentPicture(document=document, image_path = os.path.join(output_directory, 'construction_volume.png'))
     
 def CapitalMarketsSection():
     #Captial Markets Section
@@ -715,43 +716,44 @@ def CapitalMarketsSection():
     
 def OutlookSection():
     #Outlook Section
-    AddHeading(document,'Outlook',2)
+    AddHeading(document, 'Outlook', 2)
     AddDocumentParagraph(document = document, language_variable = outlook_language)
 
 def AppendixSection():
+    #Adds a table with stats on all submarkets in the market
     if market == primary_market:
-        #Appendix Section
+        
         if  len(df_submarkets) > 0:
             document.add_paragraph('')
-            AddHeading(document,'Appendix',2)
-            #Add a table with stats on all submarkets in the market
-            AddTableTitle(document = document,title =(market_title + ' ' + sector + ' Market Overview' ))
-            AddSubmarketsPerformanceTable(document = document, submarkets_data_frame = df_submarkets, col_width = 1.2, sector=sector)
+            AddHeading(document, 'Appendix', 2)
+            
+            AddTableTitle(document = document, title = (market_title + ' ' + sector + ' Market Overview' ))
+            AddSubmarketsPerformanceTable(document = document, submarkets_data_frame = df_submarkets, col_width = 1.2, sector = sector)
             document.add_paragraph('')
 
 def GetLanguage(writeup_directory):
-    global overview_language, demand_language,sale_language,rent_language,construction_languge,outlook_language
+    global overview_language, demand_language, sale_language, rent_language, construction_languge, outlook_language
     
     #Overview Language
     try:
         overview_language    = CreateOverviewLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
     except Exception as e:
         print(e,'problem creating overview langauge')
-        overview_language = ['']
+        overview_language    = ['']
     
     #Demand Language
     try:
         demand_language      = CreateDemandLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
     except Exception as e:
         print(e,'problem creating demand langauge')
-        demand_language = ['']
+        demand_language      = ['']
         
     #Rent Language
     try:
         rent_language        = CreateRentLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
     except Exception as e:
         print(e,'problem creating rent langauge')
-        rent_language = ['']
+        rent_language        = ['']
 
     #Construction Language
     try:
@@ -763,44 +765,42 @@ def GetLanguage(writeup_directory):
     #Sale Language
     try:
         sale_language        = CreateSaleLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
-
-
     except Exception as e:
         print(e,'problem creating sale langauge')
-        sale_language = ['']
+        sale_language        = ['']
 
     #Outlook Language
     try:
         outlook_language     = CreateOutlookLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
     except Exception as e:
         print(e,'problem creating outlook langauge')
-        outlook_language = ['']
+        outlook_language     = ['']
     
 def GetOverviewTable():
     #Create Data for overview table
     global market,primary_market,market_title
-    #There are 4 possible permuations for this table (market/apt, market/nonapt, submarket/apt, submakert/nonapt)
+    #There are 4 possible permuations for this table (market/multifamily, market/non-multifamily, submarket/multifamily, submakert/non-multifamily)
     if sector == 'Multifamily':
-        data_for_overview_table = [ [],[],[],[],[],[],[],[] ]
+        data_for_overview_table = [ [], [], [], [], [], [], [], [] ]
     else:
-        data_for_overview_table = [ [],[],[],[],[],[],[],[],[] ]
+        data_for_overview_table = [ [], [], [], [], [], [], [], [], [] ]
 
 
     #Write Top Row of Report
     if market == 'United States of America':
-        data_for_overview_table[0] = ['',market,'YoY','QoQ']
+        data_for_overview_table[0] = ['', market, 'YoY', 'QoQ']
 
 
     elif market == primary_market: #market report
-        data_for_overview_table[0] = ['',primary_market_title,'YoY','QoQ',df_nation['Geography Name'].iloc[0],'YoY','QoQ']
+        data_for_overview_table[0] = ['', primary_market_title, 'YoY', 'QoQ', df_nation['Geography Name'].iloc[0], 'YoY', 'QoQ']
     else:
-        data_for_overview_table[0] = ['',market_title,'YoY','QoQ',primary_market_title,'YoY','QoQ']
+        data_for_overview_table[0] = ['', market_title, 'YoY', 'QoQ', primary_market_title, 'YoY', 'QoQ']
 
 
     #Rows for non-apt
     if sector != 'Multifamily':
         #Rent Growth Row
-        data_for_overview_table[1] =    CreateRowDataForTable(df_market_cut,
+        data_for_overview_table[1] =    CreateRowDataForTable(  df_market_cut,
                                                                 df_primary_market,
                                                                 df_nation,
                                                                 'Market Rent/SF',
@@ -809,10 +809,11 @@ def GetOverviewTable():
                                                                 '$',
                                                                 '%',
                                                                 '%',
-                                                                'Market Rent/SF')
+                                                                'Market Rent/SF'
+                                                             )
 
         #Vacancy Row
-        data_for_overview_table[2] =    CreateRowDataForTable(df_market_cut,
+        data_for_overview_table[2] =    CreateRowDataForTable(  df_market_cut,
                                                                 df_primary_market,
                                                                 df_nation,
                                                                 'Vacancy Rate',
@@ -821,10 +822,11 @@ def GetOverviewTable():
                                                                 '%',
                                                                 'bps',
                                                                 'bps',
-                                                                'Vacancy Rate')
+                                                                'Vacancy Rate'
+                                                            )
 
         #Availability Rate Row
-        data_for_overview_table[3] =    CreateRowDataForTable(df_market_cut,
+        data_for_overview_table[3] =    CreateRowDataForTable(  df_market_cut,
                                                                 df_primary_market,
                                                                 df_nation,
                                                                 'Availability Rate',
@@ -833,10 +835,11 @@ def GetOverviewTable():
                                                                 '%',
                                                                 'bps',
                                                                 'bps',
-                                                                'Availability Rate')
+                                                                'Availability Rate'
+                                                            )
         
         #Absorption Row
-        data_for_overview_table[4] =    CreateRowDataForTable(df_market_cut,
+        data_for_overview_table[4] =    CreateRowDataForTable(  df_market_cut,
                                                                 df_primary_market,
                                                                 df_nation,
                                                                 'Net Absorption SF',
@@ -845,10 +848,11 @@ def GetOverviewTable():
                                                                 '',
                                                                 '%',
                                                                 '%',
-                                                                'Net Absorption SF')
+                                                                'Net Absorption SF'
+                                                            )
         
         #Asset Value Row
-        data_for_overview_table[5] =    CreateRowDataForTable(df_market_cut,
+        data_for_overview_table[5] =    CreateRowDataForTable(  df_market_cut,
                                                                 df_primary_market,
                                                                 df_nation,
                                                                 'Asset Value/Sqft',
@@ -857,10 +861,11 @@ def GetOverviewTable():
                                                                 '$',
                                                                 '%',
                                                                 '%',
-                                                                'Asset Value/SF')
+                                                                'Asset Value/SF'
+                                                             )
         
         #Market Cap Rate Row
-        data_for_overview_table[6] =    CreateRowDataForTable(df_market_cut,
+        data_for_overview_table[6] =    CreateRowDataForTable(  df_market_cut,
                                                                 df_primary_market,
                                                                 df_nation,
                                                                 'Market Cap Rate',
@@ -869,10 +874,11 @@ def GetOverviewTable():
                                                                 '%',
                                                                 'bps',
                                                                 'bps',
-                                                                'Market Cap Rate')
+                                                                'Market Cap Rate'
+                                                             )
         
         #Transaction Count Row
-        data_for_overview_table[7] =    CreateRowDataForTable(df_market_cut,
+        data_for_overview_table[7] =    CreateRowDataForTable(  df_market_cut,
                                                                 df_primary_market,
                                                                 df_nation,
                                                                 'Sales Volume Transactions',
@@ -881,9 +887,10 @@ def GetOverviewTable():
                                                                 '',
                                                                 '%',
                                                                 '%',
-                                                                'Transaction Count')
+                                                                'Transaction Count'
+                                                             )
         #Sales Volume Row
-        data_for_overview_table[8] =    CreateRowDataForTable(df_market_cut,
+        data_for_overview_table[8] =    CreateRowDataForTable(  df_market_cut,
                                                                 df_primary_market,
                                                                 df_nation,
                                                                 'Total Sales Volume',
@@ -892,12 +899,13 @@ def GetOverviewTable():
                                                                 '$',
                                                                 '%',
                                                                 '%',
-                                                                'Sales Volume')
+                                                                'Sales Volume'
+                                                            )
 
     #Rows for apt
     if sector == 'Multifamily':
         #Rent row
-        data_for_overview_table[1] =    CreateRowDataForTable(df_market_cut,
+        data_for_overview_table[1] =    CreateRowDataForTable(  df_market_cut,
                                                                 df_primary_market,
                                                                 df_nation,
                                                                 'Market Effective Rent/Unit',
@@ -906,10 +914,11 @@ def GetOverviewTable():
                                                                 '$',
                                                                 '%',
                                                                 '%',
-                                                                'Market Rent/Unit')
+                                                                'Market Rent/Unit'
+                                                             )
 
         #Vacancy row
-        data_for_overview_table[2] =    CreateRowDataForTable(df_market_cut,
+        data_for_overview_table[2] =    CreateRowDataForTable(  df_market_cut,
                                                                 df_primary_market,
                                                                 df_nation,
                                                                 'Vacancy Rate',
@@ -918,10 +927,11 @@ def GetOverviewTable():
                                                                 '%',
                                                                 'bps',
                                                                 'bps',
-                                                                'Vacancy Rate')
+                                                                'Vacancy Rate'
+                                                             )
 
         #Absorption row
-        data_for_overview_table[3] =    CreateRowDataForTable(df_market_cut,
+        data_for_overview_table[3] =    CreateRowDataForTable(  df_market_cut,
                                                                 df_primary_market,
                                                                 df_nation,
                                                                 'Absorption Units',
@@ -930,10 +940,11 @@ def GetOverviewTable():
                                                                 '',
                                                                 '%',
                                                                 '%',
-                                                                'Net Absorption Units')
+                                                                'Net Absorption Units'
+                                                            )
 
         #Asset value row
-        data_for_overview_table[4] =    CreateRowDataForTable(df_market_cut,
+        data_for_overview_table[4] =    CreateRowDataForTable(  df_market_cut,
                                                                 df_primary_market,
                                                                 df_nation,
                                                                 'Asset Value/Unit',
@@ -942,10 +953,11 @@ def GetOverviewTable():
                                                                 '$',
                                                                 '%',
                                                                 '%',
-                                                                'Asset Value/Unit')
+                                                                'Asset Value/Unit'
+                                                            )
 
         #Market Cap rate row
-        data_for_overview_table[5] =    CreateRowDataForTable(df_market_cut,
+        data_for_overview_table[5] =    CreateRowDataForTable(  df_market_cut,
                                                                 df_primary_market,
                                                                 df_nation,
                                                                 'Market Cap Rate',
@@ -954,10 +966,11 @@ def GetOverviewTable():
                                                                 '%',
                                                                 'bps',
                                                                 'bps',
-                                                                'Market Cap Rate')
+                                                                'Market Cap Rate'
+                                                            )
 
         #Transaction Count row
-        data_for_overview_table[6] =    CreateRowDataForTable(df_market_cut,
+        data_for_overview_table[6] =    CreateRowDataForTable(  df_market_cut,
                                                                 df_primary_market,
                                                                 df_nation,
                                                                 'Sales Volume Transactions',
@@ -969,7 +982,7 @@ def GetOverviewTable():
                                                                 'Transaction Count')
 
         #Sales volume row
-        data_for_overview_table[7] =    CreateRowDataForTable(df_market_cut,
+        data_for_overview_table[7] =    CreateRowDataForTable(  df_market_cut,
                                                                 df_primary_market,
                                                                 df_nation,
                                                                 'Total Sales Volume',
@@ -978,7 +991,8 @@ def GetOverviewTable():
                                                                 '$',
                                                                 '%',
                                                                 '%',
-                                                                'Sales Volume')
+                                                                'Sales Volume'
+                                                             )
 
   
 
@@ -987,20 +1001,20 @@ def GetOverviewTable():
 def GetRentTable():
     #Create data for rent Table
     if sector == 'Multifamily':
-        return(CreateRowDataForWideTable(data_frame = df_market_cut, data_frame2 = df_primary_market, data_frame3 = df_nation,data_frame4 = df_slices,var1 = 'Market Effective Rent/Unit',modifier = '$',sector=sector))
+        return(CreateRowDataForWideTable(data_frame = df_market_cut, data_frame2 = df_primary_market, data_frame3 = df_nation, data_frame4 = df_slices, var1 = 'Market Effective Rent/Unit', modifier = '$', sector = sector))
 
     else:
-        return(CreateRowDataForWideTable(data_frame = df_market_cut, data_frame2 = df_primary_market, data_frame3 = df_nation,data_frame4 = df_slices,var1 = 'Market Rent/SF',modifier = '$',sector=sector))
+        return(CreateRowDataForWideTable(data_frame = df_market_cut, data_frame2 = df_primary_market, data_frame3 = df_nation, data_frame4 = df_slices, var1 = 'Market Rent/SF', modifier = '$', sector = sector))
 
 def CreateMarketReport():
-    global market_clean,market_title,output_directory,map_directory
-    global df_market_cut,df_primary_market,df_nation, df_submarkets ,df_slices
-    global latest_quarter,document,data_for_overview_table,data_for_vacancy_table,data_for_rent_table,report_path
-    global primary_market,market,primary_market_title
+    global market_clean, market_title, output_directory, map_directory
+    global df_market_cut, df_primary_market, df_nation, df_submarkets , df_slices
+    global latest_quarter, document, data_for_overview_table, data_for_vacancy_table, data_for_rent_table, report_path
+    global primary_market, market, primary_market_title
     
-    # remove slashes from market names so we can save as folder name
-    market_clean = CleanMarketName(market)
-    market_title = market_clean.replace(primary_market + ' -','').strip()
+    #remove slashes from market names so we can save as folder name
+    market_clean        = CleanMarketName(market)
+    market_title        = market_clean.replace(primary_market + ' -','').strip()
     
     #Create output, map, and writeup folders for the market of submarket
     output_directory    = CreateOutputDirectory()
@@ -1009,13 +1023,13 @@ def CreateMarketReport():
  
   
     #Create a dataframe that only has rows for the market or submarket itself
-    df_market_cut     = df[df['Geography Name'] == market].copy()                  #df for the market or submarket only
+    df_market_cut       = df[df['Geography Name'] == market].copy()                  #df for the market or submarket only
     
     #Get the latest quarter
-    latest_quarter = df_market_cut.iloc[-1]['Period']
+    latest_quarter      = df_market_cut.iloc[-1]['Period']
 
     #Get the document name and file path for the report
-    report_path = CreateReportFilePath()
+    report_path         = CreateReportFilePath()
 
     if write_reports_yes_or_no == 'y':
         #Create seperate dataframes with only rows from the current (sub)market, the primary market, and the nation 
@@ -1033,19 +1047,20 @@ def CreateMarketReport():
             df_nation         = df[df['Geography Type'] == 'National'].copy()              #df for the USA
             df_primary_market = df[df['Geography Name'] == primary_market].copy()          #df for the market only
 
-        df_slices         = df2[df2['Geography Name'] == market].copy()        #df for the primary market with the quality/subtype slices
+        df_slices             = df2[df2['Geography Name'] == market].copy()        #df for the primary market with the quality/subtype slices
 
         #A dataframe that tracks all submarkets in a market at the latest quarter
-        df_submarkets     = df.loc[(df['Geography Name'].isin(submarkets) == True) & (df['Period'] == latest_quarter)].copy()
-        assert len(df_market_cut) > 0
+        df_submarkets         = df.loc[(df['Geography Name'].isin(submarkets) == True) & (df['Period'] == latest_quarter)].copy()
+        assert len(df_market_cut)     > 0
         assert len(df_primary_market) > 0
-        assert len(df_nation) == 40
+        assert len(df_nation)         == 40
 
         #Strip the primary market out of the submarket name
         if market != primary_market:
-            market_title = market.replace(primary_market + ' -','').strip()
+            market_title        = market.replace(primary_market + ' -','').strip()
         else:
-            market_title = primary_market.replace(' - ' + state,'').strip()
+            market_title        = primary_market.replace(' - ' + state,'').strip()
+        
         primary_market_title    = primary_market.replace(' - ' + state,'').strip()
 
         #This function calls all the graph functions defined in the Graph_Functions.py file
@@ -1059,7 +1074,7 @@ def CreateMarketReport():
         data_for_vacancy_table = CreateRowDataForWideTable(data_frame = df_market_cut, data_frame2 = df_primary_market, data_frame3 = df_nation, data_frame4 = df_slices,var1 = 'Vacancy Rate', modifier = '%', sector=sector)
         
         #Create data for rent Table
-        data_for_rent_table = GetRentTable()
+        data_for_rent_table    = GetRentTable()
 
         #Get language for paragraphs 
         GetLanguage(writeup_directory = writeup_directory)
@@ -1116,11 +1131,13 @@ def user_selects_market(market_list):
     app.title('Research Automation Project - Market Reports') 
 
     labelTop = Label(app,
-                    text = "Choose your market")
+                    text = "Choose your market"
+                    )
     labelTop.grid(column=0, row=0)
 
     comboExample = ttk.Combobox(app, 
-                            values=market_list)
+                               values = market_list
+                               )
 
 
     comboExample.grid(column=0, row=1)
@@ -1136,21 +1153,25 @@ def user_selects_market(market_list):
          return([selected_market])
 
 def CreateDirectoryCSV():
-    global dropbox_markets,dropbox_research_names,dropbox_analysis_types,dropbox_states,dropbox_sectors,dropbox_sectors_codes,dropbox_links,dropbox_versions,dropbox_statuses,dropbox_document_names
+    global dropbox_markets, dropbox_research_names, dropbox_analysis_types, dropbox_states, dropbox_sectors, dropbox_sectors_codes, dropbox_links, dropbox_versions, dropbox_statuses, dropbox_document_names
     global service_api_csv_name, csv_name
+    
+   
     if write_reports_yes_or_no == 'n':
         #Now create dataframe with list of markets and export to a CSV for Salesforce
-        dropbox_df = pd.DataFrame({"Market":dropbox_primary_markets,
-                                "Submarket":dropbox_markets,
-                                'Market Research Name':dropbox_research_names,
-                                'Analysis Type': dropbox_analysis_types,
-                                'State':         dropbox_states,
-                                "Property Type":dropbox_sectors,
-                                'Property Type Code':dropbox_sectors_codes,
-                                "Dropbox Links":dropbox_links,
-                                'Version':dropbox_versions,
-                                'Status':dropbox_statuses,
-                                'Document Name': dropbox_document_names})
+        dropbox_df = pd.DataFrame({"Market":            dropbox_primary_markets,
+                                "Submarket":            dropbox_markets,
+                                'Market Research Name': dropbox_research_names,
+                                'Analysis Type':        dropbox_analysis_types,
+                                'State':                dropbox_states,
+                                "Property Type":        dropbox_sectors,
+                                'Property Type Code':   dropbox_sectors_codes,
+                                "Dropbox Links":        dropbox_links,
+                                'Version':              dropbox_versions,
+                                'Status':               dropbox_statuses,
+                                'Document Name':        dropbox_document_names
+                                  }
+                                )
 
         
         
@@ -1368,6 +1389,9 @@ def CreateDirectoryCSV():
         if output_location == os.path.join(dropbox_root,'Research','Market Analysis','Market'):
             dropbox_df.to_csv(os.path.join(output_location, service_api_csv_name), index=False)
 
+    else:
+         service_api_csv_name = ''
+
 def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
     if type == None:
         return
@@ -1388,9 +1412,10 @@ def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
             allowed_methods=["POST"],
             backoff_factor=5,
             raise_on_status=False
-        )
+                             )
+
         adapter = HTTPAdapter(max_retries=retry_strategy)
-        http = requests.Session()
+        http    = requests.Session()
         http.mount("https://", adapter)
         http.mount("http://", adapter)
 
@@ -1443,7 +1468,7 @@ for df,df2,sector in zip(      df_list,
         primary_market_name_for_file = primary_market_clean.replace(' - ' + state,'' ).strip() #Make a string with just name of market (without the '- STATECODE' portion)
 
         #"market" is the general variable name used in all functions for the market OR submarket we are doing report for   
-        market                        = primary_market 
+        market                       = primary_market 
         CreateMarketReport()
         
         #If the user has selected all markets in a sector, assume they want all submarkets run, otherwise ask them for the submarket they want
