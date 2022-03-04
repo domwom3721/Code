@@ -2372,11 +2372,12 @@ def CreateHouseholdTenureHistogram():
     
     #Add Bars with neighborhood household size distribution
     fig.add_trace(
-    go.Bar(y             = neighborhood_tenure_distribution,
-           x             = tenure_categories,
-           name          = neighborhood,
-           marker_color  = "#4160D3")
-           ,secondary_y  = False
+        go.Bar(
+            y             = neighborhood_tenure_distribution,
+            x             = tenure_categories,
+            name          = neighborhood,
+            marker_color  = "#4160D3"),
+        secondary_y  = False
             )
     #Add Comparison Bars
     fig.add_trace(
@@ -2390,47 +2391,39 @@ def CreateHouseholdTenureHistogram():
     
     #Set Title
     fig.update_layout(
-    title_text="Occupied Housing Units by Tenure",    
-
-    title={
-        'y':title_position,
-        'x':0.5,
-        'xanchor': 'center',
-        'yanchor': 'top'},
+        title_text    = "Occupied Housing Units by Tenure",    
+        font_family   = "Avenir Next LT Pro",
+        font_color    = '#262626',
+        font_size     = main_graph_font_size,
+        paper_bgcolor = paper_backgroundcolor,
+        plot_bgcolor  = "White",
+        
+        title = {
+            'y':        title_position,
+            'x':        0.5,
+            'xanchor': 'center',
+            'yanchor': 'top'
+                },
                     
-                    )
-    
-    # #Set Legend Layout
-    fig.update_layout(
-    legend=dict(
-        orientation = "h",
-        yanchor     = "bottom",
-        y           = legend_position ,
-        xanchor     = "center",
-        x           = 0.5,
-        font_size   = tickfont_size
-                )
 
-                      )
-    
-    fig.update_yaxes(title=None)
+        legend = dict(
+            orientation = "h",
+            yanchor     = "bottom",
+            y           = legend_position ,
+            xanchor     = "center",
+            x           = 0.5,
+            font_size   = tickfont_size
+                      ),
 
-    #Set Font and Colors
-    fig.update_layout(
-    font_family   = "Avenir Next LT Pro",
-    font_color    = '#262626',
-    font_size     = main_graph_font_size,
-    paper_bgcolor = paper_backgroundcolor,
-    plot_bgcolor  = "White"
-                     )
-
-    #Set size and margin
-    fig.update_layout(
-    margin = dict(l = left_margin, r = right_margin, t = top_margin, b = bottom_margin),
-                  height    = graph_height,
-                  width     = graph_width, )
+ 
+        margin    = dict(l = left_margin, r = right_margin, t = top_margin, b = bottom_margin),
+        height    = graph_height,
+        width     = graph_width, 
+                  
+                  )
 
     #Add % to  axis ticks
+    fig.update_yaxes(title=None)
     fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.0f',secondary_y=False)    
     fig.update_xaxes(tickfont = dict(size=tickfont_size))       
     fig.write_image(os.path.join(hood_folder,'household_tenure_graph.png'),engine='kaleido',scale=scale)
@@ -2441,73 +2434,60 @@ def CreateHouseholdNumberUnitsInBuildingHistogram():
 
     number_units_categories = ['Single Family Homes','Townhomes','Duplexes','3-4 Units','5-9 Units','10-19 Units','20-49 Units','50 >= Units']
    
-
     #Add Bars with neighborhood distribution
     fig.add_trace(
-    go.Bar(y=neighborhood_number_units_data,
-           x=number_units_categories,
-           name=neighborhood,
-           marker_color="#4160D3")
-            ,secondary_y=False
+        go.Bar(
+            y            = neighborhood_number_units_data,
+            x            = number_units_categories,
+            name         = neighborhood,
+            marker_color = "#4160D3"),
+        secondary_y = False
             )
 
     #Add Bars with comparison distribution
     fig.add_trace(
-    go.Bar(y=comparison_number_units_data,
-           x=number_units_categories,
-           name=comparison_area,
-           marker_color="#B3C3FF")
-            ,secondary_y=False
+    go.Bar(
+           y            = comparison_number_units_data,
+           x            = number_units_categories,
+           name         = comparison_area,
+           marker_color = "#B3C3FF"),
+    secondary_y = False
             )
-    
-    
+        
     #Set Title
     fig.update_layout(
-    title_text="Housing Units by Units in Structure",    
-
-    title={
-        'y':title_position,
-        'x':0.5,
-        'xanchor': 'center',
-        'yanchor': 'top'},
-                    
-                    )
     
-    # #Set Legend Layout
-    fig.update_layout(
-    legend=dict(
-        orientation="h",
-        yanchor="bottom",
-        y=legend_position ,
-        xanchor="center",
-        x=0.5,
-        font_size = tickfont_size
-                )
+        title_text = "Housing Units by Units in Structure",    
 
-                      )
-    
-    fig.update_yaxes(title=None)
+        title      = {
+            'y':        title_position,
+            'x':        0.5,
+            'xanchor': 'center',
+            'yanchor': 'top'
+                     },
+                        
+        legend = dict(
+                    orientation = "h",
+                    yanchor     = "bottom",
+                    y           = legend_position ,
+                    xanchor     = "center",
+                    x           = 0.5,
+                    font_size   = tickfont_size
+                    ),
 
-    #Set Font and Colors
-    fig.update_layout(
-    font_family="Avenir Next LT Pro",
-    font_color='#262626',
-    font_size = main_graph_font_size,
-    paper_bgcolor=paper_backgroundcolor,
-    plot_bgcolor ="White"
-                     )
-
-    #Set size and margin
-    fig.update_layout(
-    margin=dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin),
-    height    = graph_height,
-    width     = graph_width,
+        font_family   = "Avenir Next LT Pro",
+        font_color    = '#262626',
+        font_size     = main_graph_font_size,
+        paper_bgcolor = paper_backgroundcolor,
+        plot_bgcolor  = "White",
+        margin        = dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin),
+        height        = graph_height,
+        width         = graph_width,
         
                     )
 
-
-
     #Add % to  axis ticks
+    fig.update_yaxes(title=None)
     fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.0f',secondary_y=False)       
     fig.update_xaxes(tickfont = dict(size=tickfont_size))       
     fig.write_image(os.path.join(hood_folder,'household_units_in_structure_graph.png'),engine='kaleido',scale=scale)
@@ -2521,73 +2501,61 @@ def CreateHouseholdYearBuiltHistogram():
 
     #Add Bars with neighborhood year built data
     fig.add_trace(
-    go.Bar(y=neighborhood_year_built_data,
-           x=year_built_categories,
-           name=neighborhood,
-           marker_color="#4160D3")
-            ,secondary_y=False
-            )
+        go.Bar(
+            y            = neighborhood_year_built_data,
+            x            = year_built_categories,
+            name         = neighborhood,
+            marker_color = "#4160D3"),
+        secondary_y = False
+               )
 
     #Add bars for comparison area
     fig.add_trace(
-    go.Bar(y=comparison_year_built_data,
-           x=year_built_categories,
-           name=comparison_area,
-           marker_color="#B3C3FF")
-            ,secondary_y=False
+        go.Bar(
+            y            = comparison_year_built_data,
+            x            = year_built_categories,
+            name         = comparison_area,
+            marker_color = "#B3C3FF"),
+        secondary_y=False
             )
-    
-    
-    #Set Title
+        
     fig.update_layout(
-    title_text="Housing Units by Year Structure Built",    
+        #Set Title
+        title_text="Housing Units by Year Structure Built",    
 
-    title={
-        'y':title_position,
-        'x':0.5,
-        'xanchor': 'center',
-        'yanchor': 'top'},
-                    
-                    )
-    
-    # #Set Legend Layout
-    fig.update_layout(
-    legend=dict(
-        orientation="h",
-        yanchor="bottom",
-        y=legend_position ,
-        xanchor="center",
-        x=0.5,
-        font_size = tickfont_size
-                )
+        title = {
+            'y':title_position,
+            'x':0.5,
+            'xanchor': 'center',
+            'yanchor': 'top'
+                },
+                        
 
-                      )
-    
-    fig.update_yaxes(title=None)
+        legend = dict(
+                    orientation = "h",
+                    yanchor     = "bottom",
+                    y           = legend_position ,
+                    xanchor     = "center",
+                    x           = 0.5,
+                    font_size   = tickfont_size
+                    ),
 
-    #Set Font and Colors
-    fig.update_layout(
-    font_family="Avenir Next LT Pro",
-    font_color='#262626',
-    font_size = main_graph_font_size,
-    paper_bgcolor=paper_backgroundcolor,
-    plot_bgcolor ="White"
-                     )
-
-    #Set size and margin
-    fig.update_layout(
-    margin=dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin),
-    height    = graph_height,
-    width     = graph_width,
+        font_family   = "Avenir Next LT Pro",
+        font_color    = '#262626',
+        font_size     = main_graph_font_size,
+        paper_bgcolor = paper_backgroundcolor,
+        plot_bgcolor  = "White",
+        margin        = dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin),
+        height        = graph_height,
+        width         = graph_width,
         
                     )
 
-
-
     #Add % to  axis ticks
-    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.0f',secondary_y=False)
-    fig.update_xaxes(tickfont = dict(size=tickfont_size))       
-    fig.write_image(os.path.join(hood_folder,'household_year_built_graph.png'),engine='kaleido',scale=scale)
+    fig.update_yaxes(title = None)
+    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size = tickfont_size), tickformat = '.0f', secondary_y = False)
+    fig.update_xaxes(tickfont = dict(size = tickfont_size))       
+    fig.write_image(os.path.join(hood_folder, 'household_year_built_graph.png'), engine = 'kaleido', scale = scale)
 
 def CreateHouseholdValueHistogram():
     print('Creating Household value graph')
@@ -2596,71 +2564,63 @@ def CreateHouseholdValueHistogram():
     housing_value_categories = ['$10,000 <','$10,000-14,999','$15,000-19,999','$20,000-24,999','$25,000-29,999','$30,000-34,000','$35,000-39,999','$40,000-49,000','$50,000-59,9999','$60,000-69,999','$70,000-79,999','$80,000-89,999','$90,000-99,999','$100,000-124,999','$125,000-149,999','$150,000-174,999','$175,000-199,999','$200,000-249,999','$250,000-299,999','$300,000-399,999','$400,000-499,999','$500,000-749,999','$750,000-999,999','$1,000,000-1,499,999','$1,500,000-1,999,999','$2,000,000 >=']
     assert len(neighborhood_housing_value_data) == len(comparison_housing_value_data)
     assert len(housing_value_categories) == len(neighborhood_housing_value_data) == len(comparison_housing_value_data)
+    
     #Add Bars with neighborhood house value distribution
     fig.add_trace(
-    go.Bar(y=neighborhood_housing_value_data,
-           x=housing_value_categories,
-           name=neighborhood,
-           marker_color="#4160D3")
-            ,secondary_y=False
+        go.Bar(
+                y        = neighborhood_housing_value_data,
+                x        = housing_value_categories,
+            name         = neighborhood,
+            marker_color = "#4160D3"),
+            secondary_y = False
             )
 
     fig.add_trace(
-    go.Bar(y=comparison_housing_value_data,
-           x=housing_value_categories,
-           name=comparison_area,
-           marker_color="#B3C3FF")
-            ,secondary_y=False
-            )
+        go.Bar(
+            y            = comparison_housing_value_data,
+            x            = housing_value_categories,
+            name         = comparison_area,
+            marker_color = "#B3C3FF"),
+        secondary_y=False
+                 )
     
     
     #Set Title
     fig.update_layout(
-    title_text="Owner Occupied Housing Units by Value",    
+        title_text = "Owner Occupied Housing Units by Value",    
 
-    title={
-        'y':title_position,
-        'x':0.5,
-        'xanchor': 'center',
-        'yanchor': 'top'},
-                    
-                    )
+        title={
+            'y':        title_position,
+            'x':        0.5,
+            'xanchor': 'center',
+            'yanchor': 'top'
+            },
+                        
+        legend = dict(
+                    orientation = "h",
+                    yanchor     = "bottom",
+                    y           = legend_position ,
+                    xanchor     = "center",
+                    x           = 0.5,
+                    font_size   = tickfont_size
+                    ),
+
     
-    # #Set Legend Layout
-    fig.update_layout(
-    legend=dict(
-        orientation="h",
-        yanchor="bottom",
-        y=legend_position ,
-        xanchor="center",
-        x=0.5,
-        font_size = tickfont_size
-                )
+        font_family   = "Avenir Next LT Pro",
+        font_color    = '#262626',
+        font_size     = 14,
+        paper_bgcolor = paper_backgroundcolor,
+        plot_bgcolor  = "White",
 
-                      )
-    
-    fig.update_yaxes(title=None)
-
-    #Set Font and Colors
-    fig.update_layout(
-    font_family="Avenir Next LT Pro",
-    font_color='#262626',
-    font_size = 14,
-    paper_bgcolor=paper_backgroundcolor,
-    plot_bgcolor ="White"
-                     )
-
-    #Set size and margin
-    fig.update_layout(
-    margin=dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin),
-    height    = graph_height,
-    width     = graph_width,
+        margin    = dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin),
+        height    = graph_height,
+        width     = graph_width,
         
                     )
 
 
-
     #Add % to  axis ticks
+    fig.update_yaxes(title=None)
     fig.update_xaxes(tickangle = 45, tickfont = dict(size=tickfont_size - 3))       
     fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.0f',secondary_y=False)       
     fig.write_image(os.path.join(hood_folder,'household_value_graph.png'),engine='kaleido',scale=scale)
@@ -2675,73 +2635,66 @@ def CreatePopulationByAgeHistogram():
 
     #Add Bars with neighborhood household size distribution
     fig.add_trace(
-    go.Bar(y=neighborhood_age_data,
-           x=age_ranges,
-           name=neighborhood,
-           marker_color="#4160D3")
-            ,secondary_y=False
+        go.Bar(
+                y        = neighborhood_age_data,
+                x        = age_ranges,
+            name         = neighborhood,
+            marker_color = "#4160D3"),
+        secondary_y=False
             )
 
     #Add bars with comparison area age distribution
     fig.add_trace(
-    go.Bar(y=comparison_age_data,
-           x=age_ranges,
-           name=comparison_area,
-           marker_color="#B3C3FF")
-            ,secondary_y=False
+        go.Bar(
+            y            = comparison_age_data,
+            x            = age_ranges,
+            name         = comparison_area,
+            marker_color = "#B3C3FF"),
+        secondary_y=False
             )
     
     
+    fig.update_layout(
+    
     #Set Title
-    fig.update_layout(
-    title_text="Population by Age",    
+    title_text = "Population by Age",    
 
-    title={
-        'y':title_position,
-        'x':0.5,
+    title = {
+        'y':        title_position,
+        'x':        0.5,
         'xanchor': 'center',
-        'yanchor': 'top'},
+        'yanchor': 'top'
+            },
                     
-                    )
-    
-    # #Set Legend Layout
-    fig.update_layout(
-    legend=dict(
-        orientation="h",
-        yanchor="bottom",
-        y=legend_position ,
-        xanchor="center",
-        x=0.5,
+
+    legend = dict(
+        orientation = "h",
+        yanchor   = "bottom",
+        y         = legend_position ,
+        xanchor   = "center",
+        x         = 0.5,
         font_size = tickfont_size
-                )
+                ),
 
-                      )
-    
-    fig.update_yaxes(title=None)
+    font_family   = "Avenir Next LT Pro",
+    font_color    = '#262626',
+    font_size     = main_graph_font_size,
+    paper_bgcolor = paper_backgroundcolor,
+    plot_bgcolor  = "White",
 
-    #Set Font and Colors
-    fig.update_layout(
-    font_family="Avenir Next LT Pro",
-    font_color='#262626',
-    font_size = main_graph_font_size,
-    paper_bgcolor=paper_backgroundcolor,
-    plot_bgcolor ="White"
-                     )
-
-    #Set size and margin
-    fig.update_layout(
-    margin=dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin),
-    height    = graph_height,
-    width     = graph_width,
+    margin        = dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin),
+    height        = graph_height,
+    width         = graph_width,
         
                     )
 
 
-    fig.update_xaxes(tickangle = 0)  
     #Add % to  axis ticks
+    fig.update_xaxes(tickangle = 0)  
+    fig.update_yaxes(title=None)
     fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.0f',secondary_y=False) 
-    fig.update_xaxes(tickfont = dict(size=tickfont_size))       
-    fig.write_image(os.path.join(hood_folder,'population_by_age_graph.png'),engine='kaleido',scale=scale)
+    fig.update_xaxes(tickfont = dict(size = tickfont_size))       
+    fig.write_image(os.path.join(hood_folder, 'population_by_age_graph.png'), engine = 'kaleido', scale=scale)
 
 def CreatePopulationByIncomeHistogram():
     print('Creating Population by Income Graph')
@@ -2769,69 +2722,61 @@ def CreatePopulationByIncomeHistogram():
     
     #Add Bars with neighborhood household size distribution
     fig.add_trace(
-    go.Bar(y=neighborhood_household_income_data,
-           x=income_categories,
-           name=neighborhood,
-           marker_color="#4160D3")
-            ,secondary_y=False
+    go.Bar(
+           y            = neighborhood_household_income_data,
+           x            = income_categories,
+           name         = neighborhood,
+           marker_color = "#4160D3")
+            ,secondary_y = False
             )
 
     #Add bars for comparison area        
     fig.add_trace(
-    go.Bar(y=comparison_household_income_data,
-           x=income_categories,
-           name=comparison_area,
-           marker_color="#B3C3FF")
-            ,secondary_y=False
+        go.Bar(
+            y            = comparison_household_income_data,
+            x            = income_categories,
+            name         = comparison_area,
+            marker_color = "#B3C3FF"),
+        secondary_y=False
             )
     
     
     #Set Title
     fig.update_layout(
-    title_text="Households by Household Income",    
+        title_text="Households by Household Income",    
 
-    title={
-        'y':title_position,
-        'x':0.5,
-        'xanchor': 'center',
-        'yanchor': 'top'},
-                    
-                    )
-    
-    # #Set Legend Layout
-    fig.update_layout(
-    legend=dict(
-        orientation="h",
-        yanchor="bottom",
-        y=legend_position ,
-        xanchor="center",
-        x=0.5,
-        font_size = tickfont_size
-                )
+        title     = {
+            'y':        title_position,
+            'x':        0.5,
+            'xanchor': 'center',
+            'yanchor': 'top'
+            },
+                        
 
-                      )
-    
-    fig.update_yaxes(title=None)
+        legend = dict(
+                    orientation = "h",
+                    yanchor     = "bottom",
+                    y           = legend_position ,
+                    xanchor     = "center",
+                    x           = 0.5,
+                    font_size   = tickfont_size
+                    ),
 
-    #Set Font and Colors
-    fig.update_layout(
-    font_family="Avenir Next LT Pro",
-    font_color='#262626',
-    font_size = main_graph_font_size,
-    paper_bgcolor=paper_backgroundcolor,
-    plot_bgcolor ="White"
-                     )
+        font_family   = "Avenir Next LT Pro",
+        font_color    ='#262626',
+        font_size     = main_graph_font_size,
+        paper_bgcolor = paper_backgroundcolor,
+        plot_bgcolor  = "White",
 
-    #Set size and margin
-    fig.update_layout(
-    margin=dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin),
-    height    = graph_height,
-    width     = graph_width,
+        margin        = dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin),
+        height        = graph_height,
+        width         = graph_width,
         
                     )
 
 
-    #Add % to  axis ticks
+    #Add % to Y-axis ticks
+    fig.update_yaxes(title=None)
     fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.0f',secondary_y=False) 
     fig.update_xaxes(tickfont = dict(size=tickfont_size - 3),tickangle = 45)       
     fig.write_image(os.path.join(hood_folder,'population_by_income_graph.png'),engine='kaleido',scale=scale)
@@ -2840,7 +2785,7 @@ def CreateTopOccupationsHistogram():
     print('Creating Top Occupations Graph')
     fig = make_subplots(specs=[[{"secondary_y": False}]])
     
-    occupations_categories       =  ['Management and Business','Service','Sales and Office','Natural Resources','Production'] 
+    occupations_categories       =  ['Management and Business', 'Service', 'Sales and Office', 'Natural Resources', 'Production'] 
     assert                       len(occupations_categories) == len(neighborhood_top_occupations_data)
         
     #We have a list of categories and a list of their respecitive employment shares. Covert to list, then sort from smallest to largest
@@ -2854,62 +2799,48 @@ def CreateTopOccupationsHistogram():
 
     #Add Bars with neighborhood household size distribution
     fig.add_trace(
-    go.Bar(y=sorted_occupations_shares,
-           x=sorted_occupations_categories,
-           name=neighborhood,
-           marker_color="#4160D3")
-            ,secondary_y=False
+        go.Bar(y=sorted_occupations_shares,
+            x=sorted_occupations_categories,
+            name=neighborhood,
+            marker_color="#4160D3"),
+        secondary_y=False
             )
-
-    
     
     #Set Title
     fig.update_layout(
-    title_text="Top Employment Occupations",    
+        title_text = "Top Employment Occupations",    
 
-    title={
-        'y':title_position,
-        'x':0.5,
-        'xanchor': 'center',
-        'yanchor': 'top'},
-                    
-                    )
+        title ={
+            'y':        title_position,
+            'x':        0.5,
+            'xanchor': 'center',
+            'yanchor': 'top'
+               },
+                        
+
+        legend=dict(
+                orientation = "h",
+                yanchor     = "bottom",
+                y           = legend_position ,
+                xanchor     = "center",
+                x           = 0.5,
+                font_size   = tickfont_size
+                    ),
+
+        font_family   = "Avenir Next LT Pro",
+        font_color    = '#262626',
+        font_size     = main_graph_font_size,
+        paper_bgcolor = paper_backgroundcolor,
+        plot_bgcolor  = "White",
     
-    # #Set Legend Layout
-    fig.update_layout(
-    legend=dict(
-        orientation="h",
-        yanchor="bottom",
-        y=legend_position ,
-        xanchor="center",
-        x=0.5,
-        font_size = tickfont_size
-                )
-
-                      )
-    
-    fig.update_yaxes(title=None)
-
-    #Set Font and Colors
-    fig.update_layout(
-    font_family="Avenir Next LT Pro",
-    font_color='#262626',
-    font_size = main_graph_font_size,
-    paper_bgcolor=paper_backgroundcolor,
-    plot_bgcolor ="White"
-                     )
-
-    #Set size and margin
-    fig.update_layout(
-    margin=dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin),
-    height    = graph_height,
-    width     = graph_width,
+        margin        = dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin),
+        height        = graph_height,
+        width         = graph_width,
         
                     )
 
-
-
-    #Add % to  axis ticks
+    #Add % to  y-axis ticks
+    fig.update_yaxes(title=None)
     fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.0f',secondary_y=False) 
     fig.update_xaxes(tickfont = dict(size=tickfont_size))       
     fig.write_image(os.path.join(hood_folder,'top_occupations_graph.png'),engine='kaleido',scale=scale)
@@ -2919,74 +2850,67 @@ def CreateTravelTimeHistogram():
     fig = make_subplots(specs=[[{"secondary_y": False}]])
 
     travel_time_categories = ['< 5 Minutes','5-9 Minutes','10-14 Minutes','15-19 Minutes','20-24 Minutes','25-29 Minutes','30-34 Minutes','35-39 Minutes','40-44 Minutes','45-59 Minutes','60-89 Minutes','> 90 Minutes']
+    
     #Add Bars with neighborhood household size distribution
     fig.add_trace(
-    go.Bar(y=neighborhood_time_to_work_distribution,
-           x = travel_time_categories,
-           name=neighborhood,
-           marker_color="#4160D3")
-            ,secondary_y=False
+        go.Bar(
+            y            = neighborhood_time_to_work_distribution,
+            x            = travel_time_categories,
+            name         = neighborhood,
+            marker_color = "#4160D3"),
+        secondary_y=False
             )
+
     fig.add_trace(
-    go.Bar(y=comparison_time_to_work_distribution,
-           x=travel_time_categories,
-           name = comparison_area,
-           marker_color="#B3C3FF")
-            ,secondary_y=False
+        go.Bar(
+            y            = comparison_time_to_work_distribution,
+            x            = travel_time_categories,
+            name         = comparison_area,
+            marker_color = "#B3C3FF"),
+        secondary_y=False
             )
 
-
-    
-    #Set Title
     fig.update_layout(
-    title_text="Travel Time to Work",    
-
-    title={
-        'y':title_position,
-        'x':0.5,
-        'xanchor': 'center',
-        'yanchor': 'top'},
-                    
-                    )
-    
-    # #Set Legend Layout
-    fig.update_layout(
-    legend=dict(
-        orientation="h",
-        yanchor="bottom",
-        y=legend_position ,
-        xanchor="center",
-        x=0.5,
-        font_size = tickfont_size
-                )
-
-                      )
-    
-    fig.update_yaxes(title=None)
-
-    #Set Font and Colors
-    fig.update_layout(
-    font_family="Avenir Next LT Pro",
-    font_color='#262626',
-    font_size = main_graph_font_size,
-    paper_bgcolor=paper_backgroundcolor,
-    plot_bgcolor ="White"
-                     )
-
-    #Set size and margin
-    fig.update_layout(
-    margin=dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin),
-    height    = graph_height,
-    width     = graph_width,
         
+        #Set Title
+        title_text = "Travel Time to Work",    
+
+        title = {
+            'y':        title_position,
+            'x':        0.5,
+            'xanchor': 'center',
+            'yanchor': 'top'
+            },
+                        
+
+        legend = dict(
+                    orientation="h",
+                    yanchor="bottom",
+                    y=legend_position ,
+                    xanchor="center",
+                    x=0.5,
+                    font_size = tickfont_size
+                    ),
+
+
+        font_family   = "Avenir Next LT Pro",
+        font_color    = '#262626',
+        font_size     = main_graph_font_size,
+        paper_bgcolor = paper_backgroundcolor,
+        plot_bgcolor  = "White",
+
+        margin        = dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin),
+        height        = graph_height,
+        width         = graph_width,
+            
                     )
 
 
-
-    #Add % to  axis ticks
-    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.0f',secondary_y=False)   
-    fig.update_xaxes(tickfont = dict(size=tickfont_size))       
-    fig.write_image(os.path.join(hood_folder,'travel_time_graph.png'),engine='kaleido',scale=scale)
+    #Add % to y-axis ticks   
+    fig.update_yaxes(title=None)
+    fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size), tickformat='.0f', secondary_y = False)   
+    fig.update_xaxes(tickfont = dict(size = tickfont_size))       
+    fig.write_image(os.path.join(hood_folder,'travel_time_graph.png'), engine = 'kaleido', scale=scale)
 
 def CreateTravelModeHistogram():
     print('Creating Travel Mode to work Graph')
@@ -2994,61 +2918,51 @@ def CreateTravelModeHistogram():
 
     travel_method_categories = ['Drove Alone','Car Pooled','Public Transportation','Walked','Worked from Home','Biked','Other']
     assert len(neighborhood_method_to_work_distribution) == len(travel_method_categories)
+    
     fig.add_trace(
-    go.Bar(y=neighborhood_method_to_work_distribution,
-           x=travel_method_categories,
-           name=neighborhood,
-           marker_color="#4160D3")
-            ,secondary_y=False
+        go.Bar(
+                y        = neighborhood_method_to_work_distribution,
+                x        = travel_method_categories,
+                name     = neighborhood,
+            marker_color = "#4160D3"),
+        secondary_y=False
             )
     
     #Set Title
     fig.update_layout(
-    title_text="Travel Mode to Work",    
+        title_text="Travel Mode to Work",    
 
-    title={
-        'y':title_position,
-        'x':0.5,
-        'xanchor': 'center',
-        'yanchor': 'top'},
-                    
-                    )
-    
-    #Set Legend Layout
-    fig.update_layout(
-    legend=dict(
-        orientation="h",
-        yanchor="bottom",
-        y=legend_position ,
-        xanchor="center",
-        x=0.5,
-        font_size = tickfont_size
-                )
+        title={
+            'y':title_position,
+            'x':0.5,
+            'xanchor': 'center',
+            'yanchor': 'top'
+              },
+                        
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=legend_position ,
+            xanchor="center",
+            x=0.5,
+            font_size = tickfont_size
+                    ),
 
-                      )
-    
-    fig.update_yaxes(title=None)
-
-    #Set Font and Colors
-    fig.update_layout(
-    font_family="Avenir Next LT Pro",
-    font_color='#262626',
-    font_size = main_graph_font_size,
-    paper_bgcolor=paper_backgroundcolor,
-    plot_bgcolor ="White"
-                     )
-
-    #Set size and margin
-    fig.update_layout(
-    margin=dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin),
-    height    = graph_height,
-    width     = graph_width,
+        font_family   = "Avenir Next LT Pro",
+        font_color    = '#262626',
+        font_size     = main_graph_font_size,
+        paper_bgcolor = paper_backgroundcolor,
+        plot_bgcolor  = "White",
+        margin        = dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin),
+        height        = graph_height,
+        width         = graph_width,
         
                     )
 
 
 
     #Add % to  axis ticks
+    fig.update_yaxes(title=None)
     fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size),tickformat='.0f',secondary_y=False)    
     fig.update_xaxes(tickfont = dict(size=tickfont_size))       
     fig.write_image(os.path.join(hood_folder,'travel_mode_graph.png'),engine='kaleido',scale=scale)
