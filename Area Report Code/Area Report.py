@@ -1,110 +1,71 @@
 #By Mike Leahy, April 30 2021
     #Summary: Takes a United States County and fips code as input, prepares economic report for it using data accessed from different APIs
 
+import json
 import math
+import msvcrt
 import os
 import re
-import time
-from threading import Thread
-from datetime import date
-from pprint import pprint
-from random import randrange,choice
-import random
-from bs4 import BeautifulSoup
-
-import requests
-from requests.exceptions import HTTPError 
-from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry 
-from datetime import datetime
-
-import json
-import msvcrt
 import sys
-import docx
+import time
+from datetime import date, datetime
+from random import choice
+
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import pyautogui
-from selenium.webdriver.common import by
+import requests
+import shapefile
 import wikipedia
-from bls_datasets import oes, qcew
-from blsconnect import RequestBLS, bls_search
-from census import Census
+from bls_datasets import qcew
+from blsconnect import RequestBLS
+from bs4 import BeautifulSoup
 from docx import Document
 from docx.enum.table import WD_ALIGN_VERTICAL, WD_TABLE_ALIGNMENT
-from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
-from docx.enum.text import WD_BREAK
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK, WD_LINE_SPACING
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
-from docx.oxml.table import CT_Row, CT_Tc
 from docx.shared import Inches, Pt, RGBColor
 from fredapi import Fred
-from numpy import NaN, true_divide
+from numpy import NaN
 from plotly.subplots import make_subplots
+from requests.adapters import HTTPAdapter
+from requests.exceptions import HTTPError
+from requests.packages.urllib3.util.retry import Retry
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-#from pybea.client import BureauEconomicAnalysisClient
-from us import states
-from wikipedia.wikipedia import random
-import shapefile
-from shapely.geometry import LineString, MultiPoint, Point, shape,Polygon,mapping
+from shapely.geometry import LineString, Point, Polygon
 
-#Define file paths
+#Define file pre-paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
 project_location               =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Projects','Research Report Automation Project') 
-#main_output_location           =  os.path.join(project_location,'Output','Area') #Testing
-main_output_location           =  os.path.join(dropbox_root,'Research','Market Analysis','Area') #Production
-general_data_location          =  os.path.join(project_location,'Data','General Data')
-data_location                  =  os.path.join(project_location,'Data','Area Reports Data')
-graphics_location              =  os.path.join(project_location,'Data','General Data','Graphics')
-map_location                   =  os.path.join(project_location,'Data','Area Reports Data','County Maps')
-
-#Decide if you want to export data in excel files in the county folder
-# data_export = True
-data_export = False
-
-#Set formatting paramaters for reports
-primary_font                  = 'Avenir Next LT Pro Light' 
-primary_space_after_paragraph = 8
-tickangle                     = 0
-
+main_output_location           =  os.path.join(project_location,'Output', 'Area')                 #Testing
+main_output_location           =  os.path.join(dropbox_root,'Research', 'Market Analysis','Area') #Production
+general_data_location          =  os.path.join(project_location,'Data', 'General Data')
+data_location                  =  os.path.join(project_location,'Data', 'Area Reports Data')
+graphics_location              =  os.path.join(project_location,'Data', 'General Data','Graphics')
+map_location                   =  os.path.join(project_location,'Data', 'Area Reports Data', 'County Maps')
 
 def DeclareAPIKeys():
-    global fred, c, bls,bea_api_key,walk_score_api_key
+    global fred, bls
 
-    #Declare API Key for FRED and Census
-    fred_keys = ['7ab383546af7583fae8a058915edc868','9875b149440961806f0df696105fe12c','21843961fd781317a7674a5d23d2c7e8'] #Bowery key, #mjmleahy key
-    fred_key = choice(fred_keys) #select random key
-    fred = Fred(api_key=fred_key)   
+    #Declare API Key for FRED and BLS
+    fred                = Fred(api_key = choice(['7ab383546af7583fae8a058915edc868', '9875b149440961806f0df696105fe12c', '21843961fd781317a7674a5d23d2c7e8', ] ) )   
+    bls                = RequestBLS(key = choice(['2b8d15c77bda4527b101a2b1c98551cf', '9f0492293ac04ade8f2e72576d3822db', '708e9d690b604a7ebda9ff55fe634bc3', 'c993e3b3877845b3a60c8bce507acec6', ]))   
     
-
-    c    = Census('18335344cf4a0242ae9f7354489ef2f8860a9f61')
-
-    bls_keys = ['2b8d15c77bda4527b101a2b1c98551cf','9f0492293ac04ade8f2e72576d3822db','708e9d690b604a7ebda9ff55fe634bc3','c993e3b3877845b3a60c8bce507acec6'] #bowery email key, #mjmleahy key,#ccc key, dom key
-    bls_key  = choice(bls_keys)
-    bls  = RequestBLS(key=bls_key)   
-
-
-    bea_api_key    = '31FC4653-E810-488D-857F-37BFBAC0C5D8'
-    #bea_client     = BureauEconomicAnalysisClient(api_key=bea_api_key)
-
-    walk_score_api_key = '057f7c0a590efb7ec06da5a8735e536d'
-
 def CreateEmptySalesforceLists():
-    global  dropbox_counties,dropbox_links,dropbox_fips,dropbox_states,dropbox_analysistypes,dropbox_cbsa_codes
-    global dropbox_document_names,dropbox_market_research_names,dropbox_statuses,dropbox_versions
-    dropbox_counties = []
-    dropbox_fips     = []
-    dropbox_links    = []
-    dropbox_states   = []
-    dropbox_analysistypes = []
-    dropbox_cbsa_codes = []
-    dropbox_document_names = []
+    global  dropbox_counties, dropbox_links, dropbox_fips, dropbox_states, dropbox_analysistypes, dropbox_cbsa_codes
+    global dropbox_document_names, dropbox_market_research_names, dropbox_statuses, dropbox_versions
+    dropbox_counties              = []
+    dropbox_fips                  = []
+    dropbox_links                 = []
+    dropbox_states                = []
+    dropbox_analysistypes         = []
+    dropbox_cbsa_codes            = []
+    dropbox_document_names        = []
     dropbox_market_research_names = []
-    dropbox_statuses = []
-    dropbox_versions = []
+    dropbox_statuses              = []
+    dropbox_versions              = []
 
 def UpdateSalesforceList():
     #Add to lists that track our markets and submarkets for salesforce
@@ -122,57 +83,87 @@ def UpdateSalesforceList():
     dropbox_link = dropbox_link.replace("\\",r'/')
     dropbox_links.append(dropbox_link)   
    
-def CreateDirectory(state,county):
-    global county_folder,county_folder_map,report_path,document_name
-    state_folder             = os.path.join(main_output_location,state)
-    county_folder            = os.path.join(main_output_location,state,county)
+def CreateDirectory(state, county):
+    global county_folder, county_folder_map, report_path, document_name
+    state_folder             = os.path.join(main_output_location, state)
+    county_folder            = os.path.join(main_output_location, state, county)
     
-    state_folder_map         = os.path.join(map_location,state)
-    county_folder_map        = os.path.join(map_location,state,county)
+    state_folder_map         = os.path.join(map_location, state)
+    county_folder_map        = os.path.join(map_location, state, county)
 
     for folder in [state_folder,county_folder,state_folder_map,county_folder_map]:
-         if os.path.exists(folder):
-            pass 
-         else:
+         if os.path.exists(folder) == False:
             os.mkdir(folder) 
 
-    document_name = current_quarter + ' ' + state + ' - ' + county + '_draft.docx'
-    report_path = os.path.join(county_folder,document_name)
+    document_name            = current_quarter + ' ' + state + ' - ' + county + '_draft.docx'
+    report_path              = os.path.join(county_folder, document_name)
     return(county_folder)
 
+def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
+    if type == None:
+        return
+    #Terminate early if output directory is not set to production    
+    if main_output_location != os.path.join(dropbox_root,'Research','Market Analysis','Area'):
+        return()
+
+    print(f'Updating service database: {report_type}')
+
+    try:
+        url = f'http://market-research-service.bowery.link/api/v1/update/{report_type}'
+        dropbox_path = f'{dropbox_dir}{csv_name}'
+        payload = { 'location': dropbox_path }
+
+        retry_strategy = Retry(
+            total=3,
+            status_forcelist=[400, 404, 409, 500, 503, 504],
+            allowed_methods=["POST"],
+            backoff_factor=5,
+            raise_on_status=False
+        )
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        http = requests.Session()
+        http.mount("https://", adapter)
+        http.mount("http://", adapter)
+
+        response = http.post(url, json=payload)
+        response.raise_for_status()
+        print('Service successfully updated')
+    except HTTPError as e:
+            print(f'Request failed with status code {response.status_code}')
+            json_error = json.loads(response.content)
+            print(json.dumps(json_error, indent=2))
+            print('Service DB did not successfully update. Please run the script again after fixing the error.')
+    finally:
+        print(f'Deleting temporary CSV: ', csv_path)
+        os.remove(csv_path)
+
 def SetGraphFormatVariables():
-    global graph_width, graph_height, scale,tickfont_size,left_margin,right_margin,top_margin,bottom_margin,legend_position,paper_backgroundcolor,title_position,horizontal_spacing
+    global graph_width, graph_height, scale, tickfont_size, left_margin, right_margin, top_margin, bottom_margin, legend_position, paper_backgroundcolor, title_position, horizontal_spacing
 
     #Set graph size and format variables
-    marginInches = 1/18
-    ppi = 96.85 
-    width_inches = 6.5
-    height_inches = 3.3
+    marginInches    = 1/18
+    ppi             = 96.85 
+    width_inches    = 6.5
+    height_inches   = 3.3
 
-    graph_width  = (width_inches - marginInches)   * ppi
-    graph_height = (height_inches  - marginInches) * ppi
+    graph_width     = (width_inches - marginInches)   * ppi
+    graph_height    = (height_inches  - marginInches) * ppi
 
     #Set scale for resolution 1 = no change, > 1 increases resolution. Very important for run time of main script). 
-    scale = 3
+    scale           = 7
 
     #Set tick font size (also controls legend font size)
-    tickfont_size = 8 
+    tickfont_size   = 8 
 
     #Set Margin parameters/legend location
-    left_margin   = 0
-    right_margin  = 0
-    top_margin    = 75
-    bottom_margin = 10
+    left_margin     = 0
+    right_margin    = 0
+    top_margin      = 75
+    bottom_margin   = 10
     legend_position = 1.10
-
-
-    #Paper color
     paper_backgroundcolor = 'white'
-
-    #Title Position
-    title_position = .95
-
-    horizontal_spacing = 0.1
+    title_position        = .95
+    horizontal_spacing    = 0.1
 
 def GetStateName(state_code):
     state_names_df    = pd.read_csv(os.path.join(data_location,'State Names.csv'))
@@ -183,9 +174,8 @@ def GetStateName(state_code):
 def GetCurrentQuarterAndYear():
     #Pulls unemployment for Nassau County, NY as a way to see the most current available month for county level unemployment, 
     #from this we get the quarter and year for our report version
-    df = fred.get_series(series_id = 'NYNASS9URN')
-    df = df.to_frame().reset_index()
-    
+    df                = fred.get_series(series_id = 'NYNASS9URN')
+    df                = df.to_frame().reset_index()
     most_recent_month = str(df['index'].iloc[-1])[5:7] #cuts down to just month value eg: 08
     
     if most_recent_month == '12'  or most_recent_month == '01' or most_recent_month == '02':
@@ -193,7 +183,7 @@ def GetCurrentQuarterAndYear():
     elif most_recent_month == '11' or most_recent_month == '10' or most_recent_month == '09':
         quarter = '3'
     elif most_recent_month == '08' or most_recent_month == '07' or most_recent_month == '06':
-       quarter = '2'
+       quarter  = '2'
     elif most_recent_month == '05' or most_recent_month == '04' or most_recent_month == '03':
         quarter = '1'
 
@@ -207,11 +197,13 @@ def GetCurrentQuarterAndYear():
         else:
             year = str(int(most_recent_year) -1 )
 
-    return[year,quarter]
+    return[year, quarter]
+
 class TimeoutExpired(Exception):
-    pass
+        pass
 
 def input_with_timeout(prompt, timeout, timer=time.monotonic):
+
     sys.stdout.write(prompt)
     sys.stdout.flush()
     endtime = timer() + timeout
@@ -227,14 +219,14 @@ def input_with_timeout(prompt, timeout, timer=time.monotonic):
 def FindBLSEndYear():
     #The "BLS.Series" method we use to gather employment data uses a start and end year paramter
     #To avoid extra requests for years in the future, we pass a 5 year range. In February, the latest data will be from December 
-    #of the previous year. Therefore, we must pass in the previous year the end year. Every other month, we should use the current year as end year
-    current_year   = todays_date.year                      #For BLS\
+    #of the previous year. Therefore, we must pass in the previous year as the end year. Every other month, we should use the current year as end year
+    current_year   = todays_date.year                      
     current_month  = todays_date.month
     current_day    = todays_date.day
     previous_year  = current_year - 1
     
     #Once we are in March, the latest employment data will be from January so we can use current year as "end_year"
-    if current_month >= 3 and current_day >=2:
+    if current_month >= 3 and current_day >=14:
         return(current_year)
     else:
         return(previous_year)
@@ -253,7 +245,7 @@ def GetCountyGDP(fips,observation_start):
     county_gdp_df['GDP Growth']                   = ((county_gdp_df['GDP'] / county_gdp_df['Lagged GDP']) - 1)  * 100
 
     if data_export == True:
-        county_gdp_df.to_csv(os.path.join(county_folder,'County GDP.csv'))
+        county_gdp_df.to_csv(os.path.join(county_folder, 'County GDP.csv'))
 
     return(county_gdp_df)
 
@@ -266,93 +258,96 @@ def GetCountyPCI(fips,observation_start):
     if fips == '11001':
         county_pci_series_code = 'DCPCPI'
 
-    county_pci_df = fred.get_series(series_id = county_pci_series_code, observation_start=observation_start)
-    county_pci_df = county_pci_df.to_frame().reset_index()
+    county_pci_df         = fred.get_series(series_id = county_pci_series_code, observation_start=observation_start)
+    county_pci_df         = county_pci_df.to_frame().reset_index()
     county_pci_df.columns = ['Period','Per Capita Personal Income']
-    # print(county_pci_df)
+    
     if data_export == True:
-        county_pci_df.to_csv(os.path.join(county_folder,'County Per Capita Personal Income.csv'))
+        county_pci_df.to_csv(os.path.join(county_folder, 'County Per Capita Personal Income.csv'))
+    
     return(county_pci_df)
 
 def GetCountyResidentPopulation(fips,observation_start):
     print('Getting County Population')
     #Resident Population 
-    resident_population_series_names = pd.read_excel(os.path.join(data_location,'FRED Series Names','GeoFRED_Resident_Population_by_County_Thousands_of_Persons.xls'),
+    resident_population_series_names     = pd.read_excel(os.path.join(data_location,'FRED Series Names','GeoFRED_Resident_Population_by_County_Thousands_of_Persons.xls'),
                 dtype={'Region Code': object
-                      })
-    resident_population_series_names = resident_population_series_names.loc[resident_population_series_names['Region Code'] == fips]
-
+                      }
+                                                         )
+    resident_population_series_names     = resident_population_series_names.loc[resident_population_series_names['Region Code'] == fips]
+    county_pop_series_code               = resident_population_series_names['Series ID'].iloc[0]
     
-    county_pop_series_code = resident_population_series_names['Series ID'].iloc[0]
-    
-    county_pop_df = fred.get_series(series_id = county_pop_series_code, observation_start = observation_start)
-    county_pop_df = county_pop_df.to_frame().reset_index()
-    county_pop_df.columns = ['Period','Resident Population']
+    county_pop_df                        = fred.get_series(series_id = county_pop_series_code, observation_start = observation_start)
+    county_pop_df                        = county_pop_df.to_frame().reset_index()
+    county_pop_df.columns                = ['Period','Resident Population']
     county_pop_df['Resident Population'] = county_pop_df['Resident Population'] * 1000
+
     if data_export == True:
-        county_pop_df.to_csv(os.path.join(county_folder,'County Resident Population.csv'))
+        county_pop_df.to_csv(os.path.join(county_folder, 'County Resident Population.csv') )
+
     return(county_pop_df)
 
 def GetCountyUnemploymentRate(fips,start_year,end_year): 
     print('Getting County UR')
+
     #Seasonally-adjusted unemployment rate
-    series_name = 'LAUCN' + fips + '0000000003'
-    county_ur_df = bls.series(series_name,start_year=start_year, end_year= end_year) 
+    series_name            = 'LAUCN' + fips + '0000000003'
+    county_ur_df           = bls.series(series_name,start_year=start_year, end_year= end_year) 
     county_ur_df['year']   = county_ur_df['year'].astype(str)
-    county_ur_df['period'] =    county_ur_df['period'].str[1:3] + '/' +  county_ur_df['year'].str[2:4]      
-    county_ur_df = county_ur_df.rename(columns={series_name: "unemployment_rate"})
+    county_ur_df['period'] = county_ur_df['period'].str[1:3] + '/' +  county_ur_df['year'].str[2:4]      
+    county_ur_df           = county_ur_df.rename(columns={series_name: "unemployment_rate"})
 
     if data_export == True:
-        county_ur_df.to_csv(os.path.join(county_folder,'County Unemployment Rate.csv'))
+        county_ur_df.to_csv(os.path.join(county_folder, 'County Unemployment Rate.csv'))
+
     return(county_ur_df)
 
 def GetCountyEmployment(fips,start_year,end_year): 
-    print('Getting County Employment')
+    print('Getting County Total Employment')
+
     #Total Employment
-    series_name   = 'LAUCN' + fips + '0000000005'
-    county_emp_df = bls.series(series_name, start_year = (start_year - 1), end_year = end_year)
-
-    county_emp_df['year']   =    county_emp_df['year'].astype(str)
-    county_emp_df['period'] =    county_emp_df['period'].str[1:3] + '/' +  county_emp_df['year'].str[2:4] 
-
-    county_emp_df = county_emp_df.rename(columns={series_name: "Employment"})
-
+    series_name                              = 'LAUCN' + fips + '0000000005'
+    county_emp_df                            = bls.series(series_name, start_year = (start_year - 1), end_year = end_year)
+    county_emp_df['year']                    = county_emp_df['year'].astype(str)
+    county_emp_df['period']                  = county_emp_df['period'].str[1:3] + '/' +  county_emp_df['year'].str[2:4] 
+    county_emp_df                            = county_emp_df.rename(columns={series_name: "Employment"})
     county_emp_df['Lagged Employment']       = county_emp_df['Employment'].shift(12)
-    county_emp_df['Employment Growth']       =  round(((county_emp_df['Employment']/county_emp_df['Lagged Employment']) - 1 ) * 100,2 )
+    county_emp_df['Employment Growth']       = round(((county_emp_df['Employment']/county_emp_df['Lagged Employment']) - 1 ) * 100,2 )
 
     assert len(county_emp_df) > 60
     
     if data_export == True:
-        county_emp_df.to_csv(os.path.join(county_folder,'County Total Employment.csv'))
+        county_emp_df.to_csv(os.path.join(county_folder, 'County Total Employment.csv'))
+
     return(county_emp_df)
 
-def GetCountyIndustryBreakdown(fips,year,qtr):
-    print('Getting County Employment Breakdown')
-
+def GetCountyIndustryBreakdown(fips, year, qtr):
+    print('Getting County QCEW Employment Breakdown')
 
     #Pulls employment data from Quarterly Census of Employment and Wages
-    df_qcew          = qcew.get_data('area', rtype='dataframe', year=year,qtr=qtr, area=fips)
+    df_qcew                  = qcew.get_data('area', rtype='dataframe', year=year,qtr=qtr, area=fips)
+    
     if data_export == True:
         df_qcew.to_csv(os.path.join(county_folder,'qcew_raw.csv'))
 
     #Restrict to county-ownership level (fed,state,local,private), supersector employment
-    df_qcew          = df_qcew.loc[df_qcew['agglvl_code'] == 73] 
+    df_qcew                 = df_qcew.loc[df_qcew['agglvl_code'] == 73] 
     
     #Drop suppresed employment rows
-    df_qcew          = df_qcew.loc[df_qcew['disclosure_code'] != 'N'] 
+    df_qcew                 = df_qcew.loc[df_qcew['disclosure_code'] != 'N'] 
 
     #Drop the rows where employment is 0 
-    df_qcew          = df_qcew.loc[(df_qcew['month3_emplvl'] > 0) ] 
+    df_qcew                 = df_qcew.loc[(df_qcew['month3_emplvl'] > 0) ] 
 
     #Create a seperate dataframe with just the weekly wages by industry
-    wtavg = lambda x: np.average(x.avg_wkly_wage, weights = x.month3_emplvl,axis = 0) #define function to calcuate weighted average wage
+    wtavg                   = lambda x: np.average(x.avg_wkly_wage, weights = x.month3_emplvl,axis = 0) #define function to calcuate weighted average wage
     df_qcew_wages           = df_qcew.groupby('industry_code').apply(wtavg).reset_index()
-    df_qcew_wages.columns = ['industry_code','avg_wkly_wage']
+    df_qcew_wages.columns   = ['industry_code','avg_wkly_wage']
 
     #Create a seperate dataframe with just the location quotient by industry (averaged across sectors)
-    wtavg = lambda x: np.average(x.lq_month3_emplvl, weights = x.month3_emplvl,axis = 0) #define function to calcuate weighted average wage
-    df_qcew_lq           = df_qcew.groupby('industry_code').apply(wtavg).reset_index()
-    df_qcew_lq.columns = ['industry_code','lq_month3_emplvl']
+    wtavg                   = lambda x: np.average(x.lq_month3_emplvl, weights = x.month3_emplvl,axis = 0) #define function to calcuate weighted average wage
+    df_qcew_lq              = df_qcew.groupby('industry_code').apply(wtavg).reset_index()
+    df_qcew_lq.columns      = ['industry_code','lq_month3_emplvl']
 
     #Collapse down to total employment across the 3 ownership codes
     df_qcew                 = df_qcew.groupby('industry_code').agg(month3_emplvl=('month3_emplvl', 'sum'),)
@@ -362,31 +357,33 @@ def GetCountyIndustryBreakdown(fips,year,qtr):
     df_qcew                 = pd.merge(df_qcew, df_qcew_lq, on=('industry_code'),how='outer')
 
     #Change the industry codes to names
-    replacements = {'1011':'Natural Resources & Mining', 
-                    '1012':'Construction', 
-                    '1013':'Manufacturing', 
-                    '1021':'Trade, Transportation, & Utilities', 
-                    '1022':'Information', 
-                    '1023':'Financial Activities', 
-                    '1024':'Professional & Business Services', 
-                    '1025':'Education & Health Services', 
-                    '1026':'Leisure & Hospitality', 
-                    '1027':'Other Services', 
-                    '1028':'Public Administration', 
-                    '1029':'Unclassified'}
+    replacements            = {'1011':'Natural Resources & Mining', 
+                               '1012':'Construction', 
+                               '1013':'Manufacturing', 
+                               '1021':'Trade, Transportation, & Utilities', 
+                               '1022':'Information', 
+                               '1023':'Financial Activities', 
+                               '1024':'Professional & Business Services', 
+                               '1025':'Education & Health Services', 
+                               '1026':'Leisure & Hospitality', 
+                               '1027':'Other Services', 
+                               '1028':'Public Administration', 
+                               '1029':'Unclassified'
+                               }
 
     df_qcew['industry_code'].replace(replacements, inplace=True)
 
    
     #Sort by total employement
     df_qcew['employment_fraction'] = round(((df_qcew['month3_emplvl']/(df_qcew['month3_emplvl'].sum())) * 100),2)
-    df_qcew['county'] = county
-    df_qcew      = df_qcew.loc[df_qcew['industry_code'] != 'Unclassified']
-    df_qcew = df_qcew.sort_values(by=['month3_emplvl'])
+    df_qcew['county']              = county
+    df_qcew                        = df_qcew.loc[df_qcew['industry_code'] != 'Unclassified']
+    df_qcew                        = df_qcew.sort_values(by=['month3_emplvl'])
 
     #Export final data
     if data_export == True:
-        df_qcew.to_csv(os.path.join(county_folder,'County Industry Breakdown.csv'))
+        df_qcew.to_csv(os.path.join(county_folder, 'County Industry Breakdown.csv'))
+
     return(df_qcew)
 
 def GetCountyIndustryGrowthBreakdown(fips,year,qtr):
@@ -500,80 +497,38 @@ def GetCountyIndustryGrowthBreakdown(fips,year,qtr):
 def GetCountyMedianListPrice(fips,observation_start):
     print('Getting County MLP')
     try:
-        mlp_series_names = pd.read_excel(os.path.join(data_location,'FRED Series Names','GeoFRED_Market_Hotness__Median_Listing_Price_by_County_U.S._Dollars.xls'),
+        mlp_series_names      = pd.read_excel(os.path.join(data_location,'FRED Series Names','GeoFRED_Market_Hotness__Median_Listing_Price_by_County_U.S._Dollars.xls'),
                     dtype={'Region Code': object
-                        })
-        mlp_series_names = mlp_series_names.loc[mlp_series_names['Region Code'] == fips]
-        county_series_code = mlp_series_names['Series ID'].iloc[0]
-        county_mlp_df = fred.get_series(series_id = county_series_code,observation_start = observation_start)
-        county_mlp_df = county_mlp_df.to_frame().reset_index()
+                          }
+                                             )
+        mlp_series_names      = mlp_series_names.loc[mlp_series_names['Region Code'] == fips]
+        county_series_code    = mlp_series_names['Series ID'].iloc[0]
+        county_mlp_df         = fred.get_series(series_id = county_series_code,observation_start = observation_start)
+        county_mlp_df         = county_mlp_df.to_frame().reset_index()
         county_mlp_df.columns = ['Period','Median List Price']
     except Exception as e:
         try:
-            county_series_code = 'MEDLISPRI' + fips
-            county_mlp_df = fred.get_series(series_id = county_series_code,observation_start = observation_start)
-            county_mlp_df = county_mlp_df.to_frame().reset_index()
+            county_series_code    = 'MEDLISPRI' + fips
+            county_mlp_df         = fred.get_series(series_id = county_series_code,observation_start = observation_start)
+            county_mlp_df         = county_mlp_df.to_frame().reset_index()
             county_mlp_df.columns = ['Period','Median List Price']
         except Exception as e:
             try:
-                county_series_code = 'MELIPRCOUNTY' + fips
-                county_mlp_df = fred.get_series(series_id = county_series_code,observation_start = observation_start)
-                county_mlp_df = county_mlp_df.to_frame().reset_index()
+                county_series_code    = 'MELIPRCOUNTY' + fips
+                county_mlp_df         = fred.get_series(series_id = county_series_code,observation_start = observation_start)
+                county_mlp_df         = county_mlp_df.to_frame().reset_index()
                 county_mlp_df.columns = ['Period','Median List Price']
-            except Exception as e:
-                county_series_code = 'MELIPRCOUNTY' + fips[1:] #Sometimes FRED series names drop leading 0s
-                print(county_series_code)
-                county_mlp_df = fred.get_series(series_id = county_series_code,observation_start = observation_start)
-                county_mlp_df = county_mlp_df.to_frame().reset_index()
+            except Exception:
+                county_series_code    = 'MELIPRCOUNTY' + fips[1:] #Sometimes FRED series names drop leading 0s
+                county_mlp_df         = fred.get_series(series_id = county_series_code,observation_start = observation_start)
+                county_mlp_df         = county_mlp_df.to_frame().reset_index()
                 county_mlp_df.columns = ['Period','Median List Price']
 
 
-    
     if data_export == True:
-        county_mlp_df.to_csv(os.path.join(county_folder,'County Median Home List Price.csv'))
+        county_mlp_df.to_csv(os.path.join(county_folder, 'County Median Home List Price.csv'))
+
     return(county_mlp_df)
-
-def GetCountyEducationLevels(fips,observation_start):
-    print('Getting County Education Levels')
-
-    #fraction with HS diploma or higher
-    county_hs_series_code = 'HC01ESTVC16' + fips
-    county_edu_hs_df = fred.get_series(series_id = county_hs_series_code, observation_start=observation_start)
-    county_edu_hs_df = county_edu_hs_df.to_frame().reset_index()
-    county_edu_hs_df.columns = ['Period','Fraction With HS Diploma or Higher']
-    
-    if data_export == True:
-        county_edu_hs_df.to_csv(os.path.join(county_folder,"""County Fraction With HS or Diploma or Higer.csv"""))
-    fraction_hs         = county_edu_hs_df['Fraction With HS Diploma or Higher'].iloc[-1]
-    
-
-    #fraction with bachelor's or higher
-    county_bach_series_code = 'HC01ESTVC17' + fips
-    county_edu_df = fred.get_series(series_id = county_bach_series_code, observation_start=observation_start)
-    county_edu_df = county_edu_df.to_frame().reset_index()
-    county_edu_df.columns = ['Period','bach_frac']
-
-    if data_export == True:
-        county_edu_df.to_csv(os.path.join(county_folder,"""County Fraction With Bachelor's or Higer.csv"""))
-    
-    fraction_bachelor   = county_edu_df['bach_frac'].iloc[-1]
-
-
-
-
-    #fraction with associates degree or higher
-    county_edu_ass_series_code = 'S1501ACSTOTAL0' + fips
-    county_edu_ass_df = fred.get_series(series_id = county_edu_ass_series_code, observation_start=observation_start)
-    county_edu_ass_df = county_edu_ass_df.to_frame().reset_index()
-    county_edu_ass_df.columns = ['Period','Fraction With Associates or Higher']
-    
-    if data_export == True:
-        county_edu_ass_df.to_csv(os.path.join(county_folder,"""County Fraction With Associates Degree or Higer.csv"""))
-    
-    fraction_ass        = county_edu_ass_df['Fraction With Associates or Higher'].iloc[-1]
-    
-    
-    return([fraction_hs,fraction_ass,fraction_bachelor])
 
 def PolygonToShapeFile(poly):
         # WRITE TO SHAPEFILE USING PYSHP
@@ -783,9 +738,9 @@ def FindNearestHighways():
 def GetCountyData():
     print('Getting County Data')
     global county_gdp, county_pci
-    global county_unemployment_rate,county_employment,county_unemployment
+    global county_unemployment_rate,county_employment
     global county_resident_pop,county_industry_breakdown,county_industry_growth_breakdown
-    global county_mlp, county_edu
+    global county_mlp
     global county_shape
 
     #County GDP
@@ -802,7 +757,6 @@ def GetCountyData():
         print(e,' Unable to Get County Unemployment Rate Data')
         county_unemployment_rate      = ''
     
-
     #County Total Employment
     try:
         county_employment             = GetCountyEmployment(fips = fips,start_year=start_year,end_year=end_year)
@@ -845,17 +799,11 @@ def GetCountyData():
         print(e,' No median home list data price available')
         county_mlp                    = ''
     
-    #Get Education levels
-    try:  
-        county_edu                    = GetCountyEducationLevels(fips = fips,observation_start = observation_start)
-    except Exception as e: 
-        print(e,' Problem getting education levels for county')
-        county_edu                    = ''
-
     #Get County Shape
     county_shape = GetCountyShape(fips = fips)
 
 #MSA Data
+
 def GetMSAGDP(cbsa, observation_start):
     print('Getting MSA GDP')
     msa_gdp_series_code = 'RGMP' + cbsa
@@ -3455,18 +3403,18 @@ def CreateGraphs():
     CreateEmploymentByIndustryGraph(county_data_frame = county_industry_breakdown, folder = county_folder )
     CreateEmploymentGrowthByIndustryGraph(county_data_frame = county_industry_growth_breakdown, folder = county_folder)
     
+    #Median list price graph
     try:
         CreateMLPWithGrowthGraph(county_data_frame = county_mlp, msa_data_frame = msa_mlp, national_data_frame = national_mlp, folder = county_folder)
     except Exception as e:
         print(e)
     
-    CreateEducationAttainmentGraph(folder = county_folder)
-    
+    #MSA Graphs
     if cbsa != '':
         CreateMSAEmploymentByIndustryGraph(      msa_data_frame = msa_industry_breakdown,              folder = county_folder )
         CreateMSAEmploymentGrowthByIndustryGraph(msa_data_frame = msa_industry_growth_breakdown,       folder = county_folder )
 
-    # #National Graphs (Only use them sometimes)
+    #National Graphs (Only use them sometimes)
     # CreateNationalUnemploymentGraph(folder=county_folder)
     # CreateNationalEmploymentGrowthGraph(folder=county_folder)
     # CreateNationalGDPGraph(folder = county_folder)
@@ -5865,7 +5813,7 @@ def GetFIPSList():
    
     #Give the user 10 seconds to decide if writing reports for metro areas or individual county entries
     try:
-        fips_or_cbsa = input_with_timeout('Single county report (c) or reports for all counties in metro (m)?', 10).strip()
+        fips_or_cbsa = input_with_timeout('Single county report (c) or reports for all counties in metro (m)?', 30).strip()
     except TimeoutExpired:
         fips_or_cbsa = ''
 
@@ -5919,24 +5867,32 @@ def GetFIPSList():
     return(fips_list)
 
 DeclareAPIKeys()
-todays_date             = date.today()
-current_year_and_quarter = GetCurrentQuarterAndYear()
-current_year            = current_year_and_quarter[0]
-current_quarter_number  = current_year_and_quarter[1]
-current_quarter         = current_year + ' Q' + current_quarter_number
 
-new_england_states      = ['MA','VT','RI','ME','NH','CT']
+#Decide if you want to export data in excel files in the county folder
+data_export = False
+
+#Set formatting paramaters for reports
+primary_font                  = 'Avenir Next LT Pro Light' 
+primary_space_after_paragraph = 8
+tickangle                     = 0
+
+
+todays_date                   = date.today()
+current_year_and_quarter      = GetCurrentQuarterAndYear()
+current_year                  = current_year_and_quarter[0]
+current_quarter_number        = current_year_and_quarter[1]
+current_quarter               = current_year + ' Q' + current_quarter_number
+new_england_states            = ['MA','VT','RI','ME','NH','CT']
 
 
 #Set number of years we want to look back to calculate employment growth
-growth_period           = 5
-end_year                = FindBLSEndYear()
-start_year              = end_year - growth_period #For BLS Series 
-
-observation_start       = '01/01/' + str(start_year -1)   #For FRED
-observation_start_less1 = '01/01/' + str(start_year -2)   #For FRED for series 1 year behind the rest
-qcew_year               = current_year                    #for quarterly census of employment and wages
-qcew_qtr                = '2'                             #for quarterly census of employment and wages
+growth_period                 = 5
+end_year                      = FindBLSEndYear()
+start_year                    = end_year - growth_period        #For BLS Series 
+observation_start             = '01/01/' + str(start_year -1)   #For FRED
+observation_start_less1       = '01/01/' + str(start_year -2)   #For FRED for series 1 year behind the rest
+qcew_year                     = current_year                    #for quarterly census of employment and wages
+qcew_qtr                      = '2'                             #for quarterly census of employment and wages
 
 
 for i,fips in enumerate(GetFIPSList()):
@@ -5985,113 +5941,15 @@ for i,fips in enumerate(GetFIPSList()):
         print(e)
         print('Report Creation Failed for : ',fips)
 
+
+#Now that we are done creating reports, crawl through our directory and create CSV file on exisiting reports
 CreateDirectoryCSV()
-
-def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
-    if type == None:
-        return
-    print(f'Updating service database: {report_type}')
-
-    try:
-        url = f'http://market-research-service.bowery.link/api/v1/update/{report_type}'
-        dropbox_path = f'{dropbox_dir}{csv_name}'
-        payload = { 'location': dropbox_path }
-
-        retry_strategy = Retry(
-            total=3,
-            status_forcelist=[400, 404, 409, 500, 503, 504],
-            allowed_methods=["POST"],
-            backoff_factor=5,
-            raise_on_status=False
-        )
-        adapter = HTTPAdapter(max_retries=retry_strategy)
-        http = requests.Session()
-        http.mount("https://", adapter)
-        http.mount("http://", adapter)
-
-        response = http.post(url, json=payload)
-        response.raise_for_status()
-        print('Service successfully updated')
-    except HTTPError as e:
-            print(f'Request failed with status code {response.status_code}')
-            json_error = json.loads(response.content)
-            print(json.dumps(json_error, indent=2))
-            print('Service DB did not successfully update. Please run the script again after fixing the error.')
-    finally:
-        print(f'Deleting temporary CSV: ', csv_path)
-        os.remove(csv_path)
-
-         
-if main_output_location == os.path.join(dropbox_root,'Research','Market Analysis','Area'):
-    # Post an update request to the Market Research Docs Service to update the database
-    UpdateServiceDb(report_type='areas', 
-                    csv_name=service_api_csv_name, 
-                    csv_path=os.path.join(main_output_location, service_api_csv_name),
-                    dropbox_dir='https://www.dropbox.com/home/Research/Market Analysis/Area/')
-
-
-salesforce_export = False
-if salesforce_export == True:
-
-    # Create Directory Structure and Salesforce CSV file for Steve Keker
-    CreateEmptySalesforceLists()
-    master_county_list = pd.read_excel(os.path.join(data_location,'County_Master_List.xls'),
-            dtype={'FIPS Code': object
-                    })
-
-    for i in range(len(master_county_list)):
-        state        = master_county_list['State'].iloc[i]
-        county       = master_county_list['County Name'].iloc[i]
-    
-        fips         = master_county_list['FIPS Code'].iloc[i]
-        try:
-            cbsa         = IdentifyMSA(fips)[0]
-        except:
-            cbsa = ''
-        county       = county.split(",")[0]
-        CreateDirectory(state = state, county = county)
-        assert len(fips) == 5
-        UpdateSalesforceList()
-
-        
-
-    #Now create dataframe with list of markets and export to a CSV for Salesforce
-    dropbox_df = pd.DataFrame(
-                            {"County":dropbox_counties,
-                            "FIPS":dropbox_fips,
-                            "State": dropbox_states,
-                            "Market Research Name":dropbox_market_research_names,
-                            "Analysis Type": dropbox_analysistypes,
-                            "CBSA Code":dropbox_cbsa_codes,
-                            'Version':dropbox_versions,
-                            "Status":dropbox_statuses,
-                            "Document Name":dropbox_document_names,
-                            "Dropbox Links":dropbox_links},
-                            )
-    #Import zip code fips cross walk and aggregate down to a list of zips in each county
-    zip_code_county_crosswalk_df = pd.read_excel(os.path.join(data_location,'ZIP_COUNTY_062021.xlsx'))
-    zip_code_county_crosswalk_df['county'] = zip_code_county_crosswalk_df['county'].astype(str)
-    zip_code_county_crosswalk_df['zip'] = zip_code_county_crosswalk_df['zip'].astype(str)
-    #Add missing leading 0s
-    zip_code_county_crosswalk_df['county']        = zip_code_county_crosswalk_df['county'].str.zfill(5)
-    zip_code_county_crosswalk_df['zip']           = zip_code_county_crosswalk_df['zip'].str.zfill(5)
-    
-    #rename county variable
-    zip_code_county_crosswalk_df =  zip_code_county_crosswalk_df.rename(columns={"county": "FIPS"})
-
-    #Collapse down
-    zip_code_county_crosswalk_df =  zip_code_county_crosswalk_df.groupby(['FIPS']).agg({'zip':list}).reset_index()
-
-
-    #Merge in our dataframe with list of counties with a list of their zip codes
-    dropbox_df = pd.merge(dropbox_df, zip_code_county_crosswalk_df, on=['FIPS'],how = 'left')
-
-
-    #Remove quotes from zip code variables
-    dropbox_df['zip'] = dropbox_df['zip'].astype(str)
-    dropbox_df['zip'] = dropbox_df['zip'].str.replace("""'""",'')
-
-    dropbox_df.to_excel(os.path.join(main_output_location,'Salesforce Counties.xlsx'),float_format=str )
+ 
+#Post an update request to the Market Research Docs Service to update the database
+UpdateServiceDb(report_type = 'areas', 
+                csv_name = service_api_csv_name, 
+                csv_path = os.path.join(main_output_location, service_api_csv_name),
+                dropbox_dir = 'https://www.dropbox.com/home/Research/Market Analysis/Area/')
 
 
 
