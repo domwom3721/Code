@@ -233,7 +233,7 @@ def FindBLSEndYear():
 
 #####################################################Data Related Functions####################################
 #County Data
-def GetCountyGDP(fips,observation_start):
+def GetCountyGDP(fips, observation_start):
     print('Getting County GDP')
 
     county_gdp_series_code                        = 'REALGDPALL' + fips
@@ -249,7 +249,7 @@ def GetCountyGDP(fips,observation_start):
 
     return(county_gdp_df)
 
-def GetCountyPCI(fips,observation_start):
+def GetCountyPCI(fips, observation_start):
     print('Getting County PCI')
     #Per Capita Personal Income
     county_pci_series_code = 'PCPI' + fips
@@ -267,7 +267,7 @@ def GetCountyPCI(fips,observation_start):
     
     return(county_pci_df)
 
-def GetCountyResidentPopulation(fips,observation_start):
+def GetCountyResidentPopulation(fips, observation_start):
     print('Getting County Population')
     #Resident Population 
     resident_population_series_names     = pd.read_excel(os.path.join(data_location,'FRED Series Names','GeoFRED_Resident_Population_by_County_Thousands_of_Persons.xls'),
@@ -287,7 +287,7 @@ def GetCountyResidentPopulation(fips,observation_start):
 
     return(county_pop_df)
 
-def GetCountyUnemploymentRate(fips,start_year,end_year): 
+def GetCountyUnemploymentRate(fips, start_year, end_year): 
     print('Getting County UR')
 
     #Seasonally-adjusted unemployment rate
@@ -302,7 +302,7 @@ def GetCountyUnemploymentRate(fips,start_year,end_year):
 
     return(county_ur_df)
 
-def GetCountyEmployment(fips,start_year,end_year): 
+def GetCountyEmployment(fips, start_year, end_year): 
     print('Getting County Total Employment')
 
     #Total Employment
@@ -386,7 +386,7 @@ def GetCountyIndustryBreakdown(fips, year, qtr):
 
     return(df_qcew)
 
-def GetCountyIndustryGrowthBreakdown(fips,year,qtr):
+def GetCountyIndustryGrowthBreakdown(fips, year,qtr):
     print('Getting County Employment Growth Breakdown')
 
 
@@ -494,7 +494,7 @@ def GetCountyIndustryGrowthBreakdown(fips,year,qtr):
 
     return(df_joint)
 
-def GetCountyMedianListPrice(fips,observation_start):
+def GetCountyMedianListPrice(fips, observation_start):
     print('Getting County MLP')
     try:
         mlp_series_names      = pd.read_excel(os.path.join(data_location,'FRED Series Names','GeoFRED_Market_Hotness__Median_Listing_Price_by_County_U.S._Dollars.xls'),
@@ -803,49 +803,51 @@ def GetCountyData():
     county_shape = GetCountyShape(fips = fips)
 
 #MSA Data
-
 def GetMSAGDP(cbsa, observation_start):
     print('Getting MSA GDP')
     msa_gdp_series_code = 'RGMP' + cbsa
-    msa_gdp_df = fred.get_series(series_id = msa_gdp_series_code,observation_start = observation_start)
-    msa_gdp_df = msa_gdp_df.to_frame().reset_index()
-    msa_gdp_df.columns = ['Period','GDP']
-    msa_gdp_df['GDP'] = msa_gdp_df['GDP'] * 1000000
+    msa_gdp_df          = fred.get_series(series_id = msa_gdp_series_code,observation_start = observation_start)
+    msa_gdp_df          = msa_gdp_df.to_frame().reset_index()
+    msa_gdp_df.columns  = ['Period','GDP']
+    msa_gdp_df['GDP']   = msa_gdp_df['GDP'] * 1000000
+    
     if data_export == True:
         msa_gdp_df.to_csv(os.path.join(county_folder,'MSA GDP.csv'))
+
     return(msa_gdp_df)
 
 def GetMSAResidentPopulation(cbsa, observation_start):
     print('Getting MSA Population')
     try:
         #Resident Population 
-        resident_population_series_names = pd.read_excel(os.path.join(data_location,'FRED Series Names','GeoFRED_Resident_Population_by_Metropolitan_Statistical_Area_Thousands_of_Persons.xls'),
+        resident_population_series_names                = pd.read_excel(os.path.join(data_location,'FRED Series Names','GeoFRED_Resident_Population_by_Metropolitan_Statistical_Area_Thousands_of_Persons.xls'),
                     dtype={'Region Code': object
                         })
         resident_population_series_names['Region Code'] = resident_population_series_names['Region Code'].astype(str)
-        resident_population_series_names = resident_population_series_names.loc[resident_population_series_names['Region Code'] == cbsa]
-        msa_pop_series_code = resident_population_series_names['Series ID'].iloc[0]
+        resident_population_series_names                = resident_population_series_names.loc[resident_population_series_names['Region Code'] == cbsa]
+        msa_pop_series_code                             = resident_population_series_names['Series ID'].iloc[0]
     except:
-        msa_pop_series_code = input('enter the FRED series code for resident population for MSA')
+        msa_pop_series_code                             = input('enter the FRED series code for resident population for MSA')
 
     
-    msa_pop_df = fred.get_series(series_id = msa_pop_series_code, observation_start = observation_start)
-    msa_pop_df = msa_pop_df.to_frame().reset_index()
-    msa_pop_df.columns = ['Period','Resident Population']
+    msa_pop_df                        = fred.get_series(series_id = msa_pop_series_code, observation_start = observation_start)
+    msa_pop_df                        = msa_pop_df.to_frame().reset_index()
+    msa_pop_df.columns                = ['Period','Resident Population']
     msa_pop_df['Resident Population'] = msa_pop_df['Resident Population'] * 1000
+
     if data_export == True:
         msa_pop_df.to_csv(os.path.join(county_folder,'MSA Resident Population.csv'))
+    
     return(msa_pop_df)
 
-def GetMSAPCI(cbsa,observation_start):
+def GetMSAPCI(cbsa, observation_start):
     print('Getting MSA PCI')
     #Per Capita Personal Income
-    pci_series_names = pd.read_excel(os.path.join(data_location,'FRED Series Names','GeoFRED_Per_Capita_Personal_Income_by_Metropolitan_Statistical_Area_Dollars.xls'),
+    pci_series_names                = pd.read_excel(os.path.join(data_location,'FRED Series Names','GeoFRED_Per_Capita_Personal_Income_by_Metropolitan_Statistical_Area_Dollars.xls'),
                 dtype={'Region Code': object
                       })
-
     pci_series_names['Region Code'] = pci_series_names['Region Code'].astype(str)
-    pci_series_names = pci_series_names.loc[pci_series_names['Region Code'] == cbsa]
+    pci_series_names                = pci_series_names.loc[pci_series_names['Region Code'] == cbsa]
 
 
     if len(pci_series_names) == 1: #if the cbsa has a series
@@ -854,14 +856,16 @@ def GetMSAPCI(cbsa,observation_start):
         msa_pci_series_code = 'RPIPC' + cbsa #use a slightly different seires for the New England MSAs
 
 
-    msa_pci_df = fred.get_series(series_id = msa_pci_series_code, observation_start=observation_start)
-    msa_pci_df = msa_pci_df.to_frame().reset_index()
-    msa_pci_df.columns = ['Period','Per Capita Personal Income']
+    msa_pci_df         = fred.get_series(series_id = msa_pci_series_code, observation_start=observation_start)
+    msa_pci_df         = msa_pci_df.to_frame().reset_index()
+    msa_pci_df.columns = ['Period', 'Per Capita Personal Income']
+
     if data_export == True:
         msa_pci_df.to_csv(os.path.join(county_folder,'MSA Per Capita Personal Income.csv'))
+
     return(msa_pci_df)
 
-def GetMSAUnemploymentRate(cbsa,start_year,end_year): 
+def GetMSAUnemploymentRate(cbsa, start_year, end_year): 
     print('Getting MSA UR')
     #Seasonally-adjusted unemployment rate
 
@@ -873,13 +877,14 @@ def GetMSAUnemploymentRate(cbsa,start_year,end_year):
             series_name = 'LAUMT' + cbsa_main_state_fips + necta_code + '00000003'
         
 
-        msa_ur_df = bls.series(series_name,start_year=start_year, end_year= end_year) 
+        msa_ur_df           = bls.series(series_name,start_year=start_year, end_year= end_year) 
         msa_ur_df['year']   = msa_ur_df['year'].astype(str)
-        msa_ur_df['period'] =    msa_ur_df['period'].str[1:3] + '/' +  msa_ur_df['year'].str[2:4]
-        msa_ur_df = msa_ur_df.rename(columns={series_name: "unemployment_rate"})
+        msa_ur_df['period'] = msa_ur_df['period'].str[1:3] + '/' +  msa_ur_df['year'].str[2:4]
+        msa_ur_df           = msa_ur_df.rename(columns={series_name: "unemployment_rate"})
 
         if data_export == True:
             msa_ur_df.to_csv(os.path.join(county_folder,'MSA Unemployment Rate.csv'))
+       
         return(msa_ur_df)
 
     #Sometiems they don't use the primary state's fips in the series
@@ -905,8 +910,8 @@ def GetMSAUnemploymentRate(cbsa,start_year,end_year):
             except Exception as e:
                 print(e)
 
-def GetMSAEmployment(cbsa,start_year,end_year): 
-    print('Getting MSA Employment')
+def GetMSAEmployment(cbsa, start_year, end_year): 
+    print('Getting MSA Total Employment')
     #Total Employment
     try:
         if state not in new_england_states:
@@ -914,21 +919,19 @@ def GetMSAEmployment(cbsa,start_year,end_year):
         else:
             series_name = 'LAUMT' + cbsa_main_state_fips + necta_code + '00000005'
 
-        msa_emp_df = bls.series(series_name,start_year=(start_year-1), end_year= end_year) 
-
-        msa_emp_df['year']   = msa_emp_df['year'].astype(str)
-        msa_emp_df['period'] =    msa_emp_df['period'].str[1:3] + '/' +  msa_emp_df['year'].str[2:4]      
-        
-        msa_emp_df           = msa_emp_df.rename(columns={series_name: "Employment"})
-
+        msa_emp_df                            = bls.series(series_name,start_year=(start_year-1), end_year= end_year) 
+        msa_emp_df['year']                    = msa_emp_df['year'].astype(str)
+        msa_emp_df['period']                  = msa_emp_df['period'].str[1:3] + '/' +  msa_emp_df['year'].str[2:4]      
+        msa_emp_df                            = msa_emp_df.rename(columns={series_name: "Employment"})
         msa_emp_df['Lagged Employment']       = msa_emp_df['Employment'].shift(12)
-        msa_emp_df['Employment Growth']       =  round(((msa_emp_df['Employment']/msa_emp_df['Lagged Employment']) - 1 ) * 100,2 )
+        msa_emp_df['Employment Growth']       = round(((msa_emp_df['Employment']/msa_emp_df['Lagged Employment']) - 1 ) * 100,2 )
 
 
         if data_export == True:
             msa_emp_df.to_csv(os.path.join(county_folder,'MSA Total Employment.csv'))
         
         return(msa_emp_df)
+
     except Exception as e:
         print(e)
         for state_fips_code in cbsa_all_state_fips:
@@ -938,18 +941,15 @@ def GetMSAEmployment(cbsa,start_year,end_year):
                 else:
                     series_name = 'LAUMT' + state_fips_code + necta_code + '00000005'
 
-                msa_emp_df = bls.series(series_name,start_year=(start_year-1), end_year= end_year) 
-
-                msa_emp_df['year']   = msa_emp_df['year'].astype(str)
-                msa_emp_df['period'] =    msa_emp_df['period'].str[1:3] + '/' +  msa_emp_df['year'].str[2:4]      
-                
-                msa_emp_df           = msa_emp_df.rename(columns={series_name: "Employment"})
-
+                msa_emp_df                            = bls.series(series_name,start_year=(start_year-1), end_year= end_year) 
+                msa_emp_df['year']                    = msa_emp_df['year'].astype(str)
+                msa_emp_df['period']                  = msa_emp_df['period'].str[1:3] + '/' +  msa_emp_df['year'].str[2:4]      
+                msa_emp_df                            = msa_emp_df.rename(columns={series_name: "Employment"})
                 msa_emp_df['Lagged Employment']       = msa_emp_df['Employment'].shift(12)
-                msa_emp_df['Employment Growth']       =  round(((msa_emp_df['Employment']/msa_emp_df['Lagged Employment']) - 1 ) * 100,2 )
+                msa_emp_df['Employment Growth']       = round(((msa_emp_df['Employment']/msa_emp_df['Lagged Employment']) - 1 ) * 100,2 )
 
                 #Drop the extra year we needed to calculate growth rates
-                msa_emp_df    = msa_emp_df.loc[msa_emp_df['year'] != str(start_year-1)]
+                msa_emp_df                            = msa_emp_df.loc[msa_emp_df['year'] != str(start_year-1)]
 
                 if data_export == True:
                     msa_emp_df.to_csv(os.path.join(county_folder,'MSA Total Employment.csv'))
@@ -958,17 +958,19 @@ def GetMSAEmployment(cbsa,start_year,end_year):
             except Exception as e:
                 pass
 
-def GetMSAMedianListPrice(cbsa,observation_start):
+def GetMSAMedianListPrice(cbsa, observation_start):
     print('Getting MSA MLP')
     msa_mlp_series_code = 'MEDLISPRI' + cbsa
-    msa_mlp_df = fred.get_series(series_id = msa_mlp_series_code,observation_start = observation_start)
-    msa_mlp_df = msa_mlp_df.to_frame().reset_index()
-    msa_mlp_df.columns = ['Period','Median List Price']
+    msa_mlp_df          = fred.get_series(series_id = msa_mlp_series_code,observation_start = observation_start)
+    msa_mlp_df          = msa_mlp_df.to_frame().reset_index()
+    msa_mlp_df.columns  = ['Period','Median List Price']
+
     if data_export == True:
         msa_mlp_df.to_csv(os.path.join(county_folder,'MSA Median Home List Price.csv'))
+        
     return(msa_mlp_df)
 
-def GetMSAIndustryBreakdown(cbsa,year,qtr):
+def GetMSAIndustryBreakdown(cbsa, year, qtr):
     print('Getting MSA Employment Breakdown')
 
     
@@ -1034,7 +1036,7 @@ def GetMSAIndustryBreakdown(cbsa,year,qtr):
         df_qcew.to_csv(os.path.join(county_folder,'MSA Industry Breakdown.csv'))
     return(df_qcew)
 
-def GetMSAIndustryGrowthBreakdown(cbsa,year,qtr):
+def GetMSAIndustryGrowthBreakdown(cbsa, year, qtr):
     print('Getting MSA Employment Growth Breakdown')
 
 
@@ -1149,10 +1151,10 @@ def GetMSAIndustryGrowthBreakdown(cbsa,year,qtr):
 def GetMSAData():
     global msa_gdp
     global msa_pci
-    global msa_unemployment_rate,msa_employment,msa_unemployment
+    global msa_unemployment_rate, msa_employment, msa_unemployment
     global msa_resident_pop
     global msa_mlp
-    global msa_industry_breakdown,msa_industry_growth_breakdown
+    global msa_industry_breakdown, msa_industry_growth_breakdown
     #We create these blank variables so we can use them as function inputs for the graph functions when there is no MSA
     if cbsa == '':
             msa_gdp                         = ''
@@ -1185,134 +1187,89 @@ def GetMSAData():
         msa_industry_growth_breakdown     = GetMSAIndustryGrowthBreakdown(cbsa = cbsa, year = qcew_year, qtr = qcew_qtr)
 
 #State Data
-def GetStateGDP(state,observation_start):
+def GetStateGDP(state, observation_start):
     print('Getting State GDP')
     state_gdp_series_code = state + 'RGSP'
-    state_gdp_df = fred.get_series(series_id = state_gdp_series_code,observation_start = observation_start)
-    state_gdp_df = state_gdp_df.to_frame().reset_index()
-    state_gdp_df.columns = ['Period','GDP']
-    state_gdp_df['GDP'] = state_gdp_df['GDP'] * 1000000
+    state_gdp_df          = fred.get_series(series_id = state_gdp_series_code,observation_start = observation_start)
+    state_gdp_df          = state_gdp_df.to_frame().reset_index()
+    state_gdp_df.columns  = ['Period','GDP']
+    state_gdp_df['GDP']   = state_gdp_df['GDP'] * 1000000
+
     if data_export == True:
         state_gdp_df.to_csv(os.path.join(county_folder,'State GDP.csv'))
+    
     return(state_gdp_df)
 
 def GetStatePCI(state, observation_start):
-    print('Getting State PCI')
+    print('Getting State Per Capita Income')
     #Per Capita Personal Income
     state_pci_series_code = state + 'PCPI' 
-    state_pci_df = fred.get_series(series_id = state_pci_series_code,observation_start = observation_start)
-    state_pci_df = state_pci_df.to_frame().reset_index()
-    state_pci_df.columns = ['Period','Per Capita Personal Income']
+    state_pci_df          = fred.get_series(series_id = state_pci_series_code,observation_start = observation_start)
+    state_pci_df          = state_pci_df.to_frame().reset_index()
+    state_pci_df.columns  = ['Period','Per Capita Personal Income']
+
     if data_export == True:
-        state_pci_df.to_csv(os.path.join(county_folder,'State Per Capita Personal Income.csv'))
+        state_pci_df.to_csv(os.path.join(county_folder, 'State Per Capita Personal Income.csv'))
+    
     return(state_pci_df)
 
 def GetStateResidentPopulation(state, observation_start):
     print('Getting State Population')
     #Resident Population 
-    state_pop_series_code = state + 'POP'
-    state_pop_df = fred.get_series(series_id = state_pop_series_code, observation_start = observation_start)
-    state_pop_df = state_pop_df.to_frame().reset_index()
-    state_pop_df.columns = ['Period','Resident Population']
+    state_pop_series_code               = state + 'POP'
+    state_pop_df                        = fred.get_series(series_id = state_pop_series_code, observation_start = observation_start)
+    state_pop_df                        = state_pop_df.to_frame().reset_index()
+    state_pop_df.columns                = ['Period', 'Resident Population']
     state_pop_df['Resident Population'] = state_pop_df['Resident Population'] * 1000
+
     if data_export == True:
         state_pop_df.to_csv(os.path.join(county_folder,'State Resident Population.csv'))
+    
     return(state_pop_df)
 
-def GetStateUnemploymentRate(fips,start_year,end_year): 
+def GetStateUnemploymentRate(fips, start_year, end_year): 
     print('Getting State UR')
     #Seasonally-adjusted unemployment rate
-    series_name = 'LASST' + fips[0:2] + '0000000000003'
-    state_ur_df = bls.series(series_name,start_year=start_year, end_year= end_year) 
+    series_name             = 'LASST' + fips[0:2] + '0000000000003'
+    state_ur_df             = bls.series(series_name,start_year=start_year, end_year= end_year)
 
-    state_ur_df['year']   = state_ur_df['year'].astype(str)
-    state_ur_df['period'] =    state_ur_df['period'].str[1:3] + '/' +  state_ur_df['year'].str[2:4]      
-    state_ur_df = state_ur_df.rename(columns={series_name: "unemployment_rate"})
+    state_ur_df['year']     = state_ur_df['year'].astype(str)
+    state_ur_df['period']   = state_ur_df['period'].str[1:3] + '/' +  state_ur_df['year'].str[2:4]      
+    state_ur_df             = state_ur_df.rename(columns={series_name: "unemployment_rate"})
+
     if data_export == True:
         state_ur_df.to_csv(os.path.join(county_folder,'State Unemployment Rate.csv'))
+    
     return(state_ur_df)
 
-def GetStateEmployment(fips,start_year,end_year): 
-    print('Getting State Employment')
+def GetStateEmployment(fips, start_year, end_year): 
+    print('Getting State Total Employment')
     #Total Employment
-    series_name = 'LASST' + fips[0:2] + '0000000000005'
-    state_emp_df = bls.series(series_name,start_year=(start_year-1), end_year= end_year) 
-
-    state_emp_df['year']   = state_emp_df['year'].astype(str)
-    state_emp_df['period'] =    state_emp_df['period'].str[1:3] + '/' +  state_emp_df['year'].str[2:4]      
-   
-    state_emp_df           = state_emp_df.rename(columns={series_name: "Employment"})
-
+    series_name                             = 'LASST' + fips[0:2] + '0000000000005'
+    state_emp_df                            = bls.series(series_name,start_year=(start_year-1), end_year= end_year) 
+    state_emp_df['year']                    = state_emp_df['year'].astype(str)
+    state_emp_df['period']                  = state_emp_df['period'].str[1:3] + '/' +  state_emp_df['year'].str[2:4]      
+    state_emp_df                            = state_emp_df.rename(columns={series_name: "Employment"})
     state_emp_df['Lagged Employment']       = state_emp_df['Employment'].shift(12)
-    state_emp_df['Employment Growth']       =  round(((state_emp_df['Employment']/state_emp_df['Lagged Employment']) - 1 ) * 100,2 )
-
+    state_emp_df['Employment Growth']       = round(((state_emp_df['Employment']/state_emp_df['Lagged Employment']) - 1 ) * 100,2 )
     
-
     if data_export == True:
-        state_emp_df.to_csv(os.path.join(county_folder,'State Total Employment.csv'))
+        state_emp_df.to_csv(os.path.join(county_folder, 'State Total Employment.csv'))
 
     return(state_emp_df)
-
-def GetStateEducationLevels(observation_start):
-    print('Getting State Education Levels')
-
-
-
-
-    #fraction with HS diploma or higher
-    state_hs_series_code    = 'GCT1501' + state
-
-    state_edu_hs_df         = fred.get_series(series_id = state_hs_series_code, observation_start=observation_start)
-    state_edu_hs_df         = state_edu_hs_df.to_frame().reset_index()
-    state_edu_hs_df.columns = ['Period','Fraction With HS Diploma or Higher']
-    
-    if data_export == True:
-        state_edu_hs_df.to_csv(os.path.join(county_folder,"""State Fraction With HS or Diploma or Higer.csv"""))
-    fraction_hs         = state_edu_hs_df['Fraction With HS Diploma or Higher'].iloc[-1]
-    
-
-
-
-    # #fraction with associates degree or higher
-    # state_edu_ass_series_code =  '' + state
-
-    # state_edu_ass_df = fred.get_series(series_id = state_edu_ass_series_code, observation_start=observation_start)
-    # state_edu_ass_df = state_edu_ass_df.to_frame().reset_index()
-    # state_edu_ass_df.columns = ['Period','Fraction With Associates or Higher']
-    
-    # if data_export == True:
-    #     state_edu_ass_df.to_csv(os.path.join(county_folder,"""State Fraction With Associates Degree or Higer.csv"""))
-    
-    # fraction_ass        = state_edu_ass_df['Fraction With Associates or Higher'].iloc[-1]
-    
-
-    #fraction with bachelor's or higher
-    state_bach_series_code = 'GCT1502' + state
-    
-    state_edu_df = fred.get_series(series_id = state_bach_series_code, observation_start=observation_start)
-    state_edu_df = state_edu_df.to_frame().reset_index()
-    state_edu_df.columns = ['Period','bach_frac']
-
-    if data_export == True:
-        state_edu_df.to_csv(os.path.join(county_folder,"""State Fraction With Bachelor's or Higer.csv"""))
-    
-    fraction_bachelor   = state_edu_df['bach_frac'].iloc[-1]
-    
-    return([fraction_hs,fraction_bachelor])
 
 def GetStateData():
     print('Getting State Data')
     global state_gdp
-    global state_mhhi, state_pci
-    global state_unemployment_rate,state_employment,state_unemployment
+    global state_pci
+    global state_unemployment_rate, state_employment
     global state_resident_pop
-    global state_edu
-    state_gdp                        = GetStateGDP(state = state,observation_start = observation_start_less1)
-    state_unemployment_rate          = GetStateUnemploymentRate(fips = fips,start_year=start_year,end_year=end_year)
-    state_employment                 = GetStateEmployment(fips = fips,start_year=start_year,end_year=end_year)
+    
+    state_gdp                        = GetStateGDP(state = state, observation_start = observation_start_less1)
+    state_unemployment_rate          = GetStateUnemploymentRate(fips = fips, start_year=start_year,end_year = end_year)
+    state_employment                 = GetStateEmployment(fips = fips, start_year=start_year,end_year = end_year)
     state_pci                        = GetStatePCI(state = state, observation_start = observation_start_less1)
     state_resident_pop               = GetStateResidentPopulation(state = state, observation_start = ('01/01/' + str(end_year -12)))
-    state_edu                        = GetStateEducationLevels(observation_start = observation_start_less1)
 
 #National Data
 def GetNationalPCI(observation_start):
