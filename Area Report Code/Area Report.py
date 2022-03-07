@@ -1273,54 +1273,62 @@ def GetStateData():
 
 #National Data
 def GetNationalPCI(observation_start):
-    print('Getting National PCI')
+    print('Getting National Per Capita Income')
     #Per Capita Personal Income
-    usa_pci_series_code =  'A792RC0Q052SBEA' 
-    usa_pci_df = fred.get_series(series_id = usa_pci_series_code,observation_start = observation_start_less1,frequency = 'a')
-    usa_pci_df = usa_pci_df.to_frame().reset_index()
-    usa_pci_df.columns = ['Period','Per Capita Personal Income']
-    usa_pci_df         = usa_pci_df.loc[usa_pci_df['Per Capita Personal Income'] >= 0]
+    usa_pci_series_code = 'A792RC0Q052SBEA' 
+    usa_pci_df          = fred.get_series(series_id = usa_pci_series_code,observation_start = observation_start,frequency = 'a')
+    usa_pci_df          = usa_pci_df.to_frame().reset_index()
+    usa_pci_df.columns  = ['Period','Per Capita Personal Income']
+    usa_pci_df          = usa_pci_df.loc[usa_pci_df['Per Capita Personal Income'] >= 0]
+
     if data_export == True:
         usa_pci_df.to_csv(os.path.join(county_folder,'National Per Capita Personal Income.csv'))
+
     return(usa_pci_df)
 
 def GetNationalResidentPopulation(observation_start):
     print('Getting National Population')
     #Resident Population 
-    usa_pop_series_code = 'POP'
-    usa_pop_df = fred.get_series(series_id = usa_pop_series_code, observation_start = observation_start,frequency = 'a')
-    usa_pop_df = usa_pop_df.to_frame().reset_index()
-    usa_pop_df.columns = ['Period','Resident Population']
+    usa_pop_series_code               = 'POP'
+    usa_pop_df                        = fred.get_series(series_id = usa_pop_series_code, observation_start = observation_start,frequency = 'a')
+    usa_pop_df                        = usa_pop_df.to_frame().reset_index()
+    usa_pop_df.columns                = ['Period','Resident Population']
     usa_pop_df['Resident Population'] = usa_pop_df['Resident Population'] * 1000
+
     if data_export == True:
         usa_pop_df.to_csv(os.path.join(county_folder,'National Population.csv'))
+    
     return(usa_pop_df)
 
 def GetNationalMedianListPrice(observation_start):
     print('Getting National MLP')
     usa_mlp_series_code = 'MEDLISPRIUS'
-    usa_mlp_df = fred.get_series(series_id = usa_mlp_series_code,observation_start = observation_start)
-    usa_mlp_df = usa_mlp_df.to_frame().reset_index()
-    usa_mlp_df.columns = ['Period','Median List Price']
+    usa_mlp_df          = fred.get_series(series_id = usa_mlp_series_code, observation_start = observation_start)
+    usa_mlp_df          = usa_mlp_df.to_frame().reset_index()
+    usa_mlp_df.columns  = ['Period', 'Median List Price']
+
     if data_export == True:
         usa_mlp_df.to_csv(os.path.join(county_folder,'National Median Home List Price.csv'))
+    
     return(usa_mlp_df)
 
-def GetNationalUnemploymentRate(start_year,end_year):
-    print('Getting National UR')
+def GetNationalUnemploymentRate(start_year, end_year):
+    print('Getting national unemployment rate')
+    
     #Seasonally-adjusted unemployment rate
-    series_name = 'LNS14000000'
-    national_ur_df = bls.series(series_name,start_year=start_year,end_year=end_year) 
-
+    series_name              = 'LNS14000000'
+    national_ur_df           = bls.series(series_name,start_year=start_year,end_year=end_year) 
     national_ur_df['year']   = national_ur_df['year'].astype(str)
-    national_ur_df['period'] =    national_ur_df['period'].str[1:3] + '/' +  national_ur_df['year'].str[2:4]      
-    national_ur_df = national_ur_df.rename(columns={series_name: "unemployment_rate"})
+    national_ur_df['period'] = national_ur_df['period'].str[1:3] + '/' +  national_ur_df['year'].str[2:4]      
+    national_ur_df           = national_ur_df.rename(columns={series_name: "unemployment_rate"})
+
     if data_export == True:
         national_ur_df.to_csv(os.path.join(county_folder,'National Unemployment Rate.csv'))
+    
     return(national_ur_df)
 
-def GetNationalEmployment(start_year,end_year):
-    print('Getting National Employment')
+def GetNationalEmployment(start_year, end_year):
+    print('Getting National Total Employment')
     #Total Employment
     series_name = 'LNS12000000'
     national_emp_df = bls.series(series_name,start_year=(start_year-1), end_year= end_year)
@@ -1339,14 +1347,16 @@ def GetNationalEmployment(start_year,end_year):
     return(national_emp_df)
 
 def GetNationalGDP(observation_start):
-    print('Getting Natioanl GDP')
+    print('Getting National GDP')
     national_gdp_series_code = 'GDP'
-    national_gdp_df = fred.get_series(series_id = national_gdp_series_code,observation_start = observation_start,frequency = 'q')
-    national_gdp_df = national_gdp_df.to_frame().reset_index()
-    national_gdp_df.columns = ['Period','GDP']
-    national_gdp_df['GDP'] = national_gdp_df['GDP'] * 1000000000
+    national_gdp_df          = fred.get_series(series_id = national_gdp_series_code,observation_start = observation_start,frequency = 'q')
+    national_gdp_df          = national_gdp_df.to_frame().reset_index()
+    national_gdp_df.columns  = ['Period','GDP']
+    national_gdp_df['GDP']   = national_gdp_df['GDP'] * 1000000000
+    
     if data_export == True:
         national_gdp_df.to_csv(os.path.join(county_folder,'National GDP.csv'))
+    
     return(national_gdp_df)
 
 def GetNationalData():
