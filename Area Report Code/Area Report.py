@@ -250,7 +250,7 @@ def GetCountyGDP(fips, observation_start):
     return(county_gdp_df)
 
 def GetCountyPCI(fips, observation_start):
-    print('Getting County PCI')
+    print('Getting County Per Capita Personal Income')
     #Per Capita Personal Income
     county_pci_series_code = 'PCPI' + fips
     
@@ -288,7 +288,7 @@ def GetCountyResidentPopulation(fips, observation_start):
     return(county_pop_df)
 
 def GetCountyUnemploymentRate(fips, start_year, end_year): 
-    print('Getting County UR')
+    print('Getting County Unemployment Rate')
 
     #Seasonally-adjusted unemployment rate
     series_name            = 'LAUCN' + fips + '0000000003'
@@ -387,7 +387,7 @@ def GetCountyIndustryBreakdown(fips, year, qtr):
     return(df_qcew)
 
 def GetCountyIndustryGrowthBreakdown(fips, year,qtr):
-    print('Getting County Employment Growth Breakdown')
+    print('Getting QCEW County Employment Growth Breakdown')
 
 
     #Pulls employment data (and the lagged data) from Quarterly Census of Employment and Wages
@@ -495,7 +495,7 @@ def GetCountyIndustryGrowthBreakdown(fips, year,qtr):
     return(df_joint)
 
 def GetCountyMedianListPrice(fips, observation_start):
-    print('Getting County MLP')
+    print('Getting County Median List Price')
     try:
         mlp_series_names      = pd.read_excel(os.path.join(data_location,'FRED Series Names','GeoFRED_Market_Hotness__Median_Listing_Price_by_County_U.S._Dollars.xls'),
                     dtype={'Region Code': object
@@ -615,13 +615,12 @@ def GetCountyShape(fips):
             else:
                 county_shape        =  county_map.shape(i)
                 county_shape_polygon = Polygon(county_shape.points)
-                print('Successfully pulled county shape from shapefile')
                 try:
                     PolygonToShapeFile(poly = county_shape_polygon)
+                    print('Successfully created polygon object from county shape')
                 except Exception as e:
                     print(e,'unable to export county polygon as shape')
 
-                print('Successfully created polygon object from county shape')
 
                 return(county_shape) 
     except Exception as e:
@@ -841,7 +840,7 @@ def GetMSAResidentPopulation(cbsa, observation_start):
     return(msa_pop_df)
 
 def GetMSAPCI(cbsa, observation_start):
-    print('Getting MSA PCI')
+    print('Getting MSA Per Capita Personal Income')
     #Per Capita Personal Income
     pci_series_names                = pd.read_excel(os.path.join(data_location,'FRED Series Names','GeoFRED_Per_Capita_Personal_Income_by_Metropolitan_Statistical_Area_Dollars.xls'),
                 dtype={'Region Code': object
@@ -1201,10 +1200,10 @@ def GetStateGDP(state, observation_start):
     return(state_gdp_df)
 
 def GetStatePCI(state, observation_start):
-    print('Getting State Per Capita Income')
+    print('Getting State Per Capita Personal Income')
     #Per Capita Personal Income
     state_pci_series_code = state + 'PCPI' 
-    state_pci_df          = fred.get_series(series_id = state_pci_series_code,observation_start = observation_start)
+    state_pci_df          = fred.get_series(series_id = state_pci_series_code, observation_start = observation_start)
     state_pci_df          = state_pci_df.to_frame().reset_index()
     state_pci_df.columns  = ['Period','Per Capita Personal Income']
 
@@ -1228,7 +1227,7 @@ def GetStateResidentPopulation(state, observation_start):
     return(state_pop_df)
 
 def GetStateUnemploymentRate(fips, start_year, end_year): 
-    print('Getting State UR')
+    print('Getting State Unemployment Rate')
     #Seasonally-adjusted unemployment rate
     series_name             = 'LASST' + fips[0:2] + '0000000000003'
     state_ur_df             = bls.series(series_name,start_year=start_year, end_year= end_year)
@@ -1273,13 +1272,14 @@ def GetStateData():
 
 #National Data
 def GetNationalPCI(observation_start):
-    print('Getting National Per Capita Income')
+    print('Getting National Per Capita Personal Income')
     #Per Capita Personal Income
     usa_pci_series_code = 'A792RC0Q052SBEA' 
     usa_pci_df          = fred.get_series(series_id = usa_pci_series_code,observation_start = observation_start,frequency = 'a')
     usa_pci_df          = usa_pci_df.to_frame().reset_index()
     usa_pci_df.columns  = ['Period','Per Capita Personal Income']
     usa_pci_df          = usa_pci_df.loc[usa_pci_df['Per Capita Personal Income'] >= 0]
+   
 
     if data_export == True:
         usa_pci_df.to_csv(os.path.join(county_folder,'National Per Capita Personal Income.csv'))
@@ -1301,7 +1301,7 @@ def GetNationalResidentPopulation(observation_start):
     return(usa_pop_df)
 
 def GetNationalMedianListPrice(observation_start):
-    print('Getting National MLP')
+    print('Getting National Median List Price')
     usa_mlp_series_code = 'MEDLISPRIUS'
     usa_mlp_df          = fred.get_series(series_id = usa_mlp_series_code, observation_start = observation_start)
     usa_mlp_df          = usa_mlp_df.to_frame().reset_index()
@@ -1313,7 +1313,7 @@ def GetNationalMedianListPrice(observation_start):
     return(usa_mlp_df)
 
 def GetNationalUnemploymentRate(start_year, end_year):
-    print('Getting national unemployment rate')
+    print('Getting National Unemployment Rate')
     
     #Seasonally-adjusted unemployment rate
     series_name              = 'LNS14000000'
@@ -1367,12 +1367,12 @@ def GetNationalData():
     global national_unemployment
     global national_employment
     global national_gdp
-    national_pci                       = GetNationalPCI(observation_start = observation_start)
-    national_resident_pop              = GetNationalResidentPopulation(observation_start=('01/01/' + str(end_year - 12)))
-    national_mlp                       = GetNationalMedianListPrice(observation_start=observation_start)
+    national_pci                       = GetNationalPCI(observation_start = observation_start_less1)
+    national_resident_pop              = GetNationalResidentPopulation(observation_start = ('01/01/' + str(end_year - 12)))
+    national_mlp                       = GetNationalMedianListPrice(observation_start = observation_start)
     national_unemployment              = GetNationalUnemploymentRate(start_year = start_year, end_year=end_year)
     national_employment                = GetNationalEmployment(start_year = start_year, end_year=end_year)
-    national_gdp                       = GetNationalGDP(observation_start = observation_start)
+    national_gdp                       = GetNationalGDP(observation_start = observation_start_less1)
 
 #####################################################Graph Related Functions####################################
 
@@ -3289,78 +3289,6 @@ def CreateNationalGDPGraph(folder):
 
     fig.write_image(os.path.join(folder,'national_gdp_rate.png'),engine='kaleido',scale=scale)
 
-def CreateEducationAttainmentGraph(folder):
-    print('Creating Education Graph')
-    fig = make_subplots(specs=[[{"secondary_y": False}]])
-
-    education_levels = ['High School Diploma or Higher',"""Bachelor's Degree or Higher"""]
-    
-    #County educational attainment
-    fig.add_trace(
-    go.Bar(x=education_levels,
-            y=[county_edu[0],county_edu[2]],
-            name=county,
-           marker_color = "#4160D3")
-        )
-    
-    #Add State education levels    
-    fig.add_trace(
-    go.Bar(x=education_levels,
-            y=state_edu,
-            name=state_name,
-           marker_color = "#B3C3FF")
-        )
-
-
-
-    #Set formatting 
-    fig.update_layout(
-    title_text= county + " Educational Attainment",    
-    title={
-        'y':title_position,
-        'x':0.5,
-        'xanchor': 'center',
-        'yanchor': 'top'},
-
-    legend=dict(
-        orientation="h",
-        yanchor="bottom",
-        y=legend_position,
-        xanchor="center",
-        x=0.5,
-        font_size = tickfont_size
-                ),
-    font_family="Avenir Next LT Pro",
-    font_color='#262626',
-    font_size = 10.5,
-    paper_bgcolor=paper_backgroundcolor,
-    plot_bgcolor ="White"    
-                    )
-
-    #Add % to left axis ticks
-    fig.update_yaxes(
-        tickfont = dict(size=tickfont_size), 
-        ticksuffix = '%',  
-        title = None ,
-        secondary_y=False)                 
-                    
-    fig.update_xaxes(
-        tickfont = dict(size=tickfont_size),
-        tickangle = 0,
-        )
-
-
-    #Set size
-    fig.update_layout(
-    autosize=False,
-    height    = graph_height,
-    width     = graph_width,
-    margin=dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin,pad=0,autoexpand = True),)
-    
-
-
-    fig.write_image(os.path.join(folder,'education_levels.png'),engine='kaleido',scale=scale)
-
 def CreateGraphs():
     print('Creating Graphs')
     CreateUnemploymentRateEmploymentGrowthGraph(folder = county_folder)
@@ -3390,8 +3318,8 @@ def CreateGraphs():
 #####################################################Language Related Functions####################################
 def millify(n):
     millnames = ['',' thousand',' million',' billion',' trillion']
-    n = float(n)
-    millidx = max(0,min(len(millnames)-1,
+    n         = float(n)
+    millidx   = max(0,min(len(millnames)-1,
                         int(math.floor(0 if n == 0 else math.log10(abs(n))/3))))
 
     return '{:.1f}{}'.format(n / 10**(3 * millidx), millnames[millidx])
@@ -4463,22 +4391,6 @@ def PopulationLanguage(national_resident_pop):
     
     return([population_language])
 
-def EducationLanguage():
-    try:
-        education_language = ('In ' + county + ', ' + 
-                            "{:,.1f}%".format(county_edu[0])  +
-                            ' have a high school diploma or higher, with ' + 
-                            "{:,.1f}%".format(county_edu[1])  +
-                            ' having an Associates degree or higher' + 
-                            ' and ' +  "{:,.1f}%".format(county_edu[2])  +
-                                """ having a Bachelor's degree or higher. """
-                                )
-    except Exception as e:
-        print(e,'unable to create education langauge')
-        education_language = ''
-    
-    return([education_language])
-
 def InfrastructureLanguage():
     print('Writing Infrastructure Langauge')
 
@@ -4785,10 +4697,9 @@ def OutlookLanguage():
 def CreateLanguage():
     global overview_language
     global county_emplopyment_industry_breakdown_language, msa_emplopyment_industry_breakdown_language ,county_emplopyment_growth_language,msa_emplopyment_growth_language,unemplopyment_language,tourism_employment_language
-    global production_language,demographics_language,infrastructure_language,housing_language,outlook_language
+    global production_language, demographics_language, infrastructure_language,housing_language, outlook_language
     global car_language, train_language, bus_language, plane_language
     global population_language,income_language
-    global education_language
     print('Creating Langauge')
     
     #overview language
@@ -4865,9 +4776,6 @@ def CreateLanguage():
 
     #Income Language
     income_language = IncomeLanguage()
-
-    #Education language
-    education_language = EducationLanguage()
 
 #Table Realted functions 
 def GetDataAndLanguageForOverviewTable():
@@ -5250,7 +5158,7 @@ def AddTable(document,data_for_table): #Function we use to insert our overview t
                         font.name  = primary_font
              
 #####################################################Report document related functions####################################
-def SetPageMargins(document,margin_size):
+def SetPageMargins(document, margin_size):
     sections = document.sections
     for section in sections:
         section.top_margin    = Inches(margin_size)
@@ -5259,128 +5167,141 @@ def SetPageMargins(document,margin_size):
         section.right_margin  = Inches(margin_size)
 
 def SetDocumentStyle(document):
-    style = document.styles['Normal']
-    font = style.font
+    style     = document.styles['Normal']
+    font      = style.font
     font.name = 'Avenir Next LT Pro (Body)'
     font.size = Pt(9)
 
 def AddTitle(document):
-    title = document.add_heading(county + ' Area Analysis',level=1)
-    title.style = document.styles['Heading 2']
+    title                               = document.add_heading(county + ' Area Analysis',level=1)
+    title.style                         = document.styles['Heading 2']
     title.paragraph_format.space_after  = Pt(6)
     title.paragraph_format.space_before = Pt(12)
-    title_style = title.style
-    title_style.font.name = "Avenir Next LT Pro Light"
-    title_style.font.size = Pt(14)
-    title_style.font.bold = False
-    title_style.font.color.rgb = RGBColor.from_string('3F65AB')
+    title_style                         = title.style
+    title_style.font.name               = "Avenir Next LT Pro Light"
+    title_style.font.size               = Pt(14)
+    title_style.font.bold               = False
+    title_style.font.color.rgb          = RGBColor.from_string('3F65AB')
     title_style.element.xml
-    rFonts = title_style.element.rPr.rFonts
+    rFonts                              = title_style.element.rPr.rFonts
     rFonts.set(qn("w:asciiTheme"), "Avenir Next LT Pro Light")
 
     above_map_paragraph = document.add_paragraph("The following analysis includes pertinent aspects of the surrounding region as it pertains to the subject property. " + 
-                                                'This report was compiled using data as of ' + current_quarter + ' unless otherwise noted. Data is from a number of sources including the U.S. Bureau of Labor Statistics ("BLS"), the U.S. Bureau of Economic Analysis ("BEA"), and the U.S. Census Bureau.')
-    above_map_style = above_map_paragraph.style
-    above_map_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    above_map_style.font.size = Pt(9)
+                                                'This report was compiled using data as of ' + current_quarter + ' unless otherwise noted. Data is from a number of sources including the U.S. Bureau of Labor Statistics ("BLS"), the U.S. Bureau of Economic Analysis ("BEA"), and the U.S. Census Bureau.'
+                                                )
+    above_map_style                                   = above_map_paragraph.style
+    above_map_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
+    above_map_style.font.size                         = Pt(9)
     above_map_paragraph.paragraph_format.space_after  = Pt(primary_space_after_paragraph)
 
-def AddHeading(document,title,heading_level): #Function we use to insert the headers other than the title header
-            heading = document.add_heading(title,level=heading_level)
-            heading.style = document.styles['Heading 3']
-            heading_style =  heading.style
-            heading_style.font.name = "Avenir Next LT Pro"
-            heading_style.font.size = Pt(11)
-            heading_style.font.bold = False
-            heading.paragraph_format.space_after  = Pt(6)
-            heading.paragraph_format.space_before = Pt(12)
+def AddHeading(document, title, heading_level): 
+    #Function we use to insert the headers other than the title header
+    heading                               = document.add_heading(title, level = heading_level)
+    heading.style                         = document.styles['Heading 3']
+    heading_style                         = heading.style
+    heading_style.font.name               = "Avenir Next LT Pro"
+    heading_style.font.size               = Pt(11)
+    heading_style.font.bold               = False
+    heading.paragraph_format.space_after  = Pt(6)
+    heading.paragraph_format.space_before = Pt(12)
 
-            #Color
-            heading_style.font.color.rgb = RGBColor.from_string('3F65AB')            
-            heading_style.element.xml
-            rFonts = heading_style.element.rPr.rFonts
-            rFonts.set(qn("w:asciiTheme"), "Avenir Next LT Pro")
+    #Color
+    heading_style.font.color.rgb          = RGBColor.from_string('3F65AB')            
+    heading_style.element.xml
+    rFonts                                = heading_style.element.rPr.rFonts
+    rFonts.set(qn("w:asciiTheme"), "Avenir Next LT Pro")
 
-def Citation(document,text):
-    citation_paragraph = document.add_paragraph()
+def Citation(document, text):
+    citation_paragraph                               = document.add_paragraph()
     citation_paragraph.paragraph_format.space_after  = Pt(6)
     citation_paragraph.paragraph_format.space_before = Pt(0)
-    run = citation_paragraph.add_run('Source: ' + text)
-    font = run.font
-    font.name = primary_font
-    font.size = Pt(8)
-    font.italic = True
-    font.color.rgb  = RGBColor.from_string('929292')
-    citation_paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    run                                              = citation_paragraph.add_run('Source: ' + text)
+    font                                             = run.font
+    font.name                                        = primary_font
+    font.size                                        = Pt(8)
+    font.italic                                      = True
+    font.color.rgb                                   = RGBColor.from_string('929292')
+    citation_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.RIGHT
 
-def Note(document,text):
-    citation_paragraph = document.add_paragraph()
+def Note(document, text):
+    citation_paragraph                               = document.add_paragraph()
     citation_paragraph.paragraph_format.space_after  = Pt(6)
     citation_paragraph.paragraph_format.space_before = Pt(6)
-    run = citation_paragraph.add_run('Note: ' + text)
-    font = run.font
-    font.name = primary_font
-    font.size = Pt(8)
-    font.italic = True
-    font.color.rgb  = RGBColor.from_string('929292')
-    citation_paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    run                                              = citation_paragraph.add_run('Note: ' + text)
+    font                                             = run.font
+    font.name                                        = primary_font
+    font.size                                        = Pt(8)
+    font.italic                                      = True
+    font.color.rgb                                   = RGBColor.from_string('929292')
+    citation_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.RIGHT
 
-def AddMap(document):
-    #Add image of map
-    if os.path.exists(os.path.join(county_folder_map,'map.png')):
-        map = document.add_picture(os.path.join(county_folder_map,'map.png'),width=Inches(6.5))
-    else:    
+def GetMap():
+    try:
+        print('Getting map image from Google Maps')
+        
+        #Search Google Maps for County
+        options = webdriver.ChromeOptions()
+        options.add_argument("--start-maximized")
+        browser = webdriver.Chrome(executable_path=(os.path.join(os.environ['USERPROFILE'], 'Desktop','chromedriver.exe')),options=options)
+        browser.get('https:google.com/maps')
+        
+        #Write county name in box
+        Place = browser.find_element_by_class_name("tactile-searchbox-input")
+        Place.send_keys((county + ', ' + state))
+        
+        #Submit county name for search
+        Submit = browser.find_element_by_class_name('nhb85d-BIqFsb')
+        Submit.click()
+
+        time.sleep(5)
+        zoomout = browser.find_element_by_xpath("""//*[@id="widget-zoom-out"]/div""")
+        zoomout.click()
+        time.sleep(7)
+
+        #Differnent machines have different screen coordinates
+        if 'Leahy' in os.environ['USERPROFILE']: 
+            print("""Using Mike's coordinates for screenshot""")
+            im2 = pyautogui.screenshot(region=(1358, 465, 2142, 1404) ) #left, top, width, and height
+        
+        elif 'Dominic' in os.environ['USERPROFILE']:
+            print("""Using Dom's coordinates for screenshot""")
+            im2 = pyautogui.screenshot(region=(3680, 254, 1968, 1231) ) #left, top, width, and height
+        
+        time.sleep(.25)
+        im2.save(os.path.join(county_folder_map,'map.png'))
+        im2.close()
+        time.sleep(1)
+        browser.quit()
+   
+   #Upon failure, make sure we close the browser
+    except Exception as e:
+        print(e)
         try:
-            #Search Google Maps for County
-            options = webdriver.ChromeOptions()
-            options.add_argument("--start-maximized")
-            browser = webdriver.Chrome(executable_path=(os.path.join(os.environ['USERPROFILE'], 'Desktop','chromedriver.exe')),options=options)
-            browser.get('https:google.com/maps')
-            
-            #Write county name in box
-             # Place = browser.find_element_by_xpath("""""")
-            Place = browser.find_element_by_class_name("tactile-searchbox-input")
-            Place.send_keys((county + ', ' + state))
-            
-            #Submit county name for search
-            Submit = browser.find_element_by_class_name('nhb85d-BIqFsb')
-            Submit.click()
-
-            time.sleep(5)
-            zoomout = browser.find_element_by_xpath("""//*[@id="widget-zoom-out"]/div""")
-            zoomout.click()
-            time.sleep(7)
-
-            if 'Leahy' in os.environ['USERPROFILE']: #differnet machines have different screen coordinates
-                print('Using Mikes coordinates for screenshot')
-                im2 = pyautogui.screenshot(region=(1358,465, 2142, 1404) ) #left, top, width, and height
-            
-            elif 'Dominic' in os.environ['USERPROFILE']:
-                print('Using Doms coordinates for screenshot')
-                im2 = pyautogui.screenshot(region=(3680,254,1968 ,1231) ) #left, top, width, and height
-            
-            else:
-                im2 = pyautogui.screenshot(region=(1089,276, 2405, 1754) ) #left, top, width, and height
-
-            time.sleep(.25)
-            im2.save(os.path.join(county_folder_map,'map.png'))
-            im2.close()
-            time.sleep(1)
-            map = document.add_picture(os.path.join(county_folder_map,'map.png'),width=Inches(6.5))
             browser.quit()
-        except Exception as e:
-            print(e)
-            try:
-                browser.quit()
-            except:
-                pass
+        except:
+            pass
+ 
+def AddMap(document):
+    #Add image of map if we already have one
+    if os.path.exists(os.path.join(county_folder_map, 'map.png')):
+        print('Adding map png to document')
+        map = document.add_picture(os.path.join(county_folder_map, 'map.png'), width=Inches(6.5))
+    
+    #Otherwise, go fetch one from Google Maps
+    else:
+        GetMap() 
+    
+    if os.path.exists(os.path.join(county_folder_map, 'map.png')):
+        print('Adding map png to document')
+        map = document.add_picture(os.path.join(county_folder_map, 'map.png'), width=Inches(6.5))
+    
     Citation(document=document,text = 'Google Maps')
 
-def AddTwoColumnTable(document,pic_list,lang_list):
-    #Insert the transit graphics(car, bus,plane, train)
+def AddTwoColumnTable(document, pic_list, lang_list):
+    #Insert the transit graphics(car, bus, plane, train)
     tab = document.add_table(rows=0, cols=2)
     for pic,lang in zip(pic_list,lang_list):
-        row_cells = tab.add_row().cells
+        row_cells      = tab.add_row().cells
         
         left_paragraph = row_cells[0].paragraphs[0]
         run            = left_paragraph.add_run()
@@ -5407,49 +5328,53 @@ def AddTwoColumnTable(document,pic_list,lang_list):
             elif current_column == 1:
                 cell.width = Inches(6)
 
-def AddDocumentParagraph(document,language_variable):
+def AddDocumentParagraph(document, language_variable):
     assert type(language_variable) == list
+
     for paragraph in language_variable:
+        
+        #Skip blank paragraphs
         if paragraph == '':
             continue
+        
         par                                               = document.add_paragraph(str(paragraph))
         par.alignment                                     = WD_ALIGN_PARAGRAPH.JUSTIFY
         par.paragraph_format.space_after                  = Pt(primary_space_after_paragraph)
         summary_format                                    = document.styles['Normal'].paragraph_format
         summary_format.line_spacing_rule                  = WD_LINE_SPACING.SINGLE
-        style = document.styles['Normal']
-        font = style.font
-        font.name = 'Avenir Next LT Pro Light'
-        par.style = document.styles['Normal']
+        style                                             = document.styles['Normal']
+        font                                              = style.font
+        font.name                                         = primary_font
+        par.style                                         = document.styles['Normal']
 
-def AddDocumentPicture(document,image_path,citation):
+def AddDocumentPicture(document, image_path, citation):
     if os.path.exists(image_path):
-        fig = document.add_picture(os.path.join(image_path),width=Inches(6.5))
-        last_paragraph = document.paragraphs[-1] 
-        last_paragraph.paragraph_format.space_after       = Pt(0)
+        fig                                         = document.add_picture(os.path.join(image_path),width=Inches(6.5))
+        last_paragraph                              = document.paragraphs[-1] 
+        last_paragraph.paragraph_format.space_after = Pt(0)
+        last_paragraph.alignment                    = WD_ALIGN_PARAGRAPH.CENTER
+        Citation(document, citation)
 
-        last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        Citation(document,citation)
-
-def AddTableTitle(document,title):
-    table_title_paragraph = document.add_paragraph(title)
-    table_title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+def AddTableTitle(document, title):
+    table_title_paragraph                               = document.add_paragraph(title)
+    table_title_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.CENTER
     table_title_paragraph.paragraph_format.space_after  = Pt(6)
     table_title_paragraph.paragraph_format.space_before = Pt(12)
+
     for run in table_title_paragraph.runs:
-                    font = run.font
+                    font      = run.font
                     font.name = 'Avenir Next LT Pro Medium'
 
 #Report Section Functions
 def OverviewSection(document):
     print('Writing Overview Section')
-    AddHeading(document = document, title = 'Overview',            heading_level = 2)
+    AddHeading(document = document, title = 'Overview', heading_level = 2)
 
     #Add Overview langauge
     AddDocumentParagraph(document = document, language_variable = overview_language)
     
     #Overview table title
-    AddTableTitle(document = document,title = 'Area Fundamentals')
+    AddTableTitle(document = document, title = 'Area Fundamentals')
 
     #Creating Overview Table
     try:
@@ -5458,13 +5383,13 @@ def OverviewSection(document):
         print(e,'problem getting data for overview table')
     
     try:
-        AddTable(document = document,data_for_table = data_for_table )
+        AddTable(document = document, data_for_table = data_for_table )
     except Exception as e:
         print(e,'problem adding table')
            
 def EmploymentSection(document):
     print('Writing Employment Section')
-    AddHeading(document = document, title = 'Labor Market Conditions',            heading_level = 2)
+    AddHeading(document = document, title = 'Labor Market Conditions', heading_level = 2)
 
     #Add MSA Employment Breakdown Language
     AddDocumentParagraph(document = document, language_variable = msa_emplopyment_industry_breakdown_language)
@@ -5478,22 +5403,6 @@ def EmploymentSection(document):
     #Add county employment treemap chart
     AddDocumentPicture(document = document,image_path = os.path.join(county_folder,'employment_by_industry.png') ,citation = 'U.S. Bureau of Labor Statistics')
     
-    # top_emp_paragraph = document.add_paragraph("""The Region’s largest employers shown below illustrates the size of the top industries in the region, accounting for the majority of the top Employers.""")
-    # top_emp_paragraph.paragraph_format.space_after = Pt(0)
-    # top_emp_paragraph.paragraph_format.space_after = Pt(6)
-    # top_emp_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    
-    # table_paragraph = document.add_paragraph('The Region’s Largest Employers')
-    # table_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    # table_paragraph.paragraph_format.space_after  = Pt(6)
-    # table_paragraph.paragraph_format.space_before = Pt(12)
-    # for run in table_paragraph.runs:
-    #     font = run.font
-    #     font.name = 'Avenir Next LT Pro Medium'
-
-    # AddTable(document=document,data_for_table=[['Company Name','Industry'],['X','X'],['X','X'],['X','X'],['X','X'],['X','X'],['X','X'],['X','X'],['X','X'],['X','X'],['X','X'] ])
-    # Citation(document=document,text='')
-
     AddDocumentParagraph(document = document, language_variable = unemplopyment_language)
 
     #Add combined unemployment rate and employment growth graph
@@ -5513,44 +5422,44 @@ def EmploymentSection(document):
 
 def ProductionSection(document):
     print('Writing Production Section')
-    AddHeading(document = document, title = 'Economic Production',            heading_level = 2)
+    AddHeading(document = document, title = 'Economic Production', heading_level = 2)
     
     #Add GDP Language
     AddDocumentParagraph(document = document, language_variable = production_language)
 
     #Add GDP Graph
-    AddDocumentPicture(document = document,image_path = os.path.join(county_folder,'gdp.png') ,citation = 'U.S. Bureau of Economic Analysis')
+    AddDocumentPicture(document = document, image_path = os.path.join(county_folder,'gdp.png') ,citation = 'U.S. Bureau of Economic Analysis')
 
 def DemographicsSection(document):
     print('Writing Demographic Section')
-    AddHeading(document = document, title = 'Demographics',            heading_level = 2)
+    AddHeading(document = document, title = 'Demographics', heading_level = 2)
 
     #Add langugage on population/population growth
     AddDocumentParagraph(document = document, language_variable = population_language)
 
     #Population graph
-    AddDocumentPicture(document = document,image_path = os.path.join(county_folder,'resident_population_and_growth.png') ,citation = 'U.S. Census Bureau')
+    AddDocumentPicture(document = document,image_path = os.path.join(county_folder,'resident_population_and_growth.png'), citation = 'U.S. Census Bureau')
 
     #Add langugage on per captia income and income growth
     AddDocumentParagraph(document = document, language_variable = income_language)
 
     #Per Capita Income and Income Growth
-    AddDocumentPicture(document = document,image_path = os.path.join(county_folder,'per_capita_income_and_growth.png') ,citation = 'U.S. Census Bureau')
+    AddDocumentPicture(document = document,image_path = os.path.join(county_folder,'per_capita_income_and_growth.png'), citation = 'U.S. Census Bureau')
 
 def InfrastructureSection(document):
     print('Writing Infrastructure Section')
-    AddHeading(document = document, title = 'Infrastructure',            heading_level = 2)
+    AddHeading(document = document, title = 'Infrastructure', heading_level = 2)
     AddDocumentParagraph(document = document, language_variable = infrastructure_language)
 
     #Insert the transit graphics(car, bus,plane, train)
-    AddTableTitle(document = document,title = 'Transportation Methods')
-    AddTwoColumnTable(document,pic_list      = ['car.png','train.png','bus.png','plane.png'],lang_list =[car_language,train_language,bus_language,plane_language] )
+    AddTableTitle(document = document, title = 'Transportation Methods')
+    AddTwoColumnTable(document, pic_list = ['car.png','train.png','bus.png','plane.png'], lang_list = [car_language, train_language, bus_language, plane_language] )
 
 def HousingSection(document):
     print('Writing Housing Section')
-    AddHeading(document = document, title = 'Housing',            heading_level = 2)
+    AddHeading(          document = document, title = 'Housing', heading_level = 2)
     AddDocumentParagraph(document = document, language_variable = housing_language)
-    AddDocumentPicture(document = document,image_path = os.path.join(county_folder,'mlp.png') ,citation = 'Realtor.com')
+    AddDocumentPicture(  document = document, image_path = os.path.join(county_folder,'mlp.png'), citation = 'Realtor.com')
         
 def OutlookSection(document):
     print('Writing Outlook Section')
@@ -5561,17 +5470,17 @@ def WriteReport():
     print('Writing Report')
     #Create Document
     document = Document()
-    SetPageMargins(document   = document, margin_size=1)
-    SetDocumentStyle(document = document)
-    AddTitle(document = document)
-    AddMap(document = document)
-    OverviewSection(document     = document)
-    EmploymentSection(document   = document)
-    ProductionSection(document   = document)
-    DemographicsSection(document = document)
+    SetPageMargins(       document = document, margin_size = 1)
+    SetDocumentStyle(     document = document)
+    AddTitle(             document = document)
+    AddMap(               document = document)
+    OverviewSection(      document = document)
+    EmploymentSection(    document = document)
+    ProductionSection(    document = document)
+    DemographicsSection(  document = document)
     InfrastructureSection(document = document)
-    HousingSection(document=document)
-    OutlookSection(document = document)
+    HousingSection(       document = document)
+    OutlookSection(       document = document)
 
     #Save report
     document.save(report_path)  
@@ -5682,6 +5591,7 @@ def CreateDirectoryCSV():
         dropbox_df.to_csv(os.path.join(main_output_location, service_api_csv_name),index=False)
 
 def Main():
+    print('Creating Report for: ', county)
     SetGraphFormatVariables()
     CreateDirectory(state = state, county = county)
     GetCountyData()
@@ -5698,6 +5608,7 @@ def Main():
 
     WriteReport()
     CleanUpPNGs()
+    print('Report Complete')
 
 def IdentifyMSA(fips):
     #Figures out if a county is within a metropolitan statistical area and returns its CBSA code
@@ -5824,9 +5735,8 @@ def GetFIPSList():
             try:
                 assert len(fips) == 5
                 fips_list.append(fips)
-            except:
-                print('Invalid FIPS')
-
+            except Exception as e:
+                pass
     
     if fips_list != []:
         print('Preparing Reports for the following fips: ',fips_list)
@@ -5836,7 +5746,7 @@ def GetFIPSList():
 DeclareAPIKeys()
 
 #Decide if you want to export data in excel files in the county folder
-data_export = False
+data_export                   = False
 
 #Set formatting paramaters for reports
 primary_font                  = 'Avenir Next LT Pro Light' 
@@ -5862,48 +5772,32 @@ qcew_year                     = current_year                    #for quarterly c
 qcew_qtr                      = '2'                             #for quarterly census of employment and wages
 
 
-for i,fips in enumerate(GetFIPSList()):
-    assert type(fips) == str
+#This is the main loop for our program, we loop through a list of county FIPS codes
+for i, fips in enumerate(GetFIPSList()):
     
     try:
-        master_county_list = pd.read_excel(os.path.join(data_location,'County_Master_List.xls'),
+        assert type(fips) == str
+        master_county_list = pd.read_excel(os.path.join(data_location, 'County_Master_List.xls'),
                 dtype={'FIPS Code': object
-                        })
-        
-        #use the selected
-        print('Trying to find County')
+                      }
+                                          )
         master_county_list = master_county_list.loc[(master_county_list['FIPS Code'] == fips)]
         assert len(master_county_list) == 1
 
-        
-
-        state               = master_county_list['State'].iloc[0]    
-        state_name          = GetStateName(state_code=state)
-        county              = master_county_list['County Name'].iloc[0]
-
-        print('Creating Report for: ',county)
-        print('This county is within: ', state_name)
-
-        print('Looking for MSA the county is in')
+        state                = master_county_list['State'].iloc[0]    
+        state_name           = GetStateName(state_code=state)
+        county               = master_county_list['County Name'].iloc[0]
         cbsa                 = IdentifyMSA(fips)[0]
         cbsa_name            = IdentifyMSA(fips)[1]
         cbsa_main_state_fips = IdentifyMSA(fips)[2] #the state fips code of the first state listed for a msa        
         cbsa_all_state_fips  = IdentifyMSA(fips)[3] #a list of 2 digit FIPS codes for each state the MSA is in
         
-
         if state in new_england_states:
-            necta_code           = IdentifyNecta(cbsa = cbsa)
-            
-        if cbsa != '':
-            print('This county is part of the ' + cbsa_name + ' metro area: ',cbsa)
-        
-        
-        
-        county       = county.split(",")[0]    
+            necta_code       = IdentifyNecta(cbsa = cbsa)
+        county               = county.split(",")[0]    
+
         Main()
-        print('Report Complete')
         
-    
     except Exception as e:
         print(e)
         print('Report Creation Failed for : ',fips)
