@@ -2374,57 +2374,57 @@ def CreateMLPWithGrowthGraph(county_data_frame,msa_data_frame,national_data_fram
     #Add county MLP
     if  (isinstance(county_data_frame, pd.DataFrame) == True):
         fig.add_trace(
-        go.Scatter(x=county_data_frame['Period'],
-                y=county_data_frame['Median List Price'],
-                name=county,
-                line = dict(color = bowery_dark_blue,width = 1,dash = 'dash'),
-                showlegend=False),
-                secondary_y=False,
-                row = 1,
-                col = 1)
+            go.Scatter(x = county_data_frame['Period'],
+                      y  = county_data_frame['Median List Price'],
+                    name = county,
+                    line = dict(color = bowery_dark_blue,width = 1,dash = 'dash'),
+                    showlegend=False),
+            secondary_y=False,
+            row = 1,
+            col = 1
+                      )
     
 
     #Add MSA MLP if applicable
     if   (isinstance(msa_data_frame, pd.DataFrame) == True):
         fig.add_trace(
-        go.Scatter(x=msa_data_frame['Period'],
-                y=msa_data_frame['Median List Price'],
-                name=cbsa_name + ' (MSA)',
-                line = dict(color=bowery_light_blue,width = 1),
-                showlegend=False)
-                ,secondary_y=False, 
-                row = 1,
-                col = 1)
+            go.Scatter(x = msa_data_frame['Period'],
+                    y    = msa_data_frame['Median List Price'],
+                    name = cbsa_name + ' (MSA)',
+                    line = dict(color=bowery_light_blue,width = 1),
+                    showlegend=False
+                      ),
+            secondary_y=False, 
+            row = 1,
+            col = 1)
     
 
     #Add national MLP    
     if   (isinstance(national_data_frame, pd.DataFrame) == True):
         fig.add_trace(
-        go.Scatter(x=national_data_frame['Period'],
-                y=national_data_frame['Median List Price'],
-                name='United States',
-                line=dict(color='#000F44'),
-                showlegend=False)
-                ,secondary_y=False,
-                row = 1,
-                col = 1)
+            go.Scatter(x = national_data_frame['Period'],
+                    y    = national_data_frame['Median List Price'],
+                    name = 'United States',
+                    line = dict(color='#000F44'),
+                    showlegend=False),
+            secondary_y=False,
+            row = 1,
+            col = 1)
     
     #Add Growth Subfigure
-    print('Adding Growth Component of MLP Graph')
-
     #Calculate annualized growth rates for the county, msa (if available), and national dataframes
     if (isinstance(county_data_frame, pd.DataFrame) == True):
         county_data_frame['Median List Price_1year_growth'] =  (((county_data_frame['Median List Price']/county_data_frame['Median List Price'].shift(1 * 12))  - 1) * 100)/1
         county_data_frame['Median List Price_3year_growth'] =  (((county_data_frame['Median List Price']/county_data_frame['Median List Price'].shift(3 * 12))   - 1) * 100)/3
         county_data_frame['Median List Price_5year_growth'] =  (((county_data_frame['Median List Price']/county_data_frame['Median List Price'].shift(5* 12))   - 1) * 100)/5
 
-        county_1y_growth  = county_data_frame.iloc[-1]['Median List Price_1year_growth'] 
-        county_3y_growth  = county_data_frame.iloc[-1]['Median List Price_3year_growth'] 
-        county_5y_growth  = county_data_frame.iloc[-1]['Median List Price_5year_growth']
+        county_1y_growth                                    = county_data_frame.iloc[-1]['Median List Price_1year_growth'] 
+        county_3y_growth                                    = county_data_frame.iloc[-1]['Median List Price_3year_growth'] 
+        county_5y_growth                                    = county_data_frame.iloc[-1]['Median List Price_5year_growth']
     else:
-        county_1y_growth = 0
-        county_3y_growth = 0
-        county_5y_growth = 0 
+        county_1y_growth                                    = 0
+        county_3y_growth                                    = 0
+        county_5y_growth                                    = 0 
 
         
     if (isinstance(msa_data_frame, pd.DataFrame) == True):
@@ -2435,9 +2435,9 @@ def CreateMLPWithGrowthGraph(county_data_frame,msa_data_frame,national_data_fram
         msa_data_frame['Median List Price_3year_growth'] =  (((msa_data_frame['Median List Price']/msa_data_frame['Median List Price'].shift(3 * 12))   - 1) * 100)/3
         msa_data_frame['Median List Price_5year_growth'] =  (((msa_data_frame['Median List Price']/msa_data_frame['Median List Price'].shift(5 * 12))   - 1) * 100)/5
 
-        msa_1y_growth  = msa_data_frame.iloc[-1]['Median List Price_1year_growth'] 
-        msa_3y_growth  = msa_data_frame.iloc[-1]['Median List Price_3year_growth'] 
-        msa_5y_growth  = msa_data_frame.iloc[-1]['Median List Price_5year_growth'] 
+        msa_1y_growth                                    = msa_data_frame.iloc[-1]['Median List Price_1year_growth'] 
+        msa_3y_growth                                    = msa_data_frame.iloc[-1]['Median List Price_3year_growth'] 
+        msa_5y_growth                                    = msa_data_frame.iloc[-1]['Median List Price_5year_growth'] 
 
 
     #Make sure we are comparing same years for calculating growth rates for county and state
@@ -2447,47 +2447,50 @@ def CreateMLPWithGrowthGraph(county_data_frame,msa_data_frame,national_data_fram
     national_data_frame['Median List Price_3year_growth'] =  (((national_data_frame['Median List Price']/national_data_frame['Median List Price'].shift(3 * 12))   - 1) * 100)/3
     national_data_frame['Median List Price_5year_growth'] =  (((national_data_frame['Median List Price']/national_data_frame['Median List Price'].shift(5 * 12))   - 1) * 100)/5
 
-    national_1y_growth  = national_data_frame.iloc[-1]['Median List Price_1year_growth'] 
-    national_3y_growth  = national_data_frame.iloc[-1]['Median List Price_3year_growth'] 
-    national_5y_growth  = national_data_frame.iloc[-1]['Median List Price_5year_growth'] 
+    national_1y_growth                                    = national_data_frame.iloc[-1]['Median List Price_1year_growth'] 
+    national_3y_growth                                    = national_data_frame.iloc[-1]['Median List Price_3year_growth'] 
+    national_5y_growth                                    = national_data_frame.iloc[-1]['Median List Price_5year_growth'] 
     
 
     #Now that we've calculated growth rates, create our plot
-    years=['3 Years','1 Year']
+    years               = ['3 Years','1 Year']
     annotation_position = 'outside'
     
-    # fig.show()
+   
 
     #MSA MLP is available
     if (isinstance(msa_data_frame, pd.DataFrame) == True)  and (isinstance(county_data_frame, pd.DataFrame) == False):
         print('MSA MLP Data is available, county is not')
         #Add National Growth 
-        fig.add_trace( go.Bar(
-                name = 'United States',  
-                x=years, 
-                y=[national_3y_growth, national_1y_growth],
-                marker_color ="#000F44",
-                text = [national_3y_growth, national_1y_growth],
+        fig.add_trace( 
+            go.Bar(
+                name         = 'United States',  
+                x            = years, 
+                y            = [national_3y_growth, national_1y_growth],
+                marker_color = "#000F44",
+                text         = [national_3y_growth, national_1y_growth],
                 texttemplate = "%{value:.2f}%",
                 textposition = annotation_position,
-                cliponaxis =  False
-                ),
-                row = 1,
-                col = 2)
-
-        #Add MSA Growth
-        fig.add_trace( go.Bar(
-            name = cbsa_name + ' (MSA)',  
-            x=years, 
-            y=[ msa_3y_growth, msa_1y_growth],
-            marker_color =bowery_light_blue,
-            text = [ msa_3y_growth, msa_1y_growth],
-            texttemplate = "%{value:.2f}%",
-            textposition = annotation_position,
-            cliponaxis =  False
-            ),
+                cliponaxis   =  False
+                   ),
             row = 1,
             col = 2)
+
+        #Add MSA Growth
+        fig.add_trace( 
+            go.Bar(
+                name         = cbsa_name + ' (MSA)',  
+                x            = years, 
+                y            = [ msa_3y_growth, msa_1y_growth],
+                marker_color = bowery_light_blue,
+                text         = [ msa_3y_growth, msa_1y_growth],
+                texttemplate = "%{value:.2f}%",
+                textposition = annotation_position,
+                cliponaxis   =  False
+                  ),
+            row = 1,
+            col = 2
+                    )
 
     
     
@@ -2495,32 +2498,35 @@ def CreateMLPWithGrowthGraph(county_data_frame,msa_data_frame,national_data_fram
     elif (isinstance(msa_data_frame, pd.DataFrame) == False)  and (isinstance(county_data_frame, pd.DataFrame) == True):
         print('MSA MLP Unavailable, County MLP is available')
         #Add National Growth
-        fig.add_trace( go.Bar(
-        name = 'United States',  
-        x=years, 
-        y=[ national_3y_growth, national_1y_growth],
-        marker_color ="#000F44",
-        text = [national_3y_growth, national_1y_growth],
-        texttemplate = "%{value:.2f}%",
-        textposition = annotation_position,
-        cliponaxis =  False
-        ),
+        fig.add_trace( 
+            go.Bar(
+                name         = 'United States',  
+                x            = years, 
+                y            = [national_3y_growth, national_1y_growth],
+                marker_color = "#000F44",
+                text         = [national_3y_growth, national_1y_growth],
+                texttemplate = "%{value:.2f}%",
+                textposition = annotation_position,
+                cliponaxis   =  False
+                   ),
         row = 1,
         col = 2)
 
         #Add County Growth
-        fig.add_trace(go.Bar(
-            name=county,      
-            x=years, 
-            y=[county_3y_growth,county_1y_growth],
-            marker_color = bowery_dark_blue,
-            text = [county_3y_growth,county_1y_growth],
-            texttemplate = "%{value:.2f}%",
-            textposition = annotation_position,
-            cliponaxis =  False
-        ),
-        row = 1,
-        col = 2)
+        fig.add_trace(
+            go.Bar(
+                name         = county,      
+                x            = years, 
+                y            = [county_3y_growth,county_1y_growth],
+                marker_color = bowery_dark_blue,
+                text         = [county_3y_growth,county_1y_growth],
+                texttemplate = "%{value:.2f}%",
+                textposition = annotation_position,
+                cliponaxis   =  False
+                   ),
+            row = 1,
+            col = 2
+                     )
 
     
 
@@ -2528,74 +2534,72 @@ def CreateMLPWithGrowthGraph(county_data_frame,msa_data_frame,national_data_fram
     elif (isinstance(msa_data_frame, pd.DataFrame) == False)  and (isinstance(county_data_frame, pd.DataFrame) == False):
         print('County and MSA MLP data are unavailable')
         #Add National Growth
-        fig.add_trace( go.Bar(
-                name = 'United States',  
-                x=years, 
-                y=[ national_3y_growth, national_1y_growth],
-                marker_color ="#000F44",
-                text = [ national_3y_growth, national_1y_growth],
+        fig.add_trace( 
+            go.Bar(
+                name         = 'United States',  
+                x            = years, 
+                y            = [ national_3y_growth, national_1y_growth],
+                marker_color = "#000F44",
+                text         = [ national_3y_growth, national_1y_growth],
                 texttemplate = "%{value:.2f}%",
                 textposition = annotation_position,
-                cliponaxis =  False
-                ),
-                row = 1,
-                col = 2)
+                cliponaxis   =  False
+                  ),
+            row = 1,
+            col = 2)
     
     #County AND MSA are available
     elif (isinstance(msa_data_frame, pd.DataFrame) == True)  and (isinstance(county_data_frame, pd.DataFrame) == True):
         print('MSA and County are available')
 
         #Add National Growth
-        fig.add_trace( go.Bar(
-                name = 'United States',  
-                x=years, 
-                y=[ national_3y_growth, national_1y_growth],
-                marker_color ="#000F44",
-                text = [ national_3y_growth, national_1y_growth],
+        fig.add_trace( 
+            go.Bar(
+                name         = 'United States',  
+                x            = years, 
+                y            = [ national_3y_growth, national_1y_growth],
+                marker_color = "#000F44",
+                text         = [ national_3y_growth, national_1y_growth],
                 texttemplate = "%{value:.2f}%",
                 textposition = annotation_position,
-                cliponaxis =  False
+                cliponaxis   =  False
                 ),
-                row = 1,
-                col = 2)
+            row = 1,
+            col = 2)
 
         #Add MSA Growth
-        fig.add_trace( go.Bar(
-            name = cbsa_name + ' (MSA)',  
-            x=years, 
-            y=[msa_3y_growth, msa_1y_growth],
-            marker_color ="#B3C3FF",
-            text = [msa_3y_growth, msa_1y_growth],
-            texttemplate = "%{value:.2f}%",
-            textposition = annotation_position,
-            cliponaxis =  False
-            ),
+        fig.add_trace( 
+            go.Bar(
+                name         = cbsa_name + ' (MSA)',  
+                x            = years, 
+                y            = [msa_3y_growth, msa_1y_growth],
+                marker_color = "#B3C3FF",
+                text         = [msa_3y_growth, msa_1y_growth],
+                texttemplate = "%{value:.2f}%",
+                textposition = annotation_position,
+                cliponaxis   =  False
+                 ),
             row = 1,
             col = 2)
 
         #Add County Growth
-        fig.add_trace(go.Bar(
-                    name=county,      
-                    x=years, 
-                    y=[county_3y_growth,county_1y_growth],
-                    marker_color = bowery_dark_blue,
-                    text = [county_3y_growth,county_1y_growth],
-                    texttemplate = "%{value:.2f}%",
-                    textposition = annotation_position,
-                    cliponaxis =  False
+        fig.add_trace(
+            go.Bar(
+                name         = county,      
+                x            = years, 
+                y            = [county_3y_growth,county_1y_growth],
+                marker_color = bowery_dark_blue,
+                text         = [county_3y_growth,county_1y_growth],
+                texttemplate = "%{value:.2f}%",
+                textposition = annotation_position,
+                cliponaxis   =  False
                 ),
-                row = 1,
-                col = 2)
+            row = 1,
+            col = 2)
 
     #Change the bar mode
     fig.update_layout(barmode='group')
 
-    #Set X-axes format
-    fig.update_xaxes(
-        tickfont = dict(size=tickfont_size),
-        row = 1,
-        col = 2
-        )
 
     #Set Y-Axes format
     fig.update_yaxes(
@@ -2605,6 +2609,12 @@ def CreateMLPWithGrowthGraph(county_data_frame,msa_data_frame,national_data_fram
         row = 1,
         col = 2)                 
 
+    #Set X-axes format
+    fig.update_xaxes(
+        tickfont = dict(size=tickfont_size),
+        row = 1,
+        col = 2
+        )
 
     #Set X-Axis Format
     fig.update_xaxes(
@@ -2613,50 +2623,39 @@ def CreateMLPWithGrowthGraph(county_data_frame,msa_data_frame,national_data_fram
         tickformat="%Y",
         tickangle = tickangle,
         tickfont = dict(size=tickfont_size),
-        # linecolor = 'black',
         row = 1,
         col = 1
         )
 
     #Set Y-Axis format
-    fig.update_yaxes( tickfont = dict(size=tickfont_size),
-                    #   linecolor='black',
+    fig.update_yaxes(  tickfont = dict(size=tickfont_size),
                        row = 1,
-                        col = 1  
+                       col = 1  
                     )
 
     fig.update_yaxes(tickprefix = '$', tickfont = dict(size=tickfont_size),secondary_y=False, row = 1,col = 1)
 
 
-
-    
     #Set Legend Layout
     fig.update_layout(
-    legend=dict(
-        orientation="h",
-        yanchor="bottom",
-        y=legend_position + .1 ,
-        xanchor="center",
-        x=0.5,
-        font_size = tickfont_size
-                )
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=legend_position + .1 ,
+            xanchor="center",
+            x=0.5,
+            font_size = tickfont_size
+                    ),
 
-                      )
+        font_family   = "Avenir Next LT Pro",
+        font_color    = '#262626',
+        font_size     = 10.5,
+        paper_bgcolor = paper_backgroundcolor,
+        plot_bgcolor  = "White",
 
-    #Set Font and Colors
-    fig.update_layout(
-    font_family="Avenir Next LT Pro",
-    font_color='#262626',
-    font_size = 10.5,
-    paper_bgcolor=paper_backgroundcolor,
-    plot_bgcolor ="White"
-                     )
-
-    #Set size and margin
-    fig.update_layout(
-    margin=dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin),
-    height    = graph_height,
-    width     = graph_width,
+        margin        = dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin),
+        height        = graph_height,
+        width         = graph_width,
         
                     )
 
