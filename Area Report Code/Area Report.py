@@ -1471,7 +1471,7 @@ def CreateUnemploymentRateEmploymentGrowthGraph(folder):
         font_color    = '#262626',
         font_size     = 10.5,
         paper_bgcolor = paper_backgroundcolor,
-        plot_bgcolor  = "White"    
+        plot_bgcolor  = "White",    
                     )
 
     #Add % to left axis ticks
@@ -1516,69 +1516,74 @@ def CreateUnemploymentRateGraph(folder):
 
     #County unemployment rate
     fig.add_trace(
-    go.Scatter(x=county_unemployment_rate['period'],
-            y=county_unemployment_rate['unemployment_rate'],
-            name=county,
-            line=dict(color = bowery_dark_blue, width = 1,dash = 'dash'))
-    ,secondary_y=False)
+        go.Scatter(x=county_unemployment_rate['period'],
+                y=county_unemployment_rate['unemployment_rate'],
+                name=county,
+                line=dict(color = bowery_dark_blue, width = 1,dash = 'dash'))
+        ,secondary_y=False)
 
     #MSA unemployment rate if applicable
     if (cbsa != '') and (msa_unemployment_rate.equals(county_unemployment_rate) == False):
         fig.add_trace(
-        go.Scatter(x=msa_unemployment_rate['period'],
-                y=msa_unemployment_rate['unemployment_rate'],
-                name=cbsa_name + ' (MSA)',
-                line=dict(color=bowery_light_blue, width = 1))
-        ,secondary_y=False)
+            go.Scatter(x=msa_unemployment_rate['period'],
+                    y=msa_unemployment_rate['unemployment_rate'],
+                    name=cbsa_name + ' (MSA)',
+                    line=dict(color=bowery_light_blue, width = 1))
+            ,secondary_y=False)
 
     #State unemployment rate
     fig.add_trace(
-    go.Scatter(x=state_unemployment_rate['period'],
-            y=state_unemployment_rate['unemployment_rate'],
-            name=state_name,
-            line=dict(color=bowery_dark_grey, width = 1))
-    ,secondary_y=False)
+        go.Scatter(x=state_unemployment_rate['period'],
+                y=state_unemployment_rate['unemployment_rate'],
+                name=state_name,
+                line=dict(color=bowery_dark_grey, width = 1))
+        ,secondary_y=False)
 
     #Set formatting 
     fig.update_layout(
-    title_text="Unemployment Rate",    
-    title={
-        'y':title_position,
-        'x':0.5,
-        'xanchor': 'center',
-        'yanchor': 'top'},
+        title_text="Unemployment Rate",    
+        
+        title = {
+            'y':title_position,
+            'x':0.5,
+            'xanchor': 'center',
+            'yanchor': 'top'
+              },
 
-    legend=dict(
-        orientation="h",
-        yanchor="bottom",
-        y=legend_position,
-        xanchor="center",
-        x=0.5,
-        font_size = tickfont_size
-                ),
-    font_family="Avenir Next LT Pro",
-    font_color='#262626',
-    font_size = 10.5,
-    paper_bgcolor=paper_backgroundcolor,
-    plot_bgcolor ="White"    
+        legend = dict(
+            orientation="h",
+            yanchor="bottom",
+            y=legend_position,
+            xanchor="center",
+            x=0.5,
+            font_size = tickfont_size
+                    ),
+
+        font_family   = "Avenir Next LT Pro",
+        font_color    = '#262626',
+        font_size     = 10.5,
+        paper_bgcolor = paper_backgroundcolor,
+        plot_bgcolor  = "White",    
+        autosize      = False,
+        height        = graph_height,
+        width         = graph_width,
+        margin        = dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin,pad=0,autoexpand = True),
+
                     )
 
     #Add % to left axis ticks
     fig.update_yaxes(
-        tickfont = dict(size=tickfont_size), 
+        tickfont   = dict(size=tickfont_size), 
         ticksuffix = '%',  
-        title = None ,
-        # linecolor = 'black',   
-        tickmode  = 'auto',
-        nticks    = 6,
-        # range = [0,25],
-        secondary_y=False)                 
+        title      = None ,
+        tickmode   = 'auto',
+        nticks     = 6,
+        secondary_y= False)                 
                     
     
     #Set x axis ticks
-    quarter_list = [i for i in range(len(county_unemployment_rate['period']))]
-    quarter_list = quarter_list[::-12]
-
+    quarter_list      = [i for i in range(len(county_unemployment_rate['period']))]
+    quarter_list      = quarter_list[::-12]
     quarter_list_text = [period for period in county_unemployment_rate['period']]
     quarter_list_text = quarter_list_text[::-12]
 
@@ -1588,19 +1593,9 @@ def CreateUnemploymentRateGraph(folder):
         ticktext = quarter_list_text,
         tickfont = dict(size=tickfont_size),
         tickangle = 0,
-        # linecolor = 'black' 
-        )
+                     )
 
-    #Set size
-    fig.update_layout(
-    autosize=False,
-    height    = graph_height,
-    width     = graph_width,
-    margin=dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin,pad=0,autoexpand = True),)
-    
-
-
-    fig.write_image(os.path.join(folder,'unemployment_rate.png'),engine='kaleido',scale=scale)
+    fig.write_image(os.path.join(folder,'unemployment_rate.png'), engine = 'kaleido', scale = scale)
 
 def CreateEmploymentGrowthGraph(folder):
 
@@ -1608,63 +1603,72 @@ def CreateEmploymentGrowthGraph(folder):
 
     #County unemployment rate
     fig.add_trace(
-    go.Scatter(x=county_employment['period'],
-            y=county_employment['Employment Growth'],
-            name=county,
-            line=dict(color = bowery_dark_blue))
-    ,secondary_y=False)
+        go.Scatter(x = county_employment['period'],
+                   y = county_employment['Employment Growth'],
+                name = county,
+                line = dict(color = bowery_dark_blue)),
+        secondary_y  = False
+                )
 
     #MSA unemployment rate if applicable
     if cbsa != '':
         fig.add_trace(
-        go.Scatter(x=msa_employment['period'],
-                y=msa_employment['Employment Growth'],
-                name=cbsa_name + ' (MSA)',
-                line=dict(color=bowery_light_blue))
-        ,secondary_y=False)
+            go.Scatter(x = msa_employment['period'],
+                       y = msa_employment['Employment Growth'],
+                    name = cbsa_name + ' (MSA)',
+                    line = dict(color=bowery_light_blue)),
+            secondary_y=False)
 
     #State unemployment rate
     fig.add_trace(
-    go.Scatter(x=state_employment['period'],
-            y=state_employment['Employment Growth'],
-            name=state_name,
-            line=dict(color=bowery_dark_grey))
-    ,secondary_y=False)
+        go.Scatter(x = state_employment['period'],
+                y    = state_employment['Employment Growth'],
+                name = state_name,
+                line = dict(color=bowery_dark_grey),
+                ),
+        secondary_y=False)
 
     #Set formatting 
     fig.update_layout(
-    title_text="Annual Employment Growth",    
-    title={
-        'y':title_position,
-        'x':0.5,
-        'xanchor': 'center',
-        'yanchor': 'top'},
+        title_text="Annual Employment Growth",    
+        
+        title={
+            'y':title_position,
+            'x':0.5,
+            'xanchor': 'center',
+            'yanchor': 'top'
+              },
 
-    legend=dict(
-        orientation="h",
-        yanchor="bottom",
-        y=legend_position,
-        xanchor="center",
-        x=0.5,
-        font_size = tickfont_size
-                ),
-    font_family="Avenir Next LT Pro",
-    font_color='#262626',
-    font_size = 10.5,
-    paper_bgcolor=paper_backgroundcolor,
-    plot_bgcolor ="White"    
+        legend = dict(
+                orientation="h",
+                yanchor="bottom",
+                y=legend_position,
+                xanchor="center",
+                x=0.5,
+                font_size = tickfont_size
+                    ),
+
+        font_family   = "Avenir Next LT Pro",
+        font_color    = '#262626',
+        font_size     = 10.5,
+        paper_bgcolor = paper_backgroundcolor,
+        plot_bgcolor  = "White",   
+        
+        #Set size
+        autosize  = False,
+        height    = graph_height,
+        width     = graph_width,
+        margin    = dict(l=left_margin, r=right_margin, t=top_margin, b = bottom_margin,pad=0, autoexpand = True) 
                     )
 
     #Add % to left axis ticks
     fig.update_yaxes(
-        tickfont = dict(size=tickfont_size), 
-        ticksuffix = '%',  
-        title = None ,
-        # linecolor = 'black',
-        tickmode = 'auto',
-        nticks   = 6,
-        # range    =[-20,20],
-        secondary_y=False)                
+        tickfont    = dict(size=tickfont_size), 
+        ticksuffix  = '%',  
+        title       = None ,
+        tickmode    = 'auto',
+        nticks      = 6,
+        secondary_y = False)                
    
     
     #Set x axis ticks
@@ -1679,15 +1683,9 @@ def CreateEmploymentGrowthGraph(folder):
         ticktext = quarter_list_text,
         tickfont = dict(size=tickfont_size),
         tickangle = 0,
-        # linecolor = 'black'
-        )
+                    )
 
-    #Set size
-    fig.update_layout(
-    autosize=False,
-    height    = graph_height,
-    width     = graph_width,
-    margin=dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin,pad=0,autoexpand = True),)
+
     
     fig.write_image(os.path.join(folder,'employment_growth.png'),engine='kaleido',scale=scale)
 
@@ -1696,44 +1694,43 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
     fig = make_subplots(specs=[[{"secondary_y": True}, {"secondary_y": False}]],rows=1, cols=2,subplot_titles=("Per Capita Personal Income", "Annualized Income Growth"),horizontal_spacing = horizontal_spacing)
 
     #Add county PCI
-    if  (isinstance(county_data_frame, pd.DataFrame) == True):
+    if (isinstance(county_data_frame, pd.DataFrame) == True):
         fig.add_trace(
-        go.Scatter(x=county_data_frame['Period'],
-                y=county_data_frame['Per Capita Personal Income'],
-                name=county,
-                line = dict(color = bowery_dark_blue,width = 1,dash = 'dash'),
-                showlegend=False),
-                secondary_y=False,
-                row = 1,
-                col = 1)
+            go.Scatter(x = county_data_frame['Period'],
+                    y    = county_data_frame['Per Capita Personal Income'],
+                    name = county,
+                    line = dict(color = bowery_dark_blue,width = 1,dash = 'dash'),
+                    showlegend=False),
+                    secondary_y=False,
+                    row = 1,
+                    col = 1)
         
 
    #Add MSA PCI if applicable
-    if   (isinstance(msa_data_frame, pd.DataFrame) == True) and (msa_data_frame.equals(county_data_frame) == False):
+    if (isinstance(msa_data_frame, pd.DataFrame) == True) and (msa_data_frame.equals(county_data_frame) == False):
         fig.add_trace(
-        go.Scatter(x=msa_data_frame['Period'],
-                y=msa_data_frame['Per Capita Personal Income'],
-                name=cbsa_name + ' (MSA)',
-                line = dict(color=bowery_light_blue,width = 1),
-                showlegend=False)
-                ,secondary_y=False, 
-                row = 1,
-                col = 1)
+            go.Scatter(x = msa_data_frame['Period'],
+                    y    = msa_data_frame['Per Capita Personal Income'],
+                    name = cbsa_name + ' (MSA)',
+                    line = dict(color=bowery_light_blue,width = 1),
+                    showlegend=False)
+                    ,secondary_y=False, 
+                    row = 1,
+                    col = 1)
         
     else:
         #Add state PCI
         fig.add_trace(
-        go.Scatter(x=state_data_frame['Period'],
-                y=state_data_frame['Per Capita Personal Income'],
-                name=state_name,
-                line=dict(color='#A6B0BF'),
-                showlegend=False)
-                ,secondary_y=False,
-                row = 1,
-                col = 1)
+            go.Scatter(x = state_data_frame['Period'],
+                       y = state_data_frame['Per Capita Personal Income'],
+                    name = state_name,
+                    line = dict(color=bowery_dark_grey),
+                    showlegend=False),
+            secondary_y=False,
+            row = 1,
+            col = 1)
     
     #Add Growth Subfigure
-    print('Adding Growth Component of PCI Graph')
     
     #Calculate annualized growth rates for the county, msa (if available), and state dataframes
     if (isinstance(county_data_frame, pd.DataFrame) == True):
@@ -1741,18 +1738,15 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
         county_data_frame['Per Capita Personal Income_3year_growth'] =  (((county_data_frame['Per Capita Personal Income']/county_data_frame['Per Capita Personal Income'].shift(3))   - 1) * 100)/3
         county_data_frame['Per Capita Personal Income_5year_growth'] =  (((county_data_frame['Per Capita Personal Income']/county_data_frame['Per Capita Personal Income'].shift(5))   - 1) * 100)/5
 
-        county_1y_growth  = county_data_frame.iloc[-1]['Per Capita Personal Income_1year_growth'] 
-        county_3y_growth  = county_data_frame.iloc[-1]['Per Capita Personal Income_3year_growth'] 
-        county_5y_growth  = county_data_frame.iloc[-1]['Per Capita Personal Income_5year_growth']
+        county_1y_growth                                             = county_data_frame.iloc[-1]['Per Capita Personal Income_1year_growth'] 
+        county_3y_growth                                             = county_data_frame.iloc[-1]['Per Capita Personal Income_3year_growth'] 
+        county_5y_growth                                             = county_data_frame.iloc[-1]['Per Capita Personal Income_5year_growth']
     else:
-        county_1y_growth = 0
-        county_3y_growth = 0
-        county_5y_growth = 0 
+        county_1y_growth                                             = 0
+        county_3y_growth                                             = 0
+        county_5y_growth                                             = 0 
 
 
-        
-
-    
     if (isinstance(msa_data_frame, pd.DataFrame) == True):
         #Make sure we are comparing same years for calculating growth rates for county and msa
         if (isinstance(county_data_frame, pd.DataFrame) == True):
@@ -1772,9 +1766,9 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
     state_data_frame['Per Capita Personal Income_3year_growth'] =  (((state_data_frame['Per Capita Personal Income']/state_data_frame['Per Capita Personal Income'].shift(3))   - 1) * 100)/3
     state_data_frame['Per Capita Personal Income_5year_growth'] =  (((state_data_frame['Per Capita Personal Income']/state_data_frame['Per Capita Personal Income'].shift(5))   - 1) * 100)/5
 
-    state_1y_growth  = state_data_frame.iloc[-1]['Per Capita Personal Income_1year_growth'] 
-    state_3y_growth  = state_data_frame.iloc[-1]['Per Capita Personal Income_3year_growth'] 
-    state_5y_growth  = state_data_frame.iloc[-1]['Per Capita Personal Income_5year_growth'] 
+    state_1y_growth                                             = state_data_frame.iloc[-1]['Per Capita Personal Income_1year_growth'] 
+    state_3y_growth                                             = state_data_frame.iloc[-1]['Per Capita Personal Income_3year_growth'] 
+    state_5y_growth                                             = state_data_frame.iloc[-1]['Per Capita Personal Income_5year_growth'] 
 
     #Make sure we are comparing same years for calculating growth rates for county and state
     if  (isinstance(county_data_frame, pd.DataFrame) == True):
@@ -1783,13 +1777,13 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
     national_data_frame['Per Capita Personal Income_3year_growth'] =  (((national_data_frame['Per Capita Personal Income']/national_data_frame['Per Capita Personal Income'].shift(3))   - 1) * 100)/3
     national_data_frame['Per Capita Personal Income_5year_growth'] =  (((national_data_frame['Per Capita Personal Income']/national_data_frame['Per Capita Personal Income'].shift(5))   - 1) * 100)/5
 
-    national_1y_growth  = national_data_frame.iloc[-1]['Per Capita Personal Income_1year_growth'] 
-    national_3y_growth  = national_data_frame.iloc[-1]['Per Capita Personal Income_3year_growth'] 
-    national_5y_growth  = national_data_frame.iloc[-1]['Per Capita Personal Income_5year_growth'] 
+    national_1y_growth                                             = national_data_frame.iloc[-1]['Per Capita Personal Income_1year_growth'] 
+    national_3y_growth                                             = national_data_frame.iloc[-1]['Per Capita Personal Income_3year_growth'] 
+    national_5y_growth                                             = national_data_frame.iloc[-1]['Per Capita Personal Income_5year_growth'] 
     
 
     #Now that we've calculated growth rates, create our plot
-    years=['5 Years', '3 Years','1 Year']
+    years               = ['5 Years', '3 Years', '1 Year']
     annotation_position = 'outside'
     
     
@@ -1797,87 +1791,43 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
     if (isinstance(msa_data_frame, pd.DataFrame) == True)  and (isinstance(county_data_frame, pd.DataFrame) == False):
         print('MSA PCI Available, County PCI is NOT')
         #Add National Growth 
-        fig.add_trace( go.Bar(
-                name = 'United States',  
-                x=years, 
-                y=[national_5y_growth, national_3y_growth, national_1y_growth],
-                marker_color ="#000F44",
-                text = [national_5y_growth, national_3y_growth, national_1y_growth],
+        fig.add_trace( 
+            go.Bar(
+                name         = 'United States',  
+                x            = years, 
+                y            = [national_5y_growth, national_3y_growth, national_1y_growth],
+                marker_color = "#000F44",
+                text         = [national_5y_growth, national_3y_growth, national_1y_growth],
                 texttemplate = "%{value:.2f}%",
                 textposition = annotation_position,
-                cliponaxis =  False
-                ),
+                cliponaxis   =  False
+                   ),
                 row = 1,
                 col = 2)
 
         #Add MSA Growth
-        fig.add_trace( go.Bar(
-            name = cbsa_name + ' (MSA)',  
-            x=years, 
-            y=[msa_5y_growth, msa_3y_growth, msa_1y_growth],
-            marker_color =bowery_light_blue,
-            text = [msa_5y_growth, msa_3y_growth, msa_1y_growth],
-            texttemplate = "%{value:.2f}%",
-            textposition = annotation_position,
-            cliponaxis =  False
-            ),
+        fig.add_trace( 
+            go.Bar(
+                name = cbsa_name + ' (MSA)',  
+                x=years, 
+                y=[msa_5y_growth, msa_3y_growth, msa_1y_growth],
+                marker_color =bowery_light_blue,
+                text = [msa_5y_growth, msa_3y_growth, msa_1y_growth],
+                texttemplate = "%{value:.2f}%",
+                textposition = annotation_position,
+                cliponaxis =  False
+                ),
             row = 1,
             col = 2)
 
 
     
     #MSA PCI is unavailable, but county is (or county is equal to msa)
-    elif ((isinstance(msa_data_frame, pd.DataFrame) == False)  and (isinstance(county_data_frame, pd.DataFrame) == True)) :
+    elif ((isinstance(msa_data_frame, pd.DataFrame) == False)  and (isinstance(county_data_frame, pd.DataFrame) == True)):
         print('MSA PCI Unavailable, County PCI is available')
         #Add National Growth
-        fig.add_trace( go.Bar(
-        name = 'United States',  
-        x=years, 
-        y=[national_5y_growth, national_3y_growth, national_1y_growth],
-        marker_color ="#000F44",
-        text = [national_5y_growth, national_3y_growth, national_1y_growth],
-        texttemplate = "%{value:.2f}%",
-        textposition = annotation_position,
-        cliponaxis =  False
-        ),
-        row = 1,
-        col = 2)
-
-        # Add State Growth
-        fig.add_trace(go.Bar(
-        name=state_name,  
-        x=years, 
-        y=[state_5y_growth, state_3y_growth, state_1y_growth],
-        marker_color =bowery_dark_grey,
-        text = [state_5y_growth, state_3y_growth, state_1y_growth],
-        texttemplate = "%{value:.2f}%",
-        textposition = annotation_position,
-        cliponaxis =  False
-        ),
-        row = 1,
-        col = 2)
-
-        #Add County Growth
-        fig.add_trace(go.Bar(
-            name=county,      
-            x=years, 
-            y=[county_5y_growth,county_3y_growth,county_1y_growth],
-            marker_color = bowery_dark_blue,
-            text = [county_5y_growth,county_3y_growth,county_1y_growth],
-            texttemplate = "%{value:.2f}%",
-            textposition = annotation_position,
-            cliponaxis =  False
-        ),
-        row = 1,
-        col = 2)
-
-
-    #MSA and County are available
-    elif (isinstance(msa_data_frame, pd.DataFrame) == True)  and (isinstance(county_data_frame, pd.DataFrame) == True):
-        # print(national_data_frame)
-        print('MSA PCI Available, County PCI is available')
-        #Add National Growth
-        fig.add_trace( go.Bar(
+        fig.add_trace( 
+            go.Bar(
                 name = 'United States',  
                 x=years, 
                 y=[national_5y_growth, national_3y_growth, national_1y_growth],
@@ -1886,27 +1836,79 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
                 texttemplate = "%{value:.2f}%",
                 textposition = annotation_position,
                 cliponaxis =  False
-                ),
-                row = 1,
-                col = 2)
+                 ),
+            row = 1,
+            col = 2
+                    )
 
-
-        #Add MSA Growth
-        fig.add_trace( go.Bar(
-            name = cbsa_name + ' (MSA)',  
-            x=years, 
-            y=[msa_5y_growth, msa_3y_growth, msa_1y_growth],
-            marker_color =bowery_light_blue,
-            text = [msa_5y_growth, msa_3y_growth, msa_1y_growth],
-            texttemplate = "%{value:.2f}%",
-            textposition = annotation_position,
-            cliponaxis =  False
-            ),
+        #Add State Growth
+        fig.add_trace(
+            go.Bar(
+                name         = state_name,  
+                x            = years, 
+                y            = [state_5y_growth, state_3y_growth, state_1y_growth],
+                marker_color = bowery_dark_grey,
+                text         = [state_5y_growth, state_3y_growth, state_1y_growth],
+                texttemplate = "%{value:.2f}%",
+                textposition = annotation_position,
+                cliponaxis   =  False
+                  ),
             row = 1,
             col = 2)
 
         #Add County Growth
-        fig.add_trace(go.Bar(
+        fig.add_trace(
+            go.Bar(
+                name         = county,      
+                x            = years, 
+                y            = [county_5y_growth,county_3y_growth,county_1y_growth],
+                marker_color = bowery_dark_blue,
+                text         = [county_5y_growth,county_3y_growth,county_1y_growth],
+                texttemplate = "%{value:.2f}%",
+                textposition = annotation_position,
+                cliponaxis   =  False
+                ),
+            row = 1,
+            col = 2)
+
+
+    #MSA and County are available
+    elif (isinstance(msa_data_frame, pd.DataFrame) == True)  and (isinstance(county_data_frame, pd.DataFrame) == True):
+
+        #Add National Growth
+        fig.add_trace( 
+            go.Bar(
+                name         = 'United States',  
+                x            = years, 
+                y            = [national_5y_growth, national_3y_growth, national_1y_growth],
+                marker_color = "#000F44",
+                text         = [national_5y_growth, national_3y_growth, national_1y_growth],
+                texttemplate = "%{value:.2f}%",
+                textposition = annotation_position,
+                cliponaxis   =  False
+                  ),
+            row = 1,
+            col = 2)
+
+
+        #Add MSA Growth
+        fig.add_trace( 
+            go.Bar(
+                name         = cbsa_name + ' (MSA)',  
+                x            = years, 
+                y            = [msa_5y_growth, msa_3y_growth, msa_1y_growth],
+                marker_color = bowery_light_blue,
+                text         = [msa_5y_growth, msa_3y_growth, msa_1y_growth],
+                texttemplate = "%{value:.2f}%",
+                textposition = annotation_position,
+                cliponaxis   =  False
+                  ),
+            row = 1,
+            col = 2)
+
+        #Add County Growth
+        fig.add_trace(
+            go.Bar(
                     name=county,      
                     x=years, 
                     y=[county_5y_growth,county_3y_growth,county_1y_growth],
@@ -1916,40 +1918,42 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
                     textposition = annotation_position,
                     cliponaxis =  False
                 ),
-                row = 1,
-                col = 2)
+            row = 1,
+            col = 2)
     else:
-        fig.add_trace( go.Bar(
-                name = 'United States',  
-                x=years, 
-                y=[national_5y_growth, national_3y_growth, national_1y_growth],
-                marker_color ="#000F44",
-                text = [national_5y_growth, national_3y_growth, national_1y_growth],
+        fig.add_trace( 
+            go.Bar(
+                name         = 'United States',  
+                x            = years, 
+                y            = [national_5y_growth, national_3y_growth, national_1y_growth],
+                marker_color = "#000F44",
+                text         = [national_5y_growth, national_3y_growth, national_1y_growth],
                 texttemplate = "%{value:.2f}%",
                 textposition = annotation_position,
-                cliponaxis =  False
+                cliponaxis   = False
                 ),
-                row = 1,
-                col = 2)
+            row = 1,
+            col = 2)
 
     #Change the bar mode
     fig.update_layout(barmode='group')
 
-    #Set X-axes format
-    fig.update_xaxes(
-        tickfont = dict(size=tickfont_size),
-        row = 1,
-        col = 2
-        )
 
     #Set Y-Axes format
     fig.update_yaxes(
         ticksuffix = '%',
-        tickfont = dict(size=tickfont_size),
-        visible = False,
-        row = 1,
-        col = 2)                 
+        tickfont   = dict(size=tickfont_size),
+        visible    = False,
+        row        = 1,
+        col        = 2,
+                    )                 
 
+    #Set X-axes format
+    fig.update_xaxes(
+        tickfont = dict(size=tickfont_size),
+        row      = 1,
+        col      = 2
+                    )
 
     #Set X-Axis Format
     fig.update_xaxes(
@@ -1958,55 +1962,44 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
         tickformat="%Y",
         tickangle = tickangle,
         tickfont = dict(size=tickfont_size),
-        # linecolor = 'black',
         row = 1,
-        col = 1
-        )
+        col = 1,
+                    )
 
     #Set Y-Axis format
     fig.update_yaxes( tickfont = dict(size=tickfont_size),
-                    #   linecolor='black',
-                       row = 1,
-                        col = 1  
+                      row      = 1,
+                      col      = 1,
                     )
 
-    fig.update_yaxes(tickprefix = '$', tickfont = dict(size=tickfont_size),secondary_y=False, row = 1,col = 1)
+    fig.update_yaxes(tickprefix = '$', tickfont = dict(size=tickfont_size), secondary_y=False, row = 1,col = 1)
 
 
 
     
     #Set Legend Layout
     fig.update_layout(
-    legend=dict(
-        orientation="h",
-        yanchor="bottom",
-        y=legend_position + 0.1 ,
-        xanchor="center",
-        x=0.5,
-        font_size = tickfont_size
-                )
+        legend = dict(
+                    orientation = "h",
+                    yanchor     = "bottom",
+                    y           = legend_position + 0.1 ,
+                    xanchor     = "center",
+                    x           = 0.5,
+                    font_size   = tickfont_size
+                    ),
 
-                      )
-
-    #Set Font and Colors
-    fig.update_layout(
-    font_family="Avenir Next LT Pro",
-    font_color='#262626',
-    font_size = 10.5,
-    paper_bgcolor=paper_backgroundcolor,
-    plot_bgcolor ="White"
-                     )
-
-    #Set size and margin
-    fig.update_layout(
-    margin=dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin),
-    height    = graph_height,
-    width     = graph_width,
+        font_family   = "Avenir Next LT Pro",
+        font_color    = '#262626',
+        font_size     = 10.5,
+        paper_bgcolor = paper_backgroundcolor,
+        plot_bgcolor  = "White",
+        margin        = dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin),
+        height        = graph_height,
+        width         = graph_width,
         
                     )
 
-    # fig.update_yaxes(automargin = True)  
-    fig.write_image(os.path.join(folder,'per_capita_income_and_growth.png'),engine='kaleido',scale=scale)
+    fig.write_image(os.path.join(folder,'per_capita_income_and_growth.png'), engine='kaleido', scale=scale)
 
 def CreateGDPGraph(county_data_frame,msa_data_frame,state_data_frame,folder):
     print('Creating GDP Graph')
@@ -2015,12 +2008,13 @@ def CreateGDPGraph(county_data_frame,msa_data_frame,state_data_frame,folder):
     #Add county GDP
     if (isinstance(county_data_frame, pd.DataFrame) == True):
         fig.add_trace(
-        go.Scatter(x=county_data_frame['Period'],
-                y=county_data_frame['GDP'],
-                name=county+' (L)',
-                line = dict(color = bowery_dark_blue, width = 1,dash = 'dash')
-                )
-        ,secondary_y=False)
+            go.Scatter(x = county_data_frame['Period'],
+                       y  = county_data_frame['GDP'],
+                    name = county+' (L)',
+                    line = dict(color = bowery_dark_blue, width = 1,dash = 'dash')
+                    ),
+            secondary_y=False
+                        )
 
     #Add MSA GDP if applicable
         if (isinstance(msa_data_frame, pd.DataFrame) == True) and (msa_data_frame.equals(county_data_frame) == False):
@@ -2037,46 +2031,43 @@ def CreateGDPGraph(county_data_frame,msa_data_frame,state_data_frame,folder):
             go.Scatter(x=state_data_frame['Period'],
                     y=state_data_frame['GDP'],
                     name=state_name+' (R)',
-                    line=dict(color='#A6B0BF', width = 1),
+                    line=dict(color=bowery_dark_grey, width = 1),
                     )
             ,secondary_y=True)
     else:
         if (isinstance(msa_data_frame, pd.DataFrame) == True):
             fig.add_trace(
-            go.Scatter(x=msa_data_frame['Period'],
-                    y=msa_data_frame['GDP'],
-                    name=cbsa_name + ' (MSA)' + ' (L)',
-                    line = dict(color=bowery_light_blue),
-                    )
-            ,secondary_y=False)
+                go.Scatter(x = msa_data_frame['Period'],
+                           y = msa_data_frame['GDP'],
+                        name = cbsa_name + ' (MSA)' + ' (L)',
+                        line = dict(color=bowery_light_blue),
+                          ),
+                secondary_y=False
+            )
         
         #Add state GDP
         fig.add_trace(
-        go.Scatter(x=state_data_frame['Period'],
-                y=state_data_frame['GDP'],
-                name=state_name+' (R)',
-                line=dict(color='#A6B0BF'),
-                )
-        ,secondary_y=True)
+            go.Scatter(x = state_data_frame['Period'],
+                    y    = state_data_frame['GDP'],
+                    name = state_name+' (R)',
+                    line = dict(color=bowery_dark_grey),
+                    ),
+            secondary_y = True
+                    )
 
 
     #Set X-Axis Format
     fig.update_xaxes(
-        type = 'date',
-        dtick="M12",
-        tickformat="%Y",
-        tickangle = 0,
-        tickfont = dict(size=tickfont_size),
-        # linecolor = 'black'
-        )
-
-    #Set Y-Axis format
-    fig.update_yaxes( tickfont = dict(size=tickfont_size),
-                    #   linecolor='black'  
+        type       = 'date',
+        dtick      = "M12",
+        tickformat = "%Y",
+        tickangle  = 0,
+        tickfont   = dict(size=tickfont_size),
                     )
 
-    fig.update_yaxes(tickprefix = '$', tickfont = dict(size=tickfont_size),secondary_y=False)
-    fig.update_yaxes(tickprefix = '$', tickfont = dict(size=tickfont_size),secondary_y=True)
+    #Set Y-Axis format
+    fig.update_yaxes(tickprefix = '$', tickfont = dict(size=tickfont_size), secondary_y=False)
+    fig.update_yaxes(tickprefix = '$', tickfont = dict(size=tickfont_size), secondary_y=True)
 
 
     #Set Title
@@ -2093,36 +2084,27 @@ def CreateGDPGraph(county_data_frame,msa_data_frame,state_data_frame,folder):
     
     #Set Legend Layout
     fig.update_layout(
-    legend=dict(
-        orientation="h",
-        yanchor="bottom",
-        y=legend_position ,
-        xanchor="center",
-        x=0.5,
-        font_size = tickfont_size
-                )
+        legend=dict(
+            orientation = "h",
+            yanchor     = "bottom",
+            y           = legend_position ,
+            xanchor     = "center",
+            x           = 0.5,
+            font_size   = tickfont_size
+                   ),
 
-                      )
-
-    #Set Font and Colors
-    fig.update_layout(
-    font_family="Avenir Next LT Pro",
-    font_color='#262626',
-    font_size = 10.5,
-    paper_bgcolor=paper_backgroundcolor,
-    plot_bgcolor ="White"
-                     )
-
-    #Set size and margin
-    fig.update_layout(
-    margin=dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin),
-    height    = graph_height,
-    width     = graph_width,
+        font_family   = "Avenir Next LT Pro",
+        font_color    = '#262626',
+        font_size     = 10.5,
+        paper_bgcolor = paper_backgroundcolor,
+        plot_bgcolor  = "White",
+        margin        = dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin),
+        height        = graph_height,
+        width         = graph_width,
         
                     )
 
-    # fig.update_yaxes(automargin = True)  
-    fig.write_image(os.path.join(folder,'gdp.png'),engine='kaleido',scale=scale)
+    fig.write_image(os.path.join(folder,'gdp.png'), engine='kaleido', scale=scale)
 
 def CreatePopulationOverTimeWithGrowthGraph(county_resident_pop, state_resident_pop, msa_resident_pop, national_resident_pop, folder):
     print('Creating population over time with growth bar graph')
@@ -4446,7 +4428,6 @@ def WikipediaTransitLanguage(category):
 
                 #If we find the section we're looking for, pull all the text from the paragraphs
                 if search_term in heading.text:
-                    # print(heading.name + ' ' + heading.text.strip())
                     para      = heading.find_next_sibling('p')
                     para_text = para.text
                     para_text = re.sub('\[\d+\]', '',para_text) #remove wikipedia citations
