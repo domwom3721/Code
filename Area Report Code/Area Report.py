@@ -4086,40 +4086,45 @@ def ProductionLanguage(county_data_frame,msa_data_frame,state_data_frame):
 
 
     if  isinstance(msa_data_frame, pd.DataFrame) == True and msa_data_frame['GDP'].equals(county_data_frame['GDP']) == False:
-        msa_data_frame = msa_data_frame.loc[msa_data_frame['Period'] <= (county_data_frame['Period'].max()) ]
-        latest_msa_gdp_growth = ((msa_data_frame['GDP'].iloc[-1]/msa_data_frame['GDP'].iloc[-2]) - 1) * 100
-        latest_msa_gdp_growth =  "{:,.1f}%".format(latest_msa_gdp_growth)
+        msa_data_frame          = msa_data_frame.loc[msa_data_frame['Period'] <= (county_data_frame['Period'].max()) ]
+        latest_msa_gdp_growth   = ((msa_data_frame['GDP'].iloc[-1]/msa_data_frame['GDP'].iloc[-2]) - 1) * 100
+        latest_msa_gdp_growth   =  "{:,.1f}%".format(latest_msa_gdp_growth)
         msa_or_state_gdp_growth = latest_msa_gdp_growth
-        msa_or_state = 'Metro'
+        msa_or_state            = 'Metro'
     else:
-        state_data_frame = state_data_frame.loc[state_data_frame['Period'] <= (county_data_frame['Period'].max()) ]
+        state_data_frame        = state_data_frame.loc[state_data_frame['Period'] <= (county_data_frame['Period'].max()) ]
         latest_state_gdp_growth = ((state_data_frame['GDP'].iloc[-1]/state_data_frame['GDP'].iloc[-2]) - 1) * 100
         latest_state_gdp_growth =  "{:,.1f}%".format(latest_state_gdp_growth)
         msa_or_state_gdp_growth = latest_state_gdp_growth
-        msa_or_state = 'State'
+        msa_or_state            = 'State'
 
     #Fomrmat variables
     latest_county_gdp_growth =  "{:,.1f}%".format(latest_county_gdp_growth)
 
     production_language = ('While GDP data at the county level is not yet available, '      +
-           latest_period +
-           ' data from the U.S. Bureau of Economic Analysis points to '+
-           gdp_growth_description +
-           ' growth for ' +
-           county  +
-           ', which produced ~' +
-           latest_county_gdp  +
-           ' of output that year, ' +
-            'representing an annual change of ' +
-            latest_county_gdp_growth +
-            ' compared to ' +
-            msa_or_state_gdp_growth +
-            ' for the ' +
-            msa_or_state +
-            '.' )
+                            latest_period                                                   +
+                            ' data from the U.S. Bureau of Economic Analysis points to '    +
+                            gdp_growth_description                                          +
+                            ' growth for '                                                  +
+                            county                                                          +
+                            ', which produced ~'                                            +
+                            latest_county_gdp                                               +
+                            ' of output that year, '                                        +
+                            'representing an annual change of '                             +
+                            latest_county_gdp_growth                                        +
+                            ' compared to '                                                 +
+                            msa_or_state_gdp_growth                                         +
+                            ' for the '                                                     +
+                            msa_or_state                                                    +
+                                '.' 
+                           )
 
-    boiler_plate_econ_language = ('Economic activity has slowed after historical annual growth of 6.7% in Q2 2021, softening to 2.3% for the third quarter. The slowdown in third quarter GDP reflected the continued economic impact of the COVID-19 pandemic. A resurgence of COVID-19 cases resulted in new restrictions and delays in the reopening of establishments in some parts of the country. ' +
-                            'Supply-chain disruptions such as delays at U.S. ports and international manufacturing issues contributed to a sharp increase in inflation and pose a risk to the economic outlook. Despite supply-side challenges, many economic observers expect that the economy regained momentum in the final quarter and is well positioned for growth in 2022. ')
+    boiler_plate_econ_language = ('Economic activity has slowed after historical annual growth of 6.7% in Q2 2021, softening to 2.3% for the third quarter. '                                                           +
+                                  'The slowdown in third quarter GDP reflected the continued economic impact of the COVID-19 pandemic. '                                                                                +
+                                  'A resurgence of COVID-19 cases resulted in new restrictions and delays in the reopening of establishments in some parts of the country. '                                            +
+                                  'Supply-chain disruptions such as delays at U.S. ports and international manufacturing issues contributed to a sharp increase in inflation and pose a risk to the economic outlook. ' +
+                                  'Despite supply-side challenges, many economic observers expect that the economy regained momentum in the final quarter and is well positioned for growth in 2022. '
+                                 )
     
     return[boiler_plate_econ_language, production_language]
 
@@ -4127,17 +4132,17 @@ def IncomeLanguage():
     print('Writing Income Langauge')   
     try:
         #Get latest county income level
-        latest_county_income          = round(county_pci['Per Capita Personal Income'].iloc[-1])
-        latest_county_year            = str(county_pci['Period'].iloc[-1])[0:4]  
+        latest_county_income                                  = round(county_pci['Per Capita Personal Income'].iloc[-1])
+        latest_county_year                                    = str(county_pci['Period'].iloc[-1])[0:4]  
 
         #Get County growth rates
         county_pci['Per Capita Personal Income_1year_growth'] =  (((county_pci['Per Capita Personal Income']/county_pci['Per Capita Personal Income'].shift(1))  - 1) * 100)/1
         county_pci['Per Capita Personal Income_3year_growth'] =  (((county_pci['Per Capita Personal Income']/county_pci['Per Capita Personal Income'].shift(3))   - 1) * 100)/3
         county_pci['Per Capita Personal Income_5year_growth'] =  (((county_pci['Per Capita Personal Income']/county_pci['Per Capita Personal Income'].shift(5))   - 1) * 100)/5
 
-        county_1y_growth  = county_pci.iloc[-1]['Per Capita Personal Income_1year_growth'] 
-        county_3y_growth  = county_pci.iloc[-1]['Per Capita Personal Income_3year_growth'] 
-        county_5y_growth  = county_pci.iloc[-1]['Per Capita Personal Income_5year_growth']
+        county_1y_growth                                      = county_pci.iloc[-1]['Per Capita Personal Income_1year_growth'] 
+        county_3y_growth                                      = county_pci.iloc[-1]['Per Capita Personal Income_3year_growth'] 
+        county_5y_growth                                      = county_pci.iloc[-1]['Per Capita Personal Income_5year_growth']
 
         #See if 3 year income growth rate was higher or lower than 5 year growth rate
         if county_3y_growth > county_5y_growth:
@@ -4169,30 +4174,35 @@ def IncomeLanguage():
 
 
 
-        income_language = ('Going back five years, '    +
-                county                                  +
-            """ residents' per capita personal income """    +
-            'has expanded ' + 
-                "{:,.1f}%".format(county_5y_growth)     + 
-                ' per annum to the '                    +
-                latest_county_year                      + 
-                ' level of '                            +
-                "${:,}".format(latest_county_income)    +
-                '. '                                    +
-            'Over the past three years, growth has '    +
-            three_five_year_county_declined_or_expanded +
-            ', growing '                                +
-                "{:,.1f}%".format(county_3y_growth)     + 
-                ' per annum since '                     + 
-                str(int(latest_county_year) - 3)        + 
-                '. '                                    +
-            'This growth rate '                         + 
-            county_vs_nation_3y_exceeds_lags            +
-                ' the Nation, which has '               +
-                'expanded'                              +     
-                ' '                                     +   
-                "{:,.1f}%".format(national_3y_growth)   + 
-                ' per year over the last three years. ' 
+        income_language = (#Sentence 1
+                            'Going back five years, '                     +
+                            county                                        +
+                            """ residents' per capita personal income """ +
+                            'has expanded '                               + 
+                            "{:,.1f}%".format(county_5y_growth)           + 
+                            ' per annum to the '                          +
+                            latest_county_year                            + 
+                            ' level of '                                  +
+                            "${:,}".format(latest_county_income)          +
+                            '. '                                          +
+
+                        #Sentence 2    
+                        'Over the past three years, growth has '    +
+                        three_five_year_county_declined_or_expanded +
+                        ', growing '                                +
+                            "{:,.1f}%".format(county_3y_growth)     + 
+                            ' per annum since '                     + 
+                            str(int(latest_county_year) - 3)        + 
+                            '. '                                    +
+                        
+                        #Sentence 3
+                        'This growth rate '                         + 
+                        county_vs_nation_3y_exceeds_lags            +
+                            ' the Nation, which has '               +
+                            'expanded'                              +     
+                            ' '                                     +   
+                            "{:,.1f}%".format(national_3y_growth)   + 
+                            ' per year over the last three years. ' 
                 )
     except Exception as e:
         print(e,'unable to get income language') 
@@ -4209,8 +4219,8 @@ def PopulationLanguage(national_resident_pop):
             latest_county_pop             = round(county_resident_pop['Resident Population'].iloc[-1])
             latest_county_pop             = "{:,}".format(latest_county_pop)
 
-            county_resident_pop['Resident Population_1year_growth'] =  (((county_resident_pop['Resident Population']/county_resident_pop['Resident Population'].shift(1))  - 1) * 100)/1
-            county_resident_pop['Resident Population_5year_growth'] =  (((county_resident_pop['Resident Population']/county_resident_pop['Resident Population'].shift(5))   - 1) * 100)/5
+            county_resident_pop['Resident Population_1year_growth']  =  (((county_resident_pop['Resident Population']/county_resident_pop['Resident Population'].shift(1))  - 1) * 100)/1
+            county_resident_pop['Resident Population_5year_growth']  =  (((county_resident_pop['Resident Population']/county_resident_pop['Resident Population'].shift(5))   - 1) * 100)/5
             county_resident_pop['Resident Population_10year_growth'] =  (((county_resident_pop['Resident Population']/county_resident_pop['Resident Population'].shift(10)) - 1) * 100)/10
 
             county_1y_growth  = county_resident_pop.iloc[-1]['Resident Population_1year_growth'] 
@@ -4273,37 +4283,42 @@ def PopulationLanguage(national_resident_pop):
             national_5y_growth  = "{:,.1f}%".format(national_5y_growth) 
             national_10y_growth = "{:,.1f}%".format(national_10y_growth)
 
-            population_language = ('Going back ten years, ' +
-                    county +
-                """'s population has """+
-                county_10y_expand_or_compress +
-                ' ' +
-                    county_10y_growth +
-                    ' per annum ' +
-                    'to the ' +
-                    latest_period + 
-                    ' ' +
-                    'count of ' +
-                    latest_county_pop +
-                    '.' +
-                    ' Over the past five years, growth has ' +
-                    growth_declined_or_expanded +
-                    ', '+
-                    county_5y_expand_or_compress +
-                    ' ' +
-                    county_5y_growth +
-                    ' per annum since ' +
-                    str((int(latest_period) - 5)) +
-                    '.' + 
-                    ' This growth rate ' +
-                    county_5y_slower_or_faster_than_national +
-                    ' the Nation, which has ' +
-                    'expanded' +
-                    ' ' +
-                    national_5y_growth +
-                    ' per year ' +
-                    'over the last five years.' 
-                    )
+            population_language = (#Sentence 1:
+                                    'Going back ten years, '      +
+                                    county                        +
+                                    """'s population has """      +
+                                    county_10y_expand_or_compress +
+                                     ' '                          +
+                                    county_10y_growth             +
+                                    ' per annum '                 +
+                                    'to the '                     +
+                                    latest_period                 +      
+                                    ' '                           +
+                                    'count of '                   +
+                                    latest_county_pop             +
+                                    '.'                           +
+
+                                    #Sentence 2:
+                                    ' Over the past five years, growth has ' +
+                                    growth_declined_or_expanded              +
+                                    ', '                                     +
+                                    county_5y_expand_or_compress             +
+                                    ' '                                      +
+                                    county_5y_growth                         +
+                                    ' per annum since '                      +
+                                    str((int(latest_period) - 5))            +
+                                    '.' +
+
+                                    #Sentence 3: 
+                                    ' This growth rate '                     +
+                                    county_5y_slower_or_faster_than_national +
+                                    ' the Nation, which has '                +
+                                    'expanded'                               +
+                                    ' '                                      +
+                                    national_5y_growth                       +
+                                    ' per year '                             +
+                                    'over the last five years.'          
+                                    )
     except Exception as e:
         print(e,'unable to create population language')
         population_language = ''
@@ -4320,6 +4335,7 @@ def InfrastructureLanguage():
     public_transportation     =  page.section('Public transportation')
 
     infrastructure_language = [] #this is an empty list we will fill with paragraphs and return 
+    
     for wikipedia_section in [infrastructure,transportation,public_transportation]:
         if wikipedia_section != None:
             infrastructure_language.append(wikipedia_section)
@@ -4336,12 +4352,11 @@ def WikipediaTransitLanguage(category):
     try:
         wikipedia_search_terms_df = pd.read_csv(os.path.join(project_location,'Data','General Data','Wikipedia Transit Related Search Terms.csv'))
         wikipedia_search_terms_df = wikipedia_search_terms_df.loc[wikipedia_search_terms_df['category'] == category]
-        search_term_list = wikipedia_search_terms_df['search term']
-        
-        page                          =  wikipedia.page((county + ',' + state))
+        search_term_list          = wikipedia_search_terms_df['search term']
+        page                      = wikipedia.page((county + ',' + state))
 
         #Create a bs4 html object from the wikipedia page
-        soup = BeautifulSoup(page.html(),'html.parser')
+        soup                      = BeautifulSoup(page.html(),'html.parser')
 
         #Loop throuhg each search term looking for text, if we find any, return it as a list
         for search_term in search_term_list:
@@ -4355,7 +4370,7 @@ def WikipediaTransitLanguage(category):
                     para      = heading.find_next_sibling('p')
                     para_text = para.text
                     para_text = re.sub('\[\d+\]', '',para_text) #remove wikipedia citations
-                    langauge_paragraphs.append(para_text) #Once we have found the relevant section, add all the paragraphs into the list of paragraphs
+                    langauge_paragraphs.append(para_text)       #Once we have found the relevant section, add all the paragraphs into the list of paragraphs
 
                     #We found the first paragraph and added it to our list with text paragraphs, now keep looking in case there are multiple paragraphs in the section we wanted
                     while True:
@@ -4383,9 +4398,8 @@ def HousingLanguage():
         current_county_mlp        = county_mlp['Median List Price'].iloc[-1]
         current_county_mlp_period = str(county_mlp['Period'].iloc[-1])[0:7]
         current_county_mlp_period = current_county_mlp_period[5:] + '/' + current_county_mlp_period[0:4]
-
-        yoy_county_mlp_growth = ((county_mlp['Median List Price'].iloc[-1]/county_mlp['Median List Price'].iloc[-13]) - 1 ) * 100   
-        yoy_national_mlp_growth = ((national_mlp['Median List Price'].iloc[-1]/national_mlp['Median List Price'].iloc[-13]) - 1 ) * 100
+        yoy_county_mlp_growth     = ((county_mlp['Median List Price'].iloc[-1]/county_mlp['Median List Price'].iloc[-13]) - 1 ) * 100   
+        yoy_national_mlp_growth   = ((national_mlp['Median List Price'].iloc[-1]/national_mlp['Median List Price'].iloc[-13]) - 1 ) * 100
 
         #Determine if county year over year growth was positive or negative
         if yoy_county_mlp_growth > 0:
@@ -4405,13 +4419,16 @@ def HousingLanguage():
         if isinstance(msa_mlp, pd.DataFrame) == True:
             yoy_msa_mlp_growth = ((msa_mlp['Median List Price'].iloc[-1]/msa_mlp['Median List Price'].iloc[-13]) - 1 ) * 100
 
-            housing_langage =              (
-                                "In " +                                           
-                                county +
+            housing_langage =   (#Sentence 1
+                                "In "                           +                                           
+                                county                          +
                                 ', Realtor.com data points to ' +
                                 "{growth_description}".format(growth_description = "continued" if  yoy_county_mlp_growth >= 0  else "negative") +                                           
                                 ' growth'                       +
-                                ' in values. In fact, as of ' +
+                                ' in values. '                 +
+                                
+                                #Sentence 2
+                                'In fact, as of '   +
                                 current_county_mlp_period +
                                 ', the median home list price sits at ' +
                                 current_county_mlp +
@@ -4432,36 +4449,41 @@ def HousingLanguage():
 
         #If we don't have metro realtor.com data                        
         else: 
-            housing_langage = (
-                          'In ' +
-                            county +
-                            ', Realtor.com data points to ' +
-                            "{growth_description}".format(growth_description = "continued " if  yoy_county_mlp_growth >= 0  else "negative") +                                           
-                            ' growth' +
-                            ' in values. In fact, as of ' +
-                            current_county_mlp_period +
-                            ', the median home list price sits at ' +
-                            current_county_mlp +
-                            ', ' +
-                            increase_or_decrease +
-                            ' of ' +
-                           "{:,.0f}%".format(abs(yoy_county_mlp_growth)) +
-                            ' compared to ' +
-                             "{national_growth_description}".format(national_growth_description = "an increase of " if  yoy_national_mlp_growth >= 0  else "a decrease of ") +      
-                            "{:,.0f}%".format(abs(yoy_national_mlp_growth)) +
-                            ' across the Nation over the past year.'
-                            )
+            housing_langage = (#Sentence 1
+                                'In '                                                                                                            +
+                                county                                                                                                           +
+                                ', Realtor.com data points to '                                                                                  +
+                                "{growth_description}".format(growth_description = "continued " if  yoy_county_mlp_growth >= 0  else "negative") +                                           
+                                ' growth'                                                                                                        +
+                                ' in values. '                                                                                                   + 
+                                
+                                #Sentence 2
+                                'In fact, as of '                                                                                                +
+                                current_county_mlp_period                                                                                        +
+                                ', the median home list price sits at '                                                                          +
+                                current_county_mlp                                                                                               +
+                                ', '                                                                                                             +
+                                increase_or_decrease                                                                                             +
+                                ' of '                                                                                                           +
+                            "{:,.0f}%".format(abs(yoy_county_mlp_growth))                                                                        +
+                                ' compared to '                                                                                                  +
+                                "{national_growth_description}".format(national_growth_description = "an increase of " if  yoy_national_mlp_growth >= 0  else "a decrease of ") +      
+                                "{:,.0f}%".format(abs(yoy_national_mlp_growth))                                                                   +
+                                ' across the Nation over the past year.'
+                              )
         return([boiler_plate_housing_language,housing_langage])
 
 def CarLanguage():
     print('Creating auto Langauge')
-    wikipedia_car_language     = WikipediaTransitLanguage(category='car')
-    
+    wikipedia_car_language     = WikipediaTransitLanguage(category = 'car')
+    #If we find something on wikipedia, use that, otherwise keep going
     if wikipedia_car_language != None:
         return(wikipedia_car_language)
+
     else:
         print('No major highway information on wikipedia, using geographic data')
         nearest_highway_language = FindNearestHighways()
+        
         if nearest_highway_language != None:
             return(nearest_highway_language)
         else:
@@ -4473,6 +4495,7 @@ def PlaneLanguage():
     #First see if any text available on wikipedia, if so use that, if not, use our geographic data
     print('Searching Wikipedia for Airport Info')
     wikipedia_plane_language = WikipediaTransitLanguage(category='air')
+    
     if wikipedia_plane_language != None:
         print('Pulled Airport info from Wikipedia')
         return(wikipedia_plane_language)
@@ -4491,10 +4514,10 @@ def PlaneLanguage():
 def BusLanguage():
     print('Creating bus Langauge')
 
-    wikipedia_bus_language = WikipediaTransitLanguage(category='bus')
+    wikipedia_bus_language = WikipediaTransitLanguage(category = 'bus')
+    
     if wikipedia_bus_language != None:
         return(wikipedia_bus_language)
-    
     else:
         return(county + ' does not have public bus service.')
 
@@ -4530,12 +4553,22 @@ def OutlookLanguage():
     #Restrict to years we have for county
     national_gdp_restricted        =               national_gdp.loc[ (national_gdp['Period'] <= county_gdp_max_year) & (national_gdp['Period'] >= county_gdp_min_year)  ]    
     national_gdp_growth            =               ((   (national_gdp_restricted['GDP'].iloc[-1])/(national_gdp_restricted['GDP'].iloc[0])   - 1 ) * 100)
-
     county_gdp_growth_difference   =                (county_gdp_growth - national_gdp_growth ) * 100
 
     
-    county_gdp_sentence = ('Between, ' + str(county_gdp_min_year)[6:]  + ' and ' +  str(county_gdp_max_year)[6:]  + ', ' + county + ' GDP grew ' + "{:,.1f}%".format(county_gdp_growth) + '. ' +
-                            'This growth rate ' +
+    county_gdp_sentence = (#Sentence 1
+                           'Between, '                    + 
+                            str(county_gdp_min_year)[6:]  + 
+                            ' and '                       +
+                            str(county_gdp_max_year)[6:]  +
+                            ', '                          +
+                            county                        +
+                            ' GDP grew '                  +
+                            "{:,.1f}%".format(county_gdp_growth) +
+                            '. '                          +
+                             
+                             #Sentence 2     
+                            'This growth rate '           +
                              "{leads_or_lags}".format(leads_or_lags =('led the national average by ' +  "{:,.0f} bps".format(county_gdp_growth_difference) + ' during this period. ') if (county_gdp_growth_difference > 0)  else   ('lagged the national average by ' + "{:,.0f} bps".format(abs(county_gdp_growth_difference)) + ' during this period. ')) 
                             )
 
@@ -4571,25 +4604,33 @@ def OutlookLanguage():
         
         
         
-    county_unemployment_sentence = ('The current unemployment rate in ' + county + ' of ' + "{:,.1f}%".format(current_unemployment) + ' is ' + unemployment_above_below_hist_avg + ' its five-year average. ' +
+    county_unemployment_sentence = (#Sentence 1
+                                    'The current unemployment rate in '     + 
+                                    county                                  + 
+                                    ' of '                                  + 
+                                    "{:,.1f}%".format(current_unemployment) + 
+                                    ' is '                                  + 
+                                    unemployment_above_below_hist_avg       + 
+                                    ' its five-year average. '              +
+                                    
+                                    #Sentnce 2
                                     'It is ' + unemployment_above_below_state + ' and ' +  unemployment_above_below_national + ' the state ' +  '(' + "{:,.1f}%".format(current_state_unemployment)  + ')'  + ' and national average '  + '(' "{:,.1f}%".format(current_national_unemployment) + ')' ', respectively. '
                                     )
 
     #Demographics/Population
-    county_resident_pop['Resident Population_1year_growth'] =  (((county_resident_pop['Resident Population']/county_resident_pop['Resident Population'].shift(1))  - 1) * 100)/1
-    county_resident_pop['Resident Population_5year_growth'] =  (((county_resident_pop['Resident Population']/county_resident_pop['Resident Population'].shift(5))   - 1) * 100)/5
+    county_resident_pop['Resident Population_1year_growth']  =  (((county_resident_pop['Resident Population']/county_resident_pop['Resident Population'].shift(1))  - 1) * 100)/1
+    county_resident_pop['Resident Population_5year_growth']  =  (((county_resident_pop['Resident Population']/county_resident_pop['Resident Population'].shift(5))   - 1) * 100)/5
     county_resident_pop['Resident Population_10year_growth'] =  (((county_resident_pop['Resident Population']/county_resident_pop['Resident Population'].shift(10)) - 1) * 100)/10
 
-    county_1y_growth  = county_resident_pop.iloc[-1]['Resident Population_1year_growth'] 
-    county_5y_growth  = county_resident_pop.iloc[-1]['Resident Population_5year_growth']  
-    county_10y_growth = county_resident_pop.iloc[-1]['Resident Population_10year_growth'] 
+    county_1y_growth                                         = county_resident_pop.iloc[-1]['Resident Population_1year_growth'] 
+    county_5y_growth                                         = county_resident_pop.iloc[-1]['Resident Population_5year_growth']  
+    county_10y_growth                                        = county_resident_pop.iloc[-1]['Resident Population_10year_growth'] 
 
     if county_5y_growth < 0 and county_1y_growth < 0:
         county_demographic_sentence = (county + ' continues to experience population loss with one- and five-year annual growth rates of ' +  "{:,.1f}%".format(county_1y_growth) + ' and ' + "{:,.1f}%".format(county_5y_growth) + '.'  )
     
     elif county_5y_growth > 0 and county_1y_growth > 0:
         county_demographic_sentence = (county + ' continues to experience population gains with one- and five-year annual growth rates of ' +  "{:,.1f}%".format(county_1y_growth) + ' and ' + "{:,.1f}%".format(county_5y_growth) + '.'  )
-
 
     elif  county_5y_growth < 0 and county_1y_growth > 0:
         county_demographic_sentence = ('Although ' + county + ' has experienced population decline of ' +   "{:,.1f}%".format(abs(county_5y_growth)) +' annually over the past five years, growth has returned to positive levels with a most recent one-year growth rate of ' +  "{:,.1f}%".format(county_1y_growth) +'.')
@@ -4614,8 +4655,8 @@ def OutlookLanguage():
 
 def CreateLanguage():
     global overview_language
-    global county_emplopyment_industry_breakdown_language, msa_emplopyment_industry_breakdown_language ,county_emplopyment_growth_language,msa_emplopyment_growth_language,unemplopyment_language,tourism_employment_language
-    global production_language, demographics_language, infrastructure_language,housing_language, outlook_language
+    global county_emplopyment_industry_breakdown_language, msa_emplopyment_industry_breakdown_language ,county_emplopyment_growth_language,msa_emplopyment_growth_language,unemplopyment_language
+    global production_language, infrastructure_language,housing_language, outlook_language
     global car_language, train_language, bus_language, plane_language
     global population_language,income_language
     print('Creating Langauge')
@@ -4673,7 +4714,7 @@ def CreateLanguage():
 
 
     #Unemployment language
-    unemplopyment_language  = UnemploymentLanguage()
+    unemplopyment_language              = UnemploymentLanguage()
 
     #County Private Employment Growth language
     try:    
