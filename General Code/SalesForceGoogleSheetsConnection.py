@@ -20,7 +20,7 @@ def GoogleSheetsURLToDF(url):
     data = r.content
 
     #Convert data into pandas dataframe
-    df   = pd.read_csv(BytesIO(data), engine='python')
+    df   = pd.read_csv(BytesIO(data), engine='python',keep_default_na=False)
     return(df)
 
 def AuthorizeGoogle():
