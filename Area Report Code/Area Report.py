@@ -1382,98 +1382,114 @@ def CreateUnemploymentRateEmploymentGrowthGraph(folder):
 
     #County unemployment rate
     fig.add_trace(
-    go.Scatter(x = county_unemployment_rate['period'].iloc[-60:],
-            y = county_unemployment_rate['unemployment_rate'].iloc[-60:],
-            name=county,
-            line=dict(color="#4160D3", width = 1,dash = 'dash'))
-    ,secondary_y=False,row=1, col=1)
+            go.Scatter(x = county_unemployment_rate['period'].iloc[-60:],
+                    y = county_unemployment_rate['unemployment_rate'].iloc[-60:],
+                    name = county,
+                    line = dict(color = bowery_dark_blue, width = 1,dash = 'dash')
+                    ),
+            secondary_y = False,
+            row         = 1,
+            col         = 1
+                 )
 
     #MSA unemployment rate if applicable
     if (cbsa != '') and (msa_unemployment_rate.equals(county_unemployment_rate) == False):
         fig.add_trace(
-        go.Scatter(x    = msa_unemployment_rate['period'].iloc[-60:],
-                   y    = msa_unemployment_rate['unemployment_rate'].iloc[-60:],
-                   name = cbsa_name + ' (MSA)',
-                   line = dict(color="#B3C3FF", width = 1))
-        ,secondary_y=False,row=1, col=1)
+            go.Scatter(x    = msa_unemployment_rate['period'].iloc[-60:],
+                       y    = msa_unemployment_rate['unemployment_rate'].iloc[-60:],
+                    name    = cbsa_name + ' (MSA)',
+                    line    = dict(color = bowery_light_blue, width = 1)
+                    ),
+            secondary_y=False,row=1, col=1)
 
     #State unemployment rate
     if state != 'DC':
         fig.add_trace(
-        go.Scatter(x=state_unemployment_rate['period'].iloc[-60:],
-                y=state_unemployment_rate['unemployment_rate'].iloc[-60:],
-                name=state_name,
-                line=dict(color="#A6B0BF", width = 1))
-        ,secondary_y=False,row=1, col=1)
+            go.Scatter(x = state_unemployment_rate['period'].iloc[-60:],
+                       y = state_unemployment_rate['unemployment_rate'].iloc[-60:],
+                    name = state_name,
+                    line = dict(color = bowery_dark_grey, width = 1)
+                    ),
+            secondary_y = False,
+            row         = 1, 
+            col         = 1
+                      )
 
-    
     #County employment growth 
     fig.add_trace(
-    go.Scatter(x=county_employment['period'].iloc[-60:],
-            y=county_employment['Employment Growth'].iloc[-60:],
-            name=county,
-            line=dict(color="#4160D3", width = 1,dash = 'dash'),showlegend=False)
-    ,secondary_y=False,row=1, col=2,)
+        go.Scatter(x = county_employment['period'].iloc[-60:],
+                y = county_employment['Employment Growth'].iloc[-60:],
+                name = county,
+                line = dict(color = bowery_dark_blue, width = 1,dash = 'dash'),showlegend=False
+                  ),
+        secondary_y=False, 
+        row=1, 
+        col=2,
+                 )
 
     #MSA employment growth
     if (cbsa != '') and (msa_employment.equals(county_employment) == False):
         fig.add_trace(
-        go.Scatter(x=msa_employment['period'].iloc[-60:],
-                y=msa_employment['Employment Growth'].iloc[-60:],
-                name=cbsa_name + ' (MSA)',
-                line=dict(color="#B3C3FF", width = 1),showlegend=False)
-        ,secondary_y=False,row=1, col=2,)
+            go.Scatter(x = msa_employment['period'].iloc[-60:],
+                    y    = msa_employment['Employment Growth'].iloc[-60:],
+                    name = cbsa_name + ' (MSA)',
+                    line = dict(color=bowery_light_blue, width = 1),
+                    showlegend=False
+                      ),
+            secondary_y=False,row=1, col=2,
+                      )
 
     #State employment growth
     if state != 'DC':
         fig.add_trace(
-    go.Scatter(x=state_employment['period'].iloc[-60:],
-            y=state_employment['Employment Growth'].iloc[-60:],
-            name=state_name,
-            line=dict(color="#A6B0BF", width = 1),showlegend=False)
-    ,secondary_y=False,row=1, col=2,)
-
+            go.Scatter(x = state_employment['period'].iloc[-60:],
+                      y  = state_employment['Employment Growth'].iloc[-60:],
+                    name = state_name,
+                    line = dict(color = bowery_dark_grey, width = 1),
+                    showlegend=False
+                      ),
+            secondary_y  = False,row=1, col=2,)
 
     #Set formatting 
     fig.update_layout(
 
-    title={
-        'y':title_position,
-        'x':0.5,
-        'xanchor': 'center',
-        'yanchor': 'top'},
+        title={
+            'y':       title_position,
+            'x':       0.5,
+            'xanchor': 'center',
+            'yanchor': 'top'
+              },
 
-    legend=dict(
-        orientation="h",
-        yanchor="bottom",
-        y=legend_position + 0.1,
-        xanchor="center",
-        x=0.5,
-        font_size = tickfont_size
-                ),
-    font_family="Avenir Next LT Pro",
-    font_color='#262626',
-    font_size = 10.5,
-    paper_bgcolor=paper_backgroundcolor,
-    plot_bgcolor ="White"    
+        legend=dict(
+            orientation = "h",
+            yanchor     = "bottom",
+            y           = legend_position + 0.1,
+            xanchor     = "center",
+            x           = 0.5,
+            font_size   = tickfont_size
+                    ),
+
+        font_family   = "Avenir Next LT Pro",
+        font_color    = '#262626',
+        font_size     = 10.5,
+        paper_bgcolor = paper_backgroundcolor,
+        plot_bgcolor  = "White"    
                     )
-
-    
 
     #Add % to left axis ticks
     fig.update_yaxes(
-        tickfont = dict(size=tickfont_size), 
-        ticksuffix = '%',  
-        title = None ,
-        # linecolor = 'black',   
-        tickmode  = 'auto',
-        nticks    = 6,
-        secondary_y=False)                 
+        tickfont    = dict(size=tickfont_size), 
+        ticksuffix  = '%',  
+        title       = None ,
+        tickmode    = 'auto',
+        nticks      = 6,
+        secondary_y = False
+                    )                 
                     
     
     #Set x axis ticks
-    quarter_list = [i for i in range(len(county_unemployment_rate['period']))]
-    quarter_list = quarter_list[::-12]
+    quarter_list      = [i for i in range(len(county_unemployment_rate['period']))]
+    quarter_list      = quarter_list[::-12]
 
     quarter_list_text = [period for period in county_unemployment_rate['period']]
     quarter_list_text = quarter_list_text[::-12]
@@ -1484,18 +1500,17 @@ def CreateUnemploymentRateEmploymentGrowthGraph(folder):
         ticktext = quarter_list_text,
         tickfont = dict(size=tickfont_size),
         tickangle = 0,
-        )
+                    )
 
     #Set size
     fig.update_layout(
-    autosize=False,
+    autosize  = False,
     height    = graph_height,
     width     = graph_width,
-    margin=dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin,pad=0,autoexpand = True),)
+    margin    = dict(l=left_margin, r=right_margin, t=top_margin, b= bottom_margin,pad=0,autoexpand = True),
+                     )
     
-
-
-    fig.write_image(os.path.join(folder,'unemployment_rate_employment_growth.png'),engine='kaleido',scale=scale)
+    fig.write_image(os.path.join(folder,'unemployment_rate_employment_growth.png'), engine='kaleido', scale = scale)
 
 def CreateUnemploymentRateGraph(folder):
 
@@ -1506,7 +1521,7 @@ def CreateUnemploymentRateGraph(folder):
     go.Scatter(x=county_unemployment_rate['period'],
             y=county_unemployment_rate['unemployment_rate'],
             name=county,
-            line=dict(color="#4160D3", width = 1,dash = 'dash'))
+            line=dict(color = bowery_dark_blue, width = 1,dash = 'dash'))
     ,secondary_y=False)
 
     #MSA unemployment rate if applicable
@@ -1515,7 +1530,7 @@ def CreateUnemploymentRateGraph(folder):
         go.Scatter(x=msa_unemployment_rate['period'],
                 y=msa_unemployment_rate['unemployment_rate'],
                 name=cbsa_name + ' (MSA)',
-                line=dict(color="#B3C3FF", width = 1))
+                line=dict(color=bowery_light_blue, width = 1))
         ,secondary_y=False)
 
     #State unemployment rate
@@ -1523,7 +1538,7 @@ def CreateUnemploymentRateGraph(folder):
     go.Scatter(x=state_unemployment_rate['period'],
             y=state_unemployment_rate['unemployment_rate'],
             name=state_name,
-            line=dict(color="#A6B0BF", width = 1))
+            line=dict(color=bowery_dark_grey, width = 1))
     ,secondary_y=False)
 
     #Set formatting 
@@ -1598,7 +1613,7 @@ def CreateEmploymentGrowthGraph(folder):
     go.Scatter(x=county_employment['period'],
             y=county_employment['Employment Growth'],
             name=county,
-            line=dict(color="#4160D3"))
+            line=dict(color = bowery_dark_blue))
     ,secondary_y=False)
 
     #MSA unemployment rate if applicable
@@ -1607,7 +1622,7 @@ def CreateEmploymentGrowthGraph(folder):
         go.Scatter(x=msa_employment['period'],
                 y=msa_employment['Employment Growth'],
                 name=cbsa_name + ' (MSA)',
-                line=dict(color="#B3C3FF"))
+                line=dict(color=bowery_light_blue))
         ,secondary_y=False)
 
     #State unemployment rate
@@ -1615,7 +1630,7 @@ def CreateEmploymentGrowthGraph(folder):
     go.Scatter(x=state_employment['period'],
             y=state_employment['Employment Growth'],
             name=state_name,
-            line=dict(color="#A6B0BF"))
+            line=dict(color=bowery_dark_grey))
     ,secondary_y=False)
 
     #Set formatting 
@@ -1688,7 +1703,7 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
         go.Scatter(x=county_data_frame['Period'],
                 y=county_data_frame['Per Capita Personal Income'],
                 name=county,
-                line = dict(color="#4160D3",width = 1,dash = 'dash'),
+                line = dict(color = bowery_dark_blue,width = 1,dash = 'dash'),
                 showlegend=False),
                 secondary_y=False,
                 row = 1,
@@ -1701,7 +1716,7 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
         go.Scatter(x=msa_data_frame['Period'],
                 y=msa_data_frame['Per Capita Personal Income'],
                 name=cbsa_name + ' (MSA)',
-                line = dict(color="#B3C3FF",width = 1),
+                line = dict(color=bowery_light_blue,width = 1),
                 showlegend=False)
                 ,secondary_y=False, 
                 row = 1,
@@ -1802,7 +1817,7 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
             name = cbsa_name + ' (MSA)',  
             x=years, 
             y=[msa_5y_growth, msa_3y_growth, msa_1y_growth],
-            marker_color ="#B3C3FF",
+            marker_color =bowery_light_blue,
             text = [msa_5y_growth, msa_3y_growth, msa_1y_growth],
             texttemplate = "%{value:.2f}%",
             textposition = annotation_position,
@@ -1835,7 +1850,7 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
         name=state_name,  
         x=years, 
         y=[state_5y_growth, state_3y_growth, state_1y_growth],
-        marker_color ="#A6B0BF",
+        marker_color =bowery_dark_grey,
         text = [state_5y_growth, state_3y_growth, state_1y_growth],
         texttemplate = "%{value:.2f}%",
         textposition = annotation_position,
@@ -1849,7 +1864,7 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
             name=county,      
             x=years, 
             y=[county_5y_growth,county_3y_growth,county_1y_growth],
-            marker_color="#4160D3",
+            marker_color = bowery_dark_blue,
             text = [county_5y_growth,county_3y_growth,county_1y_growth],
             texttemplate = "%{value:.2f}%",
             textposition = annotation_position,
@@ -1883,7 +1898,7 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
             name = cbsa_name + ' (MSA)',  
             x=years, 
             y=[msa_5y_growth, msa_3y_growth, msa_1y_growth],
-            marker_color ="#B3C3FF",
+            marker_color =bowery_light_blue,
             text = [msa_5y_growth, msa_3y_growth, msa_1y_growth],
             texttemplate = "%{value:.2f}%",
             textposition = annotation_position,
@@ -1897,7 +1912,7 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
                     name=county,      
                     x=years, 
                     y=[county_5y_growth,county_3y_growth,county_1y_growth],
-                    marker_color="#4160D3",
+                    marker_color = bowery_dark_blue,
                     text = [county_5y_growth,county_3y_growth,county_1y_growth],
                     texttemplate = "%{value:.2f}%",
                     textposition = annotation_position,
@@ -2005,7 +2020,7 @@ def CreateGDPGraph(county_data_frame,msa_data_frame,state_data_frame,folder):
         go.Scatter(x=county_data_frame['Period'],
                 y=county_data_frame['GDP'],
                 name=county+' (L)',
-                line = dict(color="#4160D3", width = 1,dash = 'dash')
+                line = dict(color = bowery_dark_blue, width = 1,dash = 'dash')
                 )
         ,secondary_y=False)
 
@@ -2015,7 +2030,7 @@ def CreateGDPGraph(county_data_frame,msa_data_frame,state_data_frame,folder):
             go.Scatter(x=msa_data_frame['Period'],
                     y=msa_data_frame['GDP'],
                     name=cbsa_name + ' (MSA)' + ' (R)',
-                    line = dict(color="#B3C3FF", width = 1),
+                    line = dict(color=bowery_light_blue, width = 1),
                     )
             ,secondary_y=True)
         else:
@@ -2033,7 +2048,7 @@ def CreateGDPGraph(county_data_frame,msa_data_frame,state_data_frame,folder):
             go.Scatter(x=msa_data_frame['Period'],
                     y=msa_data_frame['GDP'],
                     name=cbsa_name + ' (MSA)' + ' (L)',
-                    line = dict(color="#B3C3FF"),
+                    line = dict(color=bowery_light_blue),
                     )
             ,secondary_y=False)
         
@@ -2122,7 +2137,7 @@ def CreatePopulationOverTimeWithGrowthGraph(county_resident_pop, state_resident_
         go.Scatter(x = county_resident_pop['Period'],
                 y = county_resident_pop['Resident Population'],
                 name = county + ' (L)',
-                line = dict(color="#4160D3", width = 1,dash = 'dash'),
+                line = dict(color = bowery_dark_blue, width = 1,dash = 'dash'),
                 showlegend= False
                 ),      
         secondary_y = False, row = 1, col = 1
@@ -2134,7 +2149,7 @@ def CreatePopulationOverTimeWithGrowthGraph(county_resident_pop, state_resident_
             go.Scatter(x = msa_resident_pop['Period'],
                     y = msa_resident_pop['Resident Population'],
                     name = cbsa_name + ' (MSA)' + ' (R)',
-                    line = dict(color ="#B3C3FF", width = 1),
+                    line = dict(color =bowery_light_blue, width = 1),
                     showlegend = False
                       ),
             secondary_y = True, row = 1, col = 1
@@ -2145,7 +2160,7 @@ def CreatePopulationOverTimeWithGrowthGraph(county_resident_pop, state_resident_
         go.Scatter(x=state_resident_pop['Period'],
                 y=state_resident_pop['Resident Population'],
                 name=state_name + ' (R)',
-                line = dict(color="#A6B0BF", width = 1),
+                line = dict(color=bowery_dark_grey, width = 1),
                 showlegend=False
                 ),
         secondary_y=True,row=1, col=1,)   
@@ -2223,7 +2238,7 @@ def CreatePopulationOverTimeWithGrowthGraph(county_resident_pop, state_resident_
             name=cbsa_name + ' (MSA)' + ' (R)',   
             x=years, 
             y=[msa_10y_growth, msa_5y_growth, msa_1y_growth],
-            marker_color ="#B3C3FF",
+            marker_color =bowery_light_blue,
             text = [msa_10y_growth, msa_5y_growth, msa_1y_growth],
             texttemplate = "%{value:.2f}%",
             textposition = annotation_position ,
@@ -2238,7 +2253,7 @@ def CreatePopulationOverTimeWithGrowthGraph(county_resident_pop, state_resident_
             name=county + ' (L)',      
             x=years, 
             y=[county_10y_growth,county_5y_growth,county_1y_growth],
-            marker_color="#4160D3",
+            marker_color = bowery_dark_blue,
             text = [county_10y_growth,county_5y_growth,county_1y_growth],
             texttemplate = "%{value:.2f}%",
             textposition = annotation_position,
@@ -2268,7 +2283,7 @@ def CreatePopulationOverTimeWithGrowthGraph(county_resident_pop, state_resident_
             name=state_name + ' (R)',  
             x=years, 
             y=[state_10y_growth, state_5y_growth, state_1y_growth],
-            marker_color ="#A6B0BF",
+            marker_color =bowery_dark_grey,
             text = [state_10y_growth, state_5y_growth, state_1y_growth],
             texttemplate = "%{value:.2f}%",
             textposition = annotation_position,
@@ -2283,7 +2298,7 @@ def CreatePopulationOverTimeWithGrowthGraph(county_resident_pop, state_resident_
                 name=county + ' (L)',      
                 x=years, 
                 y=[county_10y_growth,county_5y_growth,county_1y_growth],
-                marker_color="#4160D3",
+                marker_color = bowery_dark_blue,
                 text = [county_10y_growth,county_5y_growth,county_1y_growth],
                 texttemplate = "%{value:.2f}%",
                 textposition = annotation_position,
@@ -2382,7 +2397,7 @@ def CreateMLPWithGrowthGraph(county_data_frame,msa_data_frame,national_data_fram
         go.Scatter(x=county_data_frame['Period'],
                 y=county_data_frame['Median List Price'],
                 name=county,
-                line = dict(color="#4160D3",width = 1,dash = 'dash'),
+                line = dict(color = bowery_dark_blue,width = 1,dash = 'dash'),
                 showlegend=False),
                 secondary_y=False,
                 row = 1,
@@ -2395,7 +2410,7 @@ def CreateMLPWithGrowthGraph(county_data_frame,msa_data_frame,national_data_fram
         go.Scatter(x=msa_data_frame['Period'],
                 y=msa_data_frame['Median List Price'],
                 name=cbsa_name + ' (MSA)',
-                line = dict(color="#B3C3FF",width = 1),
+                line = dict(color=bowery_light_blue,width = 1),
                 showlegend=False)
                 ,secondary_y=False, 
                 row = 1,
@@ -2485,7 +2500,7 @@ def CreateMLPWithGrowthGraph(county_data_frame,msa_data_frame,national_data_fram
             name = cbsa_name + ' (MSA)',  
             x=years, 
             y=[ msa_3y_growth, msa_1y_growth],
-            marker_color ="#B3C3FF",
+            marker_color =bowery_light_blue,
             text = [ msa_3y_growth, msa_1y_growth],
             texttemplate = "%{value:.2f}%",
             textposition = annotation_position,
@@ -2518,7 +2533,7 @@ def CreateMLPWithGrowthGraph(county_data_frame,msa_data_frame,national_data_fram
             name=county,      
             x=years, 
             y=[county_3y_growth,county_1y_growth],
-            marker_color="#4160D3",
+            marker_color = bowery_dark_blue,
             text = [county_3y_growth,county_1y_growth],
             texttemplate = "%{value:.2f}%",
             textposition = annotation_position,
@@ -2583,7 +2598,7 @@ def CreateMLPWithGrowthGraph(county_data_frame,msa_data_frame,national_data_fram
                     name=county,      
                     x=years, 
                     y=[county_3y_growth,county_1y_growth],
-                    marker_color="#4160D3",
+                    marker_color = bowery_dark_blue,
                     text = [county_3y_growth,county_1y_growth],
                     texttemplate = "%{value:.2f}%",
                     textposition = annotation_position,
@@ -2751,7 +2766,7 @@ def CreateEmploymentGrowthByIndustryGraph(county_data_frame,folder):
             name='1 Year Growth',      
             x=county_data_frame['industry_code'], 
             y=county_data_frame['1 Year Employment Growth'],
-            marker=dict(color="#4160D3", size=9),
+            marker=dict(color = bowery_dark_blue, size=9),
             mode = 'markers',
             # texttemplate = "%{value:.2f}%",
             # textposition = annotation_position,
@@ -2900,7 +2915,7 @@ def CreateMSAEmploymentGrowthByIndustryGraph(msa_data_frame,folder):
             name='1 Year Growth',      
             x=msa_data_frame['industry_code'], 
             y=msa_data_frame['1 Year Employment Growth'],
-            marker=dict(color="#4160D3", size=9),
+            marker=dict(color = bowery_dark_blue, size=9),
             mode = 'markers',
             # texttemplate = "%{value:.2f}%",
             # textposition = annotation_position,
@@ -2980,7 +2995,7 @@ def CreateMLPGraph(county_data_frame,msa_data_frame,folder):
             y=county_data_frame['Median List Price'],
             name=county,
             mode='lines',
-            line = dict(color="#4160D3",width = 1,dash = 'dash')
+            line = dict(color = bowery_dark_blue,width = 1,dash = 'dash')
             )
     ,secondary_y=False)
 
@@ -2993,7 +3008,7 @@ def CreateMLPGraph(county_data_frame,msa_data_frame,folder):
                 y=msa_data_frame['Median List Price'],
                 name = cbsa_name + ' (MSA)',
                 mode = 'lines',
-                line = dict(color = "#B3C3FF",width = 1)
+                line = dict(color = bowery_light_blue,width = 1)
                 )
         ,secondary_y=False)
     
@@ -3077,7 +3092,7 @@ def CreateNationalUnemploymentGraph(folder):
     go.Scatter(x=national_unemployment['period'],
             y=national_unemployment['unemployment_rate'],
             name='United States of America',
-            line=dict(color="#4160D3",))
+            line=dict(color = bowery_dark_blue,))
     ,secondary_y=False)
 
     #Set formatting 
@@ -3154,7 +3169,7 @@ def CreateNationalEmploymentGrowthGraph(folder):
     go.Scatter(x=national_employment['period'],
             y=national_employment['Employment Growth'],
             name=county,
-            line=dict(color="#4160D3"))
+            line=dict(color = bowery_dark_blue))
     ,secondary_y=False)
 
 
@@ -3230,7 +3245,7 @@ def CreateNationalGDPGraph(folder):
     go.Scatter(x=national_gdp['Period'],
             y=national_gdp['GDP'],
             name='United States of America',
-            line=dict(color="#4160D3"))
+            line=dict(color = bowery_dark_blue))
     ,secondary_y=False)
 
     #Set formatting 
@@ -5752,7 +5767,11 @@ data_export                   = False
 primary_font                  = 'Avenir Next LT Pro Light' 
 primary_space_after_paragraph = 8
 tickangle                     = 0
-
+bowery_grey                   = "#D7DEEA"
+bowery_dark_grey              = "#A6B0BF"
+bowery_dark_blue              = "#4160D3"
+bowery_light_blue             = "#B3C3FF"
+bowery_black                  = "#404858"
 
 todays_date                   = date.today()
 current_year_and_quarter      = GetCurrentQuarterAndYear()
