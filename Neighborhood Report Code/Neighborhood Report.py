@@ -4465,7 +4465,12 @@ def CleanUpPNGs():
     files = os.listdir(hood_folder)
     for image in files:
         if image.endswith(".png"):
-            os.remove(os.path.join(hood_folder, image))
+              while os.path.exists(os.path.join(hood_folder, image)):
+                try:
+                    os.remove(os.path.join(hood_folder, image))
+                except:
+                    pass
+           
 
 def CreateDirectoryCSV():
     global service_api_csv_name
