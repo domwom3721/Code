@@ -56,6 +56,6 @@ market_reports_df_clean = ProcessMarketReports(market_reports_df)
 hood_reports_df_clean   = ProcessHoodReports(hood_reports_df)
 
 #Upload our cleaned dataframes back to the google sheets
-d2g.upload(df = area_reports_df_clean, gfile = spreadsheet_key, wks_name = 'Area Reports TEST', row_names=True)
-d2g.upload(df = market_reports_df_clean, gfile = spreadsheet_key, wks_name = 'Market Reports TEST', row_names=True)
-d2g.upload(df = hood_reports_df_clean, gfile = spreadsheet_key, wks_name = 'Hood Reports TEST', row_names=True)
+d2g.upload(df = area_reports_df_clean, gfile = spreadsheet_key, wks_name = 'Area Reports TEST', row_names=False)
+d2g.upload(df = market_reports_df_clean, gfile = spreadsheet_key, wks_name = 'Market Reports TEST', row_names=False)
+d2g.upload(df = hood_reports_df_clean, gfile = spreadsheet_key, wks_name = 'Hood Reports TEST', row_names=False)
