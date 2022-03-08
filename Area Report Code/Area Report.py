@@ -3273,42 +3273,33 @@ def OverviewLanguage():
     print('Writing Overview Langauge')
 
     #Section 1A: Identify county and state of subject property
-    try:
-        subject_property_location_language = ('The subject property is located in ' + county + ', ' + state_name + '. ')
-    except Exception as e:
-        print(e,'trouble creating subject in sentence')
-        subject_property_location_language = ''
+    subject_property_location_language = ('The subject property is located in ' + county + ', ' + state_name + '. ')
 
-    # Section 1B: Grab overview summary from Metro_language CSV using the CBSA Code from IdentifyMSA
+
+    #Section 1B: Grab overview summary from Metro_language CSV using the CBSA Code from IdentifyMSA
     try:
         metro_area_language_df = pd.read_csv(os.path.join(data_location,'Metro_Language.csv'),
                                                     dtype={
-                                                        'CBSA_Code': object,
-                                                        'metro_name': object,
-                                                        'Overview': object,
+                                                        'CBSA_Code':             object,
+                                                        'metro_name':            object,
+                                                        'Overview':              object,
                                                         'LaborMarketConditions': object,
-                                                        'growth': object,
-                                                        'UniqueAspects': object,
-                                                        'Infrastructure': object,
-                                                        'Education': object
+                                                        'growth':                object,
+                                                        'UniqueAspects':         object,
+                                                        'Infrastructure':        object,
+                                                        'Education':             object
                                                         }
                                             )
 
         #restrict data to only rows with the Subject County CBSA Code
         metro_area_language_df = metro_area_language_df.loc[metro_area_language_df['CBSA_Code'] == cbsa]
-        #print(metro_area_language_df)
 
         #If we have a cbsa/msa for the county, then use the excel file text
         if len(metro_area_language_df) == 1:   
             CBSA_overview_language       = metro_area_language_df['Overview'].iloc[-1]
-            CBSA_economy_language        = metro_area_language_df['LaborMarketConditions'].iloc[-1]
-            # CBSA_infrastructure_language = metro_area_language_df['Infrastructure'].iloc[-1]
-            # print('Getting Metro_Language from CSV')
-        
         else:
-            CBSA_overview_language         = ''
-            CBSA_economy_language          = ''
-            # CBSA_infrastructure_language = ''
+            CBSA_overview_language       = ''
+    
     except Exception as e:
         print(e,'trouble getting cbsa overview language')
         CBSA_overview_language       = ''
@@ -3317,13 +3308,10 @@ def OverviewLanguage():
 
     #Section 1c: Grab summary text from Wikipedia
 
-    
-    #If not, then use wikipedia and the data we have collected to construct a few paragraphs.....
-
-    #Section 1: Grab summary text from Wikipedia
     try:
         wikipeida_summary      =  wikipedia.summary((county + ',' + state))
         wikipeida_summary      = wikipeida_summary.replace('the U.S. state of ','')
+    
     except Exception as e:
         print(e)
         wikipeida_summary      = ''
@@ -3331,6 +3319,7 @@ def OverviewLanguage():
     try:
         wikipeida_economy_summary                 = wikipedia.page((county + ',' + state)).section('Economy')
         assert wikipeida_economy_summary != None
+    
     except Exception as e:
         print(e)
         wikipeida_economy_summary               = ''
@@ -3364,41 +3353,42 @@ def OverviewLanguage():
             
 
         economic_overview_paragraph = (
-                        #GDP Sentence
+                    #GDP Sentence
                     'As of '                  +
                     current_period            +
                     ', '                      +
                     county                    + 
                     """'s"""                  +
-                    ' economic output is '            +
+                    ' economic output is '    +
                     "{growing_or_contracting}".format(growing_or_contracting = "growing" if (current_gdp_growth >= 0)  else   ('contracting')) +
-                    ' at ' +
-                    "{:,.1f}%".format(abs(current_gdp_growth))     +
+                    ' at '                    +
+                    "{:,.1f}%".format(abs(current_gdp_growth))                                                                                 +
                     ' per year. '             +
                     
                     #Unemployment sentence
-                    'The unemployment rate currently sits at '  +
+                    'The unemployment rate currently sits at '   +
                     "{:,.1f}%".format(current_unemployment)      +
-                    ', '                                        +
+                    ', '                                         +
                     unemployment_above_below_hist_avg            +
                     ' its five-year average '                    +
                     'of '                                        +
-                    "{:,.1f}%".format(historical_average_unemployment)                         +
-                    ' and '               +
+                    "{:,.1f}%".format(historical_average_unemployment)                                                                          +
+                    ' and '                                      +
                     unemployment_above_below_state               +
-                    '. '                                        +
+                    '. '                                         +
 
                     #Employment growth and breakdown
-                    'The largest industry in terms of employment in ' +
-                    county                                            +
-                    ' is '                                            +
-                    largest_industry                                  +
-                    ', which employs '                                 +
+                    'The largest industry in terms of employment in '    +
+                    county                                               +
+                    ' is '                                               +
+                    largest_industry                                     +
+                    ', which employs '                                   +
                 "{:,.1f}%".format(largest_industry_employment_fraction)  +
                     ' of all workers in the County.'
 
                 
-                    )
+                                )
+
     except Exception as e:
         print(e,'unable to create economic overview paragarph')
         economic_overview_paragraph = ''
@@ -3407,15 +3397,20 @@ def OverviewLanguage():
     try:
         february_2020_employment_level = county_employment.loc[(county_employment['year'] == '2020') & (county_employment['periodName'] == 'February')]['Employment'].iloc[-1]
         april_2020_employment_level    = county_employment.loc[(county_employment['year'] == '2020') & (county_employment['periodName'] == 'April')]['Employment'].iloc[-1]    
-
-        
         pandemic_job_losses            = february_2020_employment_level - april_2020_employment_level 
         pandemic_job_losses_pct        = (pandemic_job_losses/february_2020_employment_level) * 100
 
 
         covid_context_pargaraph = (
-            'The COVID-19 pandemic slowed economic growth throughout the country, including here in ' + county + '. Between February 2020 and April, ' +
-            county + ' employers shed over ' + "{:,.0f}".format(pandemic_job_losses) + ' jobs (' +  "{:,.1f}%".format(pandemic_job_losses_pct)   + ' of the labor market), as' +
+            'The COVID-19 pandemic slowed economic growth throughout the country, including here in '  + 
+             county                                                                                    +
+             '. Between February 2020 and April, '                                                     +
+             county                                                                                    +
+             ' employers shed over '                                                                   + 
+             "{:,.0f}".format(pandemic_job_losses)                                                     +
+             ' jobs ('                                                                                 +
+             "{:,.1f}%".format(pandemic_job_losses_pct)                                                +
+             ' of the labor market), as'                                                               +
             ' social distancing protocols were put in place and operating restrictions were imposed. ' + 
             'With the availability of vaccines in early 2021, restrictions eased, and growth returned.'
                                 )
@@ -3432,7 +3427,7 @@ def OverviewLanguage():
 
 def CountyEmploymentBreakdownLanguage(county_industry_breakdown):
     print('Writing County Employment Breakdown Langauge')
-    # print(county_industry_breakdown)
+    
     #Get the largest industries
     largest_industry                                  = county_industry_breakdown['industry_code'].iloc[-1]
     largest_industry_employment                       = county_industry_breakdown['month3_emplvl'].iloc[-1]
@@ -3474,46 +3469,50 @@ def CountyEmploymentBreakdownLanguage(county_industry_breakdown):
     
 
     county_breakdown_language = (
-          'According to the Q' +
-            qcew_qtr +
-            ' '+
-            qcew_year +
-            ' Quarterly Census of Employment and Wages, ' +
-            county +
-            ' employed ' +
+           #Sentence 1
+          'According to the Q'                                                 +
+            qcew_qtr                                                           +
+            ' '                                                                +
+            qcew_year                                                          +
+            ' Quarterly Census of Employment and Wages, '                      +
+            county                                                             +
+            ' employed '                                                       +
             "{:,.0f}".format(county_industry_breakdown['month3_emplvl'].sum()) +
-            ' employees, with establishments in the ' + 
-           largest_industry +
-           ', ' +
-           second_largest_industry +
-           ', and ' +
-          third_largest_industry +
-           ' industries accounting for the top three employers. '+
-           'These industries employ ' +
-           largest_industry_employment +
-           ' (' +
-            largest_industry_employment_fraction +
-           '), ' +
-           
-            second_largest_industry_employment +
-           ' (' +
-           second_largest_industry_employment_fraction +
-           '), and ' +
-           
-            third_largest_industry_employment +
-           ' (' +
-           third_largest_industry_employment_fraction +
-           ') ' +
-           'workers in the County, respectively. ' +
+            ' employees, with establishments in the '                          + 
+           largest_industry                                                    +
+           ', '                                                                +
+           second_largest_industry                                             +
+           ', and '                                                            +
+          third_largest_industry                                               +
+           ' industries accounting for the top three employers. '              +
 
-            "{high_concentration_sentence}".format(high_concentration_sentence = (county + ' has an especially large share of workers in the ' + highest_relative_concentration_industry + """ industry. In fact, its """ +  "{:,.1f}%".format(highest_relative_concentration_employment_fraction) + ' fraction of workers is ' +  "{:,.1f}".format(highest_relative_concentration_industry_lq) + ' times higher than the National average.'   ) if highest_relative_concentration_industry_lq >= 1.75  else "") 
+           #Sentence 2
+           'These industries employ '                                          +
+           largest_industry_employment                                         +
+           ' ('                                                                +
+            largest_industry_employment_fraction                               +
+           '), '                                                               +
+            second_largest_industry_employment                                 +
+           ' ('                                                                +
+           second_largest_industry_employment_fraction                         +
+           '), and '                                                           +           
+            third_largest_industry_employment                                  +
+           ' ('                                                                +
+           third_largest_industry_employment_fraction                          +
+           ') '                                                                +
+           'workers in the County, respectively. '                             +
+
+           #Sentence 3: High concentration industry sentence (only populates if meets threshold)    
+            "{high_concentration_sentence}".format(high_concentration_sentence = (county + ' has an especially large share of workers in the ' + highest_relative_concentration_industry + 
+             """ industry. In fact, its """                                       + 
+            "{:,.1f}%".format(highest_relative_concentration_employment_fraction) +
+            ' fraction of workers is ' +  "{:,.1f}".format(highest_relative_concentration_industry_lq) + ' times higher than the National average.'   ) if highest_relative_concentration_industry_lq >= 1.75  else "") 
 
         )
     return(county_breakdown_language)
 
 def MSAEmploymentBreakdownLanguage(msa_industry_breakdown):
     print('Writing MSA Employment Breakdown Langauge')
-    # print(county_industry_breakdown)
     #Get the largest industries
     largest_industry                                  = msa_industry_breakdown['industry_code'].iloc[-1]
     largest_industry_employment                       = msa_industry_breakdown['month3_emplvl'].iloc[-1]
@@ -3555,38 +3554,40 @@ def MSAEmploymentBreakdownLanguage(msa_industry_breakdown):
     
 
     msa_breakdown_language = (
-          'According to the Q' +
-            qcew_qtr +
-            ' '+
-            qcew_year +
-            ' Quarterly Census of Employment and Wages, ' +
-            cbsa_name +
-            ' employed ' +
+           #Sentence 1
+          'According to the Q'                                              +
+            qcew_qtr                                                        +
+            ' '                                                             +
+            qcew_year                                                       +
+            ' Quarterly Census of Employment and Wages, '                   +
+            cbsa_name                                                       +
+            ' employed '                                                    +
             "{:,.0f}".format(msa_industry_breakdown['month3_emplvl'].sum()) +
-            ' private employees, with establishments in the ' + 
-           largest_industry +
-           ', ' +
-           second_largest_industry +
-           ', and ' +
-          third_largest_industry +
-           ' industries accounting for the top three employers. '+
-           'These industries employ ' +
-           largest_industry_employment +
-           ' (' +
-            largest_industry_employment_fraction +
-           '), ' +
+            ' private employees, with establishments in the '               +  
+           largest_industry                                                 +
+           ', '                                                             +
+           second_largest_industry                                          +
+           ', and '                                                         +
+          third_largest_industry                                            +
+           ' industries accounting for the top three employers. '           +
            
-            second_largest_industry_employment +
-           ' (' +
-           second_largest_industry_employment_fraction +
-           '), and ' +
-           
-            third_largest_industry_employment +
-           ' (' +
-           third_largest_industry_employment_fraction +
-           ') ' +
-           'workers in the Metro, respectively. ' +
-
+           #Sentence 2
+           'These industries employ '                                       +
+           largest_industry_employment                                      +
+           ' ('                                                             +
+            largest_industry_employment_fraction                            +
+           '), '                                                            +
+            second_largest_industry_employment                              +
+           ' ('                                                             +
+           second_largest_industry_employment_fraction                      +
+           '), and '                                                        + 
+            third_largest_industry_employment                               +
+           ' ('                                                             +
+           third_largest_industry_employment_fraction                       +
+           ') '                                                             +
+           'workers in the Metro, respectively. '                           +
+            
+           #Sentence 3: High concentration industry sentence (only populates if meets threshold)    
             "{high_concentration_sentence}".format(high_concentration_sentence = (cbsa_name + ' has an especially large share of workers in the ' + highest_relative_concentration_industry + """ industry. In fact, its """ +  "{:,.1f}%".format(highest_relative_concentration_employment_fraction) + ' fraction of workers is ' +  "{:,.1f}".format(highest_relative_concentration_industry_lq) + ' times higher than the National average.'   ) if highest_relative_concentration_industry_lq >= 1.75  else "") 
 
         )
@@ -3595,37 +3596,34 @@ def MSAEmploymentBreakdownLanguage(msa_industry_breakdown):
 def UnemploymentLanguage():
     print('Writing Unemployment Langauge')
     try:
-        latest_period                  = county_employment['period'].iloc[-1]
-        latest_county_employment       = county_employment['Employment'].iloc[-1]
-        one_year_ago_county_employment = county_employment['Employment'].iloc[-13]
-
+        latest_period                      = county_employment['period'].iloc[-1]
+        latest_county_employment           = county_employment['Employment'].iloc[-1]
+        one_year_ago_county_employment     = county_employment['Employment'].iloc[-13]
         one_year_percent_employment_change = ((latest_county_employment/one_year_ago_county_employment) -1 ) * 100
+       
         if one_year_percent_employment_change > 0:
             up_or_down = 'up ' + "{:,.0f}%".format(abs(one_year_percent_employment_change))
+
             if  one_year_percent_employment_change < 1:
                 up_or_down = 'up ' + "{:,.1f}%".format(abs(one_year_percent_employment_change))
 
 
         elif one_year_percent_employment_change < 0:
             up_or_down = 'down ' + "{:,.0f}%".format(abs(one_year_percent_employment_change)) 
+
             if one_year_percent_employment_change < -1:
                 up_or_down = 'down ' + "{:,.1f}%".format(abs(one_year_percent_employment_change)) 
-
-
 
         elif one_year_percent_employment_change == 0:
             up_or_down = 'unchanged'
 
         
-
-
-        
-
         #Get latest state and county unemployment rate
         latest_county_unemployment          = county_unemployment_rate['unemployment_rate'].iloc[-1]
 
         if cbsa != '':
             latest_msa_unemployment         = msa_unemployment_rate['unemployment_rate'].iloc[-1]
+            
             #See if county unemployment rate is above or metro  rate
             if latest_msa_unemployment > latest_county_unemployment:
                 msa_county_unemployment_above_or_below = 'below'
@@ -3642,8 +3640,6 @@ def UnemploymentLanguage():
                 msa_county_unemployment_difference = 'just slightly '
             else:
                 msa_county_unemployment_difference = ''
-
-
 
 
         pre_pandemic_unemployment_df        = county_unemployment_rate.loc[(county_unemployment_rate['periodName'] =='February') & (county_unemployment_rate['year'] == '2020')]
@@ -3690,134 +3686,114 @@ def UnemploymentLanguage():
         february_2020_unemployment_rate = county_unemployment_rate.loc[(county_unemployment_rate['year'] == '2020') & (county_unemployment_rate['periodName'] == 'February')]['unemployment_rate'].iloc[-1]
         april_2020_unemployment_rate    = county_unemployment_rate.loc[(county_unemployment_rate['year'] == '2020') & (county_unemployment_rate['periodName'] == 'April')]['unemployment_rate'].iloc[-1]    
 
-        
-        pandemic_job_losses            = february_2020_employment_level - april_2020_employment_level 
-        pandemic_job_losses_pct        = (pandemic_job_losses/february_2020_employment_level) * 100
+        pandemic_job_losses             = february_2020_employment_level - april_2020_employment_level 
+        pandemic_job_losses_pct         = (pandemic_job_losses/february_2020_employment_level) * 100
         
         #Format variables
-        latest_county_employment       = "{:,}".format(latest_county_employment)
-        latest_county_unemployment     = "{:,.1f}%".format(latest_county_unemployment)
-        latest_state_unemployment      = "{:,.1f}%".format(latest_state_unemployment)
+        latest_county_employment        = "{:,}".format(latest_county_employment)
+        latest_county_unemployment      = "{:,.1f}%".format(latest_county_unemployment)
+        latest_state_unemployment       = "{:,.1f}%".format(latest_state_unemployment)
 
 
         if cbsa == '':
 
             unemplopyment_language=( 
                     #Sentence 1: Discuss covid job losses
-                    'At the onset of the pandemic last spring, ' + county + ' area employers shed ' + "{:,.1f}%".format(pandemic_job_losses_pct) + ' of its workforce, expanding the unemployment rate from ' +
+                    'At the onset of the pandemic last spring, ' + 
+                    county                                       + 
+                    ' area employers shed '                      +
+                     "{:,.1f}%".format(pandemic_job_losses_pct)  +
+                    ' of its workforce, expanding the unemployment rate from '                   +
                     "{:,.1f}%".format(february_2020_unemployment_rate) + ' in February 2020 to ' + 
-                "{:,.1f}%".format(april_2020_unemployment_rate) + ' just two months later. ' + 
+                    "{:,.1f}%".format(april_2020_unemployment_rate) + ' just two months later. ' + 
                     
                     
                     #Sentence 2: Discuss current unemployment
-                    'The unemployment rate in '+
-                    county                     + 
-                    ' has '                    +
-                unemployment_change          +
-                    latest_county_unemployment +
-                    ', '                       +        
-                    state_county_unemployment_difference +
-                state_county_unemployment_above_or_below +
-                ' the '    +
-                state_name + 
-                ' rate'   +
+                    'The unemployment rate in '              +
+                    county                                   + 
+                    ' has '                                  +
+                    unemployment_change                      +
+                    latest_county_unemployment               +
+                    ', '                                     +        
+                    state_county_unemployment_difference     +
+                    state_county_unemployment_above_or_below +
+                    ' the '                                  +
+                    state_name                               + 
+                    ' rate'                                  +
                     "{state_unemployment}".format(state_unemployment =(' of '      + latest_state_unemployment ) if (latest_county_unemployment != latest_state_unemployment)  else   ('')) +           
-                '. '                     +
+                    '. '                                     +
 
 
-                #Sentence 3: Discuss growth in total employment
-                    'As of '+
-                latest_period +
-                ', total employment is ' +
-                up_or_down +
-                ' on a year-over-year basis. ' +
+                    #Sentence 3: Discuss growth in total employment
+                    'As of '                        +
+                    latest_period                   +
+                    ', total employment is '        +
+                    up_or_down                      +
+                    ' on a year-over-year basis. '  +
 
-                # Is unemployment above or below pre-pandemic levels?
-                'The unemployment rate '          +
-                pre_pandemic_unemp_above_or_below +
-                ' its pre-pandemic level (Feb 2020) of ' +
-                "{:,.1f}%".format(pre_pandemic_unemployment)  +
-                '.'         
-                )
+                    #Sentence 4: Is unemployment above or below pre-pandemic levels?
+                    'The unemployment rate '                      +
+                    pre_pandemic_unemp_above_or_below             +
+                    ' its pre-pandemic level (Feb 2020) of '      +
+                    "{:,.1f}%".format(pre_pandemic_unemployment)  +
+                    '.'         
+                                )
         else:
             latest_msa_unemployment        = "{:,.1f}%".format(latest_msa_unemployment)
             
-            unemplopyment_language = (  #Sentence 1: Discuss covid job losses
-                    'At the onset of the pandemic last spring, ' + county + ' area employers shed ' + "{:,.1f}%".format(pandemic_job_losses_pct) + ' of its workforce, expanding the unemployment rate from ' +
-                    "{:,.1f}%".format(february_2020_unemployment_rate) + ' in February 2020 to ' + 
-                "{:,.1f}%".format(april_2020_unemployment_rate) + ' just two months later. ' + 
-                    
-                    #Sentence 2: Discuss current unemployment
-                    'The unemployment rate in '+
-                    county                     + 
-                    ' has '                    +
-                unemployment_change          +
-                    latest_county_unemployment +
-                    ', '                       +        
-                    msa_county_unemployment_difference +
-                msa_county_unemployment_above_or_below +
-                ' the '    +
-                cbsa_name + 
-                ' rate'   +
-                    "{msa_unemployment}".format(msa_unemployment =(' of '      + latest_msa_unemployment ) if (latest_county_unemployment != latest_msa_unemployment)  else   ('')) +           
-                '. '                     +
+            unemplopyment_language = (#Sentence 1: Discuss covid job losses
+                                    'At the onset of the pandemic last spring, ' +
+                                    county                                       + 
+                                    ' area employers shed '                      + 
+                                    "{:,.1f}%".format(pandemic_job_losses_pct)   + 
+                                    ' of its workforce, expanding the unemployment rate from ' +
+                                    "{:,.1f}%".format(february_2020_unemployment_rate)         + 
+                                    ' in February 2020 to '                                    + 
+                                    "{:,.1f}%".format(april_2020_unemployment_rate)            + 
+                                    ' just two months later. '                                 + 
+                                    
+                                    #Sentence 2: Discuss current unemployment
+                                    'The unemployment rate in '                                +
+                                    county                                                     +     
+                                    ' has '                                                    +
+                                    unemployment_change                                        +
+                                    latest_county_unemployment                                 +
+                                    ', '                                                       +        
+                                    msa_county_unemployment_difference                         +
+                                    msa_county_unemployment_above_or_below                     +
+                                    ' the '                                                    +
+                                    cbsa_name                                                  + 
+                                    ' rate'                                                    +
+                                    "{msa_unemployment}".format(msa_unemployment =(' of '      + latest_msa_unemployment ) if (latest_county_unemployment != latest_msa_unemployment)  else   ('')) +           
+                                    '. '                                                       +
 
 
-                #Sentence 3: Discuss growth in total employment
-                    'As of '+
-                latest_period +
-                ', total employment is ' +
-                up_or_down +
-                ' on a year-over-year basis. ' +
+                                    #Sentence 3: Discuss growth in total employment
+                                    'As of '                                                    +
+                                    latest_period                                               +
+                                    ', total employment is '                                    +
+                                    up_or_down                                                  +
+                                    ' on a year-over-year basis. '                              +
 
-                # Is unemployment above or below pre-pandemic levels?
-                'The unemployment rate '          +
-                pre_pandemic_unemp_above_or_below +
-                ' its pre-pandemic level (Feb 2020) of ' +
-                "{:,.1f}%".format(pre_pandemic_unemployment)  +
-                '.'         
-                )
+                                    #Sentence 4: Is unemployment above or below pre-pandemic levels?
+                                    'The unemployment rate '                                    +
+                                    pre_pandemic_unemp_above_or_below                           +
+                                    ' its pre-pandemic level (Feb 2020) of '                    +
+                                    "{:,.1f}%".format(pre_pandemic_unemployment)                +
+                                    '.'         
+                                    )
     except Exception as e:
         print(e,'unable to create unemployment language')
         unemplopyment_language = ''
     
     return([unemplopyment_language])
 
-def TourismEmploymentLanguage():
-    county_industry_breakdown_lang      = county_industry_breakdown.sort_values(by=['month3_emplvl'])
-    largest_industry                    = county_industry_breakdown_lang['industry_code'].iloc[-1]
-    second_largest_industry             = county_industry_breakdown_lang['industry_code'].iloc[-2]
-    if len(county_industry_breakdown_lang) > 2:
-        third_largest_industry         = county_industry_breakdown_lang['industry_code'].iloc[-3]
-    else:
-        third_largest_industry         = ''
-    
-    
-    if (largest_industry == ('Leisure & Hospitality')) or (second_largest_industry == ('Leisure & Hospitality')) or (third_largest_industry == ('Leisure & Hospitality')):
-        print('Writing Tourism/Hospitality Language')
-
-        return('With the Leisure and Hospitality Industry accounting for a large share of employment in '+
-            county +
-            ', the pandemic has had a large effect on the Industry and local labor market. ' +
-           'However, the long-awaited bounce-back in travel and tourism appears to finally be upon us. ' +
-           'With more than half of the U.S. adult population vaccinated and new COVID infections plummeting, airline travel,' +
-           ' hotel bookings, and tourist attraction attendance is rebounding convincingly across most popular destinations. ' +
-           'A surge in leisure spending on things like hotels, travel, dining out and various categories of recreational services will be a key engine of growth over the next few quarters. ' +
-           'Economic data is pointing towards a shift in spending from consumer items in favor during the lockdowns and increased spending on services that had been put on hold. ' +
-           'With a large Tourism industry, ' +
-           county +
-           ' is expected to benefit, aiding growth in the County and region.')    
-    else:
-        return('')
-
 def CountyEmploymentGrowthLanguage(county_industry_breakdown):
     print('Writing County Employment Growth Langauge')
     
     #Track employment growth over the past 5 years
-    latest_county_employment         = county_industry_breakdown['month3_emplvl'].sum()
-    five_years_ago_county_employment = county_industry_breakdown['lagged_month3_emplvl'].sum()
-    
-
+    latest_county_employment               = county_industry_breakdown['month3_emplvl'].sum()
+    five_years_ago_county_employment       = county_industry_breakdown['lagged_month3_emplvl'].sum()
     five_year_county_employment_growth_pct = ((latest_county_employment/five_years_ago_county_employment) - 1 ) * 100
     five_year_county_employment_growth     = (latest_county_employment - five_years_ago_county_employment) 
 
@@ -3837,22 +3813,21 @@ def CountyEmploymentGrowthLanguage(county_industry_breakdown):
     five_year_county_employment_growth     = "{:,.0f}".format(five_year_county_employment_growth)
 
     #Drop the industries where employment growth cant be measured properly and the unclassified industry
-    county_industry_breakdown                = county_industry_breakdown.loc[county_industry_breakdown['industry_code'] != 'Unclassified']
+    county_industry_breakdown              = county_industry_breakdown.loc[county_industry_breakdown['industry_code'] != 'Unclassified']
 
 
     #Get the fastest and slowest growing industries
     county_industry_breakdown5y                = county_industry_breakdown.loc[(county_industry_breakdown['emp_growth_invalid'] != 1) ] 
-
     county_industry_breakdown5y                = county_industry_breakdown5y.sort_values(by=['Employment Growth'])
     fastest_growing_industry_5y                = county_industry_breakdown5y['industry_code'].iloc[-1]
     second_fastest_growing_industry_5y         = county_industry_breakdown5y['industry_code'].iloc[-2]
+    
     if len(county_industry_breakdown5y) > 2:
         third_fastest_growing_industry_5y         = county_industry_breakdown5y['industry_code'].iloc[-3]
     else:
         third_fastest_growing_industry_5y         = ''
 
-    slowest_growing_industry_5y               = county_industry_breakdown5y['industry_code'].iloc[0]
-
+    slowest_growing_industry_5y              = county_industry_breakdown5y['industry_code'].iloc[0]
     fastest_growth_industry_5y               = county_industry_breakdown5y['Employment Growth'].iloc[-1]
     second_fastest_growth_industry_5y        = county_industry_breakdown5y['Employment Growth'].iloc[-2]
     
@@ -3904,40 +3879,43 @@ def CountyEmploymentGrowthLanguage(county_industry_breakdown):
     slowest_growth_industry_1y                = "{:,.1f}%".format(slowest_growth_industry_1y)
 
 
-    county_emplopyment_growth_language = ('According to the Q' +
-            qcew_qtr +
-            ' '+
-            qcew_year +
-            ' Quarterly Census of Employment and Wages, ' +
-            county +
-            ' has experienced private employment '+
-            five_year_county_employment_expand_or_contract +
-            ' ' +
-            five_year_county_employment_growth_pct +
-             ' (' +
-             five_year_county_employment_growth +
-             ') ' +
-            'in total over the last five years. ' +
-            'During that time, the ' +
-            fastest_growing_industry_5y +
-            ', ' +
-            second_fastest_growing_industry_5y +
-            ', and ' +
-            third_fastest_growing_industry_5y +
-            ' industries saw the strongest growth, expanding ' +
-            fastest_growth_industry_5y +
-            ', ' +
-            second_fastest_growth_industry_5y + 
-            ', and '+
-            third_fastest_growth_industry_5y +
-            ', respectively.'+
-            ' Meanwhile, the ' +
-            slowest_growing_industry_5y +
-            ' Industry has experienced employment '+
-            slowest_growth_industry_5y_description +
-            ' ' +
-            slowest_growth_industry_5y +
-            ' over the previous five years.'              )
+    county_emplopyment_growth_language = (
+                                        'According to the Q'                           +
+                                        qcew_qtr                                       +
+                                        ' '                                            +
+                                        qcew_year                                      +
+                                        ' Quarterly Census of Employment and Wages, '  +
+                                        county                                         +
+                                        ' has experienced private employment '         +
+                                        five_year_county_employment_expand_or_contract +
+                                        ' '                                            +
+                                        five_year_county_employment_growth_pct         +
+                                        ' ('                                           +
+                                        five_year_county_employment_growth             +
+                                        ') '                                           +
+                                        'in total over the last five years. '          +
+                                        'During that time, the '                       +
+                                        fastest_growing_industry_5y                    +
+                                        ', '                                           +
+                                        second_fastest_growing_industry_5y             +
+                                        ', and '                                       +
+                                        third_fastest_growing_industry_5y              +
+                                        ' industries saw the strongest growth, expanding ' +
+                                        fastest_growth_industry_5y                     +
+                                        ', '                                           +
+                                        second_fastest_growth_industry_5y              + 
+                                        ', and '                                       +
+                                        third_fastest_growth_industry_5y               +
+                                        ', respectively.'                              +
+                                        ' Meanwhile, the '                             +
+                                        slowest_growing_industry_5y                    +
+                                        ' Industry has experienced employment '        +
+                                        slowest_growth_industry_5y_description         +
+                                        ' '                                            +
+                                        slowest_growth_industry_5y                     +
+                                        ' over the previous five years.'              
+                                        
+                                        )
 
 
     return(county_emplopyment_growth_language)
@@ -3948,10 +3926,8 @@ def MSAEmploymentGrowthLanguage(msa_industry_breakdown):
     #Create MSA paragarph if applicable
     if cbsa != '':
         #Track employment growth over the past 5 years
-        latest_msa_employment            = msa_industry_breakdown['month3_emplvl'].sum()
-        five_years_ago_msa_employment    = msa_industry_breakdown['lagged_month3_emplvl'].sum()
-        
-
+        latest_msa_employment               = msa_industry_breakdown['month3_emplvl'].sum()
+        five_years_ago_msa_employment       = msa_industry_breakdown['lagged_month3_emplvl'].sum()
         five_year_msa_employment_growth_pct = ((latest_msa_employment/five_years_ago_msa_employment) - 1 ) * 100
         five_year_msa_employment_growth     = (latest_msa_employment - five_years_ago_msa_employment) 
 
@@ -3971,12 +3947,11 @@ def MSAEmploymentGrowthLanguage(msa_industry_breakdown):
         five_year_msa_employment_growth     = "{:,.0f}".format(five_year_msa_employment_growth)
 
         #Drop the industries where employment growth cant be measured properly and the unclassified industry
-        msa_industry_breakdown             = msa_industry_breakdown.loc[msa_industry_breakdown['industry_code'] != 'Unclassified']
+        msa_industry_breakdown              = msa_industry_breakdown.loc[msa_industry_breakdown['industry_code'] != 'Unclassified']
 
 
         #Get the fastest and slowest growing industries
         msa_industry_breakdown5y                     = msa_industry_breakdown.loc[(msa_industry_breakdown['emp_growth_invalid'] != 1) ] 
-
         msa_industry_breakdown5y                     = msa_industry_breakdown5y.sort_values(by=['Employment Growth'])
         fastest_growing_industry_5y                  = msa_industry_breakdown5y['industry_code'].iloc[-1]
         second_fastest_growing_industry_5y           = msa_industry_breakdown5y['industry_code'].iloc[-2]
@@ -4040,45 +4015,44 @@ def MSAEmploymentGrowthLanguage(msa_industry_breakdown):
 
 
 
-        msa_emplopyment_growth_language = ('According to the Q' +
-                qcew_qtr +
-                ' '+
-                qcew_year +
-                ' Quarterly Census of Employment and Wages, ' +
-                cbsa_name + ' Metro ' +
-                'has experienced private employment '+
-                five_year_msa_employment_expand_or_contract +
-                ' ' +
-                five_year_msa_employment_growth_pct +
-                ' (' +
-                five_year_msa_employment_growth +
-                ') ' +
-                'in total over the last five years. ' +
-                'During that time, the ' +
-                fastest_growing_industry_5y +
-                ', ' +
-                second_fastest_growing_industry_5y +
-                ', and ' +
-                third_fastest_growing_industry_5y +
-                ' industries saw the strongest growth, expanding ' +
-                fastest_growth_industry_5y +
-                ', ' +
-                second_fastest_growth_industry_5y + 
-                ', and '+
-                third_fastest_growth_industry_5y +
-                ', respectively.'+
-                ' Meanwhile, the ' +
-                slowest_growing_industry_5y +
-                ' Industry has experienced employment '+
-                slowest_growth_industry_5y_description +
-                ' ' +
-                slowest_growth_industry_5y +
-                ' over the previous five years.')
+        msa_emplopyment_growth_language = (
+                                        'According to the Q' +
+                                        qcew_qtr                                           +
+                                        ' '                                                +
+                                        qcew_year                                          +
+                                        ' Quarterly Census of Employment and Wages, '      +
+                                        cbsa_name + ' Metro '                              +
+                                        'has experienced private employment '              +
+                                        five_year_msa_employment_expand_or_contract        +
+                                        ' '                                                +
+                                        five_year_msa_employment_growth_pct                +
+                                        ' ('                                               +
+                                        five_year_msa_employment_growth                    +
+                                        ') '                                               +
+                                        'in total over the last five years. '              +
+                                        'During that time, the '                           +
+                                        fastest_growing_industry_5y                        +
+                                        ', '                                               +
+                                        second_fastest_growing_industry_5y                 +
+                                        ', and '                                           +
+                                        third_fastest_growing_industry_5y                  +
+                                        ' industries saw the strongest growth, expanding ' +
+                                        fastest_growth_industry_5y                         +
+                                        ', '                                               +
+                                        second_fastest_growth_industry_5y                  + 
+                                        ', and '                                           +
+                                        third_fastest_growth_industry_5y                   +
+                                        ', respectively.'                                  +
+                                        ' Meanwhile, the '                                 +
+                                        slowest_growing_industry_5y                        +
+                                        ' Industry has experienced employment '            +
+                                        slowest_growth_industry_5y_description             +
+                                        ' '                                                +
+                                        slowest_growth_industry_5y                         +
+                                        ' over the previous five years.'
+                                        )
     else:
         msa_emplopyment_growth_language = ''
-
-
-
 
     return(msa_emplopyment_growth_language)
 
@@ -4721,7 +4695,7 @@ def CreateLanguage():
     #Income Language
     income_language = IncomeLanguage()
 
-#Table Realted functions 
+#Table Related functions 
 def GetDataAndLanguageForOverviewTable():
     print('Getting Data for overview table')
     
@@ -4730,17 +4704,15 @@ def GetDataAndLanguageForOverviewTable():
         assert len(county_employment) > (growth_period * 12) 
         current_county_employment = county_employment['Employment'].iloc[-1]
         lagged_county_employment  = county_employment['Employment'].iloc[-1 - (growth_period * 12)] #the employment data is monthly
-        print('successfully got county employment for overview')
-    
+        
     except Exception as e:
         print(e,' problem getting county employment for overview table data')
         current_county_employment = 1
         lagged_county_employment  = 1
     
     try:
-        current_county_gdp        = county_gdp['GDP'].iloc[-1]
+        current_county_gdp       = county_gdp['GDP'].iloc[-1]
         lagged_county_gdp        = county_gdp['GDP'].iloc[-1 - growth_period]
-        print('successfully got county gdp for overview table data')
 
     except Exception as e:
         print(e,' problem getting county gdp for overview table')
@@ -4750,8 +4722,7 @@ def GetDataAndLanguageForOverviewTable():
     try:
         current_county_pop        = county_resident_pop['Resident Population'].iloc[-1]
         lagged_county_pop         = county_resident_pop['Resident Population'].iloc[-1- growth_period]
-        print('successfully got county pop for overview table data')
-
+    
     except Exception as e:
         print(e,'problem getting county population for overview table')
         current_county_pop        = 1
@@ -4760,8 +4731,8 @@ def GetDataAndLanguageForOverviewTable():
     
     try:
         current_county_pci        = county_pci['Per Capita Personal Income'].iloc[-1]
-        lagged_county_pci        = county_pci['Per Capita Personal Income'].iloc[-1- growth_period]
-        print('successfully got county pci for overview table data')
+        lagged_county_pci         = county_pci['Per Capita Personal Income'].iloc[-1- growth_period]
+    
     except Exception as e:
         print(e,'problem getting county pci for overview table')
         current_county_pci        = 1
@@ -4774,7 +4745,6 @@ def GetDataAndLanguageForOverviewTable():
         county_gdp_growth        = ((current_county_gdp/lagged_county_gdp) - 1) * 100
         county_pop_growth        = ((current_county_pop/lagged_county_pop) - 1) * 100
         county_pci_growth        = ((current_county_pci/lagged_county_pci) - 1) * 100
-        print('successfully got county 5 year growth rates for overview table data')
 
     except Exception as e:
         print(e,'problem calculating growth rates for county in overview table')
@@ -4793,12 +4763,11 @@ def GetDataAndLanguageForOverviewTable():
         state_resident_pop_extra_month_cut_off  = state_resident_pop.loc[state_resident_pop['Period'] <= (county_resident_pop['Period'].max())]
         state_pci_extra_month_cut_off           = state_pci.loc[state_pci['Period']                   <= (county_pci['Period'].max())]
 
-        current_state_employment = state_employment_extra_month_cut_off['Employment'].iloc[-1]
-        current_state_gdp        = state_gdp_extra_month_cut_off['GDP'].iloc[-1]
-        current_state_pop        = state_resident_pop_extra_month_cut_off['Resident Population'].iloc[-1]
-        current_state_pci        = state_pci_extra_month_cut_off['Per Capita Personal Income'].iloc[-1]
+        current_state_employment                = state_employment_extra_month_cut_off['Employment'].iloc[-1]
+        current_state_gdp                       = state_gdp_extra_month_cut_off['GDP'].iloc[-1]
+        current_state_pop                       = state_resident_pop_extra_month_cut_off['Resident Population'].iloc[-1]
+        current_state_pci                       = state_pci_extra_month_cut_off['Per Capita Personal Income'].iloc[-1]
 
-        print('successfully got state values overview table data')
 
     except Exception as e:
         print(e,'problem getting state values for overview table data with cut off observations')
@@ -4821,16 +4790,15 @@ def GetDataAndLanguageForOverviewTable():
         lagged_state_gdp        = state_gdp_extra_month_cut_off['GDP'].iloc[-1 - growth_period]
         lagged_state_pop        = state_resident_pop_extra_month_cut_off['Resident Population'].iloc[-1- growth_period]
         lagged_state_pci        = state_pci_extra_month_cut_off['Per Capita Personal Income'].iloc[-1- growth_period]
-        print('successfully got lagged state values overview table data')
 
     
     except Exception as e:
-        print(e,'problem getting laggeed state values for overview table')
         try:
             lagged_state_employment = state_employment['Employment'].iloc[-1 - (growth_period * 12)] #the employment data is monthly
             lagged_state_gdp        = state_gdp['GDP'].iloc[-1 - growth_period]
             lagged_state_pop        = state_resident_pop['Resident Population'].iloc[-1- growth_period]
             lagged_state_pci        = state_pci['Per Capita Personal Income'].iloc[-1- growth_period]
+
         except Exception as e:
             print(e,'problem getting lagged state values with data without dropped observations')
             lagged_state_employment = 1
@@ -4844,7 +4812,6 @@ def GetDataAndLanguageForOverviewTable():
         state_gdp_growth        = ((current_state_gdp/lagged_state_gdp) - 1) * 100
         state_pop_growth        = ((current_state_pop/lagged_state_pop) - 1) * 100
         state_pci_growth        = ((current_state_pci/lagged_state_pci) - 1) * 100
-        print('successfully got  state growth rates for overview table data')
 
     except Exception as e:
         print(e,'problem getting state growth rates for overivew table')
@@ -4872,7 +4839,6 @@ def GetDataAndLanguageForOverviewTable():
             lagged_msa_pop                      = msa_resident_pop_extra_month_cut_off['Resident Population'].iloc[-1- growth_period]
             lagged_msa_pci                      = msa_pci_extra_month_cut_off['Per Capita Personal Income'].iloc[-1- growth_period]
         
-            print('successfully got msa values and lagged values for overview table data')
 
         
         except Exception as e:
@@ -4899,10 +4865,10 @@ def GetDataAndLanguageForOverviewTable():
                 current_msa_pci                       = 1
         
                 #Get lagged msa values from 5 years ago
-                lagged_msa_employment               = 1 
-                lagged_msa_gdp                      = 1
-                lagged_msa_pop                      = 1
-                lagged_msa_pci                      = 1
+                lagged_msa_employment                 = 1 
+                lagged_msa_gdp                        = 1
+                lagged_msa_pop                        = 1
+                lagged_msa_pci                        = 1
 
         try:
             #Calculate 5-year growth for msa
@@ -4910,7 +4876,6 @@ def GetDataAndLanguageForOverviewTable():
             msa_gdp_growth                      = ((current_msa_gdp/lagged_msa_gdp) - 1) * 100
             msa_pop_growth                      = ((current_msa_pop/lagged_msa_pop) - 1) * 100
             msa_pci_growth                      = ((current_msa_pci/lagged_msa_pci) - 1) * 100
-            print('successfully got msa growth rates for overview table data')
 
         except Exception as e:
             print(e,'problem getting msa growth rates for overview table data')
@@ -4967,13 +4932,9 @@ def GetDataAndLanguageForOverviewTable():
         else:
             pci_faster_or_slower = 'Equal to'
         
-        print('successfully got comparison growth description for overview table data')
-
     except Exception as e:
         print(e,'problem getting growth comparison descriptions')
         
-
-
     #Format Variables
     try:
         current_county_employment = "{:,.0f}".format(current_county_employment)
@@ -4985,7 +4946,6 @@ def GetDataAndLanguageForOverviewTable():
         county_gdp_growth         = "{:,.1f}%".format(county_gdp_growth)
         county_pop_growth         = "{:,.1f}%".format(county_pop_growth)
         county_pci_growth         = "{:,.1f}%".format(county_pci_growth)
-        print('successfully formatted variabels for overview table data')
 
     except Exception as e:
         print(e, 'problem formatting variables for overview table data')
@@ -5014,7 +4974,6 @@ def GetDataAndLanguageForOverviewTable():
                 list[2] = 'NA'
                 list[3] = 'NA'
     
-        print('successfully created list of lists for overview table data')
     
     except Exception as e:
         print(e,'problem creating list of lists for overview table data')
@@ -5027,7 +4986,6 @@ def GetDataAndLanguageForOverviewTable():
                 ]
     
     try:
-        print('successfully returned overview table data')
         return(overview_table)
     except Exception as e:
         print(e,'failed to return list')
@@ -5042,11 +5000,12 @@ def AddTable(document,data_for_table): #Function we use to insert our overview t
 
 
     #create table object
-    tab = document.add_table(rows=len(data_for_table), cols=len(data_for_table[0]))
+    tab               = document.add_table(rows=len(data_for_table), cols=len(data_for_table[0]))
     tab.alignment     = WD_TABLE_ALIGNMENT.CENTER
     tab.allow_autofit = True
+
     #loop through the rows in the table
-    for current_row ,(row,row_data_list) in enumerate(zip(tab.rows,data_for_table)): 
+    for current_row, (row,row_data_list) in enumerate(zip(tab.rows,data_for_table)): 
 
         #loop through all cells in the current row
         for current_column,(cell,cell_data) in enumerate(zip(row.cells,row_data_list)):
@@ -5066,12 +5025,11 @@ def AddTable(document,data_for_table): #Function we use to insert our overview t
                 cell.width = Inches(2)
 
 
-
             #add border to top row
             if current_row == 1:
-                    tcPr = cell._element.tcPr
+                    tcPr      = cell._element.tcPr
                     tcBorders = OxmlElement("w:tcBorders")
-                    top = OxmlElement('w:top')
+                    top       = OxmlElement('w:top')
                     top.set(qn('w:val'), 'single')
                     tcBorders.append(top)
                     tcPr.append(tcBorders)
@@ -5087,19 +5045,19 @@ def AddTable(document,data_for_table): #Function we use to insert our overview t
                 paragraph.paragraph_format.space_before = Pt(0)
 
                 for run in paragraph.runs:
-                    font = run.font
-                    font.size= Pt(8)
-                    run.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-                    run.space_after  = Pt(0)
+                    font              = run.font
+                    font.size         = Pt(8)
+                    run.alignment     = WD_ALIGN_PARAGRAPH.RIGHT
+                    run.space_after   = Pt(0)
                     run.space_before  = Pt(0)
                     
                     #make first row bold
                     if current_row == 0: 
                         font.bold = True
                         font.name = 'Avenir Next LT Pro Demi'
-                        font.size= Pt(9)
+                        font.size = Pt(9)
                     else:
-                        font.name  = primary_font
+                        font.name = primary_font
              
 #####################################################Report document related functions####################################
 def SetPageMargins(document, margin_size):
@@ -5211,6 +5169,9 @@ def GetMap():
             print("""Using Dom's coordinates for screenshot""")
             im2 = pyautogui.screenshot(region=(3680, 254, 1968, 1231) ) #left, top, width, and height
         
+        else:
+            return()
+        
         time.sleep(.25)
         im2.save(os.path.join(county_folder_map,'map.png'))
         im2.close()
@@ -5243,7 +5204,10 @@ def AddMap(document):
 
 def AddTwoColumnTable(document, pic_list, lang_list):
     #Insert the transit graphics(car, bus, plane, train)
+    
+    #Create table object
     tab = document.add_table(rows=0, cols=2)
+
     for pic,lang in zip(pic_list,lang_list):
         row_cells      = tab.add_row().cells
         
@@ -5260,7 +5224,7 @@ def AddTwoColumnTable(document, pic_list, lang_list):
                 run.add_text(str(p))
 
         else:
-            run             = right_paragraph.add_run()
+            run                 = right_paragraph.add_run()
             run.add_text(str(lang))
      
     #We have now defined our table object,loop through all rows then all cells in each current row
@@ -5269,6 +5233,7 @@ def AddTwoColumnTable(document, pic_list, lang_list):
             #Set Width for cell
             if current_column == 0:
                 cell.width = Inches(.2)
+
             elif current_column == 1:
                 cell.width = Inches(6)
 
@@ -5339,30 +5304,30 @@ def EmploymentSection(document):
     AddDocumentParagraph(document = document, language_variable = msa_emplopyment_industry_breakdown_language)
 
     #Add MSA employment treemap chart
-    AddDocumentPicture(document = document,image_path = os.path.join(county_folder,'msa_employment_by_industry.png') ,citation = 'U.S. Bureau of Labor Statistics')
+    AddDocumentPicture(document = document, image_path = os.path.join(county_folder,'msa_employment_by_industry.png') ,citation = 'U.S. Bureau of Labor Statistics')
 
     #Add County Employment Breakdown Language
     AddDocumentParagraph(document = document, language_variable = county_emplopyment_industry_breakdown_language)
 
     #Add county employment treemap chart
-    AddDocumentPicture(document = document,image_path = os.path.join(county_folder,'employment_by_industry.png') ,citation = 'U.S. Bureau of Labor Statistics')
+    AddDocumentPicture(document = document, image_path = os.path.join(county_folder,'employment_by_industry.png') ,citation = 'U.S. Bureau of Labor Statistics')
     
     AddDocumentParagraph(document = document, language_variable = unemplopyment_language)
 
     #Add combined unemployment rate and employment growth graph
-    AddDocumentPicture(document = document,image_path = os.path.join(county_folder,'unemployment_rate_employment_growth.png') ,citation = 'U.S. Bureau of Labor Statistics')
+    AddDocumentPicture(document = document, image_path = os.path.join(county_folder,'unemployment_rate_employment_growth.png') ,citation = 'U.S. Bureau of Labor Statistics')
 
     #MSA Employment growth language
     AddDocumentParagraph(document = document, language_variable = msa_emplopyment_growth_language)
 
     #Add MSA employment growth by industry bar chart
-    AddDocumentPicture(document = document,image_path = os.path.join(county_folder,'msa_employment_growth_by_industry.png') ,citation = 'U.S. Bureau of Labor Statistics')
+    AddDocumentPicture(document = document, image_path = os.path.join(county_folder,'msa_employment_growth_by_industry.png') ,citation = 'U.S. Bureau of Labor Statistics')
 
     #County Employment growth language
     AddDocumentParagraph(document = document, language_variable = county_emplopyment_growth_language)
 
     #Add county employment growth by industry bar chart
-    AddDocumentPicture(document = document,image_path = os.path.join(county_folder,'employment_growth_by_industry.png') ,citation = 'U.S. Bureau of Labor Statistics')
+    AddDocumentPicture(document = document, image_path = os.path.join(county_folder,'employment_growth_by_industry.png') ,citation = 'U.S. Bureau of Labor Statistics')
 
 def ProductionSection(document):
     print('Writing Production Section')
@@ -5407,7 +5372,7 @@ def HousingSection(document):
         
 def OutlookSection(document):
     print('Writing Outlook Section')
-    AddHeading(document = document, title = 'Outlook',            heading_level = 2)
+    AddHeading(          document = document, title = 'Outlook',            heading_level = 2)
     AddDocumentParagraph(document = document, language_variable = outlook_language)
 
 def WriteReport():
@@ -5435,7 +5400,11 @@ def CleanUpPNGs():
     files = os.listdir(county_folder)
     for image in files:
         if image.endswith(".png"):
-            os.remove(os.path.join(county_folder, image))
+            while os.path.exists(os.path.join(county_folder, image)):
+                try:
+                    os.remove(os.path.join(county_folder, image))
+                except:
+                    pass
 
 def CreateDirectoryCSV():
     global service_api_csv_name
@@ -5451,86 +5420,90 @@ def CreateDirectoryCSV():
 
 
     for (dirpath, dirnames, filenames) in os.walk(main_output_location):
-        if filenames == []:
-            continue
-        else:
-            for file in filenames:
-                    
-                if (file == 'Dropbox Areas.csv') or ('.docx' not in file):
-                    continue
-                full_path = dirpath + '/' + file
-
-                #If there's a draft and final for a county, ignore the draft
-                if (os.path.exists(full_path.replace('_draft','_FINAL'))) and ('_draft' in full_path):
-                    continue
+        for file in filenames:
                 
-                #Create variables on the reports, then add to list
-                analyisis_type = 'Area'
-                dropbox_link   = dirpath.replace(dropbox_root,r'https://www.dropbox.com/home')
-                dropbox_link   = dropbox_link.replace("\\",r'/')    
-                if '_draft' in file:
-                    file_status = 'Draft'
-                else:
-                    file_status = 'Final'
-
-                #For our more recent reports, we can parse the file name to grab key info
-                if 'Legacy' not in dirpath :
-                    version                   = file[0:7]
-                    state_name                = file[8:10]
-                    first_dash_location       = file.find('- ') 
-                    first_underscore_location = file.find('_')
-                    county_name               = file[first_dash_location + 2:first_underscore_location]        
-                    research_name             = state_name + ' - ' + county_name
-                
-                else:
-                    #Skip these subfolders
-                    if ('Unknown Period' in dirpath) or ("""Old Templates""" in dirpath) or ("""Source Data""" in dirpath):
-                        continue
-                    directory_path_split      = dirpath.split("""\\""")
-                    version                   = directory_path_split[10]
-                    state_name                = directory_path_split[11]
-                    if state_name == 'US':
-                        county_name               = 'United States' 
-                    elif state_name == 'DC':
-                        county_name               = 'Washington D.C.'  
-
-                    else:
-                        county_name               = directory_path_split[12]   
-                    research_name             = state_name + ' - ' + county_name
-
-                  
-
-                
-                dropbox_document_names.append(file)
-                dropbox_analysis_types.append(analyisis_type)
-                dropbox_links.append(dropbox_link)
-                dropbox_versions.append(version)
-                dropbox_statuses.append(file_status)
-                dropbox_county_names.append(county_name)
-                dropbox_research_names.append(research_name)
-                dropbox_states.append(state_name)
-                break
+            if ('.docx' not in file):
+                continue
             
+            full_path = dirpath + '/' + file
+
+            #If there's a draft and final for a county, ignore the draft
+            if (os.path.exists(full_path.replace('_draft','_FINAL'))) and ('_draft' in full_path):
+                continue
+            
+            #Create variables on the reports, then add to list
+            analyisis_type = 'Area'
+            dropbox_link   = dirpath.replace(dropbox_root,r'https://www.dropbox.com/home')
+            dropbox_link   = dropbox_link.replace("\\",r'/')    
+            
+            if '_draft' in file:
+                file_status = 'Draft'
+            else:
+                file_status = 'Final'
+
+            #For our more recent reports, we can parse the file name to grab key info
+            if 'Legacy' not in dirpath :
+                version                   = file[0:7]
+                state_name                = file[8:10]
+                first_dash_location       = file.find('- ') 
+                first_underscore_location = file.find('_')
+                county_name               = file[first_dash_location + 2:first_underscore_location]        
+                research_name             = state_name + ' - ' + county_name
+            
+            elif 'Legacy' in dirpath:
+                #Skip these subfolders
+                if ('Unknown Period' in dirpath) or ("""Old Templates""" in dirpath) or ("""Source Data""" in dirpath):
+                    continue
+                
+                directory_path_split      = dirpath.split("""\\""")
+                version                   = directory_path_split[10]
+                state_name                = directory_path_split[11]
+
+                if state_name == 'US':
+                    county_name               = 'United States' 
+                elif state_name == 'DC':
+                    county_name               = 'Washington D.C.'  
+
+                else:
+                    county_name               = directory_path_split[12]   
+                
+                research_name             = state_name + ' - ' + county_name
+
+                
+
+            
+            dropbox_document_names.append(file)
+            dropbox_analysis_types.append(analyisis_type)
+            dropbox_links.append(dropbox_link)
+            dropbox_versions.append(version)
+            dropbox_statuses.append(file_status)
+            dropbox_county_names.append(county_name)
+            dropbox_research_names.append(research_name)
+            dropbox_states.append(state_name)
+            break
+        
             
 
-    dropbox_df = pd.DataFrame({'Market Research Name':dropbox_research_names,
-                            'County':dropbox_county_names,
-                           'Analysis Type': dropbox_analysis_types,
-                           'State':         dropbox_states,
-                           "Dropbox Links":dropbox_links,
-                           'Version':dropbox_versions,
-                           'Status':dropbox_statuses,
-                           'Document Name': dropbox_document_names})
-    dropbox_df = dropbox_df.sort_values(by=['State','Market Research Name','Version'], ascending = (True, True,False))
+    dropbox_df = pd.DataFrame({'Market Research Name': dropbox_research_names,
+                               'County':              dropbox_county_names,
+                               'Analysis Type':       dropbox_analysis_types,
+                               'State':               dropbox_states,
+                               "Dropbox Links":       dropbox_links,
+                               'Version':             dropbox_versions,
+                               'Status':              dropbox_statuses,
+                               'Document Name':       dropbox_document_names
+                               }
+                             )
 
-    
+    dropbox_df                              = dropbox_df.sort_values(by=['State','Market Research Name','Version'], ascending = (True, True,False))
     assigned_to_df                          = pd.read_excel(os.path.join(general_data_location,'Administrative Data','Assigned To States.xlsx')) 
     dropbox_df                              = pd.merge(dropbox_df,assigned_to_df, on=['State'],how = 'left') 
     
-    csv_name = 'Dropbox Areas.csv'
-    service_api_csv_name = f'Dropbox Areas-{datetime.now().timestamp()}.csv'
+    csv_name                                = 'Dropbox Areas.csv'
+    service_api_csv_name                    = f'Dropbox Areas-{datetime.now().timestamp()}.csv'
 
     dropbox_df.to_csv(os.path.join(main_output_location, csv_name),index=False)
+
     if main_output_location == os.path.join(dropbox_root,'Research','Market Analysis','Area'):
         dropbox_df.to_csv(os.path.join(main_output_location, service_api_csv_name),index=False)
 
@@ -5557,42 +5530,41 @@ def Main():
 def IdentifyMSA(fips):
     #Figures out if a county is within a metropolitan statistical area and returns its CBSA code
     cbsa_fips_crosswalk = pd.read_csv(os.path.join(data_location,'cbsa2fipsxw.csv'),
-            dtype={'cbsacode': object,
-                    'metrodivisioncode': object,
-                    'csacode': object,
-                    'cbsatitle': object,
+            dtype={'cbsacode':                        object,
+                    'metrodivisioncode':              object,
+                    'csacode':                        object,
+                    'cbsatitle':                      object,
                     'metropolitanmicropolitanstatis': object,
-                    'metropolitandivisiontitle': object,
-                    'csatitle': object,
-                    'countycountyequivalent': object,
-                    'statename': object,
-                    'fipsstatecode': object,
-                    'fipscountycode': object,
-                    'centraloutlyingcounty': object
-                    })
+                    'metropolitandivisiontitle':      object,
+                    'csatitle':                       object,
+                    'countycountyequivalent':         object,
+                    'statename':                      object,
+                    'fipsstatecode':                  object,
+                    'fipscountycode':                 object,
+                    'centraloutlyingcounty':          object
+                    }
+                                    )
     
 
     #Add missing 0s
     cbsa_fips_crosswalk['fipsstatecode']  =  cbsa_fips_crosswalk['fipsstatecode'].str.zfill(2)
     cbsa_fips_crosswalk['fipscountycode'] =  cbsa_fips_crosswalk['fipscountycode'].str.zfill(3)
-    cbsa_fips_crosswalk['FIPS Code'] = cbsa_fips_crosswalk['fipsstatecode'] + cbsa_fips_crosswalk['fipscountycode']
-
-    cbsa_fips_crosswalk = cbsa_fips_crosswalk.loc[cbsa_fips_crosswalk['FIPS Code'] == fips] #restrict data to only rows with the subject county fips
+    cbsa_fips_crosswalk['FIPS Code']      = cbsa_fips_crosswalk['fipsstatecode'] + cbsa_fips_crosswalk['fipscountycode']
+    
+    #restrict data to only rows with the subject county fips
+    cbsa_fips_crosswalk = cbsa_fips_crosswalk.loc[cbsa_fips_crosswalk['FIPS Code'] == fips] 
     cbsa_fips_crosswalk = cbsa_fips_crosswalk.loc[cbsa_fips_crosswalk['metropolitanmicropolitanstatis'] == 'Metropolitan Statistical Area'] #restrict to msas
 
     unique_CBSA_list    = cbsa_fips_crosswalk['cbsacode'].unique()
     assert len(unique_CBSA_list) < 2
 
     if len(cbsa_fips_crosswalk) > 0 :
-        cbsa      = cbsa_fips_crosswalk['cbsacode'].iloc[-1]
-        cbsa_name = cbsa_fips_crosswalk['cbsatitle'].iloc[-1]
+        cbsa              = cbsa_fips_crosswalk['cbsacode'].iloc[-1]
+        cbsa_name         = cbsa_fips_crosswalk['cbsatitle'].iloc[-1]
         
         #Now that we've identified the MSA, we need to know the primary state FIPS code for the BLS API. Many MSAs are in multiple states.
-        cbsa_main_state = cbsa_name.split(', ')[1][0:2] #The 2 character code for the main state of the msa
-        
+        cbsa_main_state   = cbsa_name.split(', ')[1][0:2] #The 2 character code for the main state of the msa
         all_states_in_msa = cbsa_name.split(', ')[1].split('-')
-
-
 
         state_fips                = pd.read_csv(os.path.join(data_location,'State Names.csv')) #the dataframe with the state fips codes
         state_fips['State FIPS']  = state_fips['State FIPS'].astype(str)
@@ -5609,19 +5581,18 @@ def IdentifyMSA(fips):
             state_fip                       =  state_fips_restricted['State FIPS'].iloc[0]
             cbsa_all_state_fips.append(state_fip)
 
-
-
-        return([cbsa,cbsa_name,cbsa_main_state_fips,cbsa_all_state_fips])
+        return([cbsa,cbsa_name, cbsa_main_state_fips, cbsa_all_state_fips])
     else:
-        return(['','','',''])
+        return(['', '', '', ''])
 
 def IdentifyNecta(cbsa):
         cbsa_necta_crosswalk = pd.read_excel(os.path.join(data_location,'cbsa_necta_crosswalk.xls'),
             dtype={'CBSA Code': object,
-                    })
+                   }
+                                            )
         
         cbsa_necta_crosswalk['CBSA Code'] = cbsa_necta_crosswalk['CBSA Code'].astype(str)
-        cbsa_necta_crosswalk = cbsa_necta_crosswalk.loc[cbsa_necta_crosswalk['CBSA Code'] == cbsa] 
+        cbsa_necta_crosswalk              = cbsa_necta_crosswalk.loc[cbsa_necta_crosswalk['CBSA Code'] == cbsa] 
        
         if len(cbsa_necta_crosswalk) == 1:
             necta_code = cbsa_necta_crosswalk['Necta Code'].iloc[0]
@@ -5633,7 +5604,7 @@ def GetFIPSList():
     #Returns a list of County FIPS codes to do reports for
     fips_list = []
    
-    #Give the user 10 seconds to decide if writing reports for metro areas or individual county entries
+    #Give the user 30 seconds to decide if writing reports for metro areas or individual county entries
     try:
         fips_or_cbsa = input_with_timeout('Single county report (c) or reports for all counties in metro (m)?', 30).strip()
     except TimeoutExpired:
@@ -5647,29 +5618,31 @@ def GetFIPSList():
     elif fips_or_cbsa == 'm': #if user selects whole metro break out of the main loop
         cbsacode = str(input('Enter the MSA CBSA Code')).strip()
         
-        cbsa_fips_crosswalk = pd.read_csv(os.path.join(data_location,'cbsa2fipsxw.csv'),dtype={'cbsacode': object,
-                'metrodivisioncode': object,
-                'csacode': object,
-                'cbsatitle': object,
-                'metropolitanmicropolitanstatis': object,
-                'metropolitandivisiontitle': object,
-                'csatitle': object,
-                'countycountyequivalent': object,
-                'statename': object,
-                'fipsstatecode': object,
-                'fipscountycode': object,
-                'centraloutlyingcounty': object
-                })
+        cbsa_fips_crosswalk = pd.read_csv(os.path.join(data_location,'cbsa2fipsxw.csv'),
+                dtype={'cbsacode': object,
+                       'metrodivisioncode': object,
+                       'csacode': object,
+                       'cbsatitle': object,
+                       'metropolitanmicropolitanstatis': object,
+                       'metropolitandivisiontitle': object,
+                       'csatitle': object,
+                       'countycountyequivalent': object,
+                       'statename': object,
+                       'fipsstatecode': object,
+                       'fipscountycode': object,
+                       'centraloutlyingcounty': object
+                }
+                                        )
 
 
         #Add missing 0s
         cbsa_fips_crosswalk['fipsstatecode']  =  cbsa_fips_crosswalk['fipsstatecode'].str.zfill(2)
         cbsa_fips_crosswalk['fipscountycode'] =  cbsa_fips_crosswalk['fipscountycode'].str.zfill(3)
-        cbsa_fips_crosswalk['FIPS Code'] = cbsa_fips_crosswalk['fipsstatecode'] + cbsa_fips_crosswalk['fipscountycode']
+        cbsa_fips_crosswalk['FIPS Code']      = cbsa_fips_crosswalk['fipsstatecode'] + cbsa_fips_crosswalk['fipscountycode']
 
-        cbsa_fips_crosswalk = cbsa_fips_crosswalk.loc[cbsa_fips_crosswalk['metropolitanmicropolitanstatis'] == 'Metropolitan Statistical Area'] #restrict to msas
-        cbsa_fips_crosswalk = cbsa_fips_crosswalk.loc[cbsa_fips_crosswalk['cbsacode'] == cbsacode] #restrict data to only rows for counties within the MSA
-        fips_list = cbsa_fips_crosswalk['FIPS Code'].unique()
+        cbsa_fips_crosswalk                   = cbsa_fips_crosswalk.loc[cbsa_fips_crosswalk['metropolitanmicropolitanstatis'] == 'Metropolitan Statistical Area'] #restrict to MSAs
+        cbsa_fips_crosswalk                   = cbsa_fips_crosswalk.loc[cbsa_fips_crosswalk['cbsacode'] == cbsacode] #restrict data to only rows for counties within the MSA
+        fips_list                             = cbsa_fips_crosswalk['FIPS Code'].unique()
 
     #If user enters county, return a list of FIPS that the user can enter
     elif fips_or_cbsa == 'c':#if user selects individual fips, have them add them in manually
@@ -5756,9 +5729,10 @@ CreateDirectoryCSV()
  
 #Post an update request to the Market Research Docs Service to update the database
 UpdateServiceDb(report_type = 'areas', 
-                csv_name = service_api_csv_name, 
-                csv_path = os.path.join(main_output_location, service_api_csv_name),
-                dropbox_dir = 'https://www.dropbox.com/home/Research/Market Analysis/Area/')
+                csv_name    = service_api_csv_name, 
+                csv_path    = os.path.join(main_output_location, service_api_csv_name),
+                dropbox_dir = 'https://www.dropbox.com/home/Research/Market Analysis/Area/'
+                )
 
 
 
