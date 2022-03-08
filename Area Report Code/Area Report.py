@@ -5304,9 +5304,9 @@ def AddMap(document):
     else:
         GetMap() 
     
-    if os.path.exists(os.path.join(county_folder_map, 'map.png')):
-        print('Adding map png to document')
-        map = document.add_picture(os.path.join(county_folder_map, 'map.png'), width=Inches(6.5))
+        if os.path.exists(os.path.join(county_folder_map, 'map.png')):
+            print('Adding map png to document')
+            map = document.add_picture(os.path.join(county_folder_map, 'map.png'), width=Inches(6.5))
     
     Citation(document=document,text = 'Google Maps')
 
