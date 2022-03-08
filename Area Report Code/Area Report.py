@@ -387,7 +387,7 @@ def GetCountyIndustryBreakdown(fips, year, qtr):
     return(df_qcew)
 
 def GetCountyIndustryGrowthBreakdown(fips, year,qtr):
-    print('Getting QCEW County Employment Growth Breakdown')
+    print('Getting County QCEW Employment Growth Breakdown')
 
 
     #Pulls employment data (and the lagged data) from Quarterly Census of Employment and Wages
@@ -970,9 +970,8 @@ def GetMSAMedianListPrice(cbsa, observation_start):
     return(msa_mlp_df)
 
 def GetMSAIndustryBreakdown(cbsa, year, qtr):
-    print('Getting MSA Employment Breakdown')
+    print('Getting MSA QCEW Employment Breakdown')
 
-    
     #Pulls employment data from Quarterly Census of Employment and Wages
     series_code      = ('C' + cbsa[0:4])
     df_qcew          = qcew.get_data('area', rtype='dataframe', year=year, qtr=qtr, area = series_code )
@@ -1036,8 +1035,7 @@ def GetMSAIndustryBreakdown(cbsa, year, qtr):
     return(df_qcew)
 
 def GetMSAIndustryGrowthBreakdown(cbsa, year, qtr):
-    print('Getting MSA Employment Growth Breakdown')
-
+    print('Getting MSA QCEW Employment Growth Breakdown')
 
     #Pulls employment data (and the lagged data) from Quarterly Census of Employment and Wages
     series_code      = ('C' + cbsa[0:4])
