@@ -3669,7 +3669,7 @@ def UnemploymentLanguage():
 
         if cbsa == '':
 
-            unemplopyment_language=( 
+            unemployment_language=( 
                     #Sentence 1: Discuss covid job losses
                     'At the onset of the pandemic last spring, ' + 
                     county                                       + 
@@ -3713,7 +3713,7 @@ def UnemploymentLanguage():
         else:
             latest_msa_unemployment        = "{:,.1f}%".format(latest_msa_unemployment)
             
-            unemplopyment_language = (#Sentence 1: Discuss covid job losses
+            unemployment_language = (#Sentence 1: Discuss covid job losses
                                     'At the onset of the pandemic last spring, ' +
                                     county                                       + 
                                     ' area employers shed '                      + 
@@ -3756,9 +3756,9 @@ def UnemploymentLanguage():
                                     )
     except Exception as e:
         print(e,'unable to create unemployment language')
-        unemplopyment_language = ''
+        unemployment_language = ''
     
-    return([unemplopyment_language])
+    return([unemployment_language])
 
 def CountyEmploymentGrowthLanguage(county_industry_breakdown):
     print('Writing County Employment Growth Langauge')
@@ -3851,7 +3851,7 @@ def CountyEmploymentGrowthLanguage(county_industry_breakdown):
     slowest_growth_industry_1y                = "{:,.1f}%".format(slowest_growth_industry_1y)
 
 
-    county_emplopyment_growth_language = (
+    county_employment_growth_language = (
                                         'According to the Q'                           +
                                         qcew_qtr                                       +
                                         ' '                                            +
@@ -3890,7 +3890,7 @@ def CountyEmploymentGrowthLanguage(county_industry_breakdown):
                                         )
 
 
-    return(county_emplopyment_growth_language)
+    return(county_employment_growth_language)
 
 def MSAEmploymentGrowthLanguage(msa_industry_breakdown):
     print('Writing MSA Employment Growth Langauge')
@@ -3987,7 +3987,7 @@ def MSAEmploymentGrowthLanguage(msa_industry_breakdown):
 
 
 
-        msa_emplopyment_growth_language = (
+        msa_employment_growth_language = (
                                         'According to the Q' +
                                         qcew_qtr                                           +
                                         ' '                                                +
@@ -4024,9 +4024,9 @@ def MSAEmploymentGrowthLanguage(msa_industry_breakdown):
                                         ' over the previous five years.'
                                         )
     else:
-        msa_emplopyment_growth_language = ''
+        msa_employment_growth_language = ''
 
-    return(msa_emplopyment_growth_language)
+    return(msa_employment_growth_language)
 
 def ProductionLanguage(county_data_frame,msa_data_frame,state_data_frame):
     print('Writing Production Langauge')
@@ -4627,7 +4627,7 @@ def OutlookLanguage():
 
 def CreateLanguage():
     global overview_language
-    global county_emplopyment_industry_breakdown_language, msa_emplopyment_industry_breakdown_language ,county_emplopyment_growth_language,msa_emplopyment_growth_language,unemplopyment_language
+    global county_employment_industry_breakdown_language, msa_employment_industry_breakdown_language ,county_employment_growth_language,msa_employment_growth_language,unemployment_language
     global production_language, infrastructure_language,housing_language, outlook_language
     global car_language, train_language, bus_language, plane_language
     global population_language,income_language
@@ -4638,17 +4638,17 @@ def CreateLanguage():
 
     #County Employment breakdown language
     try:
-        county_emplopyment_industry_breakdown_language    = [CountyEmploymentBreakdownLanguage(county_industry_breakdown = county_industry_breakdown)]
+        county_employment_industry_breakdown_language    = [CountyEmploymentBreakdownLanguage(county_industry_breakdown = county_industry_breakdown)]
     except:
         print('problem with county employment breakdown language')
-        county_emplopyment_industry_breakdown_language    = ''
+        county_employment_industry_breakdown_language    = ''
 
     #MSA Employment breakdown language
     try:
-        msa_emplopyment_industry_breakdown_language    = [MSAEmploymentBreakdownLanguage(msa_industry_breakdown = msa_industry_breakdown)]
+        msa_employment_industry_breakdown_language    = [MSAEmploymentBreakdownLanguage(msa_industry_breakdown = msa_industry_breakdown)]
     except:
         print('problem with MSA employment breakdown language')
-        msa_emplopyment_industry_breakdown_language    = ['']
+        msa_employment_industry_breakdown_language    = ['']
 
     #Production language
     try:
@@ -4686,21 +4686,21 @@ def CreateLanguage():
 
 
     #Unemployment language
-    unemplopyment_language              = UnemploymentLanguage()
+    unemployment_language              = UnemploymentLanguage()
 
     #County Private Employment Growth language
     try:    
-        county_emplopyment_growth_language = [CountyEmploymentGrowthLanguage(county_industry_breakdown=county_industry_growth_breakdown)]
+        county_employment_growth_language = [CountyEmploymentGrowthLanguage(county_industry_breakdown=county_industry_growth_breakdown)]
     except Exception as e:
         print(e, ' ---- problem with county emp growth language')
-        county_emplopyment_growth_language = ['']
+        county_employment_growth_language = ['']
     
     #MSA Private Employment Growth language
     try:    
-        msa_emplopyment_growth_language = [MSAEmploymentGrowthLanguage(msa_industry_breakdown=msa_industry_growth_breakdown)]
+        msa_employment_growth_language = [MSAEmploymentGrowthLanguage(msa_industry_breakdown=msa_industry_growth_breakdown)]
     except Exception as e:
         print(e, ' ---- problem with msa emp growth language')
-        msa_emplopyment_growth_language = ['']
+        msa_employment_growth_language = ['']
 
     #Population language 
     population_language = PopulationLanguage(national_resident_pop = national_resident_pop )
@@ -5314,30 +5314,30 @@ def EmploymentSection(document):
     AddHeading(document = document, title = 'Labor Market Conditions', heading_level = 2)
 
     #Add MSA Employment Breakdown Language
-    AddDocumentParagraph(document = document, language_variable = msa_emplopyment_industry_breakdown_language)
+    AddDocumentParagraph(document = document, language_variable = msa_employment_industry_breakdown_language)
 
     #Add MSA employment treemap chart
     AddDocumentPicture(document = document, image_path = os.path.join(county_folder,'msa_employment_by_industry.png') ,citation = 'U.S. Bureau of Labor Statistics')
 
     #Add County Employment Breakdown Language
-    AddDocumentParagraph(document = document, language_variable = county_emplopyment_industry_breakdown_language)
+    AddDocumentParagraph(document = document, language_variable = county_employment_industry_breakdown_language)
 
     #Add county employment treemap chart
     AddDocumentPicture(document = document, image_path = os.path.join(county_folder,'employment_by_industry.png') ,citation = 'U.S. Bureau of Labor Statistics')
     
-    AddDocumentParagraph(document = document, language_variable = unemplopyment_language)
+    AddDocumentParagraph(document = document, language_variable = unemployment_language)
 
     #Add combined unemployment rate and employment growth graph
     AddDocumentPicture(document = document, image_path = os.path.join(county_folder,'unemployment_rate_employment_growth.png') ,citation = 'U.S. Bureau of Labor Statistics')
 
     #MSA Employment growth language
-    AddDocumentParagraph(document = document, language_variable = msa_emplopyment_growth_language)
+    AddDocumentParagraph(document = document, language_variable = msa_employment_growth_language)
 
     #Add MSA employment growth by industry bar chart
     AddDocumentPicture(document = document, image_path = os.path.join(county_folder,'msa_employment_growth_by_industry.png') ,citation = 'U.S. Bureau of Labor Statistics')
 
     #County Employment growth language
-    AddDocumentParagraph(document = document, language_variable = county_emplopyment_growth_language)
+    AddDocumentParagraph(document = document, language_variable = county_employment_growth_language)
 
     #Add county employment growth by industry bar chart
     AddDocumentPicture(document = document, image_path = os.path.join(county_folder,'employment_growth_by_industry.png') ,citation = 'U.S. Bureau of Labor Statistics')
