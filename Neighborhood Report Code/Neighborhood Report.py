@@ -3048,9 +3048,7 @@ def WikipediaTransitLanguage(category):
 
                 #If we find the section we're looking for, pull all the text from the paragraphs
                 if search_term in heading.text:
-                    # print(heading.name + ' ' + heading.text.strip())
                     para = heading.find_next_sibling('p')
-                    para_text = para.text
                     para_text = para.text
                     para_text = re.sub('\[\d+\]', '',para_text) #remove wikipedia citations
                     langauge_paragraphs.append(para_text) #Once we have found the relevant section, add all the paragraphs into the list of paragraphs
@@ -3063,7 +3061,9 @@ def WikipediaTransitLanguage(category):
                         elif para.name != 'p':
                             break
                         else:
-                            langauge_paragraphs.append(para.text)
+                            para_text = para.text
+                            para_text = re.sub('\[\d+\]', '',para_text) #remove wikipedia citations
+                            langauge_paragraphs.append(para_text)
             
             if langauge_paragraphs != []:
                 return(langauge_paragraphs)

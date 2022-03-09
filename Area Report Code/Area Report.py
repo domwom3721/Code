@@ -4352,7 +4352,9 @@ def WikipediaTransitLanguage(category):
                         elif para.name != 'p':
                             break
                         else:
-                            langauge_paragraphs.append(para.text)
+                             paratext = para.text
+                             paratext = re.sub('\[\d+\]', '',paratext) #remove wikipedia citations 
+                             langauge_paragraphs.append(paratext)
             
             if langauge_paragraphs != []:
                 return(langauge_paragraphs)
