@@ -4369,7 +4369,7 @@ def WikipediaTransitLanguage(category):
                 if search_term in heading.text:
                     para      = heading.find_next_sibling('p')
                     para_text = para.text
-                    para_text = re.sub('\[\d+\]', '',para_text) #remove wikipedia citations
+                    para_text = re.sub('\[\d+\]', '',para_text) #remove wikipedia citations 
                     langauge_paragraphs.append(para_text)       #Once we have found the relevant section, add all the paragraphs into the list of paragraphs
 
                     #We found the first paragraph and added it to our list with text paragraphs, now keep looking in case there are multiple paragraphs in the section we wanted
@@ -5731,7 +5731,7 @@ start_year                    = end_year - growth_period        #For BLS Series
 observation_start             = '01/01/' + str(start_year -1)   #For FRED
 observation_start_less1       = '01/01/' + str(start_year -2)   #For FRED for series 1 year behind the rest
 qcew_year                     = current_year                    #for quarterly census of employment and wages
-qcew_qtr                      = '2'                             #for quarterly census of employment and wages
+qcew_qtr                      = '3'                             #for quarterly census of employment and wages
 
 
 #This is the main loop for our program, we loop through a list of county FIPS codes
