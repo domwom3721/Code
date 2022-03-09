@@ -80,6 +80,7 @@ def user_selects_sector():
     global df_list, df_slices_list,sector_name_list,selected_sector
     global df_multifamily, df_office, df_retail, df_industrial
     global df_multifamily_slices, df_office_slices, df_retail_slices, df_industrial_slices
+    global df_transactions
 
     #If we have any custom data, read it in as a dataframe so we can append it to our primary data
     custom_data_file_location      = os.path.join(costar_data_location,'Clean Data','Clean Custom CoStar Data.xlsx')
@@ -137,6 +138,10 @@ def user_selects_sector():
     #infinite loop 
     ws.mainloop()
 
+    #Import transactions data as dataframe that we use regardless of sector selected
+    df_transactions = pd.read_excel(os.path.join(costar_data_location, 'Transaction Data', 'transaction.xlsx')) 
+    df_transactions['PropertyType'] = df_transactions['PropertyType'].str.replace('Multi-Family','Multifamily')
+
     if selected_sector == 'All':
         #Import cleaned data from 1.) Clean Costar Data.py
         df_multifamily                 = pd.read_csv(os.path.join(costar_data_location, 'Clean Data', 'mf_clean.csv')) 
@@ -173,8 +178,6 @@ def user_selects_sector():
         df_slices_list                = [df_multifamily_slices, df_office_slices, df_retail_slices, df_industrial_slices]
         sector_name_list              = ['Multifamily', 'Office', 'Retail', 'Industrial']
 
-
-
     elif selected_sector == 'Office':
 
         #Import cleaned data from 1.) Clean Costar Data.py
@@ -197,7 +200,6 @@ def user_selects_sector():
         df_list                        = [df_office]
         df_slices_list                 = [df_office_slices]
         sector_name_list               = ['Office']
-
 
     elif selected_sector == 'Retail':
         #Import cleaned data from 1.) Clean Costar Data.py
@@ -222,7 +224,6 @@ def user_selects_sector():
         df_slices_list                 = [df_retail_slices]
         sector_name_list               = ['Retail']
 
-
     elif selected_sector == 'Multifamily':
 
         #Import cleaned data from 1.) Clean Costar Data.py
@@ -246,8 +247,6 @@ def user_selects_sector():
         df_list                       = [df_multifamily]
         df_slices_list                = [df_multifamily_slices]
         sector_name_list              = ['Multifamily']
-
-
 
     elif selected_sector == 'Industrial':
         #Import cleaned data from 1.) Clean Costar Data.py
@@ -711,6 +710,8 @@ def CapitalMarketsSection():
     if len(sale_language) == 2:
         AddDocumentParagraph(document = document, language_variable = [sale_language[1]])
 
+    AddTransactionTable(document = document, market_data_frame = df_submarkets_transactions ,col_width = 1.2,sector=sector)
+
     #Asset Value  Graph
     AddDocumentPicture(document=document,image_path=os.path.join(output_directory,'asset_values.png'))
     
@@ -1011,6 +1012,7 @@ def CreateMarketReport():
     global df_market_cut, df_primary_market, df_nation, df_submarkets , df_slices
     global latest_quarter, document, data_for_overview_table, data_for_vacancy_table, data_for_rent_table, report_path
     global primary_market, market, primary_market_title
+    global df_submarkets_transactions
     
     #remove slashes from market names so we can save as folder name
     market_clean        = CleanMarketName(market)
@@ -1062,6 +1064,14 @@ def CreateMarketReport():
             market_title        = primary_market.replace(' - ' + state,'').strip()
         
         primary_market_title    = primary_market.replace(' - ' + state,'').strip()
+        
+
+
+        df_submarkets_transactions = df_transactions[(df_transactions['Submarket Cluster'] == market_title) &
+                                                      (df_transactions['State'] == state)                   &
+                                                      (df_transactions['PropertyType'] == sector)].copy() 
+        
+      
 
         #This function calls all the graph functions defined in the Graph_Functions.py file
         CreateAllGraphs(submarket_data_frame = df_market_cut , market_data_frame = df_primary_market, natioanl_data_frame = df_nation , folder = output_directory, market_title = market_title, primary_market = primary_market_title, sector = sector)
@@ -1395,11 +1405,11 @@ def CreateDirectoryCSV():
 def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
     if type == None:
         return
-    print(f'Updating service database: {report_type}')
     
     #We only want to update the database when we are in the production folder and the user is not trying to create a report
     if output_location != os.path.join(dropbox_root,'Research','Market Analysis','Market') or write_reports_yes_or_no != 'n':
         return()
+    print(f'Updating service database: {report_type}')
 
     try:
         url = f'http://market-research-service.bowery.link/api/v1/update/{report_type}'

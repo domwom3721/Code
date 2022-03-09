@@ -453,7 +453,7 @@ def CreateRowDataForWideTable(data_frame, data_frame2, data_frame3, data_frame4,
 
             return(list_of_lists)
 
-def AddMarketPerformanceTable(document, col_width, market_data_frame, sector): #Function we use to insert our wide tables into report document 
+def AddMarketPerformanceTable(document, col_width, market_data_frame, sector): 
 
     #Convert market dataframe into a (mostly) annual dataset for a handful of variables
     
@@ -565,7 +565,7 @@ def AddMarketPerformanceTable(document, col_width, market_data_frame, sector): #
                         font.bold = True
                         font.name = 'Avenir Next LT Pro Demi'
 
-def AddSubmarketsPerformanceTable(document, col_width, submarkets_data_frame, sector): #Function we use to insert our wide tables into report document 
+def AddSubmarketsPerformanceTable(document, col_width, submarkets_data_frame, sector): 
     if len(submarkets_data_frame) == 0:
         return() #If there are no submarkets, do nothing
 
@@ -675,3 +675,91 @@ def AddSubmarketsPerformanceTable(document, col_width, submarkets_data_frame, se
                     if current_column == 0 and current_row != 0:
                         font.italic = False
 
+def AddTransactionTable(document, col_width, market_data_frame, sector): 
+
+    if len(market_data_frame) == 0:
+        return()
+
+    #Start by declaring a list of variables we want to display
+    variables_of_interest = ['Property Address','City', 'Last Sale Date','Last Sale Price','Number Of Units']
+
+    for var in variables_of_interest:
+        market_data_frame[var] = market_data_frame[var].fillna('NA')
+
+
+
+    #Cut down to the variables we are going to display in the table
+    market_data_frame = market_data_frame[variables_of_interest]
+
+    #create table object
+    number_rows = len(market_data_frame) + 1 #we add extra row for variable names at the top
+    number_cols = len(market_data_frame.columns)
+
+    tab               = document.add_table(rows=number_rows, cols=number_cols)
+    tab.alignment     = WD_TABLE_ALIGNMENT.CENTER
+
+    for current_row,row in enumerate(tab.rows): 
+        for current_column,cell in enumerate(row.cells):
+            
+            if current_row == 0:
+                var_name                 = str(variables_of_interest[current_column])
+                cell.text                = var_name
+                cell.vertical_alignment = WD_ALIGN_VERTICAL.BOTTOM
+                
+            else:
+                current_variable = variables_of_interest[current_column]
+                data             = market_data_frame[current_variable].iloc[current_row-1] #look up the data value for the right period for the current variable
+                if type(data) == str:
+                    pass
+                elif current_variable == 'Last Sale Date':
+                    data = data.to_pydatetime()
+                    data = data.strftime('%b %d,%Y')
+                elif current_variable == 'Last Sale Price':
+                    data = "$" + "{:,.0f}".format(data)
+                else:
+                    if current_variable == 'Vacancy Rate' or current_variable == 'Availability Rate':
+                        data = "{:,.1f}%".format(data) 
+                    else:
+                        data = "{:,.0f}".format(data)
+
+                cell.text = data
+                
+
+            #set column widths
+            if current_column == 0:
+                cell.width = Inches(1.25)
+            else:
+                cell.width = Inches(col_width)
+
+            
+            #add border to top row
+            if current_row == 1:
+                tcPr      = cell._element.tcPr
+                tcBorders = OxmlElement("w:tcBorders")
+                top       = OxmlElement('w:top')
+                top.set(qn('w:val'), 'single')
+            
+                tcBorders.append(top)
+                tcPr.append(tcBorders)
+
+            #loop through the paragraphs in the cell and set font and style
+            for paragraph in cell.paragraphs:
+                if current_column > 0:
+                    paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+                else:
+                     paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                    
+                paragraph.paragraph_format.space_after  = Pt(0)
+                paragraph.paragraph_format.space_before = Pt(0)
+
+                for run in paragraph.runs:
+                    font = run.font
+                    if current_row == 0:
+                        font.size= Pt(8)
+                    else:
+                        font.size = Pt(7)
+
+                    #make first row bold
+                    if current_row == 0: 
+                        font.bold = True
+                        font.name = 'Avenir Next LT Pro Demi'
