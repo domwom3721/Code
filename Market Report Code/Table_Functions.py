@@ -681,7 +681,7 @@ def AddTransactionTable(document, col_width, market_data_frame, sector):
         return()
 
     #Start by declaring a list of variables we want to display
-    variables_of_interest = ['Property Address','City', 'Last Sale Date','Last Sale Price','Number Of Units']
+    variables_of_interest = ['Property Address','City', 'Number Of Units', 'Building Class', 'Style', 'Year Built', 'Last Sale Date', 'Last Sale Price']
 
     for var in variables_of_interest:
         market_data_frame[var] = market_data_frame[var].fillna('NA')
