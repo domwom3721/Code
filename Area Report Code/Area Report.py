@@ -137,34 +137,6 @@ def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
         print(f'Deleting temporary CSV: ', csv_path)
         os.remove(csv_path)
 
-def SetGraphFormatVariables():
-    global graph_width, graph_height, scale, tickfont_size, left_margin, right_margin, top_margin, bottom_margin, legend_position, paper_backgroundcolor, title_position, horizontal_spacing
-
-    #Set graph size and format variables
-    marginInches    = 1/18
-    ppi             = 96.85 
-    width_inches    = 6.5
-    height_inches   = 3.3
-
-    graph_width     = (width_inches - marginInches)   * ppi
-    graph_height    = (height_inches  - marginInches) * ppi
-
-    #Set scale for resolution 1 = no change, > 1 increases resolution. Very important for run time of main script). 
-    scale           = 7
-
-    #Set tick font size (also controls legend font size)
-    tickfont_size   = 8 
-
-    #Set Margin parameters/legend location
-    left_margin     = 0
-    right_margin    = 0
-    top_margin      = 75
-    bottom_margin   = 10
-    legend_position = 1.10
-    paper_backgroundcolor = 'white'
-    title_position        = .95
-    horizontal_spacing    = 0.1
-
 def GetStateName(state_code):
     state_names_df    = pd.read_csv(os.path.join(data_location,'State Names.csv'))
     state_names_df    = state_names_df.loc[state_names_df['State Code'] == state_code]
@@ -5550,7 +5522,6 @@ def CreateDirectoryCSV():
 
 def Main():
     print('Creating Report for: ', county)
-    SetGraphFormatVariables()
     CreateDirectory(state = state, county = county)
     GetCountyData()
     GetMSAData()
@@ -5709,12 +5680,37 @@ data_export                   = False
 #Set formatting paramaters for reports
 primary_font                  = 'Avenir Next LT Pro Light' 
 primary_space_after_paragraph = 8
+#Set graph size and format variables
 tickangle                     = 0
 bowery_grey                   = "#D7DEEA"
 bowery_dark_grey              = "#A6B0BF"
 bowery_dark_blue              = "#4160D3"
 bowery_light_blue             = "#B3C3FF"
 bowery_black                  = "#404858"
+
+marginInches                  = 1/18
+ppi                           = 96.85 
+width_inches                  = 6.5
+height_inches                 = 3.3
+
+graph_width                   = (width_inches - marginInches)   * ppi
+graph_height                  = (height_inches  - marginInches) * ppi
+
+#Set scale for resolution 1 = no change, > 1 increases resolution. Very important for run time of main script). 
+scale                         = 7
+
+#Set tick font size (also controls legend font size)
+tickfont_size                 = 8 
+
+#Set Margin parameters/legend location
+left_margin                   = 0
+right_margin                  = 0
+top_margin                    = 75
+bottom_margin                 = 10
+legend_position               = 1.10
+paper_backgroundcolor         = 'white'
+title_position                = .95
+horizontal_spacing            = 0.1
 
 todays_date                   = date.today()
 current_year_and_quarter      = GetCurrentQuarterAndYear()
