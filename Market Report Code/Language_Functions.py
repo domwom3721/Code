@@ -583,27 +583,27 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, natioanl_dat
         #Negative Rent Growth, positive vacancy growth
         if yoy_rent_growth < 0 and vacancy_change > 0:
             overview_sector_specific_language =  ('Heading into Q1 2022, some of the adverse market trends established during the pandemic continue to plague the office sector. ' + 
-                                                  'Vacancy and availability rates have expanded as increasingly more businesses and tenants adopt remote work policies. While some markets and submarkets have fared better than others, ' + 
+                                                  'Vacancy rates have expanded as increasingly more businesses and tenants adopt remote work policies. While some markets and submarkets have fared better than others, ' + 
                                                     sector.lower() + ' properties in the ' + market_or_submarket + 
                                                     ' have not. With vacancy rates rising over the year, annual rent growth remains in negative territory. ')
  	
 	    #Negative Rent Growth, Negative vacancy growth
         elif yoy_rent_growth < 0 and vacancy_change < 0:
             overview_sector_specific_language =  ('Heading into Q1 2022, some of the adverse market trends established during the pandemic continue to plague the office sector. ' + 
-                                                'Vacancy and availability rates have expanded as increasingly more businesses and tenants adopt remote work policies. While some markets and submarkets have fared better than others, ' + 
+                                                'Vacancy rates have expanded as increasingly more businesses and tenants adopt remote work policies. While some markets and submarkets have fared better than others, ' + 
                                                 sector.lower() + ' properties in the ' + market_or_submarket +  
                                                 ' continue to see negative rent growth despite vacancy rate compression. In fact, office rents have decreaseed ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + ' since 2020 Q4. ')
                         
         #Negative rent growth, no vacancy growth
         elif  yoy_rent_growth < 0 and vacancy_change == 0:
             overview_sector_specific_language = ('Heading into Q4 2021, some of the adverse market trends established during the pandemic continue to plague the office sector. ' + 
-                                                'Vacancy and availability rates have expanded as increasingly more businesses and tenants adopt remote work policies. ' + 
+                                                'Vacancy rates have expanded as increasingly more businesses and tenants adopt remote work policies. ' + 
                                                 'Despite stable vacancy rates for ' +  sector.lower() + ' properties in the ' + market_or_submarket +  ' rents have contracted, decreasing ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + ' since 2020 Q3. ')
                         
         #Positive rent growth, positive vacancy growth
         elif yoy_rent_growth > 0 and vacancy_change > 0:
             overview_sector_specific_language =  ('Heading into Q4 2021, some of the adverse market trends established during the pandemic continue to plague the office sector. ' + 
-                                                'Vacancy and availability rates have expanded as increasingly more businesses and tenants adopt remote work policies. Some markets and submarkets have fared better than others. In ' + market_or_submarket + ' ' +  
+                                                'Vacancy rates have expanded as increasingly more businesses and tenants adopt remote work policies. Some markets and submarkets have fared better than others. In ' + market_title + ', ' +  
                                                 'vacancy rates have expanded over the past year, but landlords have been able to push rents, which expanded ' + "{:,.1f}%".format(yoy_rent_growth) + ' since 2020 Q4. ')
 
         #Positive rent growth, negative vacancy growth
@@ -614,7 +614,7 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, natioanl_dat
         #Positive rent growth, no vacancy growth
         elif  yoy_rent_growth > 0 and vacancy_change == 0:
             overview_sector_specific_language = ('Heading into Q4 2021, some of the adverse market trends established during the pandemic continue to plague the office sector. ' + 
-                                                 'Vacancy and availability rates have expanded as increasingly more businesses and tenants adopt remote work policies. Some markets and submarkets have fared better than others. ' 
+                                                 'Vacancy rates have expanded as increasingly more businesses and tenants adopt remote work policies. Some markets and submarkets have fared better than others. ' 
                                                  'With stable vacancy rates over the past year, rents have managed to grow, expanding ' + "{:,.1f}%".format(yoy_rent_growth) + ' since 2020 Q3. ')
         
         #no rent growth, negative vacancy growth
