@@ -719,7 +719,9 @@ def AddTransactionTable(document, col_width, market_data_frame, sector):
                     data = data.strftime('%b %d, %Y')
                 elif current_variable == 'Year Built':
                     data = str(data)
-                elif current_variable == ('Last Sale Price' or 'Price/Unit' ):
+                elif current_variable == 'Last Sale Price':
+                    data = "$" + "{:,.0f}".format(data)
+                elif current_variable == 'Price/Unit':
                     data = "$" + "{:,.0f}".format(data)
                 else:
                     data = "{:,.0f}".format(data)
