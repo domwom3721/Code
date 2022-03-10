@@ -2172,7 +2172,7 @@ def GetData():
 
     #Start by getting our distributions for our graphs
     print('Getting distributions for hood')
-    sleep_time = 2
+    sleep_time = 1
     
     neighborhood_household_size_distribution          = GetHouseholdSizeData(     geographic_level = neighborhood_level, hood_or_comparison_area = 'hood')          #Neighborhood households by size
     time.sleep(sleep_time)
