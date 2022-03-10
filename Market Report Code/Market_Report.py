@@ -141,7 +141,8 @@ def user_selects_sector():
     #Import transactions data as dataframe that we use regardless of sector selected
     df_transactions = pd.read_excel(os.path.join(costar_data_location, 'Transaction Data', 'transaction.xlsx')) 
     df_transactions['PropertyType'] = df_transactions['PropertyType'].str.replace('Multi-Family','Multifamily')
-
+    df_transactions['Price/Unit']   = df_transactions['Last Sale Price']/df_transactions['Number Of Units']
+    
     if selected_sector == 'All':
         #Import cleaned data from 1.) Clean Costar Data.py
         df_multifamily                 = pd.read_csv(os.path.join(costar_data_location, 'Clean Data', 'mf_clean.csv')) 
@@ -1074,7 +1075,6 @@ def CreateMarketReport():
                                                             (df_transactions['PropertyType'] == sector)].copy() 
             #Keep the 20 largest transactions for markets
             df_submarkets_transactions = df_submarkets_transactions.sort_values(by=['Last Sale Price'],ascending=False )
-            df_submarkets_transactions = df_submarkets_transactions.iloc[0:10]
 
         elif market != primary_market: #submarket
             if sector == 'Multifamily':
@@ -1088,7 +1088,7 @@ def CreateMarketReport():
 
         
         df_submarkets_transactions                   = df_submarkets_transactions.sort_values(by=['Last Sale Price'], ascending=False )
-        # df_submarkets_transactions['Last Sale Date'] = df_submarkets_transactions['Last Sale Date'].dt.to_period('Q')
+        df_submarkets_transactions                   = df_submarkets_transactions.iloc[0:5]
       
         #This function calls all the graph functions defined in the Graph_Functions.py file
         CreateAllGraphs(submarket_data_frame = df_market_cut , market_data_frame = df_primary_market, natioanl_data_frame = df_nation , folder = output_directory, market_title = market_title, primary_market = primary_market_title, sector = sector)
