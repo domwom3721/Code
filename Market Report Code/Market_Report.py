@@ -33,7 +33,7 @@ start_time = time.time()
 dropbox_root                   = os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
 project_location               = os.path.join(dropbox_root,'Research','Projects','Research Report Automation Project')                        #Main Folder that stores all output, code, and documentation
 output_location                = os.path.join(project_location,'Output','Market')                                                             #The folder where we store our current reports, testing folder
-output_location                = os.path.join(dropbox_root,'Research','Market Analysis','Market')                                             #The folder where we store our current reports, production
+# output_location                = os.path.join(dropbox_root,'Research','Market Analysis','Market')                                             #The folder where we store our current reports, production
 map_location                   = os.path.join(project_location,'Data','Market Reports Data','CoStar Maps')                                    #Folders with maps png files  
 general_data_location          = os.path.join(project_location,'Data','General Data')                                                         #Folder with data for all report types
 costar_data_location           = os.path.join(project_location,'Data','Market Reports Data','CoStar Data')                                    #Folder with clean CoStar CSV files
@@ -709,8 +709,10 @@ def CapitalMarketsSection():
     AddDocumentPicture(document=document,image_path=os.path.join(output_directory,'sales_volume.png'))
     if len(sale_language) == 2:
         AddDocumentParagraph(document = document, language_variable = [sale_language[1]])
-
-    AddTransactionTable(document = document, market_data_frame = df_submarkets_transactions ,col_width = 1.2,sector=sector)
+    
+    if len(df_submarkets_transactions) > 0:
+        AddTableTitle(document = document,title = 'Recent Transactions')
+        AddTransactionTable(document = document, market_data_frame = df_submarkets_transactions ,col_width = 1.2,sector=sector)
 
     #Asset Value  Graph
     AddDocumentPicture(document=document,image_path=os.path.join(output_directory,'asset_values.png'))
@@ -1066,13 +1068,28 @@ def CreateMarketReport():
         primary_market_title    = primary_market.replace(' - ' + state,'').strip()
         
 
+        #Create transactions dataframe
+        if market == primary_market: #market
+            df_submarkets_transactions = df_transactions[   (df_transactions['Market Name'] == primary_market_title)     &
+                                                            (df_transactions['PropertyType'] == sector)].copy() 
+            #Keep the 20 largest transactions for markets
+            df_submarkets_transactions = df_submarkets_transactions.sort_values(by=['Last Sale Price'],ascending=False )
+            df_submarkets_transactions = df_submarkets_transactions.iloc[0:10]
 
-        df_submarkets_transactions = df_transactions[(df_transactions['Submarket Cluster'] == market_title) &
-                                                      (df_transactions['State'] == state)                   &
-                                                      (df_transactions['PropertyType'] == sector)].copy() 
+        elif market != primary_market: #submarket
+            if sector == 'Multifamily':
+                df_submarkets_transactions = df_transactions[(df_transactions['Submarket Cluster'] == market_title) &
+                                                            (df_transactions['Market Name'] == primary_market_title)     &
+                                                            (df_transactions['PropertyType'] == sector)].copy() 
+            else:
+                df_submarkets_transactions = df_transactions[(df_transactions['Submarket Name'] == market_title) &
+                                                            (df_transactions['Market Name'] == primary_market_title)     &
+                                                            (df_transactions['PropertyType'] == sector)].copy() 
+
         
+        df_submarkets_transactions                   = df_submarkets_transactions.sort_values(by=['Last Sale Price'], ascending=False )
+        # df_submarkets_transactions['Last Sale Date'] = df_submarkets_transactions['Last Sale Date'].dt.to_period('Q')
       
-
         #This function calls all the graph functions defined in the Graph_Functions.py file
         CreateAllGraphs(submarket_data_frame = df_market_cut , market_data_frame = df_primary_market, natioanl_data_frame = df_nation , folder = output_directory, market_title = market_title, primary_market = primary_market_title, sector = sector)
 

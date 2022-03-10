@@ -681,7 +681,10 @@ def AddTransactionTable(document, col_width, market_data_frame, sector):
         return()
 
     #Start by declaring a list of variables we want to display
-    variables_of_interest = ['Property Address','City', 'Number Of Units', 'Building Class', 'Style', 'Year Built', 'Last Sale Date', 'Last Sale Price']
+    if sector == 'Multifamily':
+        variables_of_interest = ['Property Address','City', 'Number Of Units', 'Building Class', 'Style', 'Year Built', 'Last Sale Date', 'Last Sale Price']
+    else:
+        variables_of_interest = ['Property Address','City', 'RBA', 'Building Class', 'Year Built', 'Last Sale Date', 'Last Sale Price']
 
     for var in variables_of_interest:
         market_data_frame[var] = market_data_frame[var].fillna('NA')
@@ -713,21 +716,20 @@ def AddTransactionTable(document, col_width, market_data_frame, sector):
                     pass
                 elif current_variable == 'Last Sale Date':
                     data = data.to_pydatetime()
-                    data = data.strftime('%b %d,%Y')
+                    data = data.strftime('%b %d, %Y')
+                elif current_variable == 'Year Built':
+                    data = str(data)
                 elif current_variable == 'Last Sale Price':
                     data = "$" + "{:,.0f}".format(data)
                 else:
-                    if current_variable == 'Vacancy Rate' or current_variable == 'Availability Rate':
-                        data = "{:,.1f}%".format(data) 
-                    else:
-                        data = "{:,.0f}".format(data)
+                    data = "{:,.0f}".format(data)
 
                 cell.text = data
                 
 
             #set column widths
             if current_column == 0:
-                cell.width = Inches(1.25)
+                cell.width = Inches(1.35)
             else:
                 cell.width = Inches(col_width)
 
