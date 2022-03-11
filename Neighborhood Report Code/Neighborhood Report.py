@@ -3081,6 +3081,7 @@ def SummaryLangauge():
     try:
         print('Getting summary from wikipedia')
         wikipedia_summary = page.summary
+        wikipedia_summary = wikipedia_summary.replace(', United States.','.',1)
     except Exception as e:
         print(e,'trouble getting wikiepdia summary')
         wikipedia_summary = ('')
