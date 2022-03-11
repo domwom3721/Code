@@ -39,7 +39,6 @@ from requests.exceptions import HTTPError
 from requests.packages.urllib3.util.retry import Retry
 from selenium import webdriver
 from shapely.geometry import LineString, Point, Polygon
-from shapely.ops import nearest_points
 from walkscore import WalkScoreAPI
 from yelpapi import YelpAPI
 
@@ -1758,6 +1757,9 @@ def FindAirport():
         for airport_index in airports_in_city_index_list:     
             airport_record        = airport_map.shapeRecord(airport_index)
             airport_name          = airport_record.record['Fac_Name']
+            airport_name          = airport_name.replace('Intl','International')
+            airport_name          = airport_name.replace('Rgnl','Regional')
+
             airport_type          = airport_record.record['Fac_Type']
             airport_dict          = {'name':airport_name,'type':airport_type}
             
@@ -3250,7 +3252,7 @@ def HousingTypeTenureLanguage():
             available_housing_types_list = ('single-family homes, some smaller multifamily properties, and some larger garden style properties')
 
 
-        housing_type_tenure_langugage = (most_common_category                                                    +
+        housing_type_tenure_language = (most_common_category                                                    +
                                         ', followed by '                                                         +
                                         second_most_common_category.lower()                                              + 
                                         ' then '                                                                 +
@@ -3277,7 +3279,7 @@ def HousingTypeTenureLanguage():
 
 
 
-    return([housing_type_tenure_langugage])
+    return([housing_type_tenure_language])
 
 def HousingValueLanguage():
     print('Creating Household by value Langauge')
@@ -3386,105 +3388,102 @@ def EmploymentLanguage():
 
 def HouseholdSizeLanguage():
     print('Creating Household by Size Langauge')
+    try:
+        household_size_categories = ['1 person','2 person','3 person','4 person','5 person','6 person','7 or more people']
 
-    household_size_categories = ['1 person','2 person','3 person','4 person','5 person','6 person','7 or more people']
+        #Largest cateogy for hood and comparsion area
+        hood_largest_size_category = household_size_categories[neighborhood_household_size_distribution.index(max(neighborhood_household_size_distribution))] #get the most common household size category
+        comp_largest_size_category = household_size_categories[comparison_household_size_distribution.index(max(comparison_household_size_distribution))]
 
-    #Largest cateogy for hood and comparsion area
-    hood_largest_size_category = household_size_categories[neighborhood_household_size_distribution.index(max(neighborhood_household_size_distribution))] #get the most common household size category
-    comp_largest_size_category = household_size_categories[comparison_household_size_distribution.index(max(comparison_household_size_distribution))]
+        #Compare the average household size of the hood and comparison area
+        if neighborhood_average_hh_size  > comparison_average_hh_size:
+            avg_hh_size_comparison  = 'The household size in ' + neighborhood + ' tends to be larger than those in ' + comparison_area + '. '    
+            comp_smaller_larger     = 'smaller'         
+        elif neighborhood_average_hh_size < comparison_average_hh_size:
+            avg_hh_size_comparison  = 'The household size in ' + neighborhood + ' tends to be smaller than those in ' + comparison_area + '. '  
+            comp_smaller_larger     = 'larger'         
+        elif neighborhood_average_hh_size == comparison_average_hh_size:
+            avg_hh_size_comparison  = 'The average size of a ' + neighborhood + ' household is equal to those in ' + comparison_area + '. In fact, '
+            comp_smaller_larger     = 'equal in size on average'         
 
-    #Compare the average household size of the hood and comparison area
-    if neighborhood_average_hh_size  > comparison_average_hh_size:
-        avg_hh_size_comparison  = 'The household size in ' + neighborhood + ' tends to be larger than those in ' + comparison_area + '. '    
-        comp_smaller_larger     = 'smaller'         
-    elif neighborhood_average_hh_size < comparison_average_hh_size:
-        avg_hh_size_comparison  = 'The household size in ' + neighborhood + ' tends to be smaller than those in ' + comparison_area + '. '  
-        comp_smaller_larger     = 'larger'         
-    elif neighborhood_average_hh_size == comparison_average_hh_size:
-        avg_hh_size_comparison  = 'The average size of a ' + neighborhood + ' household is equal to those in ' + comparison_area + '. In fact, '
-        comp_smaller_larger     = 'equal in size on average'         
+        family_vs_individual_break_down = 'Given the average age, household size, and age distribution, the majority of households consist of [individuals, couples, and families].'
+        
+        #Compare the modal categories
+        hood_largest_size_category_numeric = int(hood_largest_size_category[0])
+        comp_largest_size_category_numeic  = int(comp_largest_size_category[0])
+        assert 0 < hood_largest_size_category_numeric < 8
+        assert 0 < comp_largest_size_category_numeic  < 8
 
-    family_vs_individual_break_down = 'Given the average age, household size, and age distribution, the majority of households consist of [individuals, couples, and families].'
+        if hood_largest_size_category_numeric != comp_largest_size_category_numeic:
+            hh_size_category_comparison  = 'The largest share of households consist of ' + hood_largest_size_category + ' compared to ' + comp_largest_size_category + ' for ' +  comparison_area + ', where the average household tends to be ' + comp_smaller_larger +  '. '          
+        elif hood_largest_size_category_numeric == comp_largest_size_category_numeic:
+            hh_size_category_comparison  = comp_largest_size_category + ' households account for the largest share in both ' + neighborhood + ' and ' + comparison_area + '. '
     
-    #Compare the modal categories
-    hood_largest_size_category_numeric = int(hood_largest_size_category[0])
-    comp_largest_size_category_numeic  = int(comp_largest_size_category[0])
-    assert 0 < hood_largest_size_category_numeric < 8
-    assert 0 < comp_largest_size_category_numeic  < 8
-
-    if hood_largest_size_category_numeric != comp_largest_size_category_numeic:
-        hh_size_category_comparison  = 'The largest share of households consist of ' + hood_largest_size_category + ' compared to ' + comp_largest_size_category + ' for ' +  comparison_area + ', where the average household tends to be ' + comp_smaller_larger +  '. '          
-    elif hood_largest_size_category_numeric == comp_largest_size_category_numeic:
-        hh_size_category_comparison  = comp_largest_size_category + ' households account for the largest share in both ' + neighborhood + ' and ' + comparison_area + '. '
- 
-    household_size_language = (avg_hh_size_comparison + 
-                             'Households in '                                          +
-                               neighborhood                                            + 
-                              ' have an average size of '                              + 
-                              "{:,.2f} people".format(neighborhood_average_hh_size)    +
-                              ', compared to '                                         +
-                              "{:,.2f} people".format(comparison_average_hh_size)      +
-                              ' in '                                                   +   
-                              comparison_area                                          + 
-                              '. '                                                     +
-                              hh_size_category_comparison                              
-                            #   +
-                            #   family_vs_individual_break_down                                              
-                            )
-    
+        household_size_language = (avg_hh_size_comparison + 
+                                'Households in '                                          +
+                                neighborhood                                            + 
+                                ' have an average size of '                              + 
+                                "{:,.2f} people".format(neighborhood_average_hh_size)    +
+                                ', compared to '                                         +
+                                "{:,.2f} people".format(comparison_average_hh_size)      +
+                                ' in '                                                   +   
+                                comparison_area                                          + 
+                                '. '                                                     +
+                                hh_size_category_comparison                              
+                                    
+                                )
+    except Exception as e:
+        print(e, 'Unable to create household size language')   
+        household_size_language = '' 
     return([household_size_language])
 
 def PopLanguage():
     print('Creating Population intro Langauge')
 
-    #global _2010_hood_pop,  _2010_hood_hh
-    # global current_hood_pop, current_hood_hh
-    # global _2010_comparison_pop, _2010_comparison_hh
-    # global current_comparison_pop, current_comparison_hh
-    # global  hood_pop_growth,comparsion_hh_growth      
-    # global comparsion_pop_growth,comparsion_hh_growth
-    
-    disclaimer_language = ("""The following demographic profile, created with data from the U.S. Census Bureau, reflects the subject's municipality and market. """)
-	
-
-    if neighborhood_level != 'custom':
+    try:    
+        disclaimer_language = ("""The following demographic profile, created with data from the U.S. Census Bureau, reflects the subject's municipality and market. """)
         
-        if float(hood_pop_growth.replace('%','')) < 0:
-            hood_pop_growth_or_contract =  'contracted'  
-        elif float(hood_pop_growth.replace('%','')) >= 0:
-            hood_pop_growth_or_contract =  'grown'  
- 
+
+        if neighborhood_level != 'custom':
+            
+            if float(hood_pop_growth.replace('%','')) < 0:
+                hood_pop_growth_or_contract =  'contracted'  
+            elif float(hood_pop_growth.replace('%','')) >= 0:
+                hood_pop_growth_or_contract =  'grown'  
+    
 
 
-        population_description = ( 'As of the 2010 Census, ' + 
-                                   neighborhood             +
-                                   ' had a population of '  +
-                                    _2010_hood_pop          +
-                                    ' people and '          +
-                                    _2010_hood_hh           +
-                                    ' households. '         +
-                                    'Preliminary 2020 Census data shows its population has ' +
-                                     hood_pop_growth_or_contract                             +
-                                    ' by '                                                   +
-                                    hood_pop_growth                                          +
-                                    ' per year to '                                          +
-                                    current_hood_pop                                         +
-                                    ' residents.'
-                                    )
-    #We don't generate this langauge for custom areas becuase we don't have all the needed info yet
-    else:
-        population_description = (" Population estimates for "        + 
-                                  neighborhood                        +
-                                  " reflect the sum of population estimates for census tracts that overlap its geographic boundaries. " +
-                                  "Current population estimates for " + 
-                                  neighborhood                        +
-                                  ' and '                             +
-                                  comparison_area                     +
-                                " reflect "                            +
-                                "data from the most recent 5-year American Community Survey (ACS) and the 2020 Census Redistricting Data Program, respectively.")
+            population_description = ( 'As of the 2010 Census, '                                 +   
+                                    neighborhood                                                 +
+                                    ' had a population of '                                      +
+                                        _2010_hood_pop                                           +
+                                        ' people and '                                           +
+                                        _2010_hood_hh                                            +
+                                        ' households. '                                          +
+                                        'Preliminary 2020 Census data shows its population has ' +
+                                        hood_pop_growth_or_contract                              +
+                                        ' by '                                                   +
+                                        hood_pop_growth                                          +
+                                        ' per year to '                                          +
+                                        current_hood_pop                                         +
+                                        ' residents.'
+                                        )
+        #We don't generate this langauge for custom areas becuase we don't have all the needed info yet
+        else:
+            population_description = (" Population estimates for "        + 
+                                    neighborhood                        +
+                                    " reflect the sum of population estimates for census tracts that overlap its geographic boundaries. " +
+                                    "Current population estimates for " + 
+                                    neighborhood                        +
+                                    ' and '                             +
+                                    comparison_area                     +
+                                    " reflect "                            +
+                                    "data from the most recent 5-year American Community Survey (ACS) and the 2020 Census Redistricting Data Program, respectively.")
 
-    pop_intro_language = (disclaimer_language + population_description)
-
+        pop_intro_language = (disclaimer_language + population_description)
+    except Exception as e:
+        print(e,'Unable to create population growth langauge')
+        pop_intro_language = ''
     return([pop_intro_language])
 
 def PopulationAgeLanguage():
@@ -3549,74 +3548,78 @@ def PopulationAgeLanguage():
 
 def IncomeLanguage():
     print('Creating HH Income Langauge')
-    income_categories = ['under $10k',
-                         'between $10k-14,999',
-                         'between $15k-19,999',
-                         'between $20k-24,999',
-                         'between $25k-29,999',
-                         'between $30k-34,999',
-                         'between $35k-39,999',
-                         'between $40k-44,999',
-                         'between $45k-49,999',
-                         'between $50k-59,999',
-                         'between $60k-74,999',
-                         'between $75k-99,999',
-                         'between $100k-124,999',
-                         'between $125k-149,999',
-                         'between $150k-199,999',
-                         '$200k or higher']
+    try:
+        income_categories = ['under $10k',
+                            'between $10k-14,999',
+                            'between $15k-19,999',
+                            'between $20k-24,999',
+                            'between $25k-29,999',
+                            'between $30k-34,999',
+                            'between $35k-39,999',
+                            'between $40k-44,999',
+                            'between $45k-49,999',
+                            'between $50k-59,999',
+                            'between $60k-74,999',
+                            'between $75k-99,999',
+                            'between $100k-124,999',
+                            'between $125k-149,999',
+                            'between $150k-199,999',
+                            '$200k or higher']
 
-    hood_largest_income_category = income_categories[neighborhood_household_income_data.index(max(neighborhood_household_income_data))] #get the most common income category
-    comp_largest_income_category = income_categories[comparison_household_income_data.index(max(comparison_household_income_data))]
+        hood_largest_income_category = income_categories[neighborhood_household_income_data.index(max(neighborhood_household_income_data))] #get the most common income category
+        comp_largest_income_category = income_categories[comparison_household_income_data.index(max(comparison_household_income_data))]
 
-    #Compare Median HH Income levels
-    if neighborhood_median_hh_inc > comparison_median_hh_inc:
-        median_hh_comparison  = 'Households in ' + neighborhood + ' have a higher median income than those in ' + comparison_area + '. '             
-    elif neighborhood_median_hh_inc < comparison_median_hh_inc:
-        median_hh_comparison  = 'Households in ' + neighborhood + ' have a lower median income than those in ' + comparison_area + '. '
-    elif neighborhood_median_hh_inc == comparison_median_hh_inc:
-        median_hh_comparison  = 'Median household income levels are equal in ' + neighborhood + ' and ' + comparison_area + '. '
-    else:
-        median_hh_comparison  = 'Household income levels are similar in ' + neighborhood + ' and ' + comparison_area + '. '
+        #Compare Median HH Income levels
+        if neighborhood_median_hh_inc > comparison_median_hh_inc:
+            median_hh_comparison  = 'Households in ' + neighborhood + ' have a higher median income than those in ' + comparison_area + '. '             
+        elif neighborhood_median_hh_inc < comparison_median_hh_inc:
+            median_hh_comparison  = 'Households in ' + neighborhood + ' have a lower median income than those in ' + comparison_area + '. '
+        elif neighborhood_median_hh_inc == comparison_median_hh_inc:
+            median_hh_comparison  = 'Median household income levels are equal in ' + neighborhood + ' and ' + comparison_area + '. '
+        else:
+            median_hh_comparison  = 'Household income levels are similar in ' + neighborhood + ' and ' + comparison_area + '. '
 
-    #Compare the largest income cateogry
-    if hood_largest_income_category !=  comp_largest_income_category:
-        largest_income_cohort_comparison = (
-                        'In '                                                          +                                
-                       neighborhood                                                    + 
-                       ', the largest share of households has a household income of ' +
-                       hood_largest_income_category                                    +
-                       ', compared to '                                                +
-                       comp_largest_income_category                                    +
-                       ' for '                                                         +
-                        comparison_area                                                +
-                        '.' 
-                                                )
+        #Compare the largest income cateogry
+        if hood_largest_income_category !=  comp_largest_income_category:
+            largest_income_cohort_comparison = (
+                            'In '                                                          +                                
+                        neighborhood                                                    + 
+                        ', the largest share of households has a household income of ' +
+                        hood_largest_income_category                                    +
+                        ', compared to '                                                +
+                        comp_largest_income_category                                    +
+                        ' for '                                                         +
+                            comparison_area                                                +
+                            '.' 
+                                                    )
 
-    elif hood_largest_income_category ==  comp_largest_income_category:
-        largest_income_cohort_comparison = (
-                        'In both '                                                     +                                
-                       neighborhood                                                    +
-                       ' and '                                                         +
-                       comparison_area                                                 + 
-                       ', the largest share of households has a household income of ' +
-                       hood_largest_income_category                                    +
-                       '.'
-                                                )
-        
+        elif hood_largest_income_category ==  comp_largest_income_category:
+            largest_income_cohort_comparison = (
+                            'In both '                                                     +                                
+                        neighborhood                                                    +
+                        ' and '                                                         +
+                        comparison_area                                                 + 
+                        ', the largest share of households has a household income of ' +
+                        hood_largest_income_category                                    +
+                        '.'
+                                                    )
+            
 
-    income_language = (median_hh_comparison                                  +
-                      'Households in '                                       +
-                       neighborhood                                          + 
-                       ' have a median income of '                           + 
-                        "${:,.0f}".format(neighborhood_median_hh_inc)        +
-                       ', compared to '                                      +
-                       "${:,.0f}".format(comparison_median_hh_inc)           +
-                       ' for households in '                                 + 
-                       comparison_area                                       +
-                       '. The chart below indicates the share of households by income brackets. ' +
-                       largest_income_cohort_comparison
-                        )
+        income_language = (median_hh_comparison                                  +
+                        'Households in '                                       +
+                        neighborhood                                          + 
+                        ' have a median income of '                           + 
+                            "${:,.0f}".format(neighborhood_median_hh_inc)        +
+                        ', compared to '                                      +
+                        "${:,.0f}".format(comparison_median_hh_inc)           +
+                        ' for households in '                                 + 
+                        comparison_area                                       +
+                        '. The chart below indicates the share of households by income brackets. ' +
+                        largest_income_cohort_comparison
+                            )
+    except Exception as e:
+        print(e, 'Unable to create income growth language')
+        income_language = ''
     
     return([income_language])
 
@@ -3661,39 +3664,43 @@ def TravelMethodLanguage():
     
 def TravelTimeLanguage():
     print('Creating Travel Time Langauge')
-    travel_time_categories = ['< 5 minutes','5-9 minutes','10-14 minutes','15-19 minutes','20-24 minutes','25-29 minutes','30-34 minutes','35-39 minutes','40-44 minutes','45-59 minutes','60-89 minutes','> 90 minutes']
+    try:
+        travel_time_categories = ['< 5 minutes','5-9 minutes','10-14 minutes','15-19 minutes','20-24 minutes','25-29 minutes','30-34 minutes','35-39 minutes','40-44 minutes','45-59 minutes','60-89 minutes','> 90 minutes']
 
 
-    #Estimate a median household income from a category freqeuncy distribution
-    hood_median_time_range   = FindMedianCategory(frequency_list=neighborhood_time_to_work_distribution, category_list = travel_time_categories) 
-    hood_median_time_range   = hood_median_time_range.replace(' minutes','')
-    hood_median_time_range   = hood_median_time_range.replace(',','').split('-')
-    hood_median_time         = (int(hood_median_time_range[0]) + int(hood_median_time_range[1]))/2
+        #Estimate a median household income from a category freqeuncy distribution
+        hood_median_time_range   = FindMedianCategory(frequency_list=neighborhood_time_to_work_distribution, category_list = travel_time_categories) 
+        hood_median_time_range   = hood_median_time_range.replace(' minutes','')
+        hood_median_time_range   = hood_median_time_range.replace(',','').split('-')
+        hood_median_time         = (int(hood_median_time_range[0]) + int(hood_median_time_range[1]))/2
 
-    #Estimate a median household income from a category freqeuncy distribution
-    comp_median_time_range   = FindMedianCategory(frequency_list=comparison_time_to_work_distribution, category_list = travel_time_categories) 
-    comp_median_time_range   = comp_median_time_range.replace(' minutes','')
-    comp_median_time_range   = comp_median_time_range.replace(',','').split('-')
-    comp_median_time         = (int(comp_median_time_range[0]) + int(comp_median_time_range[1]))/2
-    
-    hood_largest_time_category = travel_time_categories[neighborhood_time_to_work_distribution.index(max(neighborhood_time_to_work_distribution))] #get the most common income category
-    comp_largest_time_category = travel_time_categories[comparison_time_to_work_distribution.index(max(comparison_time_to_work_distribution))]
+        #Estimate a median household income from a category freqeuncy distribution
+        comp_median_time_range   = FindMedianCategory(frequency_list=comparison_time_to_work_distribution, category_list = travel_time_categories) 
+        comp_median_time_range   = comp_median_time_range.replace(' minutes','')
+        comp_median_time_range   = comp_median_time_range.replace(',','').split('-')
+        comp_median_time         = (int(comp_median_time_range[0]) + int(comp_median_time_range[1]))/2
+        
+        hood_largest_time_category = travel_time_categories[neighborhood_time_to_work_distribution.index(max(neighborhood_time_to_work_distribution))] #get the most common income category
+        comp_largest_time_category = travel_time_categories[comparison_time_to_work_distribution.index(max(comparison_time_to_work_distribution))]
 
-    time_language = ('Commuters in ' + neighborhood + 
-                       ' have a median commute time of about '                      + 
-                        "{:,.0f} minutes".format(hood_median_time)                   +
-                       '. '                     +
-                       
-                       'In '                                                  + 
-                       neighborhood                                           + 
-                       ', the largest share of commuters have a commute between ' +
-                       hood_largest_time_category +
-                       ', compared to ' +
-                       comp_largest_time_category        +
-                       ' for '           +
-                        comparison_area +
-                        '.'
-                        )
+        time_language = ('Commuters in ' + neighborhood + 
+                        ' have a median commute time of about '                      + 
+                            "{:,.0f} minutes".format(hood_median_time)                   +
+                        '. '                     +
+                        
+                        'In '                                                  + 
+                        neighborhood                                           + 
+                        ', the largest share of commuters have a commute between ' +
+                        hood_largest_time_category +
+                        ', compared to ' +
+                        comp_largest_time_category        +
+                        ' for '           +
+                            comparison_area +
+                            '.'
+                            )
+    except Exception as e:
+        print(e, 'Unable to create travel time langauge')
+        time_language = ''
     
     return([time_language])
 
@@ -3769,7 +3776,11 @@ def RetailLanguage():
     return(retail_language)
 
 def LandUseLanguage():
-    lul = (neighborhood + ' is in NYC community district ' + nyc_community_district + '.')
+    try:
+        lul = (neighborhood + ' is in NYC community district ' + nyc_community_district + '.')
+    except Exception as e:
+        print(e,'Unable to create land use language')
+        lul = ''
     return([lul])
 
 def LocationIQPOIList(lat,lon,category,radius,limit):
@@ -4266,13 +4277,14 @@ def AddPointOfInterestsTable(document,data_for_table): #Function we use to inser
 def IntroSection(document):
     print('Writing Intro Section')
     AddTitle(document = document)
+    AddMap(document = document)
+    
     #Add Map Marker
     fig = document.add_picture(os.path.join(graphics_location,'marker.png'))
     last_paragraph = document.paragraphs[-1] 
     last_paragraph.paragraph_format.space_after       = Pt(0)
     last_paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
 
-    AddMap(document = document)
     Citation(document,'Google Maps')
     AddHeading(document = document, title =  (neighborhood + ' at a Glance'),            heading_level = 1,heading_number='Heading 3',font_size=11)
    
@@ -4280,16 +4292,19 @@ def IntroSection(document):
     AddDocumentParagraph(document = document,language_variable =  summary_langauge)
 
 def LandUseandZoningSection(document):
-    nyc_cd_map_path = os.path.join(nyc_cd_map_location,nyc_community_district,'map.png')
-    if os.path.exists(nyc_cd_map_path):
-        print('Writing Land Use Section')
-        AddHeading(document = document, title =  ('Land Use and Zoning'),            heading_level = 1,heading_number='Heading 3',font_size=11)
-        print('Adding NYC Community District Map') 
-        nyc_map = document.add_picture(nyc_cd_map_path,width=Inches(6.5))
-        Citation(document,'NYC Zola')
-   
-        #Add neighborhood overview language
-        AddDocumentParagraph(document = document,language_variable =  land_use_language)
+    try:
+        nyc_cd_map_path = os.path.join(nyc_cd_map_location,nyc_community_district,'map.png')
+        if os.path.exists(nyc_cd_map_path):
+            print('Writing Land Use Section')
+            AddHeading(document = document, title =  ('Land Use and Zoning'),            heading_level = 1,heading_number='Heading 3',font_size=11)
+            print('Adding NYC Community District Map') 
+            nyc_map = document.add_picture(nyc_cd_map_path,width=Inches(6.5))
+            Citation(document,'NYC Zola')
+    
+            #Add neighborhood overview language
+            AddDocumentParagraph(document = document,language_variable =  land_use_language)
+    except Exception as e:
+        print(e,'Unable to create Land Use Section')
 
 def CommunityAssetsSection(document):
     print('Writing Community Assets Section')
