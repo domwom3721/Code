@@ -4273,6 +4273,15 @@ def AddPointOfInterestsTable(document,data_for_table): #Function we use to inser
                         font.bold = True
                         font.name = 'Avenir Next LT Pro Demi'
 
+def CheckForBannedWords(document):
+    #This function goes through the report document looking for words that are not in compliance with apprasial best practices
+    banned_words_df                            = pd.read_csv(os.path.join(data_location,'Compliance Information','BlacklistWords.csv')) #read in crosswalk file
+    
+    for paragraph in document.paragraphs:
+        for banned_word in banned_words_df['Banned Words']:
+            if (banned_word in paragraph.text) or  (banned_word.lower() in paragraph.text) or  (banned_word.title() in paragraph.text) or  (banned_word.upper() in paragraph.text) :
+                paragraph.text = paragraph.text.replace(banned_word,('**********' + banned_word.upper() + '**********'))
+
 #####################################################Report sections functions####################################
 def IntroSection(document):
     print('Writing Intro Section')
@@ -4474,7 +4483,7 @@ def WriteReport():
     CommunityAssetsSection(   document = document)
     TransportationSection(    document = document)
     OutlookSection(           document = document)
-
+    CheckForBannedWords(     document  = document)
 
     #Save report
     document.save(report_path)  
@@ -4491,7 +4500,6 @@ def CleanUpPNGs():
                 except:
                     pass
            
-
 def CreateDirectoryCSV():
     global service_api_csv_name
     print('Creating CSV with file path information on all existing hood reports')
@@ -4953,31 +4961,33 @@ def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
 def Main():
     DecideIfWritingReport()
    
-    if report_creation == 'y':
-        UserSelectsNeighborhoodLevel(batch_mode)
-        GetUserInputs() #user selects if they want to run report and gives input for report subject
-        GetComparsionInfo()
-        print('Preparing report for: ' + neighborhood + ' compared to ' + comparison_area)
-        global latitude
-        global longitude
-        global current_year
-        global neighborhood_shape
-        current_year       = str(date.today().year)
-        CreateDirectory()
-        coordinates        = GetLatandLon()
-        latitude           = coordinates[0] 
-        longitude          = coordinates[1]
-        neighborhood_shape = GetNeighborhoodShape()
-    
-        #Skip places we have already done
-        if os.path.exists(report_path) == False and os.path.exists(report_path.replace('_draft','_FINAL')) == False:
-            GetWikipediaPage()
-            GetData()
-            CreateGraphs()
-            CreateLanguage()
-            WriteReport()
-            CleanUpPNGs()
-        print('Report for: ---------' + neighborhood + ' compared to ' + comparison_area + ' Complete ----------------')
+    if report_creation == 'n':
+       return()
+       
+    UserSelectsNeighborhoodLevel(batch_mode)
+    GetUserInputs() #user selects if they want to run report and gives input for report subject
+    GetComparsionInfo()
+    print('Preparing report for: ' + neighborhood + ' compared to ' + comparison_area)
+    global latitude
+    global longitude
+    global current_year
+    global neighborhood_shape
+    current_year       = str(date.today().year)
+    CreateDirectory()
+    coordinates        = GetLatandLon()
+    latitude           = coordinates[0] 
+    longitude          = coordinates[1]
+    neighborhood_shape = GetNeighborhoodShape()
+
+    #Skip places we have already done
+    if os.path.exists(report_path) == False and os.path.exists(report_path.replace('_draft','_FINAL')) == False:
+        GetWikipediaPage()
+        GetData()
+        CreateGraphs()
+        CreateLanguage()
+        WriteReport()
+        CleanUpPNGs()
+    print('Report for: ---------' + neighborhood + ' compared to ' + comparison_area + ' Complete ----------------')
 
 SetGraphFormatVariables()
 DeclareAPIKeys()
