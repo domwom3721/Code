@@ -4308,7 +4308,7 @@ def HousingSection(document):
     print('Writing Housing Section')
     AddHeading(document = document, title = 'Housing',                  heading_level = 1,heading_number='Heading 3',font_size=11)
     
-    AddDocumentParagraph(document = document,language_variable =  housing_intro_language)
+    # AddDocumentParagraph(document = document,language_variable =  housing_intro_language)
 
     #Add tenure language
     AddDocumentParagraph(document = document,language_variable =  housing_type_tenure_language)
