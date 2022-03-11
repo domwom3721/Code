@@ -416,6 +416,8 @@ def ProcessPlaceFIPS(place_fips):
     place_name                      = ' '.join(place_name.split(' ')[0:len(place_name.split(' '))-1]).title()
     place_name                      = place_name.replace("""\\""",'-')
     place_name                      = place_name.replace("""/""",'-')
+    place_name                      = place_name.replace(' Of ',' of ')
+
     
 
     
@@ -439,6 +441,8 @@ def ProcessCountyFIPS(county_fips):
     state_full_name           = name.split(',')[1].strip()
     name                      = name.split(',')[0].strip().title()
     name                      = name.replace("""'S""","""'s""")
+    name                      = name.replace(' Of ',' of ')
+
 
 
     #Change county name for NYC counties
