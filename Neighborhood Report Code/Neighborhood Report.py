@@ -1555,9 +1555,6 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     print('Getting 2010 Population and Total Households Estimate for Hood')
     _2010_hood_pop = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = [total_pop_field],        operator = c.sf1, aggregation_method = 'total')[0]
     _2010_hood_hh  = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = [total_households_field], operator = c.sf1, aggregation_method = 'total')[0]
-    print(_2010_hood_pop,_2010_hood_hh)
-    # assert int(_2010_hood_pop) > 0
-    # assert int(_2010_hood_hh) > 0 
 
     print('Successfully grabbed 2010 Population and HH count for hood')
     
