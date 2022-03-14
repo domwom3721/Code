@@ -5247,10 +5247,10 @@ def AddTwoColumnTable(document, pic_list, lang_list):
         for current_column,cell in enumerate(row.cells):
             #Set Width for cell
             if current_column == 0:
-                cell.width = Inches(.2)
+                cell.width = Inches(.3)
 
             elif current_column == 1:
-                cell.width = Inches(6)
+                cell.width = Inches(6.5)
 
 def AddDocumentParagraph(document, language_variable):
     assert type(language_variable) == list
