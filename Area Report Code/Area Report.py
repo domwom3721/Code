@@ -5231,7 +5231,8 @@ def AddTwoColumnTable(document, pic_list, lang_list):
 
         run.add_picture(os.path.join(graphics_location,pic),width=Inches(0.2),height =Inches(0.2))
 
-        right_paragraph = row_cells[1].paragraphs[0]
+        right_paragraph             = row_cells[1].paragraphs[0]
+        right_paragraph.alignment   = WD_ALIGN_PARAGRAPH.JUSTIFY
          
         if type(lang) == list:
             for p in lang:
