@@ -4332,14 +4332,17 @@ def WikipediaTransitLanguage(category):
 
         #Loop throuhg each search term looking for text, if we find any, return it as a list
         for search_term in search_term_list:
-            langauge_paragraphs = []
+            if search_term == 'Major highways':
+                langauge_paragraphs = [('Major highways in ' + county + ' include ')]
+            else:
+                langauge_paragraphs = []
 
             #Loop through every heading in the wikipedia page looking for the section we want
             for heading in soup.find_all(re.compile('^h[1-6]$')):
 
                 #If we find the section we're looking for, pull all the text from the paragraphs
                 if search_term in heading.text:
-                    para      = heading.find_next_sibling('p')
+                    para      = heading.find_next_sibling()
                     para_text = para.text
                     para_text = re.sub('\[\d+\]', '',para_text) #remove wikipedia citations 
                     para_text = para_text.replace('[citation needed]','') #remove wikipedia citations
