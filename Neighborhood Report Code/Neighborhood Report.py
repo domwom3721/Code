@@ -4193,9 +4193,9 @@ def AddTwoColumnTable(document,pic_list,lang_list):
         for current_column,cell in enumerate(row.cells):
             #Set Width for cell
             if current_column == 0:
-                cell.width = Inches(.2)
+                cell.width = Inches(.3)
             elif current_column == 1:
-                cell.width = Inches(6)
+                cell.width = Inches(6.5)
 
 def AddPointOfInterestsTable(document,data_for_table): #Function we use to insert our table with Location IQ points of interest into the report document
     print(data_for_table)
