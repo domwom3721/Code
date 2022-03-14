@@ -4342,6 +4342,7 @@ def WikipediaTransitLanguage(category):
                     para      = heading.find_next_sibling('p')
                     para_text = para.text
                     para_text = re.sub('\[\d+\]', '',para_text) #remove wikipedia citations 
+                    para_text = para_text.replace('[citation needed]','') #remove wikipedia citations
                     langauge_paragraphs.append(para_text)       #Once we have found the relevant section, add all the paragraphs into the list of paragraphs
 
                     #We found the first paragraph and added it to our list with text paragraphs, now keep looking in case there are multiple paragraphs in the section we wanted
@@ -4354,6 +4355,8 @@ def WikipediaTransitLanguage(category):
                         else:
                              paratext = para.text
                              paratext = re.sub('\[\d+\]', '',paratext) #remove wikipedia citations 
+                             paratext = paratext.replace('[citation needed]','') #remove wikipedia citations
+
                              langauge_paragraphs.append(paratext)
             
             if langauge_paragraphs != []:
