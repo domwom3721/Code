@@ -1552,13 +1552,10 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     redistricting_total_hh_field  = 'H1_002N'
     redistricting_total_f_field   = 'P1_035N'
 
-    print('Getting 2010 Population and Total Households Estimate for Hood')
     _2010_hood_pop = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = [total_pop_field],        operator = c.sf1, aggregation_method = 'total')[0]
     _2010_hood_hh  = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = [total_households_field], operator = c.sf1, aggregation_method = 'total')[0]
 
-    print('Successfully grabbed 2010 Population and HH count for hood')
-    
-    print('Getting current or 2020 Population and Total Households Estimate for Hood')
+
     #calculate table variables for hood
     if hood_geographic_level != 'custom':
         current_estimate_period = '2020 Census'
@@ -1572,16 +1569,10 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         current_hood_hh         = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = [acs_total_households_field],   operator = c.acs5, aggregation_method = 'total')[0]
 
 
-
-    print('Successfully grabbed 2020 Population and HH count for hood')
-    # assert current_hood_pop > 0
-
     #Table variables for comparison area
-    print('Getting 2010 Population and Total Households for comparison area')
     _2010_comparison_pop = GetCensusValue(geographic_level = comparison_level,   hood_or_comparison_area = 'comparison area',  field = [total_pop_field],        operator = c.sf1, aggregation_method = 'total')[0]
     _2010_comparison_hh  = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area =  'comparison area', field = [total_households_field], operator = c.sf1, aggregation_method = 'total')[0]
     
-    print('Getting current Population and Total Households for comparison area')
     if comparison_geographic_level != 'custom':
         current_comparison_pop    = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area', field = [redistricting_total_pop_field],   operator = c.pl, aggregation_method = 'total')[0]
         current_comparison_hh     = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area', field = [redistricting_total_hh_field],    operator = c.pl, aggregation_method = 'total')[0]
@@ -1590,7 +1581,6 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
         #Custom vs. custom still not supported
         pass
 
-    print('Successfully grabbed 2020 Population and HH count for comparison area')
 
     #Set growth periods
     if hood_geographic_level == 'custom':
