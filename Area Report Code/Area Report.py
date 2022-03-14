@@ -1989,7 +1989,7 @@ def CreateGDPGraph(county_data_frame,msa_data_frame,state_data_frame,folder):
                         )
 
     #Add MSA GDP if applicable
-        if (isinstance(msa_data_frame, pd.DataFrame) == True) and (msa_data_frame.equals(county_data_frame) == False):
+        if (isinstance(msa_data_frame, pd.DataFrame) == True) and ( (msa_data_frame['GDP'].equals(county_data_frame['GDP']))  == False  ):
             fig.add_trace(
             go.Scatter(x=msa_data_frame['Period'],
                     y=msa_data_frame['GDP'],
