@@ -5620,25 +5620,9 @@ def IdentifyNecta(cbsa):
             necta_code = ''
         return(str(necta_code))
 
-def GetFIPSList():
-    #Returns a list of County FIPS codes to do reports for
-    fips_list = []
-   
-    #Give the user 30 seconds to decide if writing reports for metro areas or individual county entries
-    try:
-        fips_or_cbsa = input_with_timeout('Single county report (c) or reports for all counties in metro (m)?', 30).strip()
-    except TimeoutExpired:
-        fips_or_cbsa = ''
-
-    #If user enters nothing, return empty list
-    if fips_or_cbsa == '':
-        return(fips_list)
-
-    #If user enters a metro area, return a list of FIPS for all the counties in that metro area
-    elif fips_or_cbsa == 'm': #if user selects whole metro break out of the main loop
-        cbsacode = str(input('Enter the MSA CBSA Code')).strip()
-        
-        cbsa_fips_crosswalk = pd.read_csv(os.path.join(data_location,'cbsa2fipsxw.csv'),
+def GetMSAFIPSList(cbsacode):
+    #Function takes a CBSA code and returns a list of county FIPS codes associated with the MSA
+    cbsa_fips_crosswalk = pd.read_csv(os.path.join(data_location,'cbsa2fipsxw.csv'),
                 dtype={'cbsacode': object,
                        'metrodivisioncode': object,
                        'csacode': object,
@@ -5655,14 +5639,34 @@ def GetFIPSList():
                                         )
 
 
-        #Add missing 0s
-        cbsa_fips_crosswalk['fipsstatecode']  =  cbsa_fips_crosswalk['fipsstatecode'].str.zfill(2)
-        cbsa_fips_crosswalk['fipscountycode'] =  cbsa_fips_crosswalk['fipscountycode'].str.zfill(3)
-        cbsa_fips_crosswalk['FIPS Code']      = cbsa_fips_crosswalk['fipsstatecode'] + cbsa_fips_crosswalk['fipscountycode']
+    #Add missing 0s
+    cbsa_fips_crosswalk['fipsstatecode']  =  cbsa_fips_crosswalk['fipsstatecode'].str.zfill(2)
+    cbsa_fips_crosswalk['fipscountycode'] =  cbsa_fips_crosswalk['fipscountycode'].str.zfill(3)
+    cbsa_fips_crosswalk['FIPS Code']      = cbsa_fips_crosswalk['fipsstatecode'] + cbsa_fips_crosswalk['fipscountycode']
 
-        cbsa_fips_crosswalk                   = cbsa_fips_crosswalk.loc[cbsa_fips_crosswalk['metropolitanmicropolitanstatis'] == 'Metropolitan Statistical Area'] #restrict to MSAs
-        cbsa_fips_crosswalk                   = cbsa_fips_crosswalk.loc[cbsa_fips_crosswalk['cbsacode'] == cbsacode] #restrict data to only rows for counties within the MSA
-        fips_list                             = cbsa_fips_crosswalk['FIPS Code'].unique()
+    cbsa_fips_crosswalk                   = cbsa_fips_crosswalk.loc[cbsa_fips_crosswalk['metropolitanmicropolitanstatis'] == 'Metropolitan Statistical Area'] #restrict to MSAs
+    cbsa_fips_crosswalk                   = cbsa_fips_crosswalk.loc[cbsa_fips_crosswalk['cbsacode'] == cbsacode] #restrict data to only rows for counties within the MSA
+    fips_list                             = cbsa_fips_crosswalk['FIPS Code'].unique()
+    return(fips_list)
+
+def GetFIPSList():
+    #Returns a list of County FIPS codes to do reports for
+    fips_list = []
+   
+    #Give the user 30 seconds to decide if writing reports for metro areas or individual county entries
+    try:
+        fips_or_cbsa = input_with_timeout('Single county report (c) or reports for all counties in metro (m)?', 30).strip()
+    except TimeoutExpired:
+        fips_or_cbsa = ''
+
+    #If user enters nothing, return empty list
+    if fips_or_cbsa == '':
+        return(fips_list)
+
+    #If user enters a metro area, return a list of FIPS for all the counties in that metro area
+    elif fips_or_cbsa == 'm': #if user selects whole metro break out of the main loop
+        return(GetMSAFIPSList(cbsacode = str(input('Enter the MSA CBSA Code')).strip()))
+        
 
     #If user enters county, return a list of FIPS that the user can enter
     elif fips_or_cbsa == 'c':#if user selects individual fips, have them add them in manually
@@ -5755,9 +5759,10 @@ for i, fips in enumerate(GetFIPSList()):
         county               = master_county_list['County Name'].iloc[0]
         cbsa                 = IdentifyMSA(fips)[0]
         cbsa_name            = IdentifyMSA(fips)[1]
-        cbsa_main_state_fips = IdentifyMSA(fips)[2] #the state fips code of the first state listed for a msa        
-        cbsa_all_state_fips  = IdentifyMSA(fips)[3] #a list of 2 digit FIPS codes for each state the MSA is in
-        
+        cbsa_main_state_fips = IdentifyMSA(fips)[2]            #the state fips code of the first state listed for a msa        
+        cbsa_all_state_fips  = IdentifyMSA(fips)[3]            #a list of 2 digit FIPS codes for each state the MSA is in
+        cbsa_all_county_fips = GetMSAFIPSList(cbsacode = cbsa) #a list of 5 digit FIPS codes for each county in the MSA
+  
         if state in new_england_states:
             necta_code       = IdentifyNecta(cbsa = cbsa)
         county               = county.split(",")[0]    
