@@ -5379,7 +5379,7 @@ def DemographicsSection(document):
 def InfrastructureSection(document):
     print('Writing Infrastructure Section')
     AddHeading(document = document, title = 'Infrastructure', heading_level = 2)
-    AddDocumentParagraph(document = document, language_variable = infrastructure_language)
+    # AddDocumentParagraph(document = document, language_variable = infrastructure_language)
 
     #Insert the transit graphics(car, bus,plane, train)
     AddTableTitle(document = document, title = 'Transportation Methods')
