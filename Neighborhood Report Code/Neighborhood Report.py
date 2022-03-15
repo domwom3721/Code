@@ -11,7 +11,6 @@ import shutil
 import sys
 import time
 from datetime import date, datetime
-from operator import ne
 from statistics import mean
 
 import googlemaps
