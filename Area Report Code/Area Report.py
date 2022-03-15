@@ -4125,7 +4125,7 @@ def IncomeLanguage():
             three_five_year_county_declined_or_expanded = 'remained stable'
 
         #Get national growth rates
-        national_pci_restricted = national_pci.loc[national_pci['Period'] <= (county_pci['Period'].max())] #Restrict to last year of county data to marke sure we comapre appples to apples
+        national_pci_restricted = national_pci.loc[national_pci['Period'] <= (county_pci['Period'].max())].copy() #Restrict to last year of county data to marke sure we comapre appples to apples
         national_pci_restricted['Per Capita Personal Income_1year_growth'] =  (((national_pci_restricted['Per Capita Personal Income']/national_pci_restricted['Per Capita Personal Income'].shift(1))  - 1) * 100)/1
         national_pci_restricted['Per Capita Personal Income_3year_growth'] =  (((national_pci_restricted['Per Capita Personal Income']/national_pci_restricted['Per Capita Personal Income'].shift(3))   - 1) * 100)/3
         national_pci_restricted['Per Capita Personal Income_5year_growth'] =  (((national_pci_restricted['Per Capita Personal Income']/national_pci_restricted['Per Capita Personal Income'].shift(5))   - 1) * 100)/5
@@ -4917,7 +4917,6 @@ def GetDataAndLanguageForOverviewTable():
             comparison_pop_growth = state_pop_growth
             comparison_pci_growth = state_pci_growth
         
-        print('successfully got comparison growth rates for overview table data')
 
     except Exception as e:
         print(e,'problem getting comparison growth rates')
