@@ -1430,7 +1430,7 @@ def CreateRentLanguage(submarket_data_frame, market_data_frame, natioanl_data_fr
         national_market_rent                 = "${:,.0f}".format(national_market_rent)
         submarket_decade_rent_growth         = "{:,.1f}%".format(abs(submarket_decade_rent_growth))
         submarket_decade_rent_growth_annual  = "{:,.1f}%".format(abs(submarket_decade_rent_growth_annual))
-        submarket_yoy_growth                 = "{:,.1f}%".format(abs(submarket_yoy_growth))
+        submarket_yoy_growth                 = "{:,.1f}%".format(submarket_yoy_growth)
         submarket_qoq_growth                 = "{:,.1f}%".format(submarket_qoq_growth)
         submarket_year_ago_yoy_growth        = "{:,.1f}%".format(submarket_year_ago_yoy_growth)
         submarket_2019Q4_yoy_growth          = "{:,.1f}%".format(submarket_2019Q4_yoy_growth)
