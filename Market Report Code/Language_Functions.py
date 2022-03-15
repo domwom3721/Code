@@ -1645,7 +1645,7 @@ def CreateConstructionLanguage(submarket_data_frame, market_data_frame, natioanl
         unit_or_sqft                        = 'square feet'
         under_construction                  = submarket_data_frame['Under Construction SF'].iloc[-1]
         median_construction_level           = submarket_data_frame['Under Construction SF'].median()
-        max_construction_level              = submarket_data_frame['Under Construction Units'].max()
+        max_construction_level              = submarket_data_frame['Under Construction SF'].max()
         under_construction_share            = round(submarket_data_frame['Under Construction %'].iloc[-1], 2)
         current_inventory                   = submarket_data_frame['Inventory SF'].iloc[-1]
         decade_ago_inventory                = submarket_data_frame['Inventory SF'].iloc[0]
