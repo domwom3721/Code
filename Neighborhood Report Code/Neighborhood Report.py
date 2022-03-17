@@ -3224,8 +3224,8 @@ def HousingTypeTenureLanguage():
         second_most_common_category = size_list[len(size_list)     - 2]
         third_most_common_category = size_list[len(size_list)     - 3]
 
-
-        
+        if most_common_category == 'properties with 50+ units':
+            most_common_category = most_common_category.replace('properties','Properties')
         
         hood_owner_occupied_fraction        =  neighborhood_tenure_distribution[1] 
         comparsion_owner_occupied_fraction  =  comparison_tenure_distribution[1]
