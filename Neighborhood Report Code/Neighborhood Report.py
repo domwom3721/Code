@@ -3402,7 +3402,6 @@ def HouseholdSizeLanguage():
 
             comp_smaller_larger     = 'equal in size on average'         
 
-        family_vs_individual_break_down = 'Given the average age, household size, and age distribution, the majority of households consist of [individuals, couples, and families].'
         
         #Compare the modal categories
         hood_largest_size_category_numeric = int(hood_largest_size_category[0])
@@ -3411,7 +3410,15 @@ def HouseholdSizeLanguage():
         assert 0 < comp_largest_size_category_numeic  < 8
 
         if hood_largest_size_category_numeric != comp_largest_size_category_numeic:
+
+            if comp_largest_size_category != '1 person':
+                comp_largest_size_category = comp_largest_size_category.replace('person', 'people')
+
+            if hood_largest_size_category != '1 person':
+                hood_largest_size_category = hood_largest_size_category.replace('person', 'people')
+
             hh_size_category_comparison  = 'The most common household size is ' + hood_largest_size_category + ' compared to ' + comp_largest_size_category + ' for ' +  comparison_area + ', where the average household tends to be ' + comp_smaller_larger +  '. '          
+
         elif hood_largest_size_category_numeric == comp_largest_size_category_numeic:
             hh_size_category_comparison  = comp_largest_size_category + ' households account for the largest share in both ' + neighborhood + ' and ' + comparison_area + '. '
     
