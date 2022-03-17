@@ -3417,7 +3417,7 @@ def HouseholdSizeLanguage():
             if hood_largest_size_category != '1 person':
                 hood_largest_size_category = hood_largest_size_category.replace('person', 'people')
 
-            hh_size_category_comparison  = 'The most common household size is ' + hood_largest_size_category + ' compared to ' + comp_largest_size_category + ' for ' +  comparison_area + ', where the average household tends to be ' + comp_smaller_larger +  '. '          
+            hh_size_category_comparison  = 'The most common household size is ' + hood_largest_size_category + ' compared to ' + comp_largest_size_category + ' for ' +  comparison_area + '. '          
 
         elif hood_largest_size_category_numeric == comp_largest_size_category_numeic:
             hh_size_category_comparison  = comp_largest_size_category + ' households account for the largest share in both ' + neighborhood + ' and ' + comparison_area + '. '
