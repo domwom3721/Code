@@ -3298,7 +3298,7 @@ def HousingValueLanguage():
                         comparison_area                                        +
                         '. In '                                                + 
                         neighborhood                                           + 
-                        ', the largest share of homes have a value '           +
+                        ', the most common home value is between '             +
                         hood_largest_value_category                            +
                         ', compared to '                                       +
                         comp_largest_value_category                            +
@@ -3405,7 +3405,7 @@ def HouseholdSizeLanguage():
         assert 0 < comp_largest_size_category_numeic  < 8
 
         if hood_largest_size_category_numeric != comp_largest_size_category_numeic:
-            hh_size_category_comparison  = 'The largest share of households consist of ' + hood_largest_size_category + ' compared to ' + comp_largest_size_category + ' for ' +  comparison_area + ', where the average household tends to be ' + comp_smaller_larger +  '. '          
+            hh_size_category_comparison  = 'The most common household size is ' + hood_largest_size_category + ' compared to ' + comp_largest_size_category + ' for ' +  comparison_area + ', where the average household tends to be ' + comp_smaller_larger +  '. '          
         elif hood_largest_size_category_numeric == comp_largest_size_category_numeic:
             hh_size_category_comparison  = comp_largest_size_category + ' households account for the largest share in both ' + neighborhood + ' and ' + comparison_area + '. '
     
@@ -3574,7 +3574,7 @@ def IncomeLanguage():
             largest_income_cohort_comparison = (
                             'In '                                                          +                                
                         neighborhood                                                    + 
-                        ', the largest share of households has a household income of ' +
+                        ', the most common household income is ' +
                         hood_largest_income_category                                    +
                         ', compared to '                                                +
                         comp_largest_income_category                                    +
@@ -3589,7 +3589,7 @@ def IncomeLanguage():
                         neighborhood                                                    +
                         ' and '                                                         +
                         comparison_area                                                 + 
-                        ', the largest share of households has a household income of ' +
+                        ', the most common household income is ' +
                         hood_largest_income_category                                    +
                         '.'
                                                     )
@@ -3680,7 +3680,7 @@ def TravelTimeLanguage():
                         
                         'In '                                                  + 
                         neighborhood                                           + 
-                        ', the largest share of commuters have a commute between ' +
+                        ', the most common commute time is between ' +
                         hood_largest_time_category +
                         ', compared to ' +
                         comp_largest_time_category        +
