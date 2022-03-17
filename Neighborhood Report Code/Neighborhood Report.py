@@ -3392,13 +3392,14 @@ def HouseholdSizeLanguage():
 
         #Compare the average household size of the hood and comparison area
         if neighborhood_average_hh_size  > comparison_average_hh_size:
-            avg_hh_size_comparison  = 'The household size in ' + neighborhood + ' tends to be larger than those in ' + comparison_area + '. '    
+            avg_hh_size_comparison  = 'Households in ' + neighborhood + ' are, on average, larger than those in ' + comparison_area + '. '    
             comp_smaller_larger     = 'smaller'         
         elif neighborhood_average_hh_size < comparison_average_hh_size:
-            avg_hh_size_comparison  = 'The household size in ' + neighborhood + ' tends to be smaller than those in ' + comparison_area + '. '  
+            avg_hh_size_comparison  = 'Households in ' + neighborhood + ' are, on average, smaller than those in ' + comparison_area + '. '    
             comp_smaller_larger     = 'larger'         
         elif neighborhood_average_hh_size == comparison_average_hh_size:
-            avg_hh_size_comparison  = 'The average size of a ' + neighborhood + ' household is equal to those in ' + comparison_area + '. In fact, '
+            avg_hh_size_comparison  = 'Households in ' + neighborhood + ' are, on average, equal in size to those in ' + comparison_area + '. '    
+
             comp_smaller_larger     = 'equal in size on average'         
 
         family_vs_individual_break_down = 'Given the average age, household size, and age distribution, the majority of households consist of [individuals, couples, and families].'
