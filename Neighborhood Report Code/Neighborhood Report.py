@@ -1685,7 +1685,6 @@ def GetWalkScore(lat,lon):
         transit_table_entry  = ('Transit Score: ' + str(transit_score) + ' (' + transit_description + ')')
 
     except Exception as e:
-        print(e,'could not get transit score')
         transit_table_entry  = 'Transit Score: NA'
 
 
@@ -3292,7 +3291,6 @@ def HousingValueLanguage():
             comp_largest_value_category = 'between ' + comp_largest_value_category
             
 
-
         value_language = (  'Homes in '                                        +
                         neighborhood                                           + 
                         ' have a median value of '                             + 
@@ -3301,16 +3299,32 @@ def HousingValueLanguage():
                         "${:,.0f}".format(comparison_median_home_value)        +
                         ' for '                                                +  
                         comparison_area                                        +
-                        '. In '                                                + 
-                        neighborhood                                           + 
-                        ', the most common home value is between '             +
-                        hood_largest_value_category                            +
-                        ', compared to '                                       +
-                        comp_largest_value_category                            +
-                        ' for '                                                +
-                            comparison_area                                    +
-                            '.'
+                        '. '                                                   
                             )
+        if hood_largest_value_category != comp_largest_value_category:
+            most_common_values = (
+                            'In '                                                  + 
+                            neighborhood                                           + 
+                            ', the most common home value is between '             +
+                            hood_largest_value_category                            +
+                            ', compared to '                                       +
+                            comp_largest_value_category                            +
+                            ' for '                                                +
+                                comparison_area                                    +
+                                '.')
+
+        elif hood_largest_value_category == comp_largest_value_category:
+            most_common_values = (
+                            'In both '                                             + 
+                            neighborhood                                           + 
+                            ' and '                                                + 
+                            comparison_area                                        +
+                            ', the most common home value is between '             +
+                            hood_largest_value_category                            +
+                                '.')
+        
+        value_language = value_language + most_common_values
+        
     except Exception as e:
         print(e,'unable to get housing value langauge')
         value_language = ''
@@ -3807,15 +3821,15 @@ def LocationIQPOIList(lat,lon,category,radius,limit):
         poi_list = [x['name'] for x in response]
         return(poi_list)
 
+    #Once it hits error, wait 5 secodns and try again to request from API
     except Exception as e:
         try:
-            print(e,'Unable to get location IQ result on first attempt, sleeping for 5 seconds and trying again')
-            time.sleep(5)
+            time.sleep(3)
             response = requests.get(url, params=data).json()
             poi_list = [x['name'] for x in response]
             return(poi_list)
-        except:
-            print('Unable to get location IQ results on second try')
+        except Exception as e:
+            print(e,'Unable to get location IQ results on second try')
             return(([]))
 
 def CreateLanguage():
