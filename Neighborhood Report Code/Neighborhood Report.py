@@ -3717,21 +3717,37 @@ def TravelTimeLanguage():
         hood_largest_time_category = travel_time_categories[neighborhood_time_to_work_distribution.index(max(neighborhood_time_to_work_distribution))] #get the most common income category
         comp_largest_time_category = travel_time_categories[comparison_time_to_work_distribution.index(max(comparison_time_to_work_distribution))]
 
-        time_language = ('Commuters in ' + neighborhood + 
-                        ' have a median commute time of about '                      + 
-                            "{:,.0f} minutes".format(hood_median_time)                   +
-                        '. '                     +
-                        
-                        'In '                                                  + 
-                        neighborhood                                           + 
-                        ', the most common commute time is between ' +
-                        hood_largest_time_category +
-                        ', compared to ' +
-                        comp_largest_time_category        +
-                        ' for '           +
-                            comparison_area +
-                            '.'
-                            )
+        if hood_largest_time_category != comp_largest_time_category:
+            time_language = ('Commuters in ' + neighborhood                              + 
+                            ' have a median commute time of about '                      + 
+                                "{:,.0f} minutes".format(hood_median_time)               +
+                            '. '                                                         +
+                            
+                            'In '                                                        + 
+                            neighborhood                                                 + 
+                            ', the most common commute time is between '                 +
+                            hood_largest_time_category                                   +
+                            ', compared to '                                             +
+                            comp_largest_time_category                                   +
+                            ' for '                                                      +
+                                comparison_area                                          +
+                                '.'
+                                )
+        elif hood_largest_time_category == comp_largest_time_category:
+            time_language = ('Commuters in '                                             + 
+                             neighborhood                                                + 
+                            ' have a median commute time of about '                      + 
+                                "{:,.0f} minutes".format(hood_median_time)               +
+                            '. '                                                         +
+                            
+                            'In both '                                                   + 
+                            neighborhood                                                 + 
+                            ' and '                                                      +
+                            comparison_area                                              +
+                            ', the most common commute time is between '                 +
+                            hood_largest_time_category                                   +
+                                '.'
+                                )
     except Exception as e:
         print(e, 'Unable to create travel time langauge')
         time_language = ''
