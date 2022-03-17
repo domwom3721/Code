@@ -1812,7 +1812,7 @@ def FindNearestAirport(lat,lon):
 
     closest_airport = airport_map.shapeRecord(cloest_airport_num)
     airport_distance = "{:,.1f} miles".format(min_dist)   
-    airport_lang = (neighborhood + ' is roughly ' + airport_distance + ' from ' + closest_airport.record['Fac_Name'].title() + ', a public ' +  closest_airport.record['Fac_Type'].lower() + '.' )
+    airport_lang = (neighborhood + ' is roughly ' + airport_distance + ' from ' + closest_airport.record['Fac_Name'].title() +  closest_airport.record['Fac_Type'].title() + '.' )
     
     airport_lang = airport_lang.replace('Intl','International')
     airport_lang = airport_lang.replace('Rgnl','Regional')
@@ -3167,8 +3167,7 @@ def TrainLanguage():
     
     else:
         print('Did not identify any train routes from  geographic data')
-        return('[There is limited use of public transit in ' + neighborhood + '. In fact, it is not served by any commuter or light-rail lines. For public transit options, residents and visitors utilize service in ____.]' +     
-              ' [---- provides public train service within ' + neighborhood + '.]' )
+        return('There is limited use of public transit in ' + neighborhood + '. In fact, it is not served by any commuter or light-rail lines.' )
 
 def OutlookLanguage():
     print('Creating Outlook Langauge')
@@ -3842,7 +3841,7 @@ def LocationIQPOIList(lat,lon,category,radius,limit):
     #Once it hits error, wait 5 secodns and try again to request from API
     except Exception as e:
         try:
-            time.sleep(3)
+            time.sleep(5)
             response = requests.get(url, params=data).json()
             poi_list = [x['name'] for x in response]
             return(poi_list)
