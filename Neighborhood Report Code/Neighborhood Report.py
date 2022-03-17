@@ -3351,18 +3351,36 @@ def HousingYearBuiltLanguage():
                             str(comparison_median_year_built)                   +
                             ' for '                                             +
                             comparison_area                                     +
-                        '. '                                                    +
+                        '. '                                                    
+                         )
+        if hood_largest_yrblt_category != comp_largest_yrblt_category:              
+            most_common_cateorgies_language = (
+                            
+                            'In '                                                   + 
+                            neighborhood                                            + 
+                            ', the largest share of homes were built '              +
+                            hood_largest_yrblt_category                             +
+                            ', compared to '                                        +
+                            comp_largest_yrblt_category                             +
+                            ' for '                                                 +
+                                comparison_area                                     +
+                                '.'
+                                )
+        elif hood_largest_yrblt_category == comp_largest_yrblt_category:
+            most_common_cateorgies_language = (
                         
-                        'In '                                                   + 
-                        neighborhood                                            + 
-                        ', the largest share of homes were built '              +
-                        hood_largest_yrblt_category                             +
-                        ', compared to '                                        +
-                        comp_largest_yrblt_category                             +
-                        ' for '                                                 +
-                            comparison_area                                     +
-                            '.'
-                            )
+                            'In both '                                              + 
+                            neighborhood                                            +
+                            ' and '                                                 +
+                            comparison_area                                         +  
+                            ', the largest share of homes were built '              +
+                            hood_largest_yrblt_category                             +
+                                '.'
+                                )
+
+
+        yrblt_language = yrblt_language + most_common_cateorgies_language 
+
     except Exception as e:
         print(e,'Unable to create housing year built langauge')    
         yrblt_language = ''
