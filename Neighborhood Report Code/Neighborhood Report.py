@@ -37,6 +37,9 @@ from requests.adapters import HTTPAdapter
 from requests.exceptions import HTTPError
 from requests.packages.urllib3.util.retry import Retry
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+if 'Leahy' in os.environ['USERPROFILE']:
+    from webdriver_manager.chrome import ChromeDriverManager
 from shapely.geometry import LineString, Point, Polygon
 from walkscore import WalkScoreAPI
 from yelpapi import YelpAPI
@@ -2035,9 +2038,11 @@ def SearchGreatSchoolDotOrg():
         #Search https://www.greatschools.org/ for the area
         options = webdriver.ChromeOptions()
         options.add_argument("--start-maximized")
-        browser = webdriver.Chrome(executable_path=(os.path.join(os.environ['USERPROFILE'], 'Desktop','chromedriver.exe')),options=options)
+        # browser = webdriver.Chrome(executable_path=(os.path.join(os.environ['USERPROFILE'], 'Desktop','chromedriver.exe')),options=options)
+        browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         browser.get('https://www.greatschools.org/')
         
+
         #Write hood name in box
         Place = browser.find_element_by_class_name("search_form_field")
         Place.send_keys(search_term)
@@ -3924,7 +3929,7 @@ def GetMap():
         #Search Google Maps for hood
         options = webdriver.ChromeOptions()
         options.add_argument("--start-maximized")
-        browser = webdriver.Chrome(executable_path=(os.path.join(os.environ['USERPROFILE'], 'Desktop','chromedriver.exe')),options=options)
+        browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         browser.get('https:google.com/maps')
             
         #Write hood name in box
@@ -4972,9 +4977,9 @@ def Main():
     #Skip places we have already done
     if os.path.exists(report_path) == False and os.path.exists(report_path.replace('_draft','_FINAL')) == False:
         GetWikipediaPage()
-        GetData()
-        CreateGraphs()
-        CreateLanguage()
+        # GetData()
+        # CreateGraphs()
+        # CreateLanguage()
         WriteReport()
         CleanUpPNGs()
     print('Report for: ---------' + neighborhood + ' compared to ' + comparison_area + ' Complete ----------------')
