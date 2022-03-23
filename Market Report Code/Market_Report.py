@@ -493,7 +493,7 @@ def MakeCoStarDisclaimer():
         disclaimer = document.add_paragraph('The information contained in this report was provided using ' +
                                              latest_quarter                                                + 
                                             ' CoStar data for the '                                        + 
-                                            market                                                         + 
+                                            market_title                                                   + 
                                             ' '                                                            + 
                                             sector                                                         + 
                                             """ Market ("Market")."""
@@ -508,7 +508,7 @@ def MakeCoStarDisclaimer():
                                             sector                                                         + 
                                             """ Submarket ("Submarket") """                                +
                                             'located in the '                                              +
-                                            primary_market                                                 + 
+                                            primary_market_title                                           + 
                                             """ Market ("Market"). """
                                             )                
     
@@ -1063,10 +1063,16 @@ def CreateMarketReport():
         #Strip the primary market out of the submarket name
         if market != primary_market:
             market_title        = market.replace(primary_market + ' -','').strip()
-        else:
-            market_title        = primary_market.replace(' - ' + state,'').strip()
+        elif market == primary_market:
+            if market == 'Washington - DC':
+                market_title = 'Washington D.C.'
+            else:
+                market_title        = primary_market.replace(' - ' + state,'').strip()
         
-        primary_market_title    = primary_market.replace(' - ' + state,'').strip()
+        if primary_market == 'Washington - DC':
+            primary_market_title    = 'Washington D.C.'
+        else:
+            primary_market_title    = primary_market.replace(' - ' + state,'').strip()
         
 
         #Create transactions dataframe
