@@ -767,3 +767,96 @@ def AddTransactionTable(document, col_width, market_data_frame, sector):
                     if current_row == 0: 
                         font.bold = True
                         font.name = 'Avenir Next LT Pro Demi'
+
+def AddConstructionTable(document, col_width, market_data_frame, sector): 
+
+    if len(market_data_frame) == 0:
+        return()
+
+    #Start by declaring a list of variables we want to display
+    if sector == 'Multifamily':
+        variables_of_interest = ['Property Address', 'City', 'Property Name','Building Status', 'Year Built', 'Building Class', 'Number of Units' ]
+    else:
+        variables_of_interest = ['Property Address', 'City', 'Property Name', 'Building Status', 'Year Built', 'Building Class', 'RBA' ]
+
+    for var in variables_of_interest:
+        market_data_frame[var] = market_data_frame[var].fillna('NA')
+
+
+
+    #Cut down to the variables we are going to display in the table
+    market_data_frame = market_data_frame[variables_of_interest]
+
+    #create table object
+    number_rows = len(market_data_frame) + 1 #we add extra row for variable names at the top
+    number_cols = len(market_data_frame.columns)
+
+    tab               = document.add_table(rows=number_rows, cols=number_cols)
+    tab.alignment     = WD_TABLE_ALIGNMENT.CENTER
+
+    for current_row,row in enumerate(tab.rows): 
+        for current_column,cell in enumerate(row.cells):
+            
+            if current_row == 0:
+                var_name                 = str(variables_of_interest[current_column])
+                cell.text                = var_name
+                cell.vertical_alignment = WD_ALIGN_VERTICAL.BOTTOM
+                
+            else:
+                current_variable = variables_of_interest[current_column]
+                data             = market_data_frame[current_variable].iloc[current_row-1] #look up the data value for the right period for the current variable
+                if type(data) == str:
+                    pass
+                elif current_variable == 'Last Sale Date':
+                    data = data.to_pydatetime()
+                    data = data.strftime('%b %d, %Y')
+                elif current_variable == 'Year Built':
+                    data = str(data)
+                elif current_variable == 'Last Sale Price':
+                    data = "$" + "{:,.0f}".format(data)
+                elif current_variable == 'Price/Unit':
+                    data = "$" + "{:,.0f}".format(data)
+                else:
+                    data = "{:,.0f}".format(data)
+
+                cell.text = data
+                
+
+            #set column widths
+            if current_column == 0:
+                cell.width = Inches(1.35)
+            else:
+                cell.width = Inches(col_width)
+
+            
+            #add border to top row
+            if current_row == 1:
+                tcPr      = cell._element.tcPr
+                tcBorders = OxmlElement("w:tcBorders")
+                top       = OxmlElement('w:top')
+                top.set(qn('w:val'), 'single')
+            
+                tcBorders.append(top)
+                tcPr.append(tcBorders)
+
+            #loop through the paragraphs in the cell and set font and style
+            for paragraph in cell.paragraphs:
+                if current_column > 0:
+                    paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+                else:
+                     paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                    
+                paragraph.paragraph_format.space_after  = Pt(0)
+                paragraph.paragraph_format.space_before = Pt(0)
+
+                for run in paragraph.runs:
+                    font = run.font
+                    if current_row == 0:
+                        font.size= Pt(8)
+                    else:
+                        font.size = Pt(7)
+
+                    #make first row bold
+                    if current_row == 0: 
+                        font.bold = True
+                        font.name = 'Avenir Next LT Pro Demi'
