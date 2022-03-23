@@ -3833,6 +3833,12 @@ def LandUseLanguage():
         lul = ''
     return([lul])
 
+def SurroundingAreaLangauge():
+    boundaries_languge             = 'Boundaries: '
+    land_languge                   = 'Land Use: '
+    immedite_surroundings_language = 'Immediate Surroundings: '
+    return([boundaries_languge, land_languge, immedite_surroundings_language ])
+
 def LocationIQPOIList(lat,lon,category,radius,limit):
     #Searches the Locate IQ API for points of interest
     print('Searching Location IQ API for: ',category)
@@ -3877,6 +3883,7 @@ def CreateLanguage():
     global household_size_language, housing_intro_language, housing_type_tenure_language
     global community_assets_language, education_language, food_language, hospital_language, park_language, retail_language
     global land_use_language
+    global surrounding_area_language
 
     summary_langauge                   =  SummaryLangauge()
     housing_type_tenure_language       =  HousingTypeTenureLanguage()
@@ -3907,6 +3914,7 @@ def CreateLanguage():
     plane_language                     = PlaneLanguage()
 
     land_use_language                  = LandUseLanguage()
+    surrounding_area_language          = SurroundingAreaLangauge()
     conclusion_langauge                = OutlookLanguage()
 
 #####################################################Report document related functions####################################
@@ -4487,7 +4495,16 @@ def EmploymentSection(document):
     
     #Insert top occupations graph
     AddDocumentPicture(document = document, image_path = os.path.join(hood_folder,'top_occupations_graph.png'),citation ='U.S. Census Bureau')
-        
+
+def SurroundingAreaAnalysisSection(document):
+    print('Writing Surrounding Area Analysis Section')
+
+    #Employment and Transportation Section
+    AddHeading(document = document, title = 'Surrounding Area Analysis', heading_level = 1,heading_number='Heading 3',font_size=11)
+
+    AddDocumentParagraph(document = document, language_variable =  surrounding_area_language)
+
+
 def TransportationSection(document):
     print('Writing Transportation Section')
     #Employment and Transportation Section
@@ -4528,6 +4545,7 @@ def WriteReport():
     SetDocumentStyle(         document = document)
     IntroSection(             document = document)
     LandUseandZoningSection(  document = document)
+    SurroundingAreaAnalysisSection(document=document)
     PopulationSection(        document = document)
     HousingSection(           document = document)
     CommunityAssetsSection(   document = document)
