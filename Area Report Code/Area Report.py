@@ -34,6 +34,9 @@ from requests.adapters import HTTPAdapter
 from requests.exceptions import HTTPError
 from requests.packages.urllib3.util.retry import Retry
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+if 'Leahy' in os.environ['USERPROFILE']:
+    from webdriver_manager.chrome import ChromeDriverManager
 from shapely.geometry import LineString, Point, Polygon
 
 #Define file pre-paths
@@ -5164,7 +5167,7 @@ def GetMap():
         #Search Google Maps for County
         options = webdriver.ChromeOptions()
         options.add_argument("--start-maximized")
-        browser = webdriver.Chrome(executable_path=(os.path.join(os.environ['USERPROFILE'], 'Desktop','chromedriver.exe')),options=options)
+        browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         browser.get('https:google.com/maps')
         
         #Write county name in box
