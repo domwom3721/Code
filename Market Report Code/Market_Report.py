@@ -147,8 +147,6 @@ def user_selects_sector():
     df_construction                 = pd.read_csv(os.path.join(costar_data_location, 'Construction Data', 'constructiondata.csv')) 
     df_construction['PropertyType'] = df_construction['PropertyType'].str.replace('Multi-Family','Multifamily')
     df_construction['PropertyType'] = df_construction['PropertyType'].str.replace('Retail (Strip Center)','Retail')
-    
-
     df_construction                 = df_construction.rename(columns={"Number Of Units": "Number of Units"})
 
     if selected_sector == 'All':
