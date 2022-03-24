@@ -12,6 +12,7 @@ import sys
 import time
 from datetime import date, datetime
 from statistics import mean
+from weakref import WeakSet
 
 import googlemaps
 import mpu
@@ -3834,10 +3835,22 @@ def LandUseLanguage():
     return([lul])
 
 def SurroundingAreaLangauge():
-    boundaries_languge             = 'Boundaries: '
-    land_languge                   = 'Land Use: '
-    immedite_surroundings_language = 'Immediate Surroundings: '
-    return([boundaries_languge, land_languge, immedite_surroundings_language ])
+    boundaries_languge             = 'As indicated in the map above, the neighborhood boundaries are detailed as follows: '
+    north                          = 'North: '
+    south                          = 'South: '
+    east                           = 'East: '
+    west                           = 'West: '
+   
+    immedite_surroundings_language = ('The subject is located on a primarily '  +
+                                      '[commercial/residential/rural/urban] '   +
+                                      '[street/block/route] '                   +
+                                      'in '                                     +
+                                      neighborhood                              +
+                                      '.'
+                                    )
+    
+    
+    return([boundaries_languge, north, south, east, west, immedite_surroundings_language ])
 
 def LocationIQPOIList(lat,lon,category,radius,limit):
     #Searches the Locate IQ API for points of interest
@@ -4504,7 +4517,6 @@ def SurroundingAreaAnalysisSection(document):
 
     AddDocumentParagraph(document = document, language_variable =  surrounding_area_language)
 
-
 def TransportationSection(document):
     print('Writing Transportation Section')
     #Employment and Transportation Section
@@ -4545,7 +4557,7 @@ def WriteReport():
     SetDocumentStyle(         document = document)
     IntroSection(             document = document)
     LandUseandZoningSection(  document = document)
-    SurroundingAreaAnalysisSection(document=document)
+    # SurroundingAreaAnalysisSection(document=document)
     PopulationSection(        document = document)
     HousingSection(           document = document)
     CommunityAssetsSection(   document = document)
