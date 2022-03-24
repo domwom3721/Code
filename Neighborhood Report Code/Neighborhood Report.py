@@ -1660,7 +1660,7 @@ def GetWikipediaPage():
         page                          =  wikipedia.page(wikipedia_page_search_term)   
     except Exception as e:
         print(e,': problem getting wikipedia page')
-        page = None
+        page                          =  wikipedia.page(pageid=input("""enter the wikipedia page ID (Can find by clicking "Wikidata item" link on page"""))   
 
 def GetWalkScore(lat,lon):
 
