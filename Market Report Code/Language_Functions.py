@@ -592,7 +592,7 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, natioanl_dat
             overview_sector_specific_language =  ('Heading into Q1 2022, some of the adverse market trends established during the pandemic continue to plague the office sector. ' + 
                                                 'Vacancy rates have expanded as increasingly more businesses and tenants adopt remote work policies. While some markets and submarkets have fared better than others, ' + 
                                                 sector.lower() + ' properties in the ' + market_or_submarket +  
-                                                ' continue to see negative rent growth despite vacancy rate compression. In fact, office rents have decreaseed ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + ' since 2020 Q4. ')
+                                                ' continue to see negative rent growth despite vacancy rate compression. In fact, office rents have decreased ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + ' since 2020 Q4. ')
                         
         #Negative rent growth, no vacancy growth
         elif  yoy_rent_growth < 0 and vacancy_change == 0:
