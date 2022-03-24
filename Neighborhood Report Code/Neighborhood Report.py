@@ -1657,11 +1657,15 @@ def GetWikipediaPage():
     elif (neighborhood_level == 'custom'):
             wikipedia_page_search_term    = (neighborhood + ', ' + comparison_area )
     try:
-        page                          =  wikipedia.page(wikipedia_page_search_term)   
+        page                          =  wikipedia.page(title = wikipedia_page_search_term, auto_suggest=False)   
     except Exception as e:
         print(e,': problem getting wikipedia page')
-        page                          =  wikipedia.page(pageid=input("""enter the wikipedia page ID (Can find by clicking "Wikidata item" link on page"""))   
-
+        try:
+            page_title                    =  input("""enter the wikipedia page title""")
+            page                          =  wikipedia.page(title = page_title, auto_suggest=False)   
+        except Exception as e:
+            print(e,': problem getting wikipedia page again')
+            page = None
 def GetWalkScore(lat,lon):
 
     lat = str(lat)
