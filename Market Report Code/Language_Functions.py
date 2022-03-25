@@ -1165,7 +1165,7 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_
             ' '                                                         +
             millify(abs(ten_year_inventory_growth),'')                  +
             ' '                                                         +
-            unit_or_sqft                                                +
+            "{unit_or_sqft}".format(unit_or_sqft = unit_or_sqft if ten_year_inventory_growth != '1' or sector != 'Multifamily'  else ( 'unit') ) +
             ' over the past ten years. '                                +
             'These '                                                    +
             "{development_or_demolitions}".format(development_or_demolitions = "developments" if ten_year_inventory_growth >= 0  else "demolitions") +     
@@ -1210,13 +1210,13 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_
             net_absorption_description                                  +
             net_absorption                                              +
             ' '                                                         +
-            unit_or_sqft                                                +
+            "{unit_or_sqft}".format(unit_or_sqft = unit_or_sqft if net_absorption != '1' or sector != 'Multifamily'  else ( 'unit') ) +
             ', '                                                        +
             qoq_absorption_increase_or_decrease                         +
             ' from the '                                                +
             previous_quarter_net_absorption                             +
             ' '                                                         +
-            unit_or_sqft                                                +
+            "{unit_or_sqft}".format(unit_or_sqft = unit_or_sqft if previous_quarter_net_absorption != '1' or sector != 'Multifamily'  else ( 'unit') ) +
             ' of net absorption in '                                    +
             previous_quarter                                            + 
             '.'                                                         +
@@ -1225,7 +1225,7 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_
             ' With '                                                    +
             net_absorption                                              +
             ' '                                                         +
-            unit_or_sqft                                                +
+            "{unit_or_sqft}".format(unit_or_sqft = unit_or_sqft if net_absorption != '1' or sector != 'Multifamily'  else ( 'unit') ) +
             net_absorption_description                                  +
             'in the '                                                   +
             quarter                                                     +
@@ -1244,7 +1244,7 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_
             ' totaled '                                                 +
             current_year_total_net_absorption                           +
             ' '                                                         +
-            unit_or_sqft                                                +
+            "{unit_or_sqft}".format(unit_or_sqft = unit_or_sqft if current_year_total_net_absorption != '1' or sector != 'Multifamily'  else ( 'unit') ) +
             '. ') 
                     ]
     #Add the CoStar Writeup language to our generated langauge
