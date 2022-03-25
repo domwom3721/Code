@@ -27,11 +27,6 @@ retail_export                    = os.path.join(dropbox_root, 'Research', 'Proje
 industrial_export                = os.path.join(dropbox_root, 'Research', 'Projects', 'Research Report Automation Project', 'Data', 'Market Reports Data', 'CoStar Data', 'Raw Data','industrial.csv')
 
 
-#Declare the sector and coordinates
-sector               = 'Office'
-lat, lon             = 40.743864357763115, -74.0310994566193
-property_coordinates = Point(lon, lat) #lon, lat
-
 def FindMetroDivCode(point):
     #Open the MSA Division shapefile
     msa_div_map = shapefile.Reader(msa_divisions_shapefile_location)
@@ -107,10 +102,14 @@ def FindCoStarMarket(msa_or_div_code, sector):
         market_name = costar_df['Geography Name'].iloc[-1]
         return(market_name)
 
+#Declare the sector and coordinates
+sector               = 'Office'
+lat, lon             = 40.743864357763115, -74.0310994566193
+property_coordinates = Point(lon, lat) #lon, lat
 
-msa_div_code       = FindMetroDivCode(point=property_coordinates) 
-msa_code           = FindMSACode(point=property_coordinates) 
-county_fips_code   = FindCountyFips(point=property_coordinates) 
+msa_div_code         = FindMetroDivCode(point=property_coordinates) 
+msa_code             = FindMSACode(point=property_coordinates) 
+county_fips_code     = FindCountyFips(point=property_coordinates) 
 
 #If we found a msa division code, use that,otherwise use msa code
 if msa_div_code != None:
