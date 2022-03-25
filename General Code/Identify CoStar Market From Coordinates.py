@@ -8,10 +8,10 @@
 #CoStar maps their markets to a MSA Divison first if available, then goes to larger MSA if the area has no divisions
 
 #Import packages
-from itertools import count
-import os 
-import shapefile
+import os
+
 import pandas as pd
+import shapefile
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 
