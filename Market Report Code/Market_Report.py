@@ -1178,7 +1178,7 @@ def CreateMarketReport():
     #Add to lists that track our markets and submarkets for salesforce
     UpdateSalesforceMarketList(markets_list = dropbox_primary_markets, submarkets_list = dropbox_markets, sector_list = dropbox_sectors, sector_code_list = dropbox_sectors_codes, dropbox_links_list = dropbox_links)
 
-def user_selects_market(market_list):
+def user_selects_market(market_list, market_or_submarket):
     if len(df_list) == 4 or market_list == []:
         return(market_list)
     
@@ -1188,20 +1188,15 @@ def user_selects_market(market_list):
         global  selected_market
         selected_market = comboExample.get()
         
-     
     app = Tk() 
     app.geometry('600x300')
     app.config(bg='#404858')
     app.title('Research Automation Project - Market Reports') 
 
-    labelTop = Label(app,
-                    text = "Choose your market"
-                    )
+    labelTop = Label(app, text = ("Choose your " + market_or_submarket))
     labelTop.grid(column=0, row=0)
 
-    comboExample = ttk.Combobox(app, 
-                               values = market_list
-                               )
+    comboExample = ttk.Combobox(app, values = market_list, width=50)
 
 
     comboExample.grid(column=0, row=1)
@@ -1517,7 +1512,7 @@ for df,df2,sector in zip(      df_list,
     market_dictionary            = CreateMarketDictionary(df)
 
     #Use a GUI to let user select a market to create reports for
-    selected_market              = user_selects_market(market_list = list(market_dictionary.keys())) 
+    selected_market              = user_selects_market(market_list = list(market_dictionary.keys()),market_or_submarket = 'market') 
 
     #Loop through the market dictionary creating reports for each market and their submarkets
     for primary_market,submarkets in market_dictionary.items():
@@ -1539,7 +1534,7 @@ for df,df2,sector in zip(      df_list,
         if selected_market == list(market_dictionary.keys()):
             selected_submarket = submarkets
         else:
-            selected_submarket = user_selects_market(market_list = submarkets) #use a GUI to let user select a market
+            selected_submarket = user_selects_market(market_list = submarkets, market_or_submarket = 'submarket') #use a GUI to let user select a market
         
         #Create all the submarket reports for the market
         for submarket in submarkets:
