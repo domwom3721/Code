@@ -35,9 +35,7 @@ from requests.exceptions import HTTPError
 from requests.packages.urllib3.util.retry import Retry
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-if 'Leahy' in os.environ['USERPROFILE']:
-    from webdriver_manager.chrome import ChromeDriverManager
-from shapely.geometry import LineString, Point, Polygon
+from selenium.webdriver.common.by import By
 
 #Define file pre-paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
@@ -5164,22 +5162,22 @@ def GetMap():
     try:
         print('Getting map image from Google Maps')
         
-        #Search Google Maps for County
+        #Step 1: Open a browser and open googlemaps.com
         options = webdriver.ChromeOptions()
         options.add_argument("--start-maximized")
-        browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        browser = webdriver.Chrome(service=Service(executable_path=(os.path.join(os.environ['USERPROFILE'], 'Desktop', 'chromedriver.exe'))), options=options)
         browser.get('https:google.com/maps')
         
-        #Write county name in box
-        Place = browser.find_element_by_class_name("tactile-searchbox-input")
+        #Step 2: Write county name in box
+        Place = browser.find_element(By.CLASS_NAME, "tactile-searchbox-input")
         Place.send_keys((county + ', ' + state))
         
         #Submit county name for search
-        Submit = browser.find_element_by_class_name('nhb85d-BIqFsb')
+        Submit = browser.find_element(By.CLASS_NAME,'nhb85d-BIqFsb')
         Submit.click()
 
         time.sleep(5)
-        zoomout = browser.find_element_by_xpath("""//*[@id="widget-zoom-out"]/div""")
+        zoomout = browser.find_element(By.XPATH,"""//*[@id="widget-zoom-out"]/div""")
         zoomout.click()
         time.sleep(7)
 
