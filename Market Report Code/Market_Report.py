@@ -305,6 +305,7 @@ def UniqueZipCodes(zip_code_list):
 def CreateEmptySalesforceLists():
     global dropbox_primary_markets, dropbox_markets, dropbox_sectors, dropbox_sectors_codes
     global dropbox_links, dropbox_research_names, dropbox_analysis_types, dropbox_states, dropbox_versions, dropbox_statuses, dropbox_document_names
+    global dropbox_cbsa_codes
     dropbox_primary_markets        = []
     dropbox_markets                = []
     dropbox_sectors                = []
@@ -313,6 +314,7 @@ def CreateEmptySalesforceLists():
     dropbox_research_names         = []
     dropbox_analysis_types         = []
     dropbox_states                 = []
+    dropbox_cbsa_codes             = []
     dropbox_versions               = []
     dropbox_statuses               = []
     dropbox_document_names         = []
@@ -340,6 +342,8 @@ def UpdateSalesforceMarketList(markets_list, submarkets_list, sector_list, secto
     dropbox_links_list.append(dropbox_link)
 
     dropbox_states.append(state)
+    dropbox_cbsa_codes.append(df_market_cut.iloc[-1]['CBSA Code'])
+
     latest_quarter = df_market_cut.iloc[-1]['Period']
     dropbox_versions.append(latest_quarter)
 
@@ -1190,12 +1194,14 @@ def CreateDirectoryCSV():
                                 'Market Research Name': dropbox_research_names,
                                 'Analysis Type':        dropbox_analysis_types,
                                 'State':                dropbox_states,
+                                'CBSA Code':            dropbox_cbsa_codes,
                                 "Property Type":        dropbox_sectors,
                                 'Property Type Code':   dropbox_sectors_codes,
                                 "Dropbox Links":        dropbox_links,
                                 'Version':              dropbox_versions,
                                 'Status':               dropbox_statuses,
-                                'Document Name':        dropbox_document_names
+                                'Document Name':        dropbox_document_names,
+                                
                                   }
                                 )
 
