@@ -1,11 +1,12 @@
 #By Mike Leahy April 29, 2021:
 #Summary:
-    #Imports 4 clean datafiles with summary statistics from CoStar.com on commerical real estate for the 4 main sectors
+    #Imports 4 clean csv files with summary statistics from CoStar.com on commerical real estate for the 4 main sectors
+    #It also imports a coresponding "slices" csv/excel file for each sector which breaks down summary statistics by property sub-type
+    #A GUI lauches which prompts the user to select which sector they want to create reports for and which markets/submarkets
     #Loops through these 4 files, loops through each of the markets and submarkets (geographic areas) and creates a directory and word document
     #The word document is a report that reports tables and graphs generated from the data files
 
 import os
-import time
 import pandas as pd
 from tkinter import *
 from tkinter import ttk
@@ -22,12 +23,11 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING, WD_BREAK
 from docx.oxml.ns import qn
 from docx.shared import Inches, Pt, RGBColor
 
+#These functions are part of the script, writen by us and stored in seperate files
 from Graph_Functions import *  
 from Language_Functions import *  
 from Table_Functions import * 
 
-#Used to track runtime of script
-start_time = time.time() 
 
 #Define file pre-paths
 dropbox_root                   = os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
@@ -41,11 +41,9 @@ costar_writeup_location        = os.path.join(project_location,'Data','Market Re
 
 #Define functions
 
-#GUI for user to select if they want to write reports, or update the database/CoStar Markets CSV file
 def user_selects_reports_or_not():
-    global   write_reports_yes_or_no
+    #Launches GUI for user to select if they want to write reports, or update the database/CoStar Markets CSV file
 
-    #GUI that lets user specify which sectors they want to run
     ws = Tk()
     ws.title('Research Automation Project - Market Reports')
     ws.geometry('400x300')
@@ -55,19 +53,12 @@ def user_selects_reports_or_not():
         global write_reports_yes_or_no
         write_reports_yes_or_no = variable.get()
 
-    options = ['y','n']
-
     #setting variable for Integers
     variable = StringVar()
     variable.set('Write Reports?')
 
     #creating widget
-    dropdown = OptionMenu(
-        ws,
-        variable,
-        *options,
-        command=select_sector
-                         )
+    dropdown = OptionMenu(ws, variable, *['yes', 'no'], command=select_sector)
 
     #positioning widget
     dropdown.pack(expand=True)
@@ -75,20 +66,20 @@ def user_selects_reports_or_not():
     #infinite loop 
     ws.mainloop()
 
-#GUI for user to select sector
 def user_selects_sector():
-    global df_list, df_slices_list,sector_name_list,selected_sector
+    #Launches GUI for user to select sector
+    global df_list, df_slices_list, sector_name_list, selected_sector
     global df_multifamily, df_office, df_retail, df_industrial
     global df_multifamily_slices, df_office_slices, df_retail_slices, df_industrial_slices
     global df_transactions, df_construction
 
     #If we have any custom data, read it in as a dataframe so we can append it to our primary data
-    custom_data_file_location      = os.path.join(costar_data_location,'Clean Data','Clean Custom CoStar Data.xlsx')
+    custom_data_file_location      = os.path.join(costar_data_location, 'Clean Data', 'Clean Custom CoStar Data.xlsx')
     if os.path.exists(custom_data_file_location):
         df_custom                  = pd.read_excel(custom_data_file_location)
 
     #Don't make the user select a sector if they are not trying to write reports
-    if write_reports_yes_or_no == 'n':
+    if write_reports_yes_or_no == 'no':
         selected_sector = 'All'
         
         #Import cleaned data from 1.) Clean Costar Data.py
@@ -117,26 +108,20 @@ def user_selects_sector():
         global selected_sector
         selected_sector = variable.get()
         
-
-    sectors = ['Multifamily', 'Office', 'Retail', 'Industrial', 'All']
-
     #setting variable for Integers
     variable = StringVar()
     variable.set('Select a sector')
 
     #creating widget
-    dropdown = OptionMenu(
-        ws,
-        variable,
-        *sectors,
-        command = select_sector
-                        )
+    dropdown = OptionMenu(ws, variable, *['Multifamily', 'Office', 'Retail', 'Industrial', 'All'], command = select_sector)
 
     #positioning widget
     dropdown.pack(expand=True)
 
     #infinite loop 
     ws.mainloop()
+
+    #Everything below this comment in this function is after the user has selected the sector and tkinter loop has ended
 
     #Import transactions data as dataframe that we use regardless of sector selected
     df_transactions                 = pd.read_excel(os.path.join(costar_data_location, 'Transaction Data', 'transaction.xlsx')) 
@@ -279,7 +264,8 @@ def user_selects_sector():
         sector_name_list              = ['Industrial']
     
 #Define functions used to handle the clean CoStar data and help write our repots
-def CreateMarketDictionary(df): #Creates a dictionary where each key is a market and the items are lists of its submarkets
+def CreateMarketDictionary(df): 
+    #Creates a dictionary where each key is a market and the items are lists of its submarkets
      df_markets             = df.loc[df['Geography Type'] == 'Metro'] 
      df_submarkets          = df.loc[df['Geography Type'] == 'Submarket']
      unique_markets_list    = df_markets['Geography Name'].unique()
@@ -304,12 +290,11 @@ def CleanMarketName(market_name):
     clean_market_name = clean_market_name.strip()
     return(clean_market_name)
 
-def UniqueZipCodes(list1):
-    #insert the list to the set
-    list_set = set(list1)
+def UniqueZipCodes(zip_code_list):
+    #Converts a list of zip codes with possible duplicates into a unqiue list with no duplicates
     
     #convert the set to the list
-    unique_list = (list(list_set))
+    unique_list = list(set(zip_code_list))
     
     #convert from string to int
     for i in range(0, len(unique_list)):
@@ -376,25 +361,25 @@ def UpdateSalesforceMarketList(markets_list, submarkets_list, sector_list, secto
         dropbox_statuses.append('Draft')
     
 def CreateOutputDirectory():
+    #Creates a folder where we put the report document inside of and returns the file path
     sector_folder        = os.path.join(output_location,sector)
     state_folder         = os.path.join(output_location,sector,state)
     market_folder        = os.path.join(state_folder,primary_market_name_for_file)
 
     if market == primary_market:
-        output_directory     = market_folder                    #Folder where we write report to
+        output_directory     = market_folder #Folder where we write report to
     else:
         output_directory     = os.path.join(market_folder,str(market_title)) 
 
-
     #Check if output,map, and summary folder already exists, and if it doesnt, make it
-    for folder in [sector_folder,state_folder,market_folder,output_directory]:
-        if os.path.exists(folder):
-            pass #does nothing
-        else:
-            os.mkdir(folder) #Create new folder for market or submarket
+    for folder in [sector_folder, state_folder, market_folder, output_directory]:
+        if os.path.exists(folder) == False:
+            os.mkdir(folder) 
+
     return(output_directory)
 
 def CreateMapDirectory():
+    #Creates a folder where we store png files with map images that we can insert into our reports
     state_folder_map         = os.path.join(map_location,sector,state)
     market_folder_map        = os.path.join(state_folder_map,primary_market_name_for_file)
 
@@ -403,37 +388,34 @@ def CreateMapDirectory():
     else:
         map_directory        = os.path.join(market_folder_map,str(market_title))
     
-    #Check if output,map, and summary folder already exists, and if it doesnt, make it
-    for folder in [state_folder_map,market_folder_map,map_directory]:
-        if os.path.exists(folder):
-            pass 
-        else:
-            os.mkdir(folder) #Create new folder for market or submarket
+    #Check if these folders exist and if not, make them
+    for folder in [state_folder_map, market_folder_map, map_directory]:
+        if os.path.exists(folder) == False:
+            os.mkdir(folder) 
     
     return(map_directory)
 
 def CreateWriteupDirectory():
+    #Creates a folder where we can save the CoStar HTML file from the website in order to scrape the writeups from CoStar analysts
     sector_folder                   = os.path.join(costar_writeup_location,sector)
     state_folder_writeup            = os.path.join(costar_writeup_location,sector,state)
     market_folder_writeup           = os.path.join(state_folder_writeup,primary_market_name_for_file)
 
     if market == primary_market:
-        writeup_directory           = market_folder_writeup                #Folder where we store map for market or submarket
+        writeup_directory           = market_folder_writeup                
     else:
         writeup_directory           = os.path.join(market_folder_writeup,str(market_title))
     
-    #Check if output,map, and summary folder already exists, and if it doesnt, make it
+    #Check if folder already exists, and if it doesnt, make it
     for folder in [sector_folder,state_folder_writeup,market_folder_writeup,writeup_directory]:
-        if os.path.exists(folder):
-            pass 
-        else:
+        if os.path.exists(folder) == False:
             os.mkdir(folder) #Create new folder for market or submarket
     
     return(writeup_directory)
 
 def CreateReportFilePath():
     global report_file_title
-    #Create report
+
     if market == primary_market:
         market_file_name = primary_market_name_for_file
         macro_or_sub     = 'Market'
@@ -441,11 +423,6 @@ def CreateReportFilePath():
         market_file_name = market_title
         macro_or_sub     = 'Submarket'
     
-    if sector == "Multifamily":
-        sector_code = "MF"
-    else:
-        sector_code = sector[0]
-
     report_file_title =   latest_quarter  + ' ' +  state + ' - '   + market_file_name + ' - ' + sector + ' ' + macro_or_sub  + '_draft' + '.docx'
 
     #Make sure we don't hit the 255 max file path limit
@@ -454,7 +431,6 @@ def CreateReportFilePath():
     else:
         report_path = os.path.join(output_directory,(latest_quarter + '-' + market_file_name + '_draft' + '.docx')  )
 
-    
     assert os.path.exists(output_directory)
     return(report_path)
 
@@ -535,26 +511,26 @@ def CleanUpPNGs():
                     os.remove(os.path.join(output_directory, image))
                 except Exception as e: 
                     print(e)
-   
+
 def AddMap():
     
     #Add image of map if there is one in the appropriate map folder
     if os.path.exists(os.path.join(map_directory,'map.png')):
-        map = document.add_picture(os.path.join(map_directory,'map.png'), width=Inches(6.5))
+        document.add_picture(os.path.join(map_directory,'map.png'), width=Inches(6.5))
     else:
-        map = document.add_paragraph('')
+        document.add_paragraph('')
 
     last_paragraph           = document.paragraphs[-1] 
     last_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
 
-def AddDocumentPicture(document,image_path):
+def AddDocumentPicture(document, image_path):
     if os.path.exists(image_path):
         fig                                         = document.add_picture(os.path.join(image_path),width = Inches(6.5))
         last_paragraph                              = document.paragraphs[-1] 
         last_paragraph.paragraph_format.space_after = Pt(0)
         last_paragraph.alignment                    = WD_ALIGN_PARAGRAPH.CENTER
 
-def AddDocumentParagraph(document,language_variable):
+def AddDocumentParagraph(document, language_variable):
     assert type(language_variable) == list
 
     for paragraph in language_variable:
@@ -648,11 +624,9 @@ def OverviewSection():
                     else:
                         AddTableTitle(document = document, title =('Historical ' + slice + ' ' + sector  + ' Performance: ' +  market_title + ' Submarket'))
 
-
                     AddMarketPerformanceTable(document = document, market_data_frame = df_slices_temp, col_width = 1.2, sector=sector)
                     document.add_paragraph('')
 
-    
     #Submarket market performance table
     else:
         AddTableTitle(document = document, title =('Historical ' + sector  + ' Performance: ' +  market_title + ' Submarket'))
@@ -661,30 +635,28 @@ def OverviewSection():
 
 def SupplyDemandSection():
     #Supply and Demand Section
-    AddHeading(document,'Supply & Demand',2)
+    AddHeading(document, 'Supply & Demand', 2)
     
     AddDocumentParagraph(document = document, language_variable = demand_language)
 
     #Vacancy Table
     AddTableTitle(document = document,title ='Vacancy Rates')
 
-    vacancy_table_width = 1.2
-    AddTable(document,data_for_vacancy_table,vacancy_table_width)
+    AddTable(document, data_for_vacancy_table, 1.2)
 
     #Absorption rate Graph
-    AddDocumentPicture(document=document,image_path=os.path.join(output_directory,'absorption_rate.png'))
+    AddDocumentPicture(document=document, image_path=os.path.join(output_directory,'absorption_rate.png'))
     
 def RentSecton():
-    AddHeading(document,'Rents',3)   
+    AddHeading(document, 'Rents', 3)   
 
     if len(rent_language) == 2:
         AddDocumentParagraph(document = document, language_variable = [rent_language[0]])
     else:
         AddDocumentParagraph(document = document, language_variable = rent_language)
 
-
     #Rent Table
-    AddTableTitle(document = document,title ='Market Rents')
+    AddTableTitle(document = document,title = 'Market Rents')
     AddTable(document,data_for_rent_table, col_width = 1.2)
     
     if len(rent_language) == 2:
@@ -702,7 +674,7 @@ def ConstructionSection():
 
     if len(df_submarkets_construction) > 0:
         AddTableTitle(document = document,title = 'Current and Recently Completed Construction Projects')
-        AddConstructionTable(document = document, market_data_frame = df_submarkets_construction, col_width = 1.2,sector = sector)
+        AddConstructionTable(document = document, market_data_frame = df_submarkets_construction, col_width = 1.2, sector = sector)
 
     #Insert construction graph
     AddDocumentPicture(document=document, image_path = os.path.join(output_directory, 'construction_volume.png'))
@@ -717,16 +689,16 @@ def CapitalMarketsSection():
         AddDocumentParagraph(document = document, language_variable = sale_language)
 
     #Sales Volume Graphs
-    AddDocumentPicture(document=document,image_path=os.path.join(output_directory,'sales_volume.png'))
+    AddDocumentPicture(document=document, image_path=os.path.join(output_directory,'sales_volume.png'))
     if len(sale_language) == 2:
         AddDocumentParagraph(document = document, language_variable = [sale_language[1]])
     
     if len(df_submarkets_transactions) > 0:
         AddTableTitle(document = document,title = 'Recent Transactions')
-        AddTransactionTable(document = document, market_data_frame = df_submarkets_transactions ,col_width = 1.2,sector=sector)
+        AddTransactionTable(document = document, market_data_frame = df_submarkets_transactions, col_width = 1.2, sector=sector)
 
-    #Asset Value  Graph
-    AddDocumentPicture(document=document,image_path=os.path.join(output_directory,'asset_values.png'))
+    #Asset Value Graph
+    AddDocumentPicture(document = document, image_path=os.path.join(output_directory,'asset_values.png'))
     
 def OutlookSection():
     #Outlook Section
@@ -809,7 +781,6 @@ def GetOverviewTable():
         data_for_overview_table[0] = ['', primary_market_title, 'YoY', 'QoQ', df_nation['Geography Name'].iloc[0], 'YoY', 'QoQ']
     else:
         data_for_overview_table[0] = ['', market_title, 'YoY', 'QoQ', primary_market_title, 'YoY', 'QoQ']
-
 
     #Rows for non-apt
     if sector != 'Multifamily':
@@ -1008,8 +979,6 @@ def GetOverviewTable():
                                                                 'Sales Volume'
                                                              )
 
-  
-
     return(data_for_overview_table)
 
 def GetRentTable():
@@ -1035,8 +1004,7 @@ def CreateMarketReport():
     output_directory    = CreateOutputDirectory()
     map_directory       = CreateMapDirectory()
     writeup_directory   = CreateWriteupDirectory()
- 
-  
+
     #Create a dataframe that only has rows for the market or submarket itself
     df_market_cut       = df[df['Geography Name'] == market].copy()                  #df for the market or submarket only
     
@@ -1046,7 +1014,7 @@ def CreateMarketReport():
     #Get the document name and file path for the report
     report_path         = CreateReportFilePath()
 
-    if write_reports_yes_or_no == 'y':
+    if write_reports_yes_or_no == 'yes':
         #Create seperate dataframes with only rows from the current (sub)market, the primary market, and the nation 
         
         #Specifiy the different comparsion levels for the culusters and research markets
@@ -1182,7 +1150,7 @@ def user_selects_market(market_list, market_or_submarket):
     if len(df_list) == 4 or market_list == []:
         return(market_list)
     
-    market_list.insert(0,'All')
+    market_list.insert(0, 'All')
     
     def select_market(event):
         global  selected_market
@@ -1198,25 +1166,24 @@ def user_selects_market(market_list, market_or_submarket):
 
     comboExample = ttk.Combobox(app, values = market_list, width=50)
 
-
     comboExample.grid(column=0, row=1)
     comboExample.current(0)
     comboExample.bind("<<ComboboxSelected>>", select_market)
     app.mainloop()
 
-
     if selected_market == 'All':
-            market_list.remove('All')
-            return(market_list)
+        market_list.remove('All')
+        return(market_list)
     else:
-         return([selected_market])
+        return([selected_market])
 
 def CreateDirectoryCSV():
     global dropbox_markets, dropbox_research_names, dropbox_analysis_types, dropbox_states, dropbox_sectors, dropbox_sectors_codes, dropbox_links, dropbox_versions, dropbox_statuses, dropbox_document_names
     global service_api_csv_name, csv_name
-    
-   
-    if write_reports_yes_or_no == 'n':
+
+    service_api_csv_name = ''
+
+    if write_reports_yes_or_no == 'no':
         #Now create dataframe with list of markets and export to a CSV for Salesforce
         dropbox_df = pd.DataFrame({"Market":            dropbox_primary_markets,
                                 "Submarket":            dropbox_markets,
@@ -1231,9 +1198,6 @@ def CreateDirectoryCSV():
                                 'Document Name':        dropbox_document_names
                                   }
                                 )
-
-        
-        
 
         #Create a version of market research name for merge without "SUB" when the submarket name matches the market name
         dropbox_df['Market Research Name Alternative']  = dropbox_df['Market Research Name'].str.replace(' SUB','')
@@ -1448,15 +1412,12 @@ def CreateDirectoryCSV():
         if output_location == os.path.join(dropbox_root,'Research','Market Analysis','Market'):
             dropbox_df.to_csv(os.path.join(output_location, service_api_csv_name), index=False)
 
-    else:
-         service_api_csv_name = ''
-
 def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
     if type == None:
         return
     
     #We only want to update the database when we are in the production folder and the user is not trying to create a report
-    if output_location != os.path.join(dropbox_root,'Research','Market Analysis','Market') or write_reports_yes_or_no != 'n':
+    if output_location != os.path.join(dropbox_root,'Research','Market Analysis','Market') or write_reports_yes_or_no != 'no':
         return()
     print(f'Updating service database: {report_type}')
 
@@ -1502,9 +1463,7 @@ user_selects_sector()
 CreateEmptySalesforceLists()
 
 #This is the main loop for our program where we loop through the selected sector dataframes, get list of unique markets, loop through those markets creating folders and writing market reports
-for df,df2,sector in zip(      df_list,
-                               df_slices_list,
-                              sector_name_list):
+for df,df2,sector in zip(df_list, df_slices_list, sector_name_list):
 
     print('--',sector,'--')
 
@@ -1563,7 +1522,7 @@ UpdateServiceDb(report_type = 'markets',
                 csv_path    = os.path.join(output_location, service_api_csv_name),
                 dropbox_dir = 'https://www.dropbox.com/home/Research/Market Analysis/Market/')
 
-print('Finished, you rock ',"--- %s seconds ---" % (time.time() - start_time))        
+print('Finished, you rock!')        
 
 
 
