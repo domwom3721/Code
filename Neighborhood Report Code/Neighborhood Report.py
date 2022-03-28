@@ -12,7 +12,6 @@ import sys
 import time
 from datetime import date, datetime
 from statistics import mean
-from weakref import WeakSet
 
 import googlemaps
 import mpu
@@ -39,8 +38,10 @@ from requests.exceptions import HTTPError
 from requests.packages.urllib3.util.retry import Retry
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-if 'Leahy' in os.environ['USERPROFILE']:
-    from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 from shapely.geometry import LineString, Point, Polygon
 from walkscore import WalkScoreAPI
 from yelpapi import YelpAPI
@@ -420,9 +421,7 @@ def ProcessPlaceFIPS(place_fips):
     place_name                      = place_name.replace("""/""",'-')
     place_name                      = place_name.replace(' Of ',' of ')
 
-    
 
-    
     #Name of State
     state                           = us.states.lookup(state_full_name) #convert the full state name to the 2 letter abbreviation
     state                           = state.abbr
@@ -491,7 +490,7 @@ def ProcessCountySubdivisionFIPS(county_subdivision_fips):
     assert len(state) == 2
 
     return([suvdiv_fips, county_fips, name, state_fips, state_full_name, state,place_type])
-     
+
 def ProcessCountyTract(tract,county_fips):
     #Takes a user provided county fips code and a census tract number and returns a list of key variables
     county_fips               = county_fips.replace('-','').strip()
@@ -576,7 +575,7 @@ def PlaceFIPSToCountyFIPS(place_fips,state_fips):
         input_county_fips = str(input('The city/place is in more than 1 county, enter the desired comparison county FIPS'))
         assert len(input_county_fips) == 5
         return(input_county_fips)
-   
+
 def PlaceNameToPlaceFIPS(place_name,state_code):
     #Takes place name and returns the 7 digit fips code for a city 
     
@@ -708,7 +707,7 @@ def CountyInputPlaceFIPSList(county_fips):
     place_county_crosswalk_df                                   = place_county_crosswalk_df.loc[(place_county_crosswalk_df['County_FIPS'] == str(county_fips)) ].reset_index()                 
 
     return(list(place_county_crosswalk_df['State_Place_FP']))
-  
+
 def CountyInputSubdivisionFIPSList(county_fips):
     #Takes a county fips code and returns a list of subdivision fips code in that county
     print('Getting list of subdivision fips within ' + county_fips)
@@ -1666,6 +1665,7 @@ def GetWikipediaPage():
         except Exception as e:
             print(e,': problem getting wikipedia page again')
             page = None
+
 def GetWalkScore(lat,lon):
 
     lat = str(lat)
@@ -4006,14 +4006,16 @@ def Citation(document,text):
 def GetMap():
     print('Getting Map')
     try:
-        #Search Google Maps for hood
+        #Step 1: Open a browser and open googlemaps.com
         options = webdriver.ChromeOptions()
         options.add_argument("--start-maximized")
-        browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        options.add_experimental_option('useAutomationExtension', False)
+
+        browser = webdriver.Chrome(service=Service(executable_path=(os.path.join(os.environ['USERPROFILE'], 'Desktop', 'chromedriver.exe'))), options=options)
         browser.get('https:google.com/maps')
-            
-        #Write hood name in box
-        Place = browser.find_element_by_class_name("tactile-searchbox-input")
+        
+        #Step 2: Write neighborhood name in search box
+        Place = browser.find_element(By.CLASS_NAME, "tactile-searchbox-input")
 
         if neighborhood_level != 'custom':
             Place.send_keys((neighborhood + ', ' + hood_state))
@@ -4022,34 +4024,30 @@ def GetMap():
             Place.send_keys((neighborhood + ', ' + comparison_area))
 
         #Submit hood name for search
-        Submit = browser.find_element_by_class_name('nhb85d-BIqFsb')
+        Submit = browser.find_element(By.CLASS_NAME, "nhb85d-BIqFsb") 
         Submit.click()
-    
-        if 'Leahy' in os.environ['USERPROFILE']:
-            #Move to the left button "Collapse Side Pannel" 
-            # to make the grey message go away
-            collapse_side_pannel_x = 1048
-            collapse_side_pannel_y = 1292
-            collapse_side_pannel_duration = 0.5
-            pyautogui.moveTo(x=collapse_side_pannel_x,y=collapse_side_pannel_y,duration = collapse_side_pannel_duration)
-            time.sleep(2)
-            pyautogui.moveTo(x=collapse_side_pannel_x - 200,y=collapse_side_pannel_y-100,duration=collapse_side_pannel_duration)
-            time.sleep(1)
-            print('Using Mikes coordinates for screenshot')
-            im2 = pyautogui.screenshot(region=(1358,465, 2142, 1404) ) #left, top, width, and height
-        elif 'Dominic' in os.environ['USERPROFILE']:
+
+        #Step 3: Collapse Side Panel
+        try:
+            collapse_side_pannel_button =  browser.find_element(By.CLASS_NAME, "Yr7JMd-pane-ornU0b-LgbsSe.noprint")
+            collapse_side_pannel_button.click()
+        except Exception as e:
+            print(e, 'Cant collapse side panel')
             time.sleep(12)
-            print('Using Doms coordinates for screenshot')
-            im2 = pyautogui.screenshot(region=(3680,254,1968 ,1231) ) #left, top, width, and height
 
-        time.sleep(.1)
+        #Step 4: Take first screen shot (zoomed in picture) and save it
+        if 'Leahy' in os.environ['USERPROFILE']:
+            im2 = pyautogui.screenshot(region=(1358, 520, 2152, 1540) ) #left, top, width, and height
+        elif 'Dominic' in os.environ['USERPROFILE']:
+            im2 = pyautogui.screenshot(region=(3680, 254, 1968, 1231) ) #left, top, width, and height
+
         im2.save(os.path.join(hood_folder_map,'map.png'))
-        time.sleep(.2)
-
-        # second photo, zoomed out
-        zoomout = browser.find_element_by_xpath("""//*[@id="widget-zoom-out"]/div""")
+        
+        #Step 5: Take second photo (zoomed out) and save it
+        zoomout_button = browser.find_element(by=By.XPATH, value ="""//*[@id="widget-zoom-out"]/div""")
         for i in range(3):
-            zoomout.click() 
+            zoomout_button.click() 
+        
         time.sleep(2.5)
 
 
@@ -4061,18 +4059,16 @@ def GetMap():
             print('Using Doms coordinates for screenshot')
             im2 = pyautogui.screenshot(region=(3680,254,1968 ,1231) ) #left, top, width, and height
         
-        else:
-            im2 = pyautogui.screenshot(region=(1089,276, 2405, 1754) ) #left, top, width, and height
-        time.sleep(1)
-
-        im2.save(os.path.join(hood_folder_map,'map2.png'))
+        im2.save(os.path.join(hood_folder_map, 'map2.png'))
         im2.close()
 
-        #Wait till we have saved both png images before proceeding
+        #Step 6: Close the browser once the screen shots are saved
         while (os.path.exists(os.path.join(hood_folder_map,'map.png')) == False) or (os.path.exists(os.path.join(hood_folder_map,'map2.png')) == False):
             pass
 
         browser.quit()
+
+    #If something doens't work, try to quit the browser in case it is still open
     except Exception as e:
          print(e)
          try:
@@ -4117,7 +4113,7 @@ def OverlayMapImages():
     #Add the zoomed in map on top of the zoomed out map and save as new png image
     # No transparency mask specified,                                      
     # simulating an raster overlay
-    img1.paste(img2, (img1.size[1] - 25,900))
+    img1.paste(img2, (img1.size[1] - 25,875))
     
     img1.save(map3_path)
     
@@ -4583,7 +4579,7 @@ def CleanUpPNGs():
                     os.remove(os.path.join(hood_folder, image))
                 except:
                     pass
-           
+
 def CreateDirectoryCSV():
     global service_api_csv_name
     print('Creating CSV with file path information on all existing hood reports')
@@ -5044,10 +5040,10 @@ def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
 
 def Main():
     DecideIfWritingReport()
-   
+
     if report_creation == 'n':
        return()
-       
+
     UserSelectsNeighborhoodLevel(batch_mode)
     GetUserInputs() #user selects if they want to run report and gives input for report subject
     GetComparsionInfo()
