@@ -1127,6 +1127,7 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
                     raw_census_data = operator.geo_tract(f, neighborhood_shape,year = decennial_census_year)
                     
                     for tract_geojson, tract_data, tract_proportion in raw_census_data:
+                        # print(tract_data)
                         neighborhood_tracts_data.append(tract_data)
                     #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
                     value_raw_data          = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_tracts_data, fields_list = [f])
