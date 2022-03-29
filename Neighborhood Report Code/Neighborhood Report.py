@@ -1532,59 +1532,45 @@ def GetTopOccupationsData(geographic_level,hood_or_comparison_area):
     print('Getting occupation data for: ',hood_or_comparison_area)
     top_occupations_data = GetCensusFrequencyDistribution(        geographic_level = geographic_level, hood_or_comparison_area = hood_or_comparison_area,fields_list =  ['B24011_002E','B24011_018E','B24011_026E','B24011_029E','B24011_036E'],operator=c.acs5)   
     return(top_occupations_data)
+
+def GetCurrentPopulation(geographic_level, hood_or_comparison_area):
+    acs_total_pop_field           = 'B01001_001E'
+    redistricting_total_pop_field = 'P1_001N'
+
+    if geographic_level != 'custom':
+        current_pop        = GetCensusValue(geographic_level = geographic_level, hood_or_comparison_area = hood_or_comparison_area, field = [redistricting_total_pop_field],   operator = c.pl, aggregation_method = 'total')[0]
+
+    elif geographic_level == 'custom':
+        current_pop        = GetCensusValue(geographic_level = geographic_level, hood_or_comparison_area = hood_or_comparison_area, field = [acs_total_pop_field],   operator = c.acs5, aggregation_method = 'total')[0]
+
+    return(current_pop)
+
+def GetCurrentHHTotal(geographic_level, hood_or_comparison_area):
+    acs_total_households_field    = 'B25124_002E'  
+    redistricting_total_hh_field  = 'H1_002N'
     
+    #calculate table variables for hood
+    if geographic_level != 'custom':
+        current_hh         = GetCensusValue(geographic_level = geographic_level, hood_or_comparison_area = hood_or_comparison_area, field = [redistricting_total_hh_field],    operator = c.pl, aggregation_method = 'total')[0]
+    
+    elif geographic_level == 'custom':
+        current_hh         = GetCensusValue(geographic_level = geographic_level, hood_or_comparison_area = hood_or_comparison_area, field = [acs_total_households_field],   operator = c.acs5, aggregation_method = 'total')[0]
+
+    return(current_hh)
+
 def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     print('Getting Overview table data')
-    global _2010_hood_pop,  _2010_hood_hh
-    global current_hood_pop, current_hood_hh
-    global _2010_comparison_pop, _2010_comparison_hh
-    global current_comparison_pop, current_comparison_hh
-    global  hood_pop_growth,comparsion_hh_growth      
-    global comparsion_pop_growth,comparsion_hh_growth
-        
-    #Pulls in our population and hh variables and estiatmes growth rates, returns a list of list that we will use to populate the overview table
-    total_pop_field               = 'P001001'
-    total_households_field        = 'H003002'
-    total_families_field          = 'P035001'
 
-    acs_total_pop_field           = 'B01001_001E'
-    acs_total_households_field    = 'B25124_002E'  
-
-    redistricting_total_pop_field = 'P1_001N'
-    redistricting_total_hh_field  = 'H1_002N'
-    redistricting_total_f_field   = 'P1_035N'
-
-    _2010_hood_pop = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = [total_pop_field],        operator = c.sf1, aggregation_method = 'total')[0]
-    _2010_hood_hh  = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = [total_households_field], operator = c.sf1, aggregation_method = 'total')[0]
-
+    global hood_pop_growth, comparsion_hh_growth      
+    global comparsion_pop_growth, comparsion_hh_growth
 
     #calculate table variables for hood
     if hood_geographic_level != 'custom':
         current_estimate_period = '2020 Census'
-        current_hood_pop        = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = [redistricting_total_pop_field],   operator = c.pl, aggregation_method = 'total')[0]
-        current_hood_hh         = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = [redistricting_total_hh_field],    operator = c.pl, aggregation_method = 'total')[0]
 
-    
     elif hood_geographic_level == 'custom':
         current_estimate_period = 'Current Estimate'
-        current_hood_pop        = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = [acs_total_pop_field],   operator = c.acs5, aggregation_method = 'total')[0]
-        current_hood_hh         = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = [acs_total_households_field],   operator = c.acs5, aggregation_method = 'total')[0]
 
-
-    #Table variables for comparison area
-    _2010_comparison_pop = GetCensusValue(geographic_level = comparison_level,   hood_or_comparison_area = 'comparison area',  field = [total_pop_field],        operator = c.sf1, aggregation_method = 'total')[0]
-    _2010_comparison_hh  = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area =  'comparison area', field = [total_households_field], operator = c.sf1, aggregation_method = 'total')[0]
-    
-    if comparison_geographic_level != 'custom':
-        current_comparison_pop    = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area', field = [redistricting_total_pop_field],   operator = c.pl, aggregation_method = 'total')[0]
-        current_comparison_hh     = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area', field = [redistricting_total_hh_field],    operator = c.pl, aggregation_method = 'total')[0]
-
-    elif comparison_geographic_level == 'custom':
-        #Custom vs. custom still not supported
-        pass
-
-
-    #Set growth periods
     if hood_geographic_level == 'custom':
         pop_growth_period = acs_5y_year - decennial_census_year
         hh_growth_period  = acs_5y_year - decennial_census_year
@@ -1600,22 +1586,13 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     #Total Households not available in american community survey
     if hood_geographic_level != 'custom':
         hood_hh_growth         = (((int(current_hood_hh)/int(_2010_hood_hh))   - 1) * 100)/hh_growth_period
-        hood_hh_growth          = "{:,.1f}%".format(hood_hh_growth)
-        current_hood_hh        = "{:,.0f}".format(int(current_hood_hh))
     else:
-        hood_hh_growth         = 'NA'
+        hood_hh_growth         = 0
+    hood_hh_growth          = "{:,.1f}%".format(hood_hh_growth)
 
-    comparsion_pop_growth  =  ((int(current_comparison_pop)/int(_2010_comparison_pop) - 1) * 100)/pop_growth_period
-    comparsion_hh_growth   =  ((int(current_comparison_hh)/int(_2010_comparison_hh)   - 1) * 100)/hh_growth_period
-
-    #Format pop and hh variables
-    _2010_hood_pop         = "{:,.0f}".format(int(_2010_hood_pop))
-    _2010_hood_hh          = "{:,.0f}".format(int(_2010_hood_hh))
-    _2010_comparison_pop   = "{:,.0f}".format(int(_2010_comparison_pop))
-    _2010_comparison_hh    = "{:,.0f}".format(int(_2010_comparison_hh))
-    current_hood_pop       = "{:,.0f}".format(int(current_hood_pop))
-    current_comparison_pop = "{:,.0f}".format(int(current_comparison_pop))
-    current_comparison_hh  = "{:,.0f}".format(int(current_comparison_hh))
+  
+    comparsion_pop_growth        =  ((int(current_comparison_pop)/int(_2010_comparison_pop) - 1) * 100)/pop_growth_period
+    comparsion_hh_growth         =  ((int(current_comparison_hh)/ int(_2010_comparison_hh)   - 1) * 100)/hh_growth_period
 
     #Format growth variables
     hood_pop_growth         = "{:,.1f}%".format(hood_pop_growth)
@@ -1623,11 +1600,11 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     comparsion_hh_growth    = "{:,.1f}%".format(comparsion_hh_growth)
 
     #each row represents a row of data for overview table
-    row1 = [''          , 'Area',             '2010 Census',            current_estimate_period,                                      'Annual % Change']
-    row2 = ['Population', neighborhood,        _2010_hood_pop,          current_hood_pop ,                                 hood_pop_growth ]
-    row3 = [''          , comparison_area,     _2010_comparison_pop,    current_comparison_pop,                       comparsion_pop_growth]
-    row4 = ['Households', neighborhood,        _2010_hood_hh,           current_hood_hh,                                     hood_hh_growth]
-    row5 = [''          , comparison_area,     _2010_comparison_hh,     current_comparison_hh,                        comparsion_hh_growth ]
+    row1 = [''          , 'Area',             '2010 Census',                                                    current_estimate_period,                                                        'Annual % Change']
+    row2 = ['Population', neighborhood,        "{:,.0f}".format(int(_2010_hood_pop)),                             "{:,.0f}".format(int(current_hood_pop)) ,                                      hood_pop_growth ]
+    row3 = [''          , comparison_area,    "{:,.0f}".format(int(_2010_comparison_pop)),                        "{:,.0f}".format(int(current_comparison_pop)),                            comparsion_pop_growth]
+    row4 = ['Households', neighborhood,        "{:,.0f}".format(int(_2010_hood_hh)),                              "{:,.0f}".format(int(current_hood_hh)),                                     hood_hh_growth]
+    row5 = [''          , comparison_area,    "{:,.0f}".format(int(_2010_comparison_hh)),                         "{:,.0f}".format(int(current_comparison_hh)),                                                     comparsion_hh_growth ]
     
     if neighborhood_level != 'custom': #Don't include household rows for custom neighborhoods
         return( 
@@ -2169,6 +2146,11 @@ def GetData():
     global neighborhood_median_age, comparison_median_age
     global neighborhood_average_hh_size,comparison_average_hh_size
     global neighborhood_median_hh_inc,comparison_median_hh_inc
+    global _2010_hood_pop,  _2010_hood_hh
+    global _2010_comparison_pop, _2010_comparison_hh
+    global current_hood_pop, current_hood_hh
+    global current_comparison_pop, current_comparison_hh
+
     print('Getting Data for ' + neighborhood)
 
     #Start by getting our distributions for our graphs
@@ -2203,7 +2185,7 @@ def GetData():
     time.sleep(sleep_time)
     
     #Now grab single values for our language
-    print('Getting median values for hood')
+    print('Getting single values for hood')
     neighborhood_values                                 = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood',field = ['B25077_001E','B25035_001E','B01002_001E','B19013_001E'],operator = c.acs5,aggregation_method = 'mean')
     neighborhood_median_home_value                      = neighborhood_values[0]
     neighborhood_median_year_built                      = neighborhood_values[1]
@@ -2237,7 +2219,7 @@ def GetData():
     comparison_number_units_data                      = GetNumberUnitsData(      geographic_level  = comparison_level,   hood_or_comparison_area = 'comparison area')    
     time.sleep(sleep_time)
     
-    print('Getting median values for comparison area')
+    print('Getting single values for comparison area')
     #Now grab single values for our language
     
     comparison_values                                 = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area = 'comparison area',field = ['B25077_001E','B25035_001E','B01002_001E','B19013_001E'],operator = c.acs5,aggregation_method = 'mean')
@@ -2256,8 +2238,23 @@ def GetData():
     walk_score_data                                   = GetWalkScore(            lat = latitude, lon = longitude                                                    )
 
     #Overview Table Data
-    overview_table_data                               = GetOverviewTable(hood_geographic_level = neighborhood_level ,comparison_geographic_level = comparison_level)
-    nyc_community_district                            = DetermineNYCCommunityDistrict(lat = latitude, lon = longitude )
+    total_pop_field               = 'P001001'
+    total_households_field        = 'H003002'
+
+    _2010_hood_pop          = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = [total_pop_field],        operator = c.sf1, aggregation_method = 'total')[0]
+    _2010_hood_hh           = GetCensusValue(geographic_level = neighborhood_level, hood_or_comparison_area = 'hood', field = [total_households_field], operator = c.sf1, aggregation_method = 'total')[0]
+
+    _2010_comparison_pop    = GetCensusValue(geographic_level = comparison_level,   hood_or_comparison_area = 'comparison area',  field = [total_pop_field],        operator = c.sf1, aggregation_method = 'total')[0]
+    _2010_comparison_hh     = GetCensusValue(geographic_level = comparison_level, hood_or_comparison_area =  'comparison area', field = [total_households_field], operator = c.sf1, aggregation_method = 'total')[0]
+    
+    current_hood_pop        = GetCurrentPopulation(geographic_level = neighborhood_level, hood_or_comparison_area =  'hood',)
+    current_hood_hh         = GetCurrentHHTotal(geographic_level = neighborhood_level, hood_or_comparison_area =  'hood',)
+    
+    current_comparison_pop  = GetCurrentPopulation(geographic_level = comparison_level, hood_or_comparison_area =  'comparison area',)
+    current_comparison_hh   = GetCurrentHHTotal(geographic_level = comparison_level, hood_or_comparison_area =   'comparison area',)
+    
+    overview_table_data     = GetOverviewTable(hood_geographic_level = neighborhood_level ,comparison_geographic_level = comparison_level)
+    nyc_community_district  = DetermineNYCCommunityDistrict(lat = latitude, lon = longitude )
     
 #####################################################Graph Related Functions####################################
 def SetGraphFormatVariables():
@@ -3176,7 +3173,20 @@ def TrainLanguage():
 
 def OutlookLanguage():
     print('Creating Outlook Langauge')
-    pop_growth_description = '[negative/modest/moderate/strong/extreme]'
+    hood_pop_growth_float = float(hood_pop_growth.replace('%','')) 
+
+    if hood_pop_growth_float < 0:
+        pop_growth_description = 'negative'
+    elif  hood_pop_growth_float == 0.0:
+        pop_growth_description = 'stagnant'
+    elif  hood_pop_growth_float > 0 and hood_pop_growth_float < 0.5 :
+        pop_growth_description = 'modest'
+    elif  hood_pop_growth_float >= 0.5 and hood_pop_growth_float < 1.5 :
+        pop_growth_description = 'moderate'
+    elif  hood_pop_growth_float >= 1.5:
+        pop_growth_description = 'strong'
+    else:
+        assert False
 
     outlook_language = (neighborhood + 
                         ' is a '     + 
