@@ -3396,7 +3396,7 @@ def OverviewLanguage():
 
     
     #Section 4: Put together our 3 sections and return it
-    overview_language = [subject_property_location_language, CBSA_overview_language, wikipeida_summary, wikipeida_economy_summary, covid_context_pargaraph, economic_overview_paragraph]
+    overview_language = [CBSA_overview_language, wikipeida_summary, wikipeida_economy_summary, covid_context_pargaraph, economic_overview_paragraph]
     return(overview_language)
 
 def CountyEmploymentBreakdownLanguage(county_industry_breakdown):
