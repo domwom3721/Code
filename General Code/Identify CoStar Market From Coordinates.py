@@ -103,17 +103,23 @@ def FindCoStarMarket(msa_or_div_code, sector):
         return(market_name)
 
 #Declare the sector and coordinates
-sector               = 'Office'
-lat, lon             = 40.743864357763115, -74.0310994566193
+sector               = 'Multifamily'
+lat, lon             = 41.9304781821789, -87.66823676083918
 property_coordinates = Point(lon, lat) #lon, lat
 
 msa_div_code         = FindMetroDivCode(point=property_coordinates) 
 msa_code             = FindMSACode(point=property_coordinates) 
 county_fips_code     = FindCountyFips(point=property_coordinates) 
 
+
 #If we found a msa division code, use that,otherwise use msa code
 if msa_div_code != None:
     costar_market = FindCoStarMarket(msa_or_div_code=msa_div_code, sector = sector)
+    
+    #Sometimes they use the MSA instead of the division like Chicago for examplee
+    if costar_market == None:
+        costar_market = FindCoStarMarket(msa_or_div_code=msa_code, sector = sector)
+
 
 elif msa_div_code == None:
     costar_market = FindCoStarMarket(msa_or_div_code=msa_code, sector = sector)
