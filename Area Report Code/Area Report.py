@@ -636,9 +636,9 @@ def FindAirport():
 
         for count,airport in enumerate(airport_info_list):
             if count < len(airport_info_list) -1 :
-                airport_sentence = airport_sentence + (airport['name'].title()) + ' ('  + (airport['type'].title())   + '), ' 
+                airport_sentence = airport_sentence + (airport['name'].title())  + ', ' 
             else:
-                airport_sentence = airport_sentence + 'and ' + (airport['name'].title()) + ' ('  + (airport['type'].title())   + ').' 
+                airport_sentence = airport_sentence + 'and ' + (airport['name'].title()) + '.' 
 
         return(airport_sentence)
     except Exception as e:
