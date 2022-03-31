@@ -3199,7 +3199,7 @@ def OutlookLanguage():
                         ' with limited/access to interstate highways, public transportation, a diverse housing stock, recreational amenities, and businesses for everyday use. ' +
                         
                         #Growth sentance
-                        'Given the lack of access to/Despite access to/ these amenities,' + neighborhood + ' has experienced ' +
+                        neighborhood + ' has experienced ' +
                         pop_growth_description +
                         ' population growth over the past decade, a trend that is expected to continue in the near-term.'
                         
