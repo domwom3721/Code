@@ -4435,7 +4435,7 @@ def HousingLanguage():
                                 'In '                                                                                                            +
                                 county                                                                                                           +
                                 ', Realtor.com data points to '                                                                                  +
-                                "{growth_description}".format(growth_description = "continued " if  yoy_county_mlp_growth >= 0  else "negative") +                                           
+                                "{growth_description}".format(growth_description = "continued" if  yoy_county_mlp_growth >= 0  else "negative") +                                           
                                 ' growth'                                                                                                        +
                                 ' in values. '                                                                                                   + 
                                 
