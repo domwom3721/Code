@@ -2345,6 +2345,10 @@ def CreateMLPWithGrowthGraph(county_data_frame,msa_data_frame,national_data_fram
     print("Creating MLP graph")
     fig = make_subplots(specs=[[{"secondary_y": True}, {"secondary_y": False}]],rows=1, cols=2,subplot_titles=("Median Home List Price", "Annualized MLP Growth"),horizontal_spacing = horizontal_spacing)
 
+    #If we are missing Metro and County housing data, don't bother making this graph
+    if  (isinstance(county_data_frame, pd.DataFrame) == False) and  (isinstance(msa_data_frame, pd.DataFrame) == False):
+        return()
+    
     #Add county MLP
     if  (isinstance(county_data_frame, pd.DataFrame) == True):
         fig.add_trace(
@@ -5207,7 +5211,7 @@ def GetMap():
             browser.quit()
         except:
             pass
- 
+
 def AddMap(document):
     #Add image of map if we already have one
     if os.path.exists(os.path.join(county_folder_map, 'map.png')):
@@ -5318,7 +5322,7 @@ def OverviewSection(document):
         AddTable(document = document, data_for_table = data_for_table )
     except Exception as e:
         print(e,'problem adding table')
-           
+
 def EmploymentSection(document):
     print('Writing Employment Section')
     AddHeading(document = document, title = 'Labor Market Conditions', heading_level = 2)
@@ -5389,9 +5393,10 @@ def InfrastructureSection(document):
 
 def HousingSection(document):
     print('Writing Housing Section')
-    AddHeading(          document = document, title = 'Housing', heading_level = 2)
-    AddDocumentParagraph(document = document, language_variable = housing_language)
-    AddDocumentPicture(  document = document, image_path = os.path.join(county_folder,'mlp.png'), citation = 'Realtor.com')
+    if os.path.exists(os.path.join(county_folder,'mlp.png')):
+        AddHeading(          document = document, title = 'Housing', heading_level = 2)
+        AddDocumentParagraph(document = document, language_variable = housing_language)
+        AddDocumentPicture(  document = document, image_path = os.path.join(county_folder,'mlp.png'), citation = 'Realtor.com')
         
 def OutlookSection(document):
     print('Writing Outlook Section')
