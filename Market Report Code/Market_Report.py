@@ -38,6 +38,8 @@ map_location                   = os.path.join(project_location,'Data','Market Re
 general_data_location          = os.path.join(project_location,'Data','General Data')                                                         #Folder with data for all report types
 costar_data_location           = os.path.join(project_location,'Data','Market Reports Data','CoStar Data')                                    #Folder with clean CoStar CSV files
 costar_writeup_location        = os.path.join(project_location,'Data','Market Reports Data','CoStar Writeups')                                #Folder with html files downloaded from CoStar.com
+costar_construction_location   = os.path.join(project_location,'Data','Market Reports Data','CoStar Data', 'Construction Data')                                
+costar_transaction_location    = os.path.join(project_location,'Data','Market Reports Data','CoStar Data', 'Transaction Data' )                                
 
 #Define functions
 
@@ -71,7 +73,7 @@ def user_selects_sector():
     global df_list, df_slices_list, sector_name_list, selected_sector
     global df_multifamily, df_office, df_retail, df_industrial
     global df_multifamily_slices, df_office_slices, df_retail_slices, df_industrial_slices
-    global df_transactions, df_construction
+
 
     #If we have any custom data, read it in as a dataframe so we can append it to our primary data
     custom_data_file_location      = os.path.join(costar_data_location, 'Clean Data', 'Clean Custom CoStar Data.xlsx')
@@ -122,18 +124,6 @@ def user_selects_sector():
     ws.mainloop()
 
     #Everything below this comment in this function is after the user has selected the sector and tkinter loop has ended
-
-    #Import transactions data as dataframe that we use regardless of sector selected
-    df_transactions                 = pd.read_excel(os.path.join(costar_data_location, 'Transaction Data', 'transaction.xlsx')) 
-    df_transactions['PropertyType'] = df_transactions['PropertyType'].str.replace('Multi-Family','Multifamily')
-    df_transactions['Price/Unit']   = df_transactions['Last Sale Price']/df_transactions['Number Of Units']
-
-    #Import construction data as dataframe that we use regardless of sector selected
-    df_construction                 = pd.read_csv(os.path.join(costar_data_location, 'Construction Data', 'constructiondata.csv')) 
-    df_construction['PropertyType'] = df_construction['PropertyType'].str.replace('Multi-Family','Multifamily')
-    df_construction['PropertyType'] = df_construction['PropertyType'].str.replace('Retail (Strip Center)','Retail',regex=False)
-    df_construction                 = df_construction.rename(columns={"Number Of Units": "Number of Units"})
-
     if selected_sector == 'All':
         #Import cleaned data from 1.) Clean Costar Data.py
         df_multifamily                 = pd.read_csv(os.path.join(costar_data_location, 'Clean Data', 'mf_clean.csv')) 
@@ -262,7 +252,7 @@ def user_selects_sector():
         df_list                       = [df_industrial]
         df_slices_list                = [df_industrial_slices]
         sector_name_list              = ['Industrial']
-    
+
 #Define functions used to handle the clean CoStar data and help write our repots
 def CreateMarketDictionary(df): 
     #Creates a dictionary where each key is a market and the items are lists of its submarkets
@@ -363,7 +353,7 @@ def UpdateSalesforceMarketList(markets_list, submarkets_list, sector_list, secto
     else:
         dropbox_document_names.append(report_file_title)
         dropbox_statuses.append('Draft')
-    
+
 def CreateOutputDirectory():
     #Creates a folder where we put the report document inside of and returns the file path
     sector_folder        = os.path.join(output_location,sector)
@@ -416,6 +406,42 @@ def CreateWriteupDirectory():
             os.mkdir(folder) #Create new folder for market or submarket
     
     return(writeup_directory)
+
+def CreateConstructionDirectory():
+    #Creates a folder where we can save the CoStar HTML file from the website in order to scrape the writeups from CoStar analysts
+    sector_folder                   = os.path.join(costar_construction_location, sector)
+    state_folder                    = os.path.join(costar_construction_location, sector, state)
+    market_folder                   = os.path.join(state_folder, primary_market_name_for_file)
+
+    if market == primary_market:
+        construction_directory           = market_folder               
+    else:
+        construction_directory           = os.path.join(market_folder, str(market_title))
+    
+    #Check if folder already exists, and if it doesnt, make it
+    for folder in [sector_folder,state_folder, market_folder, construction_directory]:
+        if os.path.exists(folder) == False:
+            os.mkdir(folder) #Create new folder for market or submarket
+    
+    return(construction_directory)
+
+def CreateTransactionDirectory():
+    #Creates a folder where we can save the CoStar HTML file from the website in order to scrape the writeups from CoStar analysts
+    sector_folder                   = os.path.join(costar_transaction_location, sector)
+    state_folder                    = os.path.join(costar_transaction_location, sector, state)
+    market_folder                   = os.path.join(state_folder, primary_market_name_for_file)
+
+    if market == primary_market:
+        transaction_directory           = market_folder               
+    else:
+        transaction_directory           = os.path.join(market_folder, str(market_title))
+    
+    #Check if folder already exists, and if it doesnt, make it
+    for folder in [sector_folder,state_folder, market_folder, transaction_directory]:
+        if os.path.exists(folder) == False:
+            os.mkdir(folder) #Create new folder for market or submarket
+    
+    return(transaction_directory)
 
 def CreateReportFilePath():
     global report_file_title
@@ -675,10 +701,11 @@ def ConstructionSection():
     AddHeading(document,'Construction & Future Supply',2)
 
     AddDocumentParagraph(document = document, language_variable = construction_languge)
-
-    if len(df_submarkets_construction) > 0:
-        AddTableTitle(document = document,title = 'Current and Recently Completed Construction Projects')
-        AddConstructionTable(document = document, market_data_frame = df_submarkets_construction, col_width = 1.2, sector = sector)
+    
+    if 'df_submarkets_construction' in globals():
+        if len(df_submarkets_construction) > 0:
+            AddTableTitle(document = document,title = 'Current and Recently Completed Construction Projects')
+            AddConstructionTable(document = document, market_data_frame = df_submarkets_construction, col_width = 1.2, sector = sector)
 
     #Insert construction graph
     AddDocumentPicture(document=document, image_path = os.path.join(output_directory, 'construction_volume.png'))
@@ -697,9 +724,10 @@ def CapitalMarketsSection():
     if len(sale_language) == 2:
         AddDocumentParagraph(document = document, language_variable = [sale_language[1]])
     
-    if len(df_submarkets_transactions) > 0:
-        AddTableTitle(document = document,title = 'Recent Transactions')
-        AddTransactionTable(document = document, market_data_frame = df_submarkets_transactions, col_width = 1.2, sector=sector)
+    if 'df_submarkets_transactions' in globals():
+        if len(df_submarkets_transactions) > 0:
+            AddTableTitle(document = document,title = 'Recent Transactions')
+            AddTransactionTable(document = document, market_data_frame = df_submarkets_transactions, col_width = 1.2, sector=sector)
 
     #Asset Value Graph
     AddDocumentPicture(document = document, image_path=os.path.join(output_directory,'asset_values.png'))
@@ -765,7 +793,7 @@ def GetLanguage(writeup_directory):
     except Exception as e:
         print(e,'problem creating outlook langauge')
         outlook_language     = ['']
-    
+
 def GetOverviewTable():
     #Create Data for overview table
     global market,primary_market,market_title
@@ -999,15 +1027,18 @@ def CreateMarketReport():
     global latest_quarter, document, data_for_overview_table, data_for_vacancy_table, data_for_rent_table, report_path
     global primary_market, market, primary_market_title
     global df_submarkets_transactions, df_submarkets_construction
+    global df_transactions, df_construction
     
     #remove slashes from market names so we can save as folder name
     market_clean        = CleanMarketName(market)
     market_title        = market_clean.replace(primary_market + ' -','').strip()
     
     #Create output, map, and writeup folders for the market of submarket
-    output_directory    = CreateOutputDirectory()
-    map_directory       = CreateMapDirectory()
-    writeup_directory   = CreateWriteupDirectory()
+    output_directory       = CreateOutputDirectory()
+    map_directory          = CreateMapDirectory()
+    writeup_directory      = CreateWriteupDirectory()
+    construction_directory = CreateConstructionDirectory()
+    transaction_directory  = CreateTransactionDirectory()
 
     #Create a dataframe that only has rows for the market or submarket itself
     df_market_cut       = df[df['Geography Name'] == market].copy()                  #df for the market or submarket only
@@ -1057,46 +1088,90 @@ def CreateMarketReport():
             primary_market_title    = primary_market.replace(' - ' + state,'').strip()
         
 
-        #Create transactions dataframe
-        if market == primary_market: #market
-            df_submarkets_transactions = df_transactions[   (df_transactions['Market Name'] == primary_market_title)     &
-                                                            (df_transactions['PropertyType'] == sector)].copy() 
-            #Keep the 20 largest transactions for markets
-            df_submarkets_transactions = df_submarkets_transactions.sort_values(by=['Last Sale Price'],ascending=False )
 
-        elif market != primary_market: #submarket
-            if sector == 'Multifamily':
-                df_submarkets_transactions = df_transactions[(df_transactions['Submarket Cluster'] == market_title) &
-                                                            (df_transactions['Market Name'] == primary_market_title)     &
-                                                            (df_transactions['PropertyType'] == sector)].copy() 
-            else:
-                df_submarkets_transactions = df_transactions[(df_transactions['Submarket Name'] == market_title) &
-                                                            (df_transactions['Market Name'] == primary_market_title)     &
-                                                            (df_transactions['PropertyType'] == sector)].copy() 
 
+        #Import transactions data as dataframe that we use regardless of sector selected
+        i = 0
+        for file in os.listdir(transaction_directory):
+            #Skip the non excel files
+            if file.endswith('.csv') == False and  file.endswith('.xlsx') == False:
+                continue
+
+            #The first file is our master df we append each new file to
+            if i == 0:
+                df_transactions                 = pd.read_excel(os.path.join(transaction_directory, file)) 
+            elif i > 0:
+                df_transactions_alt             = pd.read_excel(os.path.join(transaction_directory, file)) 
+                df_transactions                 = df_transactions.append(df_transactions_alt)
+            i += 1    
         
-        df_submarkets_transactions                   = df_submarkets_transactions.sort_values(by=['Last Sale Price'], ascending=False )
-        df_submarkets_transactions                   = df_submarkets_transactions.iloc[0:5]
+        if i == 0:
+            df_transactions                 = None
+        else:
+            df_transactions['PropertyType'] = df_transactions['PropertyType'].str.replace('Multi-Family','Multifamily')
+            df_transactions['Price/Unit']   = df_transactions['Last Sale Price']/df_transactions['Number Of Units']
+
+            #Create transactions dataframe
+            if market == primary_market: #market
+                df_submarkets_transactions = df_transactions[   (df_transactions['Market Name'] == primary_market_title)     &
+                                                                (df_transactions['PropertyType'] == sector)].copy() 
+                #Keep the 20 largest transactions for markets
+                df_submarkets_transactions = df_submarkets_transactions.sort_values(by=['Last Sale Price'],ascending=False )
+
+            elif market != primary_market: #submarket
+                if sector == 'Multifamily':
+                    df_submarkets_transactions = df_transactions[(df_transactions['Submarket Cluster'] == market_title) &
+                                                                (df_transactions['Market Name'] == primary_market_title)     &
+                                                                (df_transactions['PropertyType'] == sector)].copy() 
+                else:
+                    df_submarkets_transactions = df_transactions[(df_transactions['Submarket Name'] == market_title) &
+                                                                (df_transactions['Market Name'] == primary_market_title)     &
+                                                                (df_transactions['PropertyType'] == sector)].copy() 
+
+            
+            df_submarkets_transactions                   = df_submarkets_transactions.sort_values(by=['Last Sale Price'], ascending=False )
+            df_submarkets_transactions                   = df_submarkets_transactions.iloc[0:5]
+
+        #Import construction data as dataframe that we use regardless of sector selected
+        i = 0
+        for file in os.listdir(construction_directory ):
+            #Skip the non excel files
+            if file.endswith('.csv') == False and  file.endswith('.xlsx') == False:
+                continue
+
+            #The first file is our master df we append each new file to
+            if i == 0:
+                df_construction                 = pd.read_excel(os.path.join(construction_directory , file)) 
+            elif i > 0:
+                df_construction_alt             = pd.read_excel(os.path.join(construction_directory , file)) 
+                df_construction                 = df_construction.append(df_transactions_alt)
+            i += 1    
+        
+        #if there are no construction data files in the folder, just assign the variable None
+        if i == 0:
+            df_construction                 = None
+        else:        
+            df_construction['PropertyType'] = df_construction['PropertyType'].str.replace('Multi-Family','Multifamily')
+            df_construction['PropertyType'] = df_construction['PropertyType'].str.replace('Retail (Strip Center)','Retail',regex=False)
+            df_construction                 = df_construction.rename(columns={"Number Of Units": "Number of Units"})
+
+            #Create construction dataframe
+            if market == primary_market: #market
+                df_submarkets_construction = df_construction[   (df_construction['Market Name'] == primary_market_title)     &
+                                                                (df_construction['PropertyType'] == sector)].copy() 
 
 
-        #Create construction dataframe
-        if market == primary_market: #market
-            df_submarkets_construction = df_construction[   (df_construction['Market Name'] == primary_market_title)     &
-                                                            (df_construction['PropertyType'] == sector)].copy() 
+            elif market != primary_market: #submarket
+                if sector == 'Multifamily':
+                    df_submarkets_construction = df_construction[(df_construction['Submarket Cluster'] == market_title) &
+                                                                (df_construction['Market Name'] == primary_market_title)     &
+                                                                (df_construction['PropertyType'] == sector)].copy() 
+                else:
+                    df_submarkets_construction = df_construction[(df_construction['Submarket Name'] == market_title) &
+                                                                (df_construction['Market Name'] == primary_market_title)     &
+                                                                (df_construction['PropertyType'] == sector)].copy() 
 
-
-        elif market != primary_market: #submarket
-            if sector == 'Multifamily':
-                df_submarkets_construction = df_construction[(df_construction['Submarket Cluster'] == market_title) &
-                                                            (df_construction['Market Name'] == primary_market_title)     &
-                                                            (df_construction['PropertyType'] == sector)].copy() 
-            else:
-                df_submarkets_construction = df_construction[(df_construction['Submarket Name'] == market_title) &
-                                                            (df_construction['Market Name'] == primary_market_title)     &
-                                                            (df_construction['PropertyType'] == sector)].copy() 
-
-        df_submarkets_construction                   = df_submarkets_construction.sort_values(by=['RBA'], ascending=False )
-        # df_submarkets_construction                   = df_submarkets_construction.iloc[0:5]
+            df_submarkets_construction                   = df_submarkets_construction.sort_values(by=['RBA'], ascending=False )
 
         
         #This function calls all the graph functions defined in the Graph_Functions.py file
