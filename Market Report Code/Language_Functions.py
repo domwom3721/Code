@@ -175,6 +175,7 @@ def EditCoStarWriteUp(paragraph_list):
         text = text.replace(' 4 Star ',' Class B ')
         text = text.replace('4 Star','Class B')
         text = text.replace('4-Star','Class B')
+        text = text.replace('4-star','Class B')
         text = text.replace(' 5 Star ',' Class A ')
         text = text.replace('5 Star','Class A')
         text = text.replace('5-Star','Class A')
