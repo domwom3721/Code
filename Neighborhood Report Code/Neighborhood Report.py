@@ -3320,7 +3320,7 @@ def HousingValueLanguage():
             most_common_values = (
                             'In '                                                  + 
                             neighborhood                                           + 
-                            ', the most common home value is between '             +
+                            ', the most common home value is '                     + 
                             hood_largest_value_category                            +
                             ', compared to '                                       +
                             comp_largest_value_category                            +
@@ -3334,7 +3334,7 @@ def HousingValueLanguage():
                             neighborhood                                           + 
                             ' and '                                                + 
                             comparison_area                                        +
-                            ', the most common home value is between '             +
+                            ', the most common home value is '                     +
                             hood_largest_value_category                            +
                                 '.')
         
