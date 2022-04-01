@@ -3499,16 +3499,16 @@ def PopLanguage():
             population_description = ( 'As of the 2010 Census, '                                 +   
                                     neighborhood                                                 +
                                     ' had a population of '                                      +
-                                    str(_2010_hood_pop)                                               +
+                                      "{:,.0f}".format(int(_2010_hood_pop))                      +
                                         ' people and '                                           +
-                                    str( _2010_hood_hh)                                               +
+                                     "{:,.0f}".format(int(_2010_hood_hh))                        +
                                         ' households. '                                          +
                                         'Preliminary 2020 Census data shows its population has ' +
                                         hood_pop_growth_or_contract                              +
                                         ' by '                                                   +
                                     "{:,.1f}%".format(hood_pop_growth)                                            +
                                         ' per year to '                                          +
-                                        "{:,.1f}".format(current_hood_pop)                       +
+                                        "{:,.0f}".format(current_hood_pop)                       +
                                         ' residents.'
                                         )
         #We don't generate this langauge for custom areas becuase we don't have all the needed info yet
