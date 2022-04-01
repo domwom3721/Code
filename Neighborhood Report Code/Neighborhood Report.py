@@ -1594,17 +1594,13 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     comparsion_pop_growth        =  ((int(current_comparison_pop)/int(_2010_comparison_pop) - 1) * 100)/pop_growth_period
     comparsion_hh_growth         =  ((int(current_comparison_hh)/ int(_2010_comparison_hh)   - 1) * 100)/hh_growth_period
 
-    #Format growth variables
-    hood_pop_growth         = "{:,.1f}%".format(hood_pop_growth)
-    comparsion_pop_growth   = "{:,.1f}%".format(comparsion_pop_growth)
-    comparsion_hh_growth    = "{:,.1f}%".format(comparsion_hh_growth)
 
     #each row represents a row of data for overview table
     row1 = [''          , 'Area',             '2010 Census',                                                    current_estimate_period,                                                        'Annual % Change']
-    row2 = ['Population', neighborhood,        "{:,.0f}".format(int(_2010_hood_pop)),                             "{:,.0f}".format(int(current_hood_pop)) ,                                      hood_pop_growth ]
-    row3 = [''          , comparison_area,    "{:,.0f}".format(int(_2010_comparison_pop)),                        "{:,.0f}".format(int(current_comparison_pop)),                            comparsion_pop_growth]
+    row2 = ['Population', neighborhood,        "{:,.0f}".format(int(_2010_hood_pop)),                             "{:,.0f}".format(int(current_hood_pop)) ,                                       "{:,.1f}%".format(hood_pop_growth) ]
+    row3 = [''          , comparison_area,    "{:,.0f}".format(int(_2010_comparison_pop)),                        "{:,.0f}".format(int(current_comparison_pop)),                            "{:,.1f}%".format(comparsion_pop_growth)]
     row4 = ['Households', neighborhood,        "{:,.0f}".format(int(_2010_hood_hh)),                              "{:,.0f}".format(int(current_hood_hh)),                                     hood_hh_growth]
-    row5 = [''          , comparison_area,    "{:,.0f}".format(int(_2010_comparison_hh)),                         "{:,.0f}".format(int(current_comparison_hh)),                                                     comparsion_hh_growth ]
+    row5 = [''          , comparison_area,    "{:,.0f}".format(int(_2010_comparison_hh)),                         "{:,.0f}".format(int(current_comparison_hh)),                             "{:,.1f}%".format(comparsion_hh_growth) ]
     
     if neighborhood_level != 'custom': #Don't include household rows for custom neighborhoods
         return( 
@@ -3173,17 +3169,16 @@ def TrainLanguage():
 
 def OutlookLanguage():
     print('Creating Outlook Langauge')
-    hood_pop_growth_float = float(hood_pop_growth.replace('%','')) 
 
-    if hood_pop_growth_float < 0:
+    if hood_pop_growth < 0:
         pop_growth_description = 'negative'
-    elif  hood_pop_growth_float == 0.0:
+    elif  hood_pop_growth == 0.0:
         pop_growth_description = 'stagnant'
-    elif  hood_pop_growth_float > 0 and hood_pop_growth_float < 0.5 :
+    elif  hood_pop_growth > 0 and hood_pop_growth < 0.5 :
         pop_growth_description = 'modest'
-    elif  hood_pop_growth_float >= 0.5 and hood_pop_growth_float < 1.5 :
+    elif  hood_pop_growth >= 0.5 and hood_pop_growth < 1.5 :
         pop_growth_description = 'moderate'
-    elif  hood_pop_growth_float >= 1.5:
+    elif  hood_pop_growth >= 1.5:
         pop_growth_description = 'strong'
     else:
         assert False
@@ -3491,30 +3486,29 @@ def PopLanguage():
 
     try:    
         disclaimer_language = ("""The following demographic profile, created with data from the U.S. Census Bureau, reflects the subject's municipality and market. """)
-        
+            #Format growth variables
 
         if neighborhood_level != 'custom':
             
-            if float(hood_pop_growth.replace('%','')) < 0:
+            if hood_pop_growth < 0:
                 hood_pop_growth_or_contract =  'contracted'  
-            elif float(hood_pop_growth.replace('%','')) >= 0:
+            elif hood_pop_growth >= 0:
                 hood_pop_growth_or_contract =  'grown'  
     
-
 
             population_description = ( 'As of the 2010 Census, '                                 +   
                                     neighborhood                                                 +
                                     ' had a population of '                                      +
-                                        _2010_hood_pop                                           +
+                                    str(_2010_hood_pop)                                               +
                                         ' people and '                                           +
-                                        _2010_hood_hh                                            +
+                                    str( _2010_hood_hh)                                               +
                                         ' households. '                                          +
                                         'Preliminary 2020 Census data shows its population has ' +
                                         hood_pop_growth_or_contract                              +
                                         ' by '                                                   +
-                                        "{:,.1f}".format(hood_pop_growth)                                       +
+                                    "{:,.1f}%".format(hood_pop_growth)                                            +
                                         ' per year to '                                          +
-                                        current_hood_pop                                         +
+                                        "{:,.1f}".format(current_hood_pop)                       +
                                         ' residents.'
                                         )
         #We don't generate this langauge for custom areas becuase we don't have all the needed info yet
