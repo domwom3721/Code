@@ -161,6 +161,7 @@ def EditCoStarWriteUp(paragraph_list):
         text = text.replace(' 4 & 5 Star ',' Class A and B ')
         text = text.replace('4 & 5 Stars','Class A and B')
         text = text.replace(' 4 and 5-star  ',' Class A and B ')   
+        text = text.replace(' 4 and 5-star ',' Class A and B ')   
         text = text.replace(' 4 and 5 Star ',' Class A and B ')
         text = text.replace('4 and 5 Star ',' Class A and B ')
         text = text.replace(' 4 or 5 Star ',' Class A and B ')
@@ -1250,7 +1251,7 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_
     #Add the CoStar Writeup language to our generated langauge
     demand_language = CoStarWriteUp + demand_language
     return(demand_language)
-                                             
+
 #Language for rent section
 def CreateRentLanguage(submarket_data_frame, market_data_frame, natioanl_data_frame, market_title, primary_market, sector, writeup_directory):
 
