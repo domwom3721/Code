@@ -1387,7 +1387,6 @@ def GetNumberUnitsData(geographic_level,hood_or_comparison_area):
         
             owner_occupied_units_raw_data = c.acs5.state_place(fields = owner_occupied_fields_list,state_fips=state_fips,place=place_fips,year=acs_5y_year)[0]
             renter_occupied_units_raw_data = c.acs5.state_place(fields = renter_occupied_fields_list,state_fips=state_fips,place=place_fips,year=acs_5y_year)[0]
-        
         except Exception as e:
             print(e, 'Problem getting number units data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
             return()
@@ -2432,7 +2431,7 @@ def CreateHouseholdNumberUnitsInBuildingHistogram():
     fig = make_subplots(specs=[[{"secondary_y": False}]])
 
     number_units_categories = ['Single Family Homes','Townhomes','Duplexes','3-4 Units','5-9 Units','10-19 Units','20-49 Units','50 >= Units']
-   
+    assert len(number_units_categories) == len(neighborhood_number_units_data)
     #Add Bars with neighborhood distribution
     fig.add_trace(
         go.Bar(
