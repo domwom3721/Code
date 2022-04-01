@@ -3512,7 +3512,7 @@ def PopLanguage():
                                         'Preliminary 2020 Census data shows its population has ' +
                                         hood_pop_growth_or_contract                              +
                                         ' by '                                                   +
-                                        hood_pop_growth                                          +
+                                        "{:,.1f}".format(hood_pop_growth)                                       +
                                         ' per year to '                                          +
                                         current_hood_pop                                         +
                                         ' residents.'
