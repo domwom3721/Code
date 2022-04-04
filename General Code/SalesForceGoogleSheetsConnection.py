@@ -1,5 +1,4 @@
 from io import BytesIO
-from numpy import dtype
 import requests
 import pandas as pd
 import gspread
@@ -19,16 +18,15 @@ county_shapefile_location        = os.path.join(dropbox_root, 'Research', 'Proje
 
 #Open the CoStar Markets export as dataframe
 costar_markets_df                = pd.read_csv(os.path.join(dropbox_root, 'Research', 'Market Analysis', 'Market', 'CoStar Markets.csv'), dtype= {'CBSA Code': object})
-
-#Restrict to our columns of interest
-# costar_markets_df                = costar_markets_df[[ 'Market Research Name', 'Analysis Type', 'CBSA Code', 'Property Type']]
 costar_markets_df['CBSA Code']   = costar_markets_df['CBSA Code'].str[0:5]
 
-def FindMetroDivCode(point):
-    #Open the MSA Division shapefile
-    msa_div_map = shapefile.Reader(msa_divisions_shapefile_location)
-    
+#Open the MSA shapefile    
+msa_map                          = shapefile.Reader(msa_shapefile_location)
 
+#Open the MSA Division shapefile
+msa_div_map                      = shapefile.Reader(msa_divisions_shapefile_location)
+
+def FindMetroDivCode(point):
     #Loop through the MSA div map
     for i in range(len(msa_div_map) ):
         polygon               = Polygon(msa_div_map.shape(i).points)
@@ -38,9 +36,6 @@ def FindMetroDivCode(point):
             return(div_code)
 
 def FindMSACode(point):
-    #Open the MSA shapefile
-    msa_map     = shapefile.Reader(msa_shapefile_location)
-    
     #Loop through the MSA div map
     for i in range(len(msa_map) ):
         polygon               = Polygon(msa_map.shape(i).points)
@@ -136,6 +131,17 @@ def ProcessHoodReports(df):
 
 def ProcessPropetyReports(df):
     df['Zip Code'] = df['Zip Code'].astype(str)
+    
+    df.loc[ (df['State'] == 'NY') & (df['County'] == 'New York'), 'Borough'] = 'Manhattan'
+    df.loc[ (df['State'] == 'NY') & (df['County'] == 'Bronx'),    'Borough'] = 'Bronx'
+    df.loc[ (df['State'] == 'NY') & (df['County'] == 'Kings'), 'Borough'] = 'Kings'
+    df.loc[ (df['State'] == 'NY') & (df['County'] == 'Queens'), 'Borough'] = 'Queens'
+    df.loc[ (df['State'] == 'NY') & (df['County'] == 'Richmond'), 'Borough'] = 'Staten Island'
+
+    
+
+
+
     return(df)
 
 def ProcessJobRecords(df):
@@ -162,7 +168,9 @@ job_records_df_clean      = ProcessJobRecords(job_records_df)
 
 
 #Merge JOB and PROP dfs
-merged_prop_job_df      = pd.merge(job_records_df_clean, property_records_df_clean, on=['Property Number'], how = 'left', ) 
+merged_prop_job_df      = pd.merge(property_records_df_clean, job_records_df_clean, on=['Property Number'], how = 'left', ) 
+assert len(merged_prop_job_df) == len(property_records_df_clean)
+
 
 #Iterate through each row of the merged job x prop df and assign each record a market
 for i in range(len(merged_prop_job_df)):
@@ -193,16 +201,24 @@ for i in range(len(merged_prop_job_df)):
 
 #Merge the market back into the property df
 merged_prop_job_df = merged_prop_job_df.fillna('')
-# merged_prop_job_df = merged_prop_job_df[['Property Number','Market']]
-# property_records_df_clean = property_records_df_clean.drop(columns='Market')
-# property_records_df_clean = pd.merge(property_records_df_clean, merged_prop_job_df, on=['Property Number'], how = 'left', ) 
-# property_records_df_clean = property_records_df_clean.fillna('')
-	
+merged_prop_job_df = merged_prop_job_df[['Property Number','Market']]
+property_records_df_clean = property_records_df_clean.drop(columns='Market')
+property_records_df_clean = pd.merge(property_records_df_clean, merged_prop_job_df, on=['Property Number'], how = 'left', ) 
+property_records_df_clean = property_records_df_clean.fillna('')
+
+#Re-order columns
+column_names = ['Property Number', 'City',	'State',	'Zip Code',	'Market',	'Neighborhood/District',	'Borough',	'County', 'FIPS',	'CBSA']
+property_records_df_clean = property_records_df_clean.reindex(columns=column_names)
 
 
-# #Upload our cleaned dataframes back to the google sheets
+#Upload our cleaned dataframes back to the google sheets
+d2g.upload(df = property_records_df_clean, gfile = spreadsheet_key, wks_name = 'PROP TEST', row_names=False,)
+
+
+
+
+
 # d2g.upload(df = area_reports_df_clean, gfile = spreadsheet_key, wks_name = 'Area Reports TEST', row_names=False)
 # d2g.upload(df = market_reports_df_clean, gfile = spreadsheet_key, wks_name = 'Market Reports TEST', row_names=False)
 # d2g.upload(df = hood_reports_df_clean, gfile = spreadsheet_key, wks_name = 'Hood Reports TEST', row_names=False)
-# d2g.upload(df = property_records_df_clean, gfile = spreadsheet_key, wks_name = 'PROP TEST', row_names=False,)
-d2g.upload(df = merged_prop_job_df, gfile = spreadsheet_key, wks_name = 'JOB PROP MERGE TEST', row_names=False,)
+# d2g.upload(df = merged_prop_job_df, gfile = spreadsheet_key, wks_name = 'JOB PROP MERGE TEST', row_names=False,)
