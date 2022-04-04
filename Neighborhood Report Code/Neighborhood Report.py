@@ -3150,7 +3150,7 @@ def BusLanguage():
     if bus_lang != None:
         return(bus_lang)
     else:
-        return( neighborhood + ' does not have public bus service, but service is accessible in nearby ________.' ) 
+        return( neighborhood + ' does not have public bus service.' ) 
                 
 def TrainLanguage():
     print('Creating train Langauge')
