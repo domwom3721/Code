@@ -682,9 +682,9 @@ def AddTransactionTable(document, col_width, market_data_frame, sector):
 
     #Start by declaring a list of variables we want to display
     if sector == 'Multifamily':
-        variables_of_interest = ['Property Address','City', 'Number Of Units', 'Building Class', 'Style', 'Year Built', 'Last Sale Date', 'Price/Unit']
+        variables_of_interest = ['Property Address', 'Number Of Units', 'Building Class', 'Style', 'Year Built', 'Last Sale Date', 'Price/Unit']
     else:
-        variables_of_interest = ['Property Address','City', 'RBA', 'Building Class', 'Year Built', 'Last Sale Date', 'Last Sale Price']
+        variables_of_interest = ['Property Address', 'RBA', 'Building Class', 'Year Built', 'Last Sale Date', 'Last Sale Price']
 
     for var in variables_of_interest:
         market_data_frame[var] = market_data_frame[var].fillna('NA')
@@ -775,9 +775,9 @@ def AddConstructionTable(document, col_width, market_data_frame, sector):
 
     #Start by declaring a list of variables we want to display
     if sector == 'Multifamily':
-        variables_of_interest = ['Property Address', 'City', 'Property Name','Building Status', 'Year Built', 'Building Class', 'Number of Units' ]
+        variables_of_interest = ['Property Address', 'Property Name','Building Status', 'Year Built', 'Building Class', 'Number of Units' ]
     else:
-        variables_of_interest = ['Property Address', 'City', 'Property Name', 'Building Status', 'Year Built', 'Building Class', 'RBA' ]
+        variables_of_interest = ['Property Address', 'Property Name', 'Building Status', 'Year Built', 'Building Class', 'RBA' ]
 
     for var in variables_of_interest:
         market_data_frame[var] = market_data_frame[var].fillna('NA')

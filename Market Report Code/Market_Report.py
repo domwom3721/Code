@@ -321,12 +321,15 @@ def AppendAllExcelFilesInDirectory(directory):
         return(None)
 
 def CleanTransactionData(df_transactions):
-     #Clean Transaction dataframe
+    #Clean Transaction dataframe
     if isinstance(df_transactions,pd.DataFrame) == False:
         return(None)
     
     df_transactions['PropertyType'] = df_transactions['PropertyType'].str.replace('Multi-Family','Multifamily')
     df_transactions['Price/Unit']   = df_transactions['Last Sale Price']/df_transactions['Number Of Units']
+    df_transactions['Year Built']   = df_transactions['Year Built'].astype(str)
+    df_transactions['Year Built']   = df_transactions['Year Built'].str[0:4]
+    df_transactions['Property Address']   =  df_transactions['Property Address'] + ', ' + df_transactions['City'] 
 
     #Create transactions dataframe
     if market == primary_market: #market
@@ -349,15 +352,17 @@ def CleanTransactionData(df_transactions):
     df_submarkets_transactions                   = df_submarkets_transactions.sort_values(by=['Last Sale Price'], ascending=False )
     df_submarkets_transactions                   = df_submarkets_transactions.iloc[0:5]
     return(df_submarkets_transactions)
-        
+
 def CleanConstructionData(df_construction):
     #Clean construction dataframe
     if isinstance(df_construction,pd.DataFrame) == False:
         return(None)
     
-    df_construction['PropertyType'] = df_construction['PropertyType'].str.replace('Multi-Family','Multifamily')
-    df_construction['PropertyType'] = df_construction['PropertyType'].str.replace('Retail (Strip Center)','Retail',regex=False)
-    df_construction                 = df_construction.rename(columns={"Number Of Units": "Number of Units"})
+    df_construction['PropertyType']       = df_construction['PropertyType'].str.replace('Multi-Family','Multifamily')
+    df_construction['PropertyType']       = df_construction['PropertyType'].str.replace('Retail (Strip Center)','Retail',regex=False)
+    df_construction                       = df_construction.rename(columns={"Number Of Units": "Number of Units"})
+    df_construction['Property Address']   = df_construction['Property Address'] + ', ' + df_construction['City'] 
+    
 
     #Create construction dataframe
     if market == primary_market: #market
@@ -374,8 +379,17 @@ def CleanConstructionData(df_construction):
             df_submarkets_construction = df_construction[(df_construction['Submarket Name'] == market_title) &
                                                         (df_construction['Market Name'] == primary_market_title)     &
                                                         (df_construction['PropertyType'] == sector)].copy() 
+    #Create a dummy variable for if a buidling exists or not
+    df_submarkets_construction['Under Construction']  = 0
+    df_submarkets_construction.loc[df_submarkets_construction['Building Status']     == 'Under Construction', 'PropertyType'] = 1
 
-    df_submarkets_construction                   = df_submarkets_construction.sort_values(by=['RBA'], ascending=False )
+    if sector == 'Multifamily':
+        sort_var = 'Number of Units'
+    else:
+        sort_var = 'RBA'
+    df_submarkets_construction                   = df_submarkets_construction.sort_values(by=['Under Construction',sort_var], ascending=False, )
+    df_submarkets_construction                   = df_submarkets_construction.iloc[0:5]
+
     return(df_submarkets_construction)
 
 def CreateEmptySalesforceLists():
