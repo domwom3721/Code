@@ -10,7 +10,7 @@ from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK, WD_LINE_SPACING
 from docx.oxml.ns import qn
 from docx.shared import Inches, Pt, RGBColor
-
+from datetime import date, datetime
 
 #Define file pre-paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
@@ -101,7 +101,6 @@ def AddDocumentPicture(document, image_path, citation):
         last_paragraph                              = document.paragraphs[-1] 
         last_paragraph.paragraph_format.space_after = Pt(0)
         last_paragraph.alignment                    = WD_ALIGN_PARAGRAPH.CENTER
-        Citation(document, citation)
 
 def AddTableTitle(document, title):
     table_title_paragraph                               = document.add_paragraph(title)
@@ -117,6 +116,10 @@ def OutlookSection(document):
     print('Writing Outlook Section')
     AddHeading(          document = document, title = 'Conclusion',            heading_level = 2)
 
+def SuggestedParagraphSection(document):
+    print('Writing Suggested Paragraph Section')
+    AddHeading(document = document, title = 'Suggested Paragraph for Appraisal Report',            heading_level = 2)
+
 
 #Set formatting paramaters for reports
 primary_font                  = 'Avenir Next LT Pro Light' 
@@ -126,6 +129,10 @@ bowery_dark_grey              = "#A6B0BF"
 bowery_dark_blue              = "#4160D3"
 bowery_light_blue             = "#B3C3FF"
 bowery_black                  = "#404858"
+
+todays_date                   = date.today()
+current_year                  = todays_date.year
+
 
 
 #Read in our excel file where we store text on rent control regulations
@@ -138,7 +145,7 @@ for i in range(len(rent_control_df)):
     state            = rent_control_df['State'].iloc[i]
     muncipality_name = rent_control_df['Municipality'].iloc[i]
     document_name    = rent_control_df['Document Title'].iloc[i]
-    document_name    = document_name.replace(':',' - ')
+    document_name    = str(current_year) + ' ' + state + ' - ' +  muncipality_name + ' - ' +  'Rent Control_draft'
     document_title   = rent_control_df['Document Title'].iloc[i]
 
     print('Creating Report for: ', muncipality_name + ', ' + state)
@@ -181,7 +188,7 @@ for i in range(len(rent_control_df)):
             AddHeading(document = document, title = section, heading_level = 2)
             AddDocumentParagraph(document = document, language_variable = [language])
     
-
+    SuggestedParagraphSection(document = document)
     OutlookSection(document = document)
 
     #Save report
