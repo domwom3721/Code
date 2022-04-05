@@ -116,11 +116,6 @@ def OutlookSection(document):
     print('Writing Outlook Section')
     AddHeading(          document = document, title = 'Conclusion',            heading_level = 2)
 
-def SuggestedParagraphSection(document):
-    print('Writing Suggested Paragraph Section')
-    AddHeading(document = document, title = 'Suggested Paragraph for Appraisal Report',            heading_level = 2)
-
-
 #Set formatting paramaters for reports
 primary_font                  = 'Avenir Next LT Pro Light' 
 primary_space_after_paragraph = 8
@@ -136,9 +131,35 @@ current_year                  = todays_date.year
 
 
 #Read in our excel file where we store text on rent control regulations
-rent_control_df              = pd.read_excel(os.path.join(data_location,'Rent Control Template.xlsx'))
-rent_control_df              = rent_control_df.fillna('')
+rent_control_df                    = pd.read_excel(os.path.join(data_location,'Rent Control Template.xlsx'))
+rent_control_df                    = rent_control_df.fillna('')
+rent_control_df['Date of Update:'] = rent_control_df['Date of Update:'].dt.strftime('%m/%d/%Y')
 
+section_list = ['Overview',
+                'Governance',
+                'Applicable To',
+                'Exemptions',
+                'Permitted Annual Increases',
+                'Rent Control',
+                'Rent Stabilization',
+                'Vacancy Decontrol',
+                'Vacancy Bonus',
+                'Capital Improvements',
+                'Individual Apartment Improvements',
+                'Preferential Rent',
+                'Co-op & Condo Conversions',
+                '421-A',
+                'Warehousing',
+                'Hardship Rental Increases',
+                'Rent Roll Filing',
+                'Increase in Services Charge',
+                'Real Property Tax Credits & Rebates',
+                'Parking Fees',
+                'Utilities Increases',
+                'CPI',
+                'Rental of Vacant Units',
+                'Suggested Paragraph for Appraisal Report',
+                ]
 
 #Loop through each row of the dataframe, create a report and directory for each
 for i in range(len(rent_control_df)):
@@ -147,6 +168,10 @@ for i in range(len(rent_control_df)):
     document_name    = rent_control_df['Document Title'].iloc[i]
     document_name    = str(current_year) + ' ' + state + ' - ' +  muncipality_name + ' - ' +  'Rent Control_draft'
     document_title   = rent_control_df['Document Title'].iloc[i]
+    phone_number     = rent_control_df['Phone Number of Rent Leveling Board:'].iloc[i]
+    website          = rent_control_df['Source/Website:'].iloc[i]
+    date_of_update   = rent_control_df['Date of Update:'].iloc[i]
+    date_of_update   = str(date_of_update).replace('nan','')
 
     print('Creating Report for: ', muncipality_name + ', ' + state)
     CreateDirectory(state = state, muncipality_name = muncipality_name, document_name = document_name)
@@ -158,37 +183,24 @@ for i in range(len(rent_control_df)):
     AddTitle(             document = document)
 
     #Loop through each column in the excel file and (if there is text stored) make a section for that column in the document and write the stored text to it
-    for section in ['Overview',	
-                  'Governance',	
-                  'Rent Control',	
-                  'Rent Stabilization',	
-                  'Vacancy Decontrol',	
-                  'Vacancy Bonus',	
-                  'Major Capital Improvements',	
-                  'Individual Apartment Improvements',	
-                  'Preferential Rent',	
-                  'Co-op & Condo Conversions',	
-                  '421-A',	
-                  'Warehousing', 
-                  'Permitted Annual Increases',	
-                  'Hardship Rental Increases',	
-                  'Exemptions',	
-                  'Is the landlord required to file the rent roll with the Rent Leveling Board?  ',
-                'Increase in Services Charge',	
-                'Real Property Tax Rebate',	
-                'Parking Fees',	
-                'Annual Increases',	
-                'CPI',	
-                'Rental of Vacant Units',	
-                'Suggested Paragraph for Appraisal Report']:
+
+
+
+
+    for section in section_list:
 
         language = rent_control_df[section].iloc[i]
-        if language != ('nan' and '' and  NaN):
-            assert language != ''
+        if language != ('nan' and '' and  NaN) or section == 'Suggested Paragraph for Appraisal Report':
             AddHeading(document = document, title = section, heading_level = 2)
             AddDocumentParagraph(document = document, language_variable = [language])
+            
+            if section == 'Overview':
+                AddDocumentParagraph(document = document, language_variable = [('Phone Number of Rent Leveling Board: ' + phone_number), 
+                                                                               ('Website: '                             + website), 
+                                                                               ( 'Date of Update: '                      + str(date_of_update)),
+                                                                               ])
+
     
-    SuggestedParagraphSection(document = document)
     OutlookSection(document = document)
 
     #Save report
