@@ -201,6 +201,8 @@ def EditCoStarWriteUp(paragraph_list):
         text = text.replace('2021q2','2021 Q2')
         text = text.replace('2021q3','2021 Q3')
         text = text.replace('2021q4','2021 Q4')
+        text = text.replace(' come on line ',' come on-line ')
+
         #Now remove bad characters
         for char in ['ï','»','¿','â','€']:
             text = text.replace(char,'')
