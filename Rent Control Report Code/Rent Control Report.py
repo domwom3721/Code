@@ -201,7 +201,7 @@ for i in range(len(rent_control_df)):
                                                                                ])
 
     
-    OutlookSection(document = document)
+    
 
     #Save report
     document.save(report_path)  
