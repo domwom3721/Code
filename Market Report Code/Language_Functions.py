@@ -1971,13 +1971,13 @@ def CreateSaleLanguage(submarket_data_frame,market_data_frame, natioanl_data_fra
                     ' and has '                                                         +
                     asset_value_change_description                                      +
                     ' '                                                                 +
-                    asset_value_change                                                  + 
-                    ' over the past year, '                                             +
+                    "{asset_value_change}".format(asset_value_change = (asset_value_change + ' ') if asset_value_change_description != 'remained stable'  else "") +
+                    'over the past year, '                                              +
                     'while the market cap rate has '                                    +
                     cap_rate_change_description                                         +
                     ' '                                                                 +
-                    cap_rate_change                                                     +
-                    ' over the past year '                                              +
+                    "{cap_rate_change}".format(cap_rate_change = (cap_rate_change + ' ') if cap_rate_change_description != 'remained stable'  else "") +
+                    'over the past year '                                               +
                     cap_rate_change_description_to_or_at                                +
                     ' '                                                                 +
                     cap_rate                                                            +
