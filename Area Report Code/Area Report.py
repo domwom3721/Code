@@ -84,7 +84,7 @@ def UpdateSalesforceList():
     dropbox_link = county_folder.replace(dropbox_root,r'https://www.dropbox.com/home')
     dropbox_link = dropbox_link.replace("\\",r'/')
     dropbox_links.append(dropbox_link)   
-   
+
 def CreateDirectory(state, county):
     global county_folder, county_folder_map, report_path, document_name
     state_folder             = os.path.join(main_output_location, state)
@@ -707,7 +707,7 @@ def FindNearestHighways():
     except Exception as e:
         print(e,'Unable to locate major roads inside the county area')
         return(None)
- 
+
 def GetCountyData():
     print('Getting County Data')
     global county_gdp, county_pci
@@ -2316,9 +2316,9 @@ def CreatePopulationOverTimeWithGrowthGraph(county_resident_pop, state_resident_
     fig.update_xaxes(
         type = 'date',
         dtick="M12",
-        tickformat="%Y",
+        tickformat="%y",
         tickangle = tickangle,
-        tickfont = dict(size=tickfont_size),
+        tickfont = dict(size=tickfont_size ),
         # linecolor = 'black',
         row = 1,
         col = 1
@@ -3570,7 +3570,7 @@ def MSAEmploymentBreakdownLanguage(msa_industry_breakdown):
 
         )
     return(msa_breakdown_language)
-  
+
 def UnemploymentLanguage():
     print('Writing Unemployment Langauge')
     try:
@@ -5084,7 +5084,7 @@ def AddTable(document,data_for_table): #Function we use to insert our overview t
                         font.size = Pt(9)
                     else:
                         font.name = primary_font
-             
+
 #####################################################Report document related functions####################################
 def SetPageMargins(document, margin_size):
     sections = document.sections
