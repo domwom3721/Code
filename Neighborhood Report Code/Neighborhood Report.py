@@ -1820,7 +1820,7 @@ def FindNearestHighways():
             highway_record        = road_map.shapeRecord(highway_index)
             
 
-            highway_name          = highway_record.record['ROADNAME']
+            highway_name          = highway_record.record['ROADNAME'].title()
             #Clean up abbreviations
             highway_name          = highway_name.replace('Hwy','Highway')
             highway_name          = highway_name.replace('Pkwy','Parkway') 
