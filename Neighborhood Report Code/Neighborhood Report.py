@@ -1820,7 +1820,7 @@ def FindNearestHighways():
             highway_record        = road_map.shapeRecord(highway_index)
             
 
-            highway_name          = highway_record.record['ROADNAME'].title()
+            highway_name          = highway_record.record['ROADNAME']
             #Clean up abbreviations
             highway_name          = highway_name.replace('Hwy','Highway')
             highway_name          = highway_name.replace('Pkwy','Parkway') 
@@ -1854,9 +1854,9 @@ def FindNearestHighways():
                
 
                 if count < len(highway_info_list) -1 :
-                    sentence = sentence + (highway['name']) + ' ('  + (highway['type'])   + ') ' + ' (' + highway['number'] + '),'
+                    sentence = sentence + (highway['name'])  + ' (' + highway['number'] + '),'
                 else:
-                    sentence = sentence + 'and ' + (highway['name']) + ' ('  + (highway['type'])   + ')' + ' (' + highway['number'] + ').' 
+                    sentence = sentence + 'and ' + (highway['name'])   + ' (' + highway['number'] + ').' 
         
         
         
@@ -1866,9 +1866,8 @@ def FindNearestHighways():
         
         elif len(highway_info_list) == 2:
            
-            sentence = ((highway_info_list[0]['name']) + ' (' + highway_info_list[0]['number'] + ')' + ' ('  + (highway_info_list[0]['type'])   + ') ' + 'and '  + 
-                        (highway_info_list[1]['name']) + ' (' + highway_info_list[1]['number'] + ')'+ ' ('  + (highway_info_list[1]['type'])   + ') '
-                        + ' are the main roads connecting ' + neighborhood + '.')
+            sentence = ((highway_info_list[0]['name']) + ' (' + highway_info_list[0]['number'] + ')'  + ' ' + 'and '  + 
+                        (highway_info_list[1]['name']) + ' (' + highway_info_list[1]['number'] + ')'  + ' are the main roads connecting ' + neighborhood + '.')
         elif len(highway_info_list) == 0:
             sentence = None
 
@@ -3954,7 +3953,7 @@ def SetDocumentStyle(document):
     font.size = Pt(9)
 
 def AddTitle(document):
-    main_title = document.add_heading('Neighborhood & Demographic Overview draftdraftdraft',level=0) 
+    main_title = document.add_heading('Neighborhood & Demographic Overview',level=0) 
     main_title.style = document.styles['Heading 1']
     main_title.paragraph_format.space_after  = Pt(6)
     main_title.paragraph_format.space_before = Pt(12)
