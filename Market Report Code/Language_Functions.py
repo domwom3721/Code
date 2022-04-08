@@ -213,7 +213,7 @@ def EditCoStarWriteUp(paragraph_list):
     return(new_paragraph_list)
 
 #Langauge for overview section
-def CreateOverviewLanguage(submarket_data_frame, market_data_frame, natioanl_data_frame, market_title, primary_market, sector, writeup_directory):
+def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_data_frame, slices_data_frame, market_title, primary_market, sector, writeup_directory):
 
     #Pull writeup from the CoStar Html page if we have one saved
     CoStarWriteUp = PullCoStarWriteUp(section_names = ['Summary'], writeup_directory = writeup_directory)
@@ -221,6 +221,7 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, natioanl_dat
     #Section 1: Begin making variables for the overview language that come from the data: 
     if sector == 'Multifamily':
         rent_var                        = 'Market Effective Rent/Unit'
+        inventory_var                   = 'Inventory Units'
         yoy_rent_growth                 = submarket_data_frame['YoY Market Effective Rent/Unit Growth'].iloc[-1]
         qoq_rent_growth                 = submarket_data_frame['QoQ Market Effective Rent/Unit Growth'].iloc[-1]
         under_construction              = submarket_data_frame['Under Construction Units'].iloc[-1]
@@ -230,10 +231,11 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, natioanl_dat
         net_absorption_var_name         = 'Absorption Units'
         submarket_inventory             = submarket_data_frame['Inventory Units'].iloc[-1]
         market_inventory                = market_data_frame['Inventory Units'].iloc[-1]
+        national_inventory              = national_data_frame['Inventory Units'].iloc[-1]
+        
         unit_or_sqft                    = 'unit'
         unit_or_sqft_singular           = 'unit'
         extra_s                         = 's'
-
 
     else: #non multifamily
         rent_var                        = 'Market Rent/SF'
@@ -242,6 +244,7 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, natioanl_dat
         qoq_rent_growth                 = submarket_data_frame['QoQ Rent Growth'].iloc[-1]
         under_construction              = submarket_data_frame['Under Construction SF'].iloc[-1]
         under_construction_share        = submarket_data_frame['Under Construction %'].iloc[-1]
+        inventory_var                   = 'Inventory SF'
         
         #Get current asset value
         asset_value                     = submarket_data_frame['Asset Value/Sqft'].iloc[-1]
@@ -251,11 +254,68 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, natioanl_dat
         #Get submarket and market inventory and the fraction of the inventory the submarket makes up
         submarket_inventory             = submarket_data_frame['Inventory SF'].iloc[-1]
         market_inventory                = market_data_frame['Inventory SF'].iloc[-1]
+        national_inventory              = national_data_frame['Inventory SF'].iloc[-1]
+
         unit_or_sqft                    = 'square feet'
         unit_or_sqft_singular           = 'SF'
         extra_s                         = ''
-    
+
+    #Get Quality breakdown for markets
+    if submarket_data_frame.equals(market_data_frame):
+
+        #Keep the last observation from each slice
+        slices_data_frame                                   = slices_data_frame.copy().groupby('Slice').tail(1)
+        slices_data_frame['Slices Fraction']                = slices_data_frame[inventory_var]/slices_data_frame[inventory_var].sum() * 100
+
+        #If the market only has 1 slice
+        if len(slices_data_frame) == 1:
+            slice_fraction                   = slices_data_frame['Slices Fraction'].iloc[1]
+            slice_name                       = slices_data_frame['Slices'].iloc[1]
+            inventory_breakdown              = 'The inventory is roughly ' + "{:,.2f}% ".format(slice_fraction) + slice_name + '. '
+            total_slices_inventory           = slices_data_frame[inventory_var].iloc[1]
+
+
+        #If the market only has 2 slices
+        elif len(slices_data_frame) == 2:
+            slice_fraction_1       = slices_data_frame['Slices Fraction'].iloc[0]
+            slice_fraction_2       = slices_data_frame['Slices Fraction'].iloc[1]
+            slice_name_1           = slices_data_frame['Slice'].iloc[0]
+            slice_name_2           = slices_data_frame['Slice'].iloc[1]
+            total_slices_inventory = slices_data_frame[inventory_var].iloc[0] + slices_data_frame[inventory_var].iloc[1]
+            inventory_breakdown    ='The inventory is roughly ' + "{:,.2f}% ".format(slice_fraction_1) + slice_name_1 + ' and '  "{:,.2f}% ".format(slice_fraction_2) + slice_name_2 + '. '   
+            
+
+        if len(slices_data_frame) >= 3:
+            total_slices_inventory           = 0
+            inventory_breakdown = 'The inventory is roughly '       
+
+            for i in range(len(slices_data_frame)):
+                slice_name      = slices_data_frame['Slice'].iloc[i]
+                slice_inventory = slices_data_frame[inventory_var].iloc[i]
+                slice_fraction  = slices_data_frame['Slices Fraction'].iloc[i]
+                total_slices_inventory += slice_inventory
+
+
+                #Add the slice name and fraction to a string variable that will be inserted into our language below
+                if i == (len(slices_data_frame) - 1):
+                    inventory_breakdown = inventory_breakdown + 'and '+ "{:,.2f}% ".format(slice_fraction)  + slice_name  + '. ' 
+                else:
+                    inventory_breakdown = inventory_breakdown + "{:,.2f}% ".format(slice_fraction)  + slice_name + ', '          
+        else:
+            total_slices_inventory = 0
+            inventory_breakdown    = ''
+
+
+        #Make sure the total invetory from adding together the inventory from each slice addds up to our inventory total from the main data
+        try:
+            assert int(total_slices_inventory) == int(market_inventory)
+        except Exception as e:
+            print(e, 'Slices inventory does not add up to total, not including quality breakdown in overview language')
+            inventory_breakdown = ''
+
     submarket_inventory_fraction        = (submarket_inventory/market_inventory) * 100
+    market_inventory_fraction           = (market_inventory/national_inventory) * 100
+
     current_sale_volume                 = submarket_data_frame['Total Sales Volume'].iloc[-1]
     current_transaction_count           = submarket_data_frame['Sales Volume Transactions'].iloc[-1]
     vacancy                             = submarket_data_frame['Vacancy Rate'].iloc[-1]
@@ -663,35 +723,47 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, natioanl_dat
     #Section 4.1: Create the first subsection (overview_intro_language)
     #Market
     if  market_or_submarket == 'Market':
-        overview_intro_language = ('The subject property is located in the ' +
-                                    market_title +
-                                    ' ' +
-                                    market_or_submarket +
-                                    ' defined in the map above. This Market is home to ' +
-                                    market_inventory +
-                                    ' ' +
-                                    unit_or_sqft + extra_s +
-                                    ' of ' +
-                                    sector.lower() +
-                                    ' space. ')  
+        overview_intro_language = ('The subject property is located in the '         +
+                                    market_title                                     +
+                                    ' '                                              +
+                                    market_or_submarket                              +
+                                    ' defined in the map above. '                    +
+                                    
+                                    #Sentence 2
+                                    'This Market accounts for '                      +
+                                    "{:,.2f}% ".format(market_inventory_fraction)    +
+                                    """of the Nation's total inventory with """      + 
+                                    market_inventory                                 +
+                                    ' '                                              +
+                                    unit_or_sqft + extra_s                           +
+                                    ' of '                                           +
+                                    sector.lower()                                   +
+                                    ' space. '                                       +
+                                    
+                                    #Sentence 3 (Quality Breakdown)
+                                    inventory_breakdown                              
+                                    )  
 
     #Submarket
     else:
         overview_intro_language = ('The subject property is located in the ' +
-                                    market_title +
-                                    ' Submarket of the ' +
-                                    primary_market +
-                                    ' Market,' +
-                                    ' defined in the map above. This Submarket is home to ' +
+                                    market_title                             +
+                                    ' Submarket of the '                     +
+                                    primary_market                           +
+                                    ' Market,'                               +
+                                    ' defined in the map above. '            +
+                                    
+                                    #Sentence 2
+                                    'This Submarket accounts for '           +
+                                    submarket_inventory_fraction +
+                                    """ of the Market’s total inventory with """ +
                                     submarket_inventory +
                                     ' ' +
                                     unit_or_sqft + extra_s +
                                     ' of ' +
                                     sector.lower() +
-                                    ' space, ' +
-                                    'accounting for ' +
-                                    submarket_inventory_fraction +
-                                    """ of the Market’s total inventory. """)  
+                                    ' space. ' 
+                                    )  
       
 
     #Create the construction sentance

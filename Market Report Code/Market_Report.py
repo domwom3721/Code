@@ -854,7 +854,7 @@ def GetLanguage(writeup_directory):
     
     #Overview Language
     try:
-        overview_language    = CreateOverviewLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market_title, sector = sector, writeup_directory=writeup_directory)
+        overview_language    = CreateOverviewLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, national_data_frame= df_nation, slices_data_frame = df_slices, market_title = market_title, primary_market = primary_market_title, sector = sector, writeup_directory=writeup_directory)
     except Exception as e:
         print(e,'problem creating overview langauge')
         overview_language    = ['']

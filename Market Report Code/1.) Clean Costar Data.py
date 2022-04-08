@@ -3,6 +3,8 @@
 
 #Import packages we will be using
 import os
+from unicodedata import numeric
+from numpy import int64
 import pandas as pd
 
 #Define file location pre paths
@@ -97,7 +99,8 @@ df_office_slices       = pd.read_csv(raw_office_slices_file,
                         'Total Sales Volume':           object,
                         'Transaction Sale Price/SF':    object,
                         'Under Construction Buildings': object,
-                        'Vacancy Rate':                 object
+                        'Vacancy Rate':                 object,
+                        'Inventory SF':                 str,
                         }     
                                     )
 
@@ -111,7 +114,8 @@ df_retail_slices       = pd.read_csv(raw_retail_slices_file,
                        'Office Gross Rent Direct':     object,
                        'Office Gross Rent Overall':    object,
                        'Transaction Sale Price/SF':    object,
-                       'Under Construction Buildings': object
+                       'Under Construction Buildings': object,
+                       'Inventory SF':                 str,
                        }
                                     )
 
@@ -121,7 +125,8 @@ df_industrial_slices   = pd.read_excel(raw_industrial_slices_file,
                          'Total Sales Volume':           object,
                          'Transaction Sale Price/SF':    object,
                          'Under Construction Buildings': object,
-                         'Vacancy Rate':                 float
+                         'Vacancy Rate':                 float,
+                         'Inventory SF':                 str,
                         }
                                       )
 
@@ -285,7 +290,7 @@ def MainClean(df,sector): #Calls all cleaning functions and returns cleaned data
 
 def MainCleanSlices(df,sector): #Calls cleaning functions and returns cleaned dataframes for our sliced data
     if sector == 'Multifamily':
-        df = df[['Property Class Name','Period','Slice','As Of','Geography Name','Property Type','Vacancy Rate','Market Effective Rent/Unit']]
+        df = df[['Property Class Name','Period','Slice','As Of','Geography Name','Property Type','Vacancy Rate','Market Effective Rent/Unit','Inventory Units']]
     else:
         df = df[['Property Class Name','Period','Slice','As Of','Geography Name','Property Type','Vacancy Rate','Market Rent/SF','Inventory SF','Under Construction SF','Net Delivered SF 12 Mo','Availability Rate','Net Absorption SF 12 Mo']]
         df['Availability Rate'] = df['Availability Rate'] * 100
@@ -304,14 +309,20 @@ def MainCleanSlices(df,sector): #Calls cleaning functions and returns cleaned da
         df['Market Effective Rent/Unit'] = df['Market Effective Rent/Unit'].str.replace('$','')
         df['Market Effective Rent/Unit'] = df['Market Effective Rent/Unit'].str.replace(',','',5)
         df['Market Effective Rent/Unit'] = df['Market Effective Rent/Unit'].astype(float)
+        
+
+        df['Inventory Units']             = df['Inventory Units'].str.replace(',','')
+        df['Inventory Units']             = df['Inventory Units'].astype(int)
 
     else:
         if df['Vacancy Rate'].dtype == 'object':
             df['Market Rent/SF'] = df['Market Rent/SF'].str.replace('$','')
             df['Market Rent/SF'] = df['Market Rent/SF'].str.replace(',','',5)
             df['Market Rent/SF'] = df['Market Rent/SF'].astype(float)
-
-
+        
+        df['Inventory SF']             = df['Inventory SF'].str.replace(',','')
+        df['Inventory SF']             = df['Inventory SF'].astype(int64)
+        
     #Remove "Center" from slice name
     df['Slice']                = df['Slice'].str.replace(' Center', '', regex=False)
     df['Geography Name']       = df['Geography Name'].str.replace('New York City', 'Manhattan', regex=False)
