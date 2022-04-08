@@ -1388,16 +1388,16 @@ def CreateRentLanguage(submarket_data_frame, market_data_frame, natioanl_data_fr
     #Describe the relationship between the submarket rent levels compared to the market rent levels
     if primary_rent_discount < 0:
         primary_rent_discount             =  primary_rent_discount * -1
-        cheaper_or_more_expensive_primary = 'more expensive'
+        cheaper_or_more_expensive_primary = 'higher'
     else:
-        cheaper_or_more_expensive_primary = 'cheaper'
+        cheaper_or_more_expensive_primary = 'lower'
 
     #Describe the relationship between the market rent levels compared to national rent levels
     if national_rent_discount < 0:
         national_rent_discount             =  national_rent_discount * -1
-        cheaper_or_more_expensive_national = 'more expensive'
+        cheaper_or_more_expensive_national = 'higher'
     else:
-        cheaper_or_more_expensive_national = 'cheaper'
+        cheaper_or_more_expensive_national = 'lower'
 
     
     #Describe rent growth in the submarket over the past decade
@@ -1429,7 +1429,7 @@ def CreateRentLanguage(submarket_data_frame, market_data_frame, natioanl_data_fr
     else:
         qoq_pushing_or_contracting_annual_growth = '[contracting/pushing] annual growth to'
 
-      
+
     #Describe Prepandemic Growth 
     #There's 3 possible starting situations, YoY rent growth in 2019 Q4 was higher than 2019 Q3, lower, or the same, next we need to determine if the growth rate is higher, lower, or in line with the
     #historical average (pre 2020 average)
@@ -1555,7 +1555,8 @@ def CreateRentLanguage(submarket_data_frame, market_data_frame, natioanl_data_fr
             ', the rents in the '                           +
             market_or_submarket                             + 
             ' are '                                         +
-            "{market_nation_rent_relationship}".format(market_nation_rent_relationship = "equal to " if (primary_market_rent == national_market_rent )  else   ('roughly ' + national_rent_discount + ' ' + cheaper_or_more_expensive_national + ' than ')) +
+            #If the rent is equal, say equal, if the differnce is less than 3%, just say similar to, otherwise, state the differnce 
+           "{market_nation_rent_relationship}".format(market_nation_rent_relationship = "equal to " if (primary_market_rent == national_market_rent )  else   ("{x}".format(x = "similar to " if ( abs(float(national_rent_discount.replace('%',''))) < 3 )  else ('roughly ' + national_rent_discount + ' ' + cheaper_or_more_expensive_national + ' than ')))  ) +
             'the '                                          +
             market_or_nation                                +            
             "{national_rent_level}".format(national_rent_level = "" if (primary_market_rent == national_market_rent)  else     (' where rents sit at ' + national_market_rent + '/' + unit_or_sqft ))                                                       +
@@ -1635,7 +1636,9 @@ def CreateRentLanguage(submarket_data_frame, market_data_frame, natioanl_data_fr
             ', rents in the '   +
             market_or_submarket + 
             ' are '             +
-            "{submarket_market_rent_relationship}".format(submarket_market_rent_relationship = "equal to " if (current_rent == primary_market_rent)  else   ('roughly ' + primary_rent_discount + ' ' + cheaper_or_more_expensive_primary + ' than ')) +
+           "{submarket_market_rent_relationship}".format(submarket_market_rent_relationship = "equal to " if (current_rent == primary_market_rent)  else   ("{x}".format(x = "similar to " if ( abs(float(primary_rent_discount.replace('%',''))) < 3 )  else ('roughly ' + primary_rent_discount + ' ' + cheaper_or_more_expensive_primary + ' than ')))  ) +
+        
+            # "{submarket_market_rent_relationship}".format(submarket_market_rent_relationship = "equal to " if (current_rent == primary_market_rent)  else   ('roughly ' + primary_rent_discount + ' ' + cheaper_or_more_expensive_primary + ' than ')) +
             'the '              +
             market_or_nation    +
             "{market_rent_level}".format(market_rent_level = "" if (current_rent == primary_market_rent)  else     (' where rents sit at ' + primary_market_rent + '/' + unit_or_sqft )) +
