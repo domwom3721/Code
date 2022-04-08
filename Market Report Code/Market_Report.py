@@ -325,11 +325,18 @@ def CleanTransactionData(df_transactions):
     if isinstance(df_transactions,pd.DataFrame) == False:
         return(None)
     
-    df_transactions['PropertyType'] = df_transactions['PropertyType'].str.replace('Multi-Family','Multifamily')
-    df_transactions['Price/Unit']   = df_transactions['Last Sale Price']/df_transactions['Number Of Units']
-    df_transactions['Year Built']   = df_transactions['Year Built'].astype(str)
-    df_transactions['Year Built']   = df_transactions['Year Built'].str[0:4]
-    df_transactions['Property Address']   =  df_transactions['Property Address'] + ', ' + df_transactions['City'] 
+    df_transactions['PropertyType']      = df_transactions['PropertyType'].str.replace('Multi-Family','Multifamily')
+    df_transactions['Price/Unit']        = df_transactions['Last Sale Price']/df_transactions['Number Of Units']
+    df_transactions['Year Built']        = df_transactions['Year Built'].astype(str)
+    df_transactions['Year Built']        = df_transactions['Year Built'].str[0:4]
+    df_transactions['Property Address']  =  df_transactions['Property Address'] + ', ' + df_transactions['City'] 
+    
+    #Convert last sale date to Q# YYYY Format
+    df_transactions['Quarter']           = df_transactions['Last Sale Date'].dt.quarter
+    df_transactions['Year']              = df_transactions['Last Sale Date'].dt.year
+    df_transactions['Quarter']           = df_transactions['Quarter'].astype(str)
+    df_transactions['Year']              = df_transactions['Year'].astype(str)
+    df_transactions['Last Sale Date']    = 'Q' + df_transactions['Quarter']  + ' ' +  df_transactions['Year']  
 
     #Create transactions dataframe
     if market == primary_market: #market
