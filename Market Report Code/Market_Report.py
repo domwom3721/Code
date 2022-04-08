@@ -728,7 +728,7 @@ def OverviewSection():
                          sector.lower()                                                                                         +
                          ' space in the '                                                                                       +
                          market_or_submarket                                                                                    +
-                         ' are presented in the ensuing table.'
+                         ' are presented in the following table.'
                          )
 
 
