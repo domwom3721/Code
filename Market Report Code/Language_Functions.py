@@ -271,7 +271,7 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
         if len(slices_data_frame) == 1:
             slice_fraction                   = slices_data_frame['Slices Fraction'].iloc[1]
             slice_name                       = slices_data_frame['Slices'].iloc[1]
-            inventory_breakdown              = 'The inventory is roughly ' + "{:,.2f}% ".format(slice_fraction) + slice_name + '. '
+            inventory_breakdown              = 'The inventory is roughly ' + "{:,.1f}% ".format(slice_fraction) + slice_name + '. '
             total_slices_inventory           = slices_data_frame[inventory_var].iloc[1]
 
 
@@ -282,7 +282,7 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
             slice_name_1           = slices_data_frame['Slice'].iloc[0]
             slice_name_2           = slices_data_frame['Slice'].iloc[1]
             total_slices_inventory = slices_data_frame[inventory_var].iloc[0] + slices_data_frame[inventory_var].iloc[1]
-            inventory_breakdown    ='The inventory is roughly ' + "{:,.2f}% ".format(slice_fraction_1) + slice_name_1 + ' and '  "{:,.2f}% ".format(slice_fraction_2) + slice_name_2 + '. '   
+            inventory_breakdown    ='The inventory is roughly ' + "{:,.1f}% ".format(slice_fraction_1) + slice_name_1 + ' and '  "{:,.1f}% ".format(slice_fraction_2) + slice_name_2 + '. '   
             
 
         if len(slices_data_frame) >= 3:
@@ -298,9 +298,9 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
 
                 #Add the slice name and fraction to a string variable that will be inserted into our language below
                 if i == (len(slices_data_frame) - 1):
-                    inventory_breakdown = inventory_breakdown + 'and '+ "{:,.2f}% ".format(slice_fraction)  + slice_name  + '. ' 
+                    inventory_breakdown = inventory_breakdown + 'and '+ "{:,.1f}% ".format(slice_fraction)  + slice_name  + '. ' 
                 else:
-                    inventory_breakdown = inventory_breakdown + "{:,.2f}% ".format(slice_fraction)  + slice_name + ', '          
+                    inventory_breakdown = inventory_breakdown + "{:,.1f}% ".format(slice_fraction)  + slice_name + ', '          
         else:
             total_slices_inventory = 0
             inventory_breakdown    = ''
