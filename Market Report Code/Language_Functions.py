@@ -785,16 +785,17 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
                                     "{with_or_despite}".format(with_or_despite = "Despite " if ((asset_value_change_description == 'compressed' and fundamentals_change == 'improving') or (asset_value_change_description == 'expanded' and fundamentals_change == 'softening') )  else "With ") +     
                                     fundamentals_change                +
                                     ' fundamentals '                   +
-                                    'for '                           +
-                                    sector.lower()                    +
-                                    ' properties in the '             +
-                                    market_or_submarket               +
+                                    'for '                             +
+                                    sector.lower()                     +
+                                    ' properties in the '              +
+                                    market_or_submarket                +
                                     ', values have '                   +
                                     asset_value_change_description     +
                                     ' over the past year to '          +
                                     asset_value                        +
                                     unit_or_sqft_singular              +
-                                    ' and cap rates have '             +
+                                    '. '                               +
+                                    'Capitalization rates have '       +
                                     cap_rate_change_description        +
                                     cap_rate_yoy_change                +
                                     ' to a rate of '                   +
