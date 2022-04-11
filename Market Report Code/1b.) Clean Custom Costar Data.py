@@ -22,7 +22,20 @@ elif sector == 'i':
 elif sector == 'r':
     sector = 'Retail'
 
-geography_name = input('Enter the name of the market with the following format: Abilene - TX')
+
+geography_type       = int(input('Market (1) or submarket (2)?'))
+if geography_type == 1:
+    geography_type = 'Metro'
+elif geography_type == 2:
+    geography_type = 'Submarket'
+else:
+    assert False
+if geography_type == 'Metro':
+    geography_name       = input('Enter the name of the market with the following format: Abilene - TX')
+
+elif geography_type == 'Submarket':
+    geography_name       = input('Enter the name of the submarket with the following format: Birmingham - AL - Fultondale')
+
 
 
 #Section 2: Define file location pre paths
@@ -106,7 +119,7 @@ if sector != 'Multifamily':
 
 #Section 6: Data cleaning
 def NameGeography(df):
-    df['Geography Type'] = 'Metro'
+    df['Geography Type'] = geography_type
     df['Geography Name'] = geography_name
     return(df)
 
