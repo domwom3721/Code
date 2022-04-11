@@ -42,7 +42,7 @@ from shapely.geometry import LineString, Point, Polygon
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
 project_location               =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Projects','Research Report Automation Project') 
 main_output_location           =  os.path.join(project_location,'Output', 'Area')                 #Testing
-main_output_location           =  os.path.join(dropbox_root,'Research', 'Market Analysis','Area') #Production
+# main_output_location           =  os.path.join(dropbox_root,'Research', 'Market Analysis','Area') #Production
 general_data_location          =  os.path.join(project_location,'Data', 'General Data')
 data_location                  =  os.path.join(project_location,'Data', 'Area Reports Data')
 graphics_location              =  os.path.join(project_location,'Data', 'General Data','Graphics')
@@ -5592,6 +5592,7 @@ def IdentifyMSA(fips):
         #Now that we've identified the MSA, we need to know the primary state FIPS code for the BLS API. Many MSAs are in multiple states.
         cbsa_main_state   = cbsa_name.split(', ')[1][0:2] #The 2 character code for the main state of the msa
         all_states_in_msa = cbsa_name.split(', ')[1].split('-')
+        cbsa_name         = cbsa_name.split(', ')[0]
 
         state_fips                = pd.read_csv(os.path.join(data_location,'State Names.csv')) #the dataframe with the state fips codes
         state_fips['State FIPS']  = state_fips['State FIPS'].astype(str)
@@ -5659,7 +5660,7 @@ def GetMSAFIPSList(cbsacode):
 def GetFIPSList():
     #Returns a list of County FIPS codes to do reports for
     fips_list = []
-   
+
     #Give the user 30 seconds to decide if writing reports for metro areas or individual county entries
     try:
         fips_or_cbsa = input_with_timeout('Single county report (c) or reports for all counties in metro (m)?', 30).strip()
@@ -5690,6 +5691,24 @@ def GetFIPSList():
         print('Preparing Reports for the following fips: ',fips_list)
 
     return(fips_list)
+
+def GetCBSAList():
+    #Returns a list of MSA CBSA codes to do reports for
+    cbsa_list = []
+
+    cbsa = None
+    while cbsa != '':
+        cbsa  =         str(input('What is the 5 digit county CBSA code?')).strip()
+        try:
+            assert len(cbsa) == 5
+            cbsa_list.append(cbsa)
+        except Exception as e:
+            pass
+
+    if cbsa_list != []:
+        print('Preparing Reports for the following CBSAs: ',cbsa_list)
+
+    return(cbsa_list)
 
 DeclareAPIKeys()
 
@@ -5748,42 +5767,108 @@ observation_start_less1       = '01/01/' + str(start_year -2)   #For FRED for se
 qcew_year                     = current_year                    #for quarterly census of employment and wages
 qcew_qtr                      = '3'                             #for quarterly census of employment and wages
 
+county_or_msa_report = input('County report (c) or Metropolitan Statistical Area report (m)?').strip()
+assert ( county_or_msa_report == ('m') or county_or_msa_report == ('c')  )
 
-#This is the main loop for our program, we loop through a list of county FIPS codes
-for i, fips in enumerate(GetFIPSList()):
+#This is the main loop for our program when doing MSA reports
+if county_or_msa_report == 'm':
+    list_of_msa_cbsa_codes = GetCBSAList() 
+    for i, cbsa in enumerate(list_of_msa_cbsa_codes):
+        try:
+            cbsa_fips_crosswalk = pd.read_csv(os.path.join(data_location,'cbsa2fipsxw.csv'),
+                    dtype={'cbsacode':                        object,
+                            'metrodivisioncode':              object,
+                            'csacode':                        object,
+                            'cbsatitle':                      object,
+                            'metropolitanmicropolitanstatis': object,
+                            'metropolitandivisiontitle':      object,
+                            'csatitle':                       object,
+                            'countycountyequivalent':         object,
+                            'statename':                      object,
+                            'fipsstatecode':                  object,
+                            'fipscountycode':                 object,
+                            'centraloutlyingcounty':          object
+                            }
+                                            )
+            
+
+            #Add missing 0s
+            cbsa_fips_crosswalk['cbsacode']  =  cbsa_fips_crosswalk['cbsacode'].str.zfill(5)
+            
+            #restrict data to only rows with the subject CBSA code
+            cbsa_fips_crosswalk              = cbsa_fips_crosswalk.loc[cbsa_fips_crosswalk['cbsacode'] == cbsa] 
+            cbsa_fips_crosswalk              = cbsa_fips_crosswalk.loc[cbsa_fips_crosswalk['metropolitanmicropolitanstatis'] == 'Metropolitan Statistical Area'] #restrict to msas
+            cbsa_name                        = cbsa_fips_crosswalk['cbsatitle'].iloc[-1]
+                
+            #Now that we've identified the MSA, we need to know the primary state FIPS code for the BLS API. Many MSAs are in multiple states.
+            cbsa_main_state                 = cbsa_name.split(', ')[1][0:2] #The 2 character code for the main state of the msa
+            all_states_in_msa               = cbsa_name.split(', ')[1].split('-')
+            cbsa_name                       = cbsa_name.split(', ')[0]
+            state_fips                      = pd.read_csv(os.path.join(data_location,'State Names.csv')) #the dataframe with the state fips codes
+            state_fips['State FIPS']        = state_fips['State FIPS'].astype(str)
+            state_fips['State FIPS']        = state_fips['State FIPS'].str.zfill(2)  #cleaning the dataframe with the state fips codes
+            state_fips_restricted           = state_fips.loc[state_fips['State Code'] == cbsa_main_state] #cutting down dataframe to only the row with the state whose code we are looking up
+            cbsa_main_state_fips            = state_fips_restricted['State FIPS'].iloc[0]
+            
+            #In case the MSA series on BLS don't use the primary state's FIPS code, collect all of the state codes for the MSA to try
+            cbsa_all_state_fips  = []
+            for state in all_states_in_msa:
+                state_fips_restricted           =  state_fips.loc[state_fips['State Code'] == state] #cutting down dataframe to only the row with the state whose code we are looking up
+                state_fip                       =  state_fips_restricted['State FIPS'].iloc[0]
+                cbsa_all_state_fips.append(state_fip)
+
+            state                = cbsa_main_state 
+            state_name           = GetStateName(state_code=state)
+            cbsa_all_county_fips = GetMSAFIPSList(cbsacode = cbsa) #a list of 5 digit FIPS codes for each county in the MSA
     
-    try:
-        assert type(fips) == str
-        master_county_list = pd.read_excel(os.path.join(data_location, 'County_Master_List.xls'),
-                dtype={'FIPS Code': object
-                      }
-                                          )
-        master_county_list = master_county_list.loc[(master_county_list['FIPS Code'] == fips)]
-        assert len(master_county_list) == 1
+            if state in new_england_states:
+                necta_code       = IdentifyNecta(cbsa = cbsa)
 
-        state                = master_county_list['State'].iloc[0]    
-        state_name           = GetStateName(state_code=state)
-        county               = master_county_list['County Name'].iloc[0]
-        cbsa                 = IdentifyMSA(fips)[0]
-        cbsa_name            = IdentifyMSA(fips)[1]
-        cbsa_main_state_fips = IdentifyMSA(fips)[2]            #the state fips code of the first state listed for a msa        
-        cbsa_all_state_fips  = IdentifyMSA(fips)[3]            #a list of 2 digit FIPS codes for each state the MSA is in
-        cbsa_all_county_fips = GetMSAFIPSList(cbsacode = cbsa) #a list of 5 digit FIPS codes for each county in the MSA
-  
-        if state in new_england_states:
-            necta_code       = IdentifyNecta(cbsa = cbsa)
-        county               = county.split(",")[0]    
+            print(cbsa_name)
+            # Main()
+            
+        except Exception as e:
+            print(e)
+            print('Report Creation Failed for : ', cbsa)
 
-        Main()
-        
-    except Exception as e:
-        print(e)
-        print('Report Creation Failed for : ',fips)
+#This is the main loop for our program when doing county reports
+elif county_or_msa_report == 'c':
+    list_of_county_fips_codes = GetFIPSList() 
+    for i, fips in enumerate(list_of_county_fips_codes):
+        try:
+            assert type(fips) == str
+            master_county_list = pd.read_excel(os.path.join(data_location, 'County_Master_List.xls'),
+                    dtype={'FIPS Code': object
+                        }
+                                            )
+            master_county_list = master_county_list.loc[(master_county_list['FIPS Code'] == fips)]
+            assert len(master_county_list) == 1
 
+            state                = master_county_list['State'].iloc[0]    
+            state_name           = GetStateName(state_code=state)
+            county               = master_county_list['County Name'].iloc[0]
+            cbsa                 = IdentifyMSA(fips)[0]
+            cbsa_name            = IdentifyMSA(fips)[1]
+            cbsa_main_state_fips = IdentifyMSA(fips)[2]            #the state fips code of the first state listed for a msa        
+            cbsa_all_state_fips  = IdentifyMSA(fips)[3]            #a list of 2 digit FIPS codes for each state the MSA is in
+            cbsa_all_county_fips = GetMSAFIPSList(cbsacode = cbsa) #a list of 5 digit FIPS codes for each county in the MSA
+    
+            if state in new_england_states:
+                necta_code       = IdentifyNecta(cbsa = cbsa)
+            county               = county.split(",")[0]    
+
+            Main()
+            
+        except Exception as e:
+            print(e)
+            print('Report Creation Failed for : ',fips)
+
+else:
+    assert False
 
 #Now that we are done creating reports, crawl through our directory and create CSV file on exisiting reports
 CreateDirectoryCSV()
- 
+
 #Post an update request to the Market Research Docs Service to update the database
 UpdateServiceDb(report_type = 'areas', 
                 csv_name    = service_api_csv_name, 
