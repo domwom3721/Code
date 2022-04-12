@@ -1395,26 +1395,37 @@ def CreateUnemploymentRateEmploymentGrowthGraph(folder):
     fig = make_subplots(rows=1, cols=2,subplot_titles=("Unemployment Rate", "Annual Employment Growth"),horizontal_spacing = horizontal_spacing)
 
     #County unemployment rate
-    fig.add_trace(
-            go.Scatter(x = county_unemployment_rate['period'].iloc[-60:],
-                    y = county_unemployment_rate['unemployment_rate'].iloc[-60:],
-                    name = county,
-                    line = dict(color = bowery_dark_blue, width = 1,dash = 'dash')
-                    ),
-            secondary_y = False,
-            row         = 1,
-            col         = 1
-                 )
+    if county_or_msa_report == 'c':
+        fig.add_trace(
+                go.Scatter(x = county_unemployment_rate['period'].iloc[-60:],
+                        y = county_unemployment_rate['unemployment_rate'].iloc[-60:],
+                        name = county,
+                        line = dict(color = bowery_dark_blue, width = 1,dash = 'dash')
+                        ),
+                secondary_y = False,
+                row         = 1,
+                col         = 1
+                    )
 
     #MSA unemployment rate if applicable
-    if (cbsa != '') and (msa_unemployment_rate.equals(county_unemployment_rate) == False):
+    if county_or_msa_report == 'c':
+        if (cbsa != '') and (msa_unemployment_rate.equals(county_unemployment_rate) == False):
+            fig.add_trace(
+                go.Scatter(x    = msa_unemployment_rate['period'].iloc[-60:],
+                        y    = msa_unemployment_rate['unemployment_rate'].iloc[-60:],
+                        name    = cbsa_name + ' (MSA)',
+                        line    = dict(color = bowery_light_blue, width = 1)
+                        ),
+                secondary_y=False,row=1, col=1)
+    elif county_or_msa_report == 'm':
         fig.add_trace(
-            go.Scatter(x    = msa_unemployment_rate['period'].iloc[-60:],
-                       y    = msa_unemployment_rate['unemployment_rate'].iloc[-60:],
-                    name    = cbsa_name + ' (MSA)',
-                    line    = dict(color = bowery_light_blue, width = 1)
-                    ),
-            secondary_y=False,row=1, col=1)
+                go.Scatter(x    = msa_unemployment_rate['period'].iloc[-60:],
+                        y    = msa_unemployment_rate['unemployment_rate'].iloc[-60:],
+                        name    = cbsa_name + ' (MSA)',
+                        line    = dict(color = bowery_light_blue, width = 1)
+                        ),
+                secondary_y=False,row=1, col=1)
+
 
     #State unemployment rate
     if state != 'DC':
@@ -1430,28 +1441,41 @@ def CreateUnemploymentRateEmploymentGrowthGraph(folder):
                       )
 
     #County employment growth 
-    fig.add_trace(
-        go.Scatter(x = county_employment['period'].iloc[-60:],
-                y = county_employment['Employment Growth'].iloc[-60:],
-                name = county,
-                line = dict(color = bowery_dark_blue, width = 1,dash = 'dash'),showlegend=False
-                  ),
-        secondary_y=False, 
-        row=1, 
-        col=2,
-                 )
+    if county_or_msa_report == 'c':
+        fig.add_trace(
+            go.Scatter(x = county_employment['period'].iloc[-60:],
+                    y = county_employment['Employment Growth'].iloc[-60:],
+                    name = county,
+                    line = dict(color = bowery_dark_blue, width = 1,dash = 'dash'),showlegend=False
+                    ),
+            secondary_y=False, 
+            row=1, 
+            col=2,
+                    )
 
     #MSA employment growth
-    if (cbsa != '') and (msa_employment.equals(county_employment) == False):
+    if county_or_msa_report == 'c':
+        if (cbsa != '') and (msa_employment.equals(county_employment) == False):
+            fig.add_trace(
+                go.Scatter(x = msa_employment['period'].iloc[-60:],
+                        y    = msa_employment['Employment Growth'].iloc[-60:],
+                        name = cbsa_name + ' (MSA)',
+                        line = dict(color=bowery_light_blue, width = 1),
+                        showlegend=False
+                        ),
+                secondary_y=False,row=1, col=2,
+                        )
+    elif county_or_msa_report == 'm':
         fig.add_trace(
-            go.Scatter(x = msa_employment['period'].iloc[-60:],
-                    y    = msa_employment['Employment Growth'].iloc[-60:],
-                    name = cbsa_name + ' (MSA)',
-                    line = dict(color=bowery_light_blue, width = 1),
-                    showlegend=False
-                      ),
-            secondary_y=False,row=1, col=2,
-                      )
+                go.Scatter(x = msa_employment['period'].iloc[-60:],
+                        y    = msa_employment['Employment Growth'].iloc[-60:],
+                        name = cbsa_name + ' (MSA)',
+                        line = dict(color=bowery_light_blue, width = 1),
+                        showlegend=False
+                        ),
+                secondary_y=False,row=1, col=2,
+                        )
+
 
     #State employment growth
     if state != 'DC':
@@ -1502,11 +1526,18 @@ def CreateUnemploymentRateEmploymentGrowthGraph(folder):
                     
     
     #Set x axis ticks
-    quarter_list      = [i for i in range(len(county_unemployment_rate['period']))]
-    quarter_list      = quarter_list[::-12]
+    if county_or_msa_report == 'c':
+        quarter_list      = [i for i in range(len(county_unemployment_rate['period']))]
+        quarter_list      = quarter_list[::-12]
 
-    quarter_list_text = [period for period in county_unemployment_rate['period']]
-    quarter_list_text = quarter_list_text[::-12]
+        quarter_list_text = [period for period in county_unemployment_rate['period']]
+        quarter_list_text = quarter_list_text[::-12]
+    elif county_or_msa_report == 'm':
+        quarter_list      = [i for i in range(len(msa_unemployment_rate['period']))]
+        quarter_list      = quarter_list[::-12]
+
+        quarter_list_text = [period for period in msa_unemployment_rate['period']]
+        quarter_list_text = quarter_list_text[::-12]
 
     fig.update_xaxes(
         tickmode = 'array',
@@ -3263,6 +3294,11 @@ def CreateNationalGDPGraph(folder):
 def CreateGraphs():
     print('Creating Graphs')
     CreateUnemploymentRateEmploymentGrowthGraph(                                                                                                                                                                    folder = county_folder)
+    
+    if county_or_msa_report == 'm':
+        county_gdp, county_pci, county_industry_breakdown, county_industry_growth_breakdown,county_resident_pop = None, None, None, None, None
+
+    
     CreateGDPGraph(                        county_data_frame = county_gdp, msa_data_frame = msa_gdp,state_data_frame=state_gdp,                                                                                    folder = county_folder)
     CreatePCIGraph(                        county_data_frame = county_pci ,msa_data_frame = msa_pci,state_data_frame=state_pci, national_data_frame = national_pci,                                                  folder = county_folder)
     CreateEmploymentByIndustryGraph(       county_data_frame = county_industry_breakdown,                                                                                                                            folder = county_folder)
@@ -5402,8 +5438,9 @@ def EmploymentSection(document):
     #Add MSA employment treemap chart
     AddDocumentPicture(document = document, image_path = os.path.join(county_folder,'msa_employment_by_industry.png') ,citation = 'U.S. Bureau of Labor Statistics')
 
-    #Add County Employment Breakdown Language
-    AddDocumentParagraph(document = document, language_variable = county_employment_industry_breakdown_language)
+    if county_or_msa_report == 'c':
+        #Add County Employment Breakdown Language
+        AddDocumentParagraph(document = document, language_variable = county_employment_industry_breakdown_language)
 
     #Add county employment treemap chart
     AddDocumentPicture(document = document, image_path = os.path.join(county_folder,'employment_by_industry.png') ,citation = 'U.S. Bureau of Labor Statistics')
@@ -5418,9 +5455,9 @@ def EmploymentSection(document):
 
     #Add MSA employment growth by industry bar chart
     AddDocumentPicture(document = document, image_path = os.path.join(county_folder,'msa_employment_growth_by_industry.png') ,citation = 'U.S. Bureau of Labor Statistics')
-
-    #County Employment growth language
-    AddDocumentParagraph(document = document, language_variable = county_employment_growth_language)
+    if county_or_msa_report == 'c':
+        #County Employment growth language
+        AddDocumentParagraph(document = document, language_variable = county_employment_growth_language)
 
     #Add county employment growth by industry bar chart
     AddDocumentPicture(document = document, image_path = os.path.join(county_folder,'employment_growth_by_industry.png') ,citation = 'U.S. Bureau of Labor Statistics')
@@ -5623,14 +5660,14 @@ def Main():
     GetNationalData()
     print('Finished Fetching Data')
     
-    # CreateGraphs()
-    # print('Finished Creating Graphs')
+    CreateGraphs()
+    print('Finished Creating Graphs')
     
     CreateLanguage()
     print('Finished Creating Langauge')
 
     WriteReport()
-    # CleanUpPNGs()
+    CleanUpPNGs()
     print('Report Complete')
 
 def IdentifyMSA(fips):
