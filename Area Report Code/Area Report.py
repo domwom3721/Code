@@ -200,10 +200,13 @@ def FindBLSEndYear():
     previous_year  = current_year - 1
     
     #Once we are in March, the latest employment data will be from January so we can use current year as "end_year"
-    if current_month >= 3 and current_day >=14:
+    if (current_month <= 3 and current_day <=14) :
+        return(previous_year)
+    elif current_month >= 3 and current_day > 14:
         return(current_year)
     else:
-        return(previous_year)
+        return(current_year)
+
 
 #####################################################Data Related Functions####################################
 #County Data
@@ -4047,7 +4050,7 @@ def MSAUnemploymentLanguage():
                 ' the '                                  +
                 state_name                               + 
                 ' rate'                                  +
-                "{state_unemployment}".format(state_unemployment =(' of '      + latest_state_unemployment ) if (latest_msa_unemployment != latest_state_unemployment)  else   ('')) +           
+                "{state_unemployment}".format(state_unemployment =(' of '      + "{:,.1f}%".format(latest_state_unemployment) ) if (latest_msa_unemployment != latest_state_unemployment)  else   ('')) +           
                 '. '                                     +
 
 
