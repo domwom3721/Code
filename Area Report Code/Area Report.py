@@ -1388,6 +1388,25 @@ def GetNationalData():
     national_employment                = GetNationalEmployment(start_year = start_year, end_year=end_year)
     national_gdp                       = GetNationalGDP(observation_start = observation_start_less1)
 
+def GetWikipediaPage():
+    global page
+    print('Getting Wikipedia page')
+    if (county_or_msa_report == 'c'):
+            wikipedia_page_search_term    = (county + ', ' + state)
+
+    elif (county_or_msa_report == 'm'):
+            wikipedia_page_search_term    = (cbsa_name)
+    try:
+        page                          =  wikipedia.page(title = wikipedia_page_search_term, auto_suggest=False)   
+    except Exception as e:
+        print(e,': problem getting wikipedia page')
+        try:
+            page_title                    =  input("""enter the wikipedia page title""")
+            page                          =  wikipedia.page(title = page_title, auto_suggest=False)   
+        except Exception as e:
+            print(e,': problem getting wikipedia page again')
+            page = None
+
 #####################################################Graph Related Functions####################################
 
 def CreateUnemploymentRateEmploymentGrowthGraph(folder):
@@ -2160,28 +2179,51 @@ def CreatePopulationOverTimeWithGrowthGraph(county_resident_pop, state_resident_
     fig = make_subplots(specs=[[{"secondary_y": True}, {"secondary_y": False}]],rows=1, cols=2,subplot_titles=("Population", "Annualized Population Growth"),horizontal_spacing = horizontal_spacing)
 
     #County Population
-    fig.add_trace(
-        go.Scatter(x = county_resident_pop['Period'],
-                y = county_resident_pop['Resident Population'],
-                name = county + ' (L)',
-                line = dict(color = bowery_dark_blue, width = 1,dash = 'dash'),
-                showlegend= False
-                ),      
-        secondary_y = False, row = 1, col = 1
-                 )
+    if county_or_msa_report == 'c':
+        fig.add_trace(
+            go.Scatter(x = county_resident_pop['Period'],
+                    y = county_resident_pop['Resident Population'],
+                    name = county + ' (L)',
+                    line = dict(color = bowery_dark_blue, width = 1,dash = 'dash'),
+                    showlegend= False
+                    ),      
+            secondary_y = False, row = 1, col = 1
+                    )
     
     #MSA Population if applicable
-    if (cbsa != '') and (msa_resident_pop.equals(county_resident_pop) == False):
+    if county_or_msa_report == 'c':
+        if (cbsa != '') and (msa_resident_pop.equals(county_resident_pop) == False):
+            fig.add_trace(
+                go.Scatter(x = msa_resident_pop['Period'],
+                        y = msa_resident_pop['Resident Population'],
+                        name = cbsa_name + ' (MSA)' + ' (R)',
+                        line = dict(color =bowery_light_blue, width = 1),
+                        showlegend = False
+                        ),
+                secondary_y = True, row = 1, col = 1
+                        )
+        else:
+            #State Population
+            fig.add_trace(
+            go.Scatter(x=state_resident_pop['Period'],
+                    y=state_resident_pop['Resident Population'],
+                    name=state_name + ' (R)',
+                    line = dict(color=bowery_dark_grey, width = 1),
+                    showlegend=False
+                    ),
+            secondary_y=True,row=1, col=1,)   
+    
+    if county_or_msa_report == 'm':
         fig.add_trace(
-            go.Scatter(x = msa_resident_pop['Period'],
-                    y = msa_resident_pop['Resident Population'],
-                    name = cbsa_name + ' (MSA)' + ' (R)',
-                    line = dict(color =bowery_light_blue, width = 1),
-                    showlegend = False
-                      ),
-            secondary_y = True, row = 1, col = 1
-                     )
-    else:
+                go.Scatter(x = msa_resident_pop['Period'],
+                        y = msa_resident_pop['Resident Population'],
+                        name = cbsa_name + ' (MSA)' + ' (R)',
+                        line = dict(color =bowery_light_blue, width = 1),
+                        showlegend = False
+                        ),
+                secondary_y = False, row = 1, col = 1
+                        )
+    
         #State Population
         fig.add_trace(
         go.Scatter(x=state_resident_pop['Period'],
@@ -2194,19 +2236,21 @@ def CreatePopulationOverTimeWithGrowthGraph(county_resident_pop, state_resident_
 
 
     #Calculate annualized growth rates for the county, msa (if available), and state dataframes
-    assert len(county_resident_pop) >= 11
-    county_resident_pop['Resident Population_1year_growth'] =  (((county_resident_pop['Resident Population']/county_resident_pop['Resident Population'].shift(1))  - 1) * 100)/1
-    county_resident_pop['Resident Population_5year_growth'] =  (((county_resident_pop['Resident Population']/county_resident_pop['Resident Population'].shift(5))   - 1) * 100)/5
-    county_resident_pop['Resident Population_10year_growth'] =  (((county_resident_pop['Resident Population']/county_resident_pop['Resident Population'].shift(10)) - 1) * 100)/10
+    if county_or_msa_report == 'c':
+        assert len(county_resident_pop) >= 11
+        county_resident_pop['Resident Population_1year_growth'] =  (((county_resident_pop['Resident Population']/county_resident_pop['Resident Population'].shift(1))  - 1) * 100)/1
+        county_resident_pop['Resident Population_5year_growth'] =  (((county_resident_pop['Resident Population']/county_resident_pop['Resident Population'].shift(5))   - 1) * 100)/5
+        county_resident_pop['Resident Population_10year_growth'] =  (((county_resident_pop['Resident Population']/county_resident_pop['Resident Population'].shift(10)) - 1) * 100)/10
 
-    county_1y_growth  = county_resident_pop.iloc[-1]['Resident Population_1year_growth'] 
-    county_5y_growth  = county_resident_pop.iloc[-1]['Resident Population_5year_growth'] 
-    county_10y_growth = county_resident_pop.iloc[-1]['Resident Population_10year_growth']
+        county_1y_growth  = county_resident_pop.iloc[-1]['Resident Population_1year_growth'] 
+        county_5y_growth  = county_resident_pop.iloc[-1]['Resident Population_5year_growth'] 
+        county_10y_growth = county_resident_pop.iloc[-1]['Resident Population_10year_growth']
 
     if cbsa != '':
         #Make sure we are comparing same years for calculating growth rates for county and msa
         assert len(msa_resident_pop) >= 11
-        msa_resident_pop = msa_resident_pop.loc[msa_resident_pop['Period'] <= (county_resident_pop['Period'].max())]
+        if county_or_msa_report == 'c':
+            msa_resident_pop = msa_resident_pop.loc[msa_resident_pop['Period'] <= (county_resident_pop['Period'].max())]
         msa_resident_pop['Resident Population_1year_growth'] =  (((msa_resident_pop['Resident Population']/msa_resident_pop['Resident Population'].shift(1))  - 1) * 100)/1
         msa_resident_pop['Resident Population_5year_growth'] =  (((msa_resident_pop['Resident Population']/msa_resident_pop['Resident Population'].shift(5))   - 1) * 100)/5
         msa_resident_pop['Resident Population_10year_growth'] =  (((msa_resident_pop['Resident Population']/msa_resident_pop['Resident Population'].shift(10)) - 1) * 100)/10
@@ -2217,7 +2261,11 @@ def CreatePopulationOverTimeWithGrowthGraph(county_resident_pop, state_resident_
 
     #Make sure we are comparing same years for calculating growth rates for county and state
     assert len(state_resident_pop) >= 11
-    state_resident_pop = state_resident_pop.loc[state_resident_pop['Period'] <= (county_resident_pop['Period'].max())]
+    if county_or_msa_report == 'c':
+        state_resident_pop = state_resident_pop.loc[state_resident_pop['Period'] <= (county_resident_pop['Period'].max())]
+    elif county_or_msa_report == 'm':
+        state_resident_pop = state_resident_pop.loc[state_resident_pop['Period'] <= (msa_resident_pop['Period'].max())]
+
     state_resident_pop['Resident Population_1year_growth'] =  (((state_resident_pop['Resident Population']/state_resident_pop['Resident Population'].shift(1))  - 1) * 100)/1
     state_resident_pop['Resident Population_5year_growth'] =  (((state_resident_pop['Resident Population']/state_resident_pop['Resident Population'].shift(5))   - 1) * 100)/5
     state_resident_pop['Resident Population_10year_growth'] =  (((state_resident_pop['Resident Population']/state_resident_pop['Resident Population'].shift(10)) - 1) * 100)/10
@@ -2227,7 +2275,11 @@ def CreatePopulationOverTimeWithGrowthGraph(county_resident_pop, state_resident_
     state_10y_growth = state_resident_pop.iloc[-1]['Resident Population_10year_growth']
 
     #Make sure we are comparing same years for calculating growth rates for county and USA
-    national_resident_pop = national_resident_pop.loc[national_resident_pop['Period'] <= (county_resident_pop['Period'].max())]
+    if county_or_msa_report == 'c':
+        national_resident_pop = national_resident_pop.loc[national_resident_pop['Period'] <= (county_resident_pop['Period'].max())]
+    elif county_or_msa_report == 'm':
+        national_resident_pop = national_resident_pop.loc[national_resident_pop['Period'] <= (msa_resident_pop['Period'].max())]
+    
     national_resident_pop['Resident Population_1year_growth'] =  (((national_resident_pop['Resident Population']/national_resident_pop['Resident Population'].shift(1))  - 1) * 100)/1
     national_resident_pop['Resident Population_5year_growth'] =  (((national_resident_pop['Resident Population']/national_resident_pop['Resident Population'].shift(5))   - 1) * 100)/5
     national_resident_pop['Resident Population_10year_growth'] =  (((national_resident_pop['Resident Population']/national_resident_pop['Resident Population'].shift(10)) - 1) * 100)/10
@@ -2242,86 +2294,42 @@ def CreatePopulationOverTimeWithGrowthGraph(county_resident_pop, state_resident_
 
 
     #If there's a MSA/CBSA include it, otherwise just use county, state, and USA
-    if (cbsa != '') and (county_resident_pop.equals(msa_resident_pop) == False):
+    if county_or_msa_report == 'c':
+        if (cbsa != '') and (county_resident_pop.equals(msa_resident_pop) == False):
+                
+            fig.add_trace(        
+            go.Bar(
+                name='United States',   
+                x=years, 
+                y=[national_10y_growth, national_5y_growth, national_1y_growth],
+                marker_color ="#000F44",
+                text = [national_10y_growth, national_5y_growth, national_1y_growth],
+                texttemplate = "%{value:.2f}%",
+                textposition = annotation_position ,
+                cliponaxis =  False,
+                ),
+                row = 1,
+                col = 2
+            )
             
-        fig.add_trace(        
-        go.Bar(
-            name='United States',   
-            x=years, 
-            y=[national_10y_growth, national_5y_growth, national_1y_growth],
-            marker_color ="#000F44",
-            text = [national_10y_growth, national_5y_growth, national_1y_growth],
-            texttemplate = "%{value:.2f}%",
-            textposition = annotation_position ,
-            cliponaxis =  False,
-            ),
-            row = 1,
-            col = 2
-        )
-        
 
-        fig.add_trace(        
-        go.Bar(
-            name=cbsa_name + ' (MSA)' + ' (R)',   
-            x=years, 
-            y=[msa_10y_growth, msa_5y_growth, msa_1y_growth],
-            marker_color =bowery_light_blue,
-            text = [msa_10y_growth, msa_5y_growth, msa_1y_growth],
-            texttemplate = "%{value:.2f}%",
-            textposition = annotation_position ,
-            cliponaxis =  False,
-            ),
-            row = 1,
-            col = 2
-        )
-        
-        fig.add_trace( 
-        go.Bar(
-            name=county + ' (L)',      
-            x=years, 
-            y=[county_10y_growth,county_5y_growth,county_1y_growth],
-            marker_color = bowery_dark_blue,
-            text = [county_10y_growth,county_5y_growth,county_1y_growth],
-            texttemplate = "%{value:.2f}%",
-            textposition = annotation_position,
-            cliponaxis =  False),
-            row=1,
-            col=2
-        )
-    
-    else:
-        fig.add_trace(        
-        go.Bar(
-            name='United States',   
-            x=years, 
-            y=[national_10y_growth, national_5y_growth, national_1y_growth],
-            marker_color ="#000F44",
-            text = [national_10y_growth, national_5y_growth, national_1y_growth],
-            texttemplate = "%{value:.2f}%",
-            textposition = annotation_position ,
-            cliponaxis =  False,
-            ),
-            row = 1,
-            col = 2
-        )
-
-        fig.add_trace( 
-        go.Bar(
-            name=state_name + ' (R)',  
-            x=years, 
-            y=[state_10y_growth, state_5y_growth, state_1y_growth],
-            marker_color =bowery_dark_grey,
-            text = [state_10y_growth, state_5y_growth, state_1y_growth],
-            texttemplate = "%{value:.2f}%",
-            textposition = annotation_position,
-            cliponaxis =  False,
-            ),
-            row = 1,
-            col = 2
-        )
-
-        fig.add_trace( 
-        go.Bar(
+            fig.add_trace(        
+            go.Bar(
+                name=cbsa_name + ' (MSA)' + ' (R)',   
+                x=years, 
+                y=[msa_10y_growth, msa_5y_growth, msa_1y_growth],
+                marker_color =bowery_light_blue,
+                text = [msa_10y_growth, msa_5y_growth, msa_1y_growth],
+                texttemplate = "%{value:.2f}%",
+                textposition = annotation_position ,
+                cliponaxis =  False,
+                ),
+                row = 1,
+                col = 2
+            )
+            
+            fig.add_trace( 
+            go.Bar(
                 name=county + ' (L)',      
                 x=years, 
                 y=[county_10y_growth,county_5y_growth,county_1y_growth],
@@ -2329,18 +2337,107 @@ def CreatePopulationOverTimeWithGrowthGraph(county_resident_pop, state_resident_
                 text = [county_10y_growth,county_5y_growth,county_1y_growth],
                 texttemplate = "%{value:.2f}%",
                 textposition = annotation_position,
+                cliponaxis =  False),
+                row=1,
+                col=2
+            )
+        
+        else:
+            fig.add_trace(        
+            go.Bar(
+                name='United States',   
+                x=years, 
+                y=[national_10y_growth, national_5y_growth, national_1y_growth],
+                marker_color ="#000F44",
+                text = [national_10y_growth, national_5y_growth, national_1y_growth],
+                texttemplate = "%{value:.2f}%",
+                textposition = annotation_position ,
                 cliponaxis =  False,
                 ),
-                  row = 1,
-                  col = 2
-                 )
+                row = 1,
+                col = 2
+            )
+
+            fig.add_trace( 
+            go.Bar(
+                name=state_name + ' (R)',  
+                x=years, 
+                y=[state_10y_growth, state_5y_growth, state_1y_growth],
+                marker_color =bowery_dark_grey,
+                text = [state_10y_growth, state_5y_growth, state_1y_growth],
+                texttemplate = "%{value:.2f}%",
+                textposition = annotation_position,
+                cliponaxis =  False,
+                ),
+                row = 1,
+                col = 2
+            )
+
+            fig.add_trace( 
+            go.Bar(
+                    name=county + ' (L)',      
+                    x=years, 
+                    y=[county_10y_growth,county_5y_growth,county_1y_growth],
+                    marker_color = bowery_dark_blue,
+                    text = [county_10y_growth,county_5y_growth,county_1y_growth],
+                    texttemplate = "%{value:.2f}%",
+                    textposition = annotation_position,
+                    cliponaxis =  False,
+                    ),
+                    row = 1,
+                    col = 2
+                    )
+            
+            
+    elif county_or_msa_report == 'm':
+        fig.add_trace(        
+            go.Bar(
+                name='United States',   
+                x=years, 
+                y=[national_10y_growth, national_5y_growth, national_1y_growth],
+                marker_color ="#000F44",
+                text = [national_10y_growth, national_5y_growth, national_1y_growth],
+                texttemplate = "%{value:.2f}%",
+                textposition = annotation_position ,
+                cliponaxis =  False,
+                ),
+                row = 1,
+                col = 2
+            )
+
+        fig.add_trace( 
+            go.Bar(
+                name=state_name + ' (R)',  
+                x=years, 
+                y=[state_10y_growth, state_5y_growth, state_1y_growth],
+                marker_color =bowery_dark_grey,
+                text = [state_10y_growth, state_5y_growth, state_1y_growth],
+                texttemplate = "%{value:.2f}%",
+                textposition = annotation_position,
+                cliponaxis =  False,
+                ),
+                row = 1,
+                col = 2
+            )
         
-        
+        fig.add_trace(        
+            go.Bar(
+                name=cbsa_name + ' (MSA)' + ' (R)',   
+                x=years, 
+                y=[msa_10y_growth, msa_5y_growth, msa_1y_growth],
+                marker_color =bowery_light_blue,
+                text = [msa_10y_growth, msa_5y_growth, msa_1y_growth],
+                texttemplate = "%{value:.2f}%",
+                textposition = annotation_position ,
+                cliponaxis =  False,
+                ),
+                row = 1,
+                col = 2
+            )
+
 
     #Change the bar mode
     fig.update_layout(barmode='group')
-
-    # fig.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
 
      #Set X-axes format
     fig.update_xaxes(
@@ -3369,7 +3466,7 @@ def OverviewLanguage():
     #Section 1c: Grab summary text from Wikipedia
 
     try:
-        wikipeida_summary      =  wikipedia.summary((county + ',' + state))
+        wikipeida_summary      =  page.summary
         wikipeida_summary      = wikipeida_summary.replace('the U.S. state of ','')
     
     except Exception as e:
@@ -3377,7 +3474,7 @@ def OverviewLanguage():
         wikipeida_summary      = ''
 
     try:
-        wikipeida_economy_summary                 = wikipedia.page((county + ',' + state)).section('Economy')
+        wikipeida_economy_summary                 = page.section('Economy')
         assert wikipeida_economy_summary != None
     
     except Exception as e:
@@ -4389,7 +4486,6 @@ def InfrastructureLanguage():
     print('Writing Infrastructure Langauge')
 
     #Section 1: Grab language on infrastructure from Wikipedia API
-    page                      =  wikipedia.page((county + ',' + state))
     infrastructure            =  page.section('Infrastructure')
     transportation            =  page.section('Transportation')
     public_transportation     =  page.section('Public transportation')
@@ -4413,7 +4509,6 @@ def WikipediaTransitLanguage(category):
         wikipedia_search_terms_df = pd.read_csv(os.path.join(project_location,'Data','General Data','Wikipedia Transit Related Search Terms.csv'))
         wikipedia_search_terms_df = wikipedia_search_terms_df.loc[wikipedia_search_terms_df['category'] == category]
         search_term_list          = wikipedia_search_terms_df['search term']
-        page                      = wikipedia.page((county + ',' + state))
 
         #Create a bs4 html object from the wikipedia page
         soup                      = BeautifulSoup(page.html(),'html.parser')
@@ -5655,7 +5750,7 @@ def Main():
         print('Creating Report for: ', cbsa_name)
         CreateDirectory(state = state, area_name =cbsa_name )
         
-
+    GetWikipediaPage()
     GetMSAData()
     GetStateData()
     GetNationalData()
