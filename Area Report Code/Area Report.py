@@ -3296,13 +3296,14 @@ def CreateGraphs():
     CreateUnemploymentRateEmploymentGrowthGraph(                                                                                                                                                                    folder = county_folder)
     
     if county_or_msa_report == 'm':
-        county_gdp, county_pci, county_industry_breakdown, county_industry_growth_breakdown,county_resident_pop = None, None, None, None, None
-
+        county_gdp, county_pci, county_resident_pop, county_mlp = None, None, None, None
+    
+    elif county_or_msa_report == 'c':
+        CreateEmploymentByIndustryGraph(       county_data_frame = county_industry_breakdown,                                                                                                                            folder = county_folder)
+        CreateEmploymentGrowthByIndustryGraph( county_data_frame = county_industry_growth_breakdown,                                                                                                                     folder = county_folder)
     
     CreateGDPGraph(                        county_data_frame = county_gdp, msa_data_frame = msa_gdp,state_data_frame=state_gdp,                                                                                    folder = county_folder)
     CreatePCIGraph(                        county_data_frame = county_pci ,msa_data_frame = msa_pci,state_data_frame=state_pci, national_data_frame = national_pci,                                                  folder = county_folder)
-    CreateEmploymentByIndustryGraph(       county_data_frame = county_industry_breakdown,                                                                                                                            folder = county_folder)
-    CreateEmploymentGrowthByIndustryGraph( county_data_frame = county_industry_growth_breakdown,                                                                                                                     folder = county_folder)
     CreatePopulationOverTimeWithGrowthGraph(county_resident_pop = county_resident_pop, state_resident_pop = state_resident_pop, msa_resident_pop = msa_resident_pop, national_resident_pop = national_resident_pop, folder = county_folder)
     
     #Median list price graph
