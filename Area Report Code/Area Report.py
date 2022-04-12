@@ -85,19 +85,19 @@ def UpdateSalesforceList():
     dropbox_link = dropbox_link.replace("\\",r'/')
     dropbox_links.append(dropbox_link)   
 
-def CreateDirectory(state, county):
+def CreateDirectory(state, area_name):
     global county_folder, county_folder_map, report_path, document_name
     state_folder             = os.path.join(main_output_location, state)
-    county_folder            = os.path.join(main_output_location, state, county)
+    county_folder            = os.path.join(main_output_location, state, area_name)
     
     state_folder_map         = os.path.join(map_location, state)
-    county_folder_map        = os.path.join(map_location, state, county)
+    county_folder_map        = os.path.join(map_location, state, area_name)
 
     for folder in [state_folder,county_folder,state_folder_map,county_folder_map]:
          if os.path.exists(folder) == False:
             os.mkdir(folder) 
 
-    document_name            = current_quarter + ' ' + state + ' - ' + county + '_draft.docx'
+    document_name            = current_quarter + ' ' + state + ' - ' + area_name + '_draft.docx'
     report_path              = os.path.join(county_folder, document_name)
     return(county_folder)
 
@@ -599,6 +599,38 @@ def GetCountyShape(fips):
                 return(county_shape) 
     except Exception as e:
         print(e,'unable to get county shape')
+
+def GetMSAShape(cbsa):
+    global msa_shape_polygon
+    try:
+        
+        shapefile_location = os.path.join(dropbox_root,'Research','Projects','CoStar Map Project','US CBSA Shapefile','cb_2018_us_cbsa_500k.shp')
+        assert os.path.exists(shapefile_location)
+
+        #Open the shapefile
+        msa_map = shapefile.Reader(shapefile_location)
+        
+        #Loop through each place in the shape file
+        for i in range(len(msa_map)):
+            msa_record = msa_map.shapeRecord(i)
+            #Look for the record that corresponds to our subject 
+
+            if (msa_record.record['CBSAFP'])  != cbsa:
+                continue
+            
+            else:
+                msa_shape        =  msa_map.shape(i)
+                msa_shape_polygon = Polygon(msa_shape.points)
+                try:
+                    PolygonToShapeFile(poly = msa_shape_polygon)
+                    print('Successfully created polygon object from msa shape')
+                except Exception as e:
+                    print(e,'unable to export msa polygon as shape')
+
+
+                return(msa_shape) 
+    except Exception as e:
+        print(e,'unable to get msa shape')
 
 def FindAirport():
     #Specify the file path to the airports shape file
@@ -1126,6 +1158,7 @@ def GetMSAData():
     global msa_resident_pop
     global msa_mlp
     global msa_industry_breakdown, msa_industry_growth_breakdown
+    global msa_shape
     #We create these blank variables so we can use them as function inputs for the graph functions when there is no MSA
     if cbsa == '':
             msa_gdp                         = ''
@@ -1156,6 +1189,7 @@ def GetMSAData():
         
         msa_industry_breakdown            = GetMSAIndustryBreakdown(      cbsa = cbsa, year = qcew_year, qtr = qcew_qtr)    
         msa_industry_growth_breakdown     = GetMSAIndustryGrowthBreakdown(cbsa = cbsa, year = qcew_year, qtr = qcew_qtr)
+        msa_shape                         = GetMSAShape(cbsa = cbsa)
 
 #State Data
 def GetStateGDP(state, observation_start):
@@ -1198,10 +1232,10 @@ def GetStateResidentPopulation(state, observation_start):
     
     return(state_pop_df)
 
-def GetStateUnemploymentRate(fips, start_year, end_year): 
+def GetStateUnemploymentRate(state_fips, start_year, end_year): 
     print('Getting State Unemployment Rate')
     #Seasonally-adjusted unemployment rate
-    series_name             = 'LASST' + fips[0:2] + '0000000000003'
+    series_name             = 'LASST' + state_fips + '0000000000003'
     state_ur_df             = bls.series(series_name,start_year=start_year, end_year= end_year)
 
     state_ur_df['year']     = state_ur_df['year'].astype(str)
@@ -1213,10 +1247,10 @@ def GetStateUnemploymentRate(fips, start_year, end_year):
     
     return(state_ur_df)
 
-def GetStateEmployment(fips, start_year, end_year): 
+def GetStateEmployment(state_fips, start_year, end_year): 
     print('Getting State Total Employment')
     #Total Employment
-    series_name                             = 'LASST' + fips[0:2] + '0000000000005'
+    series_name                             = 'LASST' + state_fips + '0000000000005'
     state_emp_df                            = bls.series(series_name,start_year=(start_year-1), end_year= end_year) 
     state_emp_df['year']                    = state_emp_df['year'].astype(str)
     state_emp_df['period']                  = state_emp_df['period'].str[1:3] + '/' +  state_emp_df['year'].str[2:4]      
@@ -1237,10 +1271,18 @@ def GetStateData():
     global state_resident_pop
     
     state_gdp                        = GetStateGDP(state = state, observation_start = observation_start_less1)
-    state_unemployment_rate          = GetStateUnemploymentRate(fips = fips, start_year=start_year,end_year = end_year)
-    state_employment                 = GetStateEmployment(fips = fips, start_year=start_year,end_year = end_year)
     state_pci                        = GetStatePCI(state = state, observation_start = observation_start_less1)
     state_resident_pop               = GetStateResidentPopulation(state = state, observation_start = ('01/01/' + str(end_year -12)))
+    
+    #When doing a metro report, we want data on the MSA's primary state, so we use that state fips code
+    if county_or_msa_report == 'm':
+        state_unemployment_rate          = GetStateUnemploymentRate(state_fips = cbsa_main_state_fips, start_year=start_year,end_year = end_year)
+        state_employment                 = GetStateEmployment(state_fips =cbsa_main_state_fips, start_year=start_year,end_year = end_year)
+    
+    #When doing a county report, we know the state fips from our county fips so just use that
+    elif  county_or_msa_report == 'c':
+        state_unemployment_rate          = GetStateUnemploymentRate(state_fips = fips[0:2], start_year=start_year,end_year = end_year)
+        state_employment                 = GetStateEmployment(state_fips       = fips[0:2], start_year=start_year,end_year = end_year)
 
 #National Data
 def GetNationalPCI(observation_start):
@@ -3249,9 +3291,12 @@ def millify(n):
 
 def OverviewLanguage():
     print('Writing Overview Langauge')
-
-    #Section 1A: Identify county and state of subject property
-    subject_property_location_language = ('The subject property is located in ' + county + ', ' + state_name + '. ')
+    try:
+        #Section 1A: Identify county and state of subject property
+        subject_property_location_language = ('The subject property is located in ' + county + ', ' + state_name + '. ')
+    except Exception as e:
+        print(e)
+        subject_property_location_language = ''
 
 
     #Section 1B: Grab overview summary from Metro_language CSV using the CBSA Code from IdentifyMSA
@@ -4188,7 +4233,7 @@ def IncomeLanguage():
 
     return([income_language])   
 
-def PopulationLanguage(national_resident_pop):
+def PopulationLanguage():
     print('Writing Demographic Langauge')
     try:
             county_resident_pop['Period'] = county_resident_pop['Period'].dt.strftime('%m/%d/%Y')
@@ -4461,59 +4506,70 @@ def HousingLanguage():
 
 def CarLanguage():
     print('Creating auto Langauge')
-    wikipedia_car_language     = WikipediaTransitLanguage(category = 'car')
-    #If we find something on wikipedia, use that, otherwise keep going
-    if wikipedia_car_language != None:
-        return(wikipedia_car_language)
+    try:
+        wikipedia_car_language     = WikipediaTransitLanguage(category = 'car')
+        #If we find something on wikipedia, use that, otherwise keep going
+        if wikipedia_car_language != None:
+            return(wikipedia_car_language)
 
-    else:
-        print('No major highway information on wikipedia, using geographic data')
-        nearest_highway_language = FindNearestHighways()
-        
-        if nearest_highway_language != None:
-            return(nearest_highway_language)
         else:
-            return('Major roads serving ' + county  + ' include .')
+            print('No major highway information on wikipedia, using geographic data')
+            nearest_highway_language = FindNearestHighways()
+            
+            if nearest_highway_language != None:
+                return(nearest_highway_language)
+            else:
+                return('Major roads serving ' + county  + ' include .')
+    except Exception as e:
+        print(e,'Unable to create major roads language')
 
 def PlaneLanguage():
     print('Creating plane Langauge')
-
-    #First see if any text available on wikipedia, if so use that, if not, use our geographic data
-    print('Searching Wikipedia for Airport Info')
-    wikipedia_plane_language = WikipediaTransitLanguage(category='air')
     
-    if wikipedia_plane_language != None:
-        print('Pulled Airport info from Wikipedia')
-        return(wikipedia_plane_language)
-    
-    else:
-        #Check to see if there are any airports within the area    
-        print('No Airport Information on Wikipedia, using airport shapefile to see if there are any airports within the area')
-        airport_language = FindAirport()
-
-        if airport_language != None:
-            return(airport_language)
-
+    try:
+        #First see if any text available on wikipedia, if so use that, if not, use our geographic data
+        print('Searching Wikipedia for Airport Info')
+        wikipedia_plane_language = WikipediaTransitLanguage(category='air')
+        
+        if wikipedia_plane_language != None:
+            print('Pulled Airport info from Wikipedia')
+            return(wikipedia_plane_language)
+        
         else:
-             return(county + ' is served by  .')
+            #Check to see if there are any airports within the area    
+            print('No Airport Information on Wikipedia, using airport shapefile to see if there are any airports within the area')
+            airport_language = FindAirport()
+
+            if airport_language != None:
+                return(airport_language)
+
+            else:
+                return(county + ' is served by  .')
+    except Exception as e:
+        print(e,'Unable to create local airport language')
 
 def BusLanguage():
     print('Creating bus Langauge')
-
-    wikipedia_bus_language = WikipediaTransitLanguage(category = 'bus')
-    
-    if wikipedia_bus_language != None:
-        return(wikipedia_bus_language)
-    else:
-        return(county + ' does not have public bus service.')
+    try:
+        wikipedia_bus_language = WikipediaTransitLanguage(category = 'bus')
+        
+        if wikipedia_bus_language != None:
+            return(wikipedia_bus_language)
+        else:
+            return(county + ' does not have public bus service.')
+    except Exception as e:
+        print(e,'Unable to create public bus language')
 
 def TrainLanguage():
     print('Creating train Langauge')
-    wikipedia_train_language = WikipediaTransitLanguage(category='train')
-    if wikipedia_train_language != None:
-        return(wikipedia_train_language)
-    else:
-        return(county + ' is not served by any commuter or light rail lines.')
+    try:
+        wikipedia_train_language = WikipediaTransitLanguage(category='train')
+        if wikipedia_train_language != None:
+            return(wikipedia_train_language)
+        else:
+            return(county + ' is not served by any commuter or light rail lines.')
+    except Exception as e:
+        print(e,'Unable to create public rail language')
 
 def OutlookLanguage():
     print('Writing Outlook Langauge')
@@ -4701,7 +4757,6 @@ def CreateLanguage():
 
     #Unemployment language
     unemployment_language              = UnemploymentLanguage()
-
     #County Private Employment Growth language
     try:    
         county_employment_growth_language = [CountyEmploymentGrowthLanguage(county_industry_breakdown=county_industry_growth_breakdown)]
@@ -4716,8 +4771,9 @@ def CreateLanguage():
         print(e, ' ---- problem with msa emp growth language')
         msa_employment_growth_language = ['']
 
+
     #Population language 
-    population_language = PopulationLanguage(national_resident_pop = national_resident_pop )
+    population_language = PopulationLanguage()
 
     #Income Language
     income_language = IncomeLanguage()
@@ -5101,7 +5157,14 @@ def SetDocumentStyle(document):
     font.size = Pt(9)
 
 def AddTitle(document):
-    title                               = document.add_heading(county + ' Area Analysis',level=1)
+    if county_or_msa_report == 'c':
+        title_text                          = county + ' Area Analysis'
+    elif county_or_msa_report == 'm':
+        title_text                          = cbsa_name + ' MSA Area Analysis'
+    else:
+        assert False
+
+    title                               = document.add_heading(title_text,level=1)
     title.style                         = document.styles['Heading 2']
     title.paragraph_format.space_after  = Pt(6)
     title.paragraph_format.space_before = Pt(12)
@@ -5175,7 +5238,13 @@ def GetMap():
         
         #Step 2: Write county name in box
         Place = browser.find_element(By.CLASS_NAME, "tactile-searchbox-input")
-        Place.send_keys((county + ', ' + state))
+        if county_or_msa_report == 'c':
+            search_term = (county + ', ' + state)
+        
+        elif county_or_msa_report == 'm':
+            search_term = (cbsa_name + ' ' + 'Metropolitan Area')
+        
+        Place.send_keys(search_term)
         
         #Submit county name for search
         Submit = browser.find_element(By.CLASS_NAME,'nhb85d-BIqFsb')
@@ -5397,7 +5466,7 @@ def HousingSection(document):
         AddHeading(          document = document, title = 'Housing', heading_level = 2)
         AddDocumentParagraph(document = document, language_variable = housing_language)
         AddDocumentPicture(  document = document, image_path = os.path.join(county_folder,'mlp.png'), citation = 'Realtor.com')
-        
+
 def OutlookSection(document):
     print('Writing Outlook Section')
     AddHeading(          document = document, title = 'Outlook',            heading_level = 2)
@@ -5420,6 +5489,7 @@ def WriteReport():
     OutlookSection(       document = document)
 
     #Save report
+    print(report_path)
     document.save(report_path)  
 
 def CleanUpPNGs():
@@ -5536,22 +5606,31 @@ def CreateDirectoryCSV():
         dropbox_df.to_csv(os.path.join(main_output_location, service_api_csv_name),index=False)
 
 def Main():
-    print('Creating Report for: ', county)
-    CreateDirectory(state = state, county = county)
-    GetCountyData()
+
+    #Skip getting county level data when doing a metro area report
+    if  county_or_msa_report == 'c':
+        print('Creating Report for: ', county)
+        CreateDirectory(state = state, area_name=county)
+        GetCountyData()
+
+    elif  county_or_msa_report == 'm':
+        print('Creating Report for: ', cbsa_name)
+        CreateDirectory(state = state, area_name =cbsa_name )
+        
+
     GetMSAData()
     GetStateData()
     GetNationalData()
     print('Finished Fetching Data')
     
-    CreateGraphs()
-    print('Finished Creating Graphs')
+    # CreateGraphs()
+    # print('Finished Creating Graphs')
     
     CreateLanguage()
     print('Finished Creating Langauge')
 
     WriteReport()
-    CleanUpPNGs()
+    # CleanUpPNGs()
     print('Report Complete')
 
 def IdentifyMSA(fips):
@@ -5824,8 +5903,7 @@ if county_or_msa_report == 'm':
             if state in new_england_states:
                 necta_code       = IdentifyNecta(cbsa = cbsa)
 
-            print(cbsa_name)
-            # Main()
+            Main()
             
         except Exception as e:
             print(e)
