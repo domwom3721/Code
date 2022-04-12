@@ -2217,7 +2217,7 @@ def CreatePopulationOverTimeWithGrowthGraph(county_resident_pop, state_resident_
         fig.add_trace(
                 go.Scatter(x = msa_resident_pop['Period'],
                         y = msa_resident_pop['Resident Population'],
-                        name = cbsa_name + ' (MSA)' + ' (R)',
+                        name = cbsa_name + ' (MSA)' + ' (L)',
                         line = dict(color =bowery_light_blue, width = 1),
                         showlegend = False
                         ),
