@@ -4479,7 +4479,7 @@ def MSAProductionLanguage(msa_data_frame, state_data_frame):
         print('Unable to create production language')
         return(['',''])
 
-def IncomeLanguage():
+def CountyIncomeLanguage():
     print('Writing Income Langauge')   
     try:
         #Get latest county income level
@@ -4561,7 +4561,7 @@ def IncomeLanguage():
 
     return([income_language])   
 
-def PopulationLanguage():
+def CountyPopulationLanguage():
     print('Writing Demographic Langauge')
     try:
             county_resident_pop['Period'] = county_resident_pop['Period'].dt.strftime('%m/%d/%Y')
@@ -4663,6 +4663,202 @@ def PopulationLanguage():
                                     #Sentence 3: 
                                     ' This growth rate '                     +
                                     county_5y_slower_or_faster_than_national +
+                                    ' the Nation, which has '                +
+                                    'expanded'                               +
+                                    ' '                                      +
+                                    national_5y_growth                       +
+                                    ' per year '                             +
+                                    'over the last five years.'          
+                                    )
+    except Exception as e:
+        print(e,'unable to create population language')
+        population_language = ''
+    
+    return([population_language])
+
+def MSAIncomeLanguage():
+    print('Writing Income Langauge')   
+    try:
+        #Get latest county income level
+        latest_msa_income                                  = round(msa_pci['Per Capita Personal Income'].iloc[-1])
+        latest_msa_year                                    = str(msa_pci['Period'].iloc[-1])[0:4]  
+
+        #Get County growth rates
+        msa_pci['Per Capita Personal Income_1year_growth'] =  (((msa_pci['Per Capita Personal Income']/msa_pci['Per Capita Personal Income'].shift(1))  - 1) * 100)/1
+        msa_pci['Per Capita Personal Income_3year_growth'] =  (((msa_pci['Per Capita Personal Income']/msa_pci['Per Capita Personal Income'].shift(3))   - 1) * 100)/3
+        msa_pci['Per Capita Personal Income_5year_growth'] =  (((msa_pci['Per Capita Personal Income']/msa_pci['Per Capita Personal Income'].shift(5))   - 1) * 100)/5
+
+        msa_1y_growth                                      = msa_pci.iloc[-1]['Per Capita Personal Income_1year_growth'] 
+        msa_3y_growth                                      = msa_pci.iloc[-1]['Per Capita Personal Income_3year_growth'] 
+        msa_5y_growth                                      = msa_pci.iloc[-1]['Per Capita Personal Income_5year_growth']
+
+        #See if 3 year income growth rate was higher or lower than 5 year growth rate
+        if msa_3y_growth > msa_5y_growth:
+            three_five_year_msa_declined_or_expanded = 'expanded'
+        elif msa_3y_growth < msa_5y_growth:
+            three_five_year_msa_declined_or_expanded = 'declined'
+        elif msa_3y_growth == msa_5y_growth:
+            three_five_year_msa_declined_or_expanded = 'remained stable'
+
+        #Get national growth rates
+        national_pci_restricted = national_pci.loc[national_pci['Period'] <= (msa_pci['Period'].max())].copy() #Restrict to last year of msa data to marke sure we compare appples to apples
+        national_pci_restricted['Per Capita Personal Income_1year_growth'] =  (((national_pci_restricted['Per Capita Personal Income']/national_pci_restricted['Per Capita Personal Income'].shift(1))  - 1) * 100)/1
+        national_pci_restricted['Per Capita Personal Income_3year_growth'] =  (((national_pci_restricted['Per Capita Personal Income']/national_pci_restricted['Per Capita Personal Income'].shift(3))   - 1) * 100)/3
+        national_pci_restricted['Per Capita Personal Income_5year_growth'] =  (((national_pci_restricted['Per Capita Personal Income']/national_pci_restricted['Per Capita Personal Income'].shift(5))   - 1) * 100)/5
+
+        national_1y_growth  = national_pci_restricted.iloc[-1]['Per Capita Personal Income_1year_growth']
+        national_3y_growth  = national_pci_restricted.iloc[-1]['Per Capita Personal Income_3year_growth'] 
+        national_5y_growth  = national_pci_restricted.iloc[-1]['Per Capita Personal Income_5year_growth'] 
+        
+        
+        
+        #See if 3 year income growth rate was higher or lower than nation
+        if msa_3y_growth > national_3y_growth:
+            msa_vs_nation_3y_exceeds_lags = 'exceeds'
+        elif msa_3y_growth < national_3y_growth:
+            msa_vs_nation_3y_exceeds_lags = 'lags'
+        elif msa_3y_growth == national_3y_growth:
+            msa_vs_nation_3y_exceeds_lags = 'is equal to'
+
+
+
+        income_language = (#Sentence 1
+                            'Going back five years, '                     +
+                            cbsa_name                                     +
+                            """ residents' per capita personal income """ +
+                            'has expanded '                               + 
+                            "{:,.1f}%".format(msa_5y_growth)              + 
+                            ' per annum to the '                          +
+                            latest_msa_year                               + 
+                            ' level of '                                  +
+                            "${:,}".format(latest_msa_income)             +
+                            '. '                                          +
+
+                        #Sentence 2    
+                        'Over the past three years, growth has '          +
+                        three_five_year_msa_declined_or_expanded          +
+                        ', growing '                                      +
+                            "{:,.1f}%".format(msa_3y_growth)              + 
+                            ' per annum since '                           + 
+                            str(int(latest_msa_year) - 3)                 + 
+                            '. '                                          +
+                        
+                        #Sentence 3
+                        'This growth rate '                               + 
+                        msa_vs_nation_3y_exceeds_lags                     +
+                            ' the Nation, which has '                     +
+                            'expanded'                                    +     
+                            ' '                                           +   
+                            "{:,.1f}%".format(national_3y_growth)         + 
+                            ' per year over the last three years. ' 
+                )
+    except Exception as e:
+        print(e,'unable to get income language') 
+        income_language = ''
+
+    return([income_language])   
+
+def MSAPopulationLanguage():
+    print('Writing Demographic Langauge')
+    try:
+            msa_resident_pop['Period']    = msa_resident_pop['Period'].dt.strftime('%m/%d/%Y')
+            latest_period                 = msa_resident_pop['Period'].iloc[-1]
+            latest_period                 = latest_period[-4:]
+            latest_msa_pop                = round(msa_resident_pop['Resident Population'].iloc[-1])
+            
+            msa_resident_pop['Resident Population_1year_growth']  =  (((msa_resident_pop['Resident Population']/msa_resident_pop['Resident Population'].shift(1))  - 1) * 100)/1
+            msa_resident_pop['Resident Population_5year_growth']  =  (((msa_resident_pop['Resident Population']/msa_resident_pop['Resident Population'].shift(5))   - 1) * 100)/5
+            msa_resident_pop['Resident Population_10year_growth'] =  (((msa_resident_pop['Resident Population']/msa_resident_pop['Resident Population'].shift(10)) - 1) * 100)/10
+
+            msa_1y_growth  = msa_resident_pop.iloc[-1]['Resident Population_1year_growth'] 
+            msa_5y_growth  = msa_resident_pop.iloc[-1]['Resident Population_5year_growth'] 
+            msa_10y_growth = msa_resident_pop.iloc[-1]['Resident Population_10year_growth']
+
+            #Determine how to describe 10 year msa population growth
+            if msa_10y_growth > 0:
+                msa_10y_expand_or_compress =  'expanded'
+            elif msa_10y_growth < 0:
+                msa_10y_expand_or_compress =  'compressed'
+            else:
+                msa_10y_expand_or_compress =  '[remained stagnant with limited growth of ]'
+            
+            #Determine how to describe 5 year msa population growth
+            if msa_5y_growth > 0:
+                msa_5y_expand_or_compress =  'growing'
+            elif msa_5y_growth < 0:
+                msa_5y_expand_or_compress =  'contracting'
+            else:
+                msa_5y_expand_or_compress =  '[growing/contracting]'
+
+            #Determine if 5 year growth is slower of faster than 10 year growth
+            if msa_5y_growth > msa_10y_growth:
+                growth_declined_or_expanded = 'expanded'
+            elif msa_5y_growth < msa_10y_growth:
+                growth_declined_or_expanded = 'declined'
+            elif msa_5y_growth == msa_10y_growth:
+                growth_declined_or_expanded = 'remained stable'
+            else:
+                growth_declined_or_expanded = '[declined/expanded]'
+
+
+            #Make sure we are comparing same years for calculating growth rates for msa and USA
+            national_resident_pop['Resident Population_1year_growth'] =  (((national_resident_pop['Resident Population']/national_resident_pop['Resident Population'].shift(1))  - 1) * 100)/1
+            national_resident_pop['Resident Population_5year_growth'] =  (((national_resident_pop['Resident Population']/national_resident_pop['Resident Population'].shift(5))   - 1) * 100)/5
+            national_resident_pop['Resident Population_10year_growth'] =  (((national_resident_pop['Resident Population']/national_resident_pop['Resident Population'].shift(10)) - 1) * 100)/10
+            national_resident_pop = national_resident_pop.loc[national_resident_pop['Period'] <= (msa_resident_pop['Period'].max())]
+
+            national_1y_growth  = national_resident_pop.iloc[-1]['Resident Population_1year_growth'] 
+            national_5y_growth  = national_resident_pop.iloc[-1]['Resident Population_5year_growth'] 
+            national_10y_growth = national_resident_pop.iloc[-1]['Resident Population_10year_growth']
+
+            #Determine if msa 5 year growth was slower or faster than national growth
+            if msa_5y_growth > national_5y_growth:
+                msa_5y_slower_or_faster_than_national = 'exceeds'
+            elif  msa_5y_growth < national_5y_growth:
+                msa_5y_slower_or_faster_than_national = 'falls short of'
+            elif  msa_5y_growth == national_5y_growth:
+                msa_5y_slower_or_faster_than_national = 'is equal to'
+            else:
+                msa_5y_slower_or_faster_than_national = '[falls short of/exceeds]'
+
+        
+            msa_1y_growth  = "{:,.1f}%".format(msa_1y_growth)
+            msa_5y_growth  = "{:,.1f}%".format(abs(msa_5y_growth)) 
+            msa_10y_growth = "{:,.1f}%".format(abs(msa_10y_growth))
+
+            national_1y_growth  = "{:,.1f}%".format(national_1y_growth)
+            national_5y_growth  = "{:,.1f}%".format(national_5y_growth) 
+            national_10y_growth = "{:,.1f}%".format(national_10y_growth)
+
+            population_language = (#Sentence 1:
+                                    'Going back ten years, '      +
+                                    cbsa_name                     +
+                                    """'s population has """      +
+                                    msa_10y_expand_or_compress    +
+                                     ' '                          +
+                                    msa_10y_growth                +
+                                    ' per annum '                 +
+                                    'to the '                     +
+                                    latest_period                 +      
+                                    ' '                           +
+                                    'count of '                   +
+                                    "{:,}".format(latest_msa_pop) +
+                                    '.'                           +
+
+                                    #Sentence 2:
+                                    ' Over the past five years, growth has ' +
+                                    growth_declined_or_expanded              +
+                                    ', '                                     +
+                                    msa_5y_expand_or_compress             +
+                                    ' '                                      +
+                                    msa_5y_growth                         +
+                                    ' per annum since '                      +
+                                    str((int(latest_period) - 5))            +
+                                    '.' +
+
+                                    #Sentence 3: 
+                                    ' This growth rate '                     +
+                                    msa_5y_slower_or_faster_than_national +
                                     ' the Nation, which has '                +
                                     'expanded'                               +
                                     ' '                                      +
@@ -5058,7 +5254,7 @@ def CreateLanguage():
         print('problem with infrastructure language')
         infrastructure_language = ['']
 
-    #Houing langauge
+    #Housing langauge
     try:    
         housing_language        = HousingLanguage()
     except:
@@ -5101,10 +5297,16 @@ def CreateLanguage():
 
 
     #Population language 
-    population_language = PopulationLanguage()
+    if county_or_msa_report == 'c':
+        population_language = CountyPopulationLanguage()
+    elif county_or_msa_report == 'm':
+        population_language = MSAPopulationLanguage()
 
     #Income Language
-    income_language = IncomeLanguage()
+    if county_or_msa_report == 'c':
+        income_language = CountyIncomeLanguage()
+    elif county_or_msa_report == 'm':
+        income_language = MSAIncomeLanguage()
 
 #Table Related functions 
 def GetDataAndLanguageForOverviewTable():
