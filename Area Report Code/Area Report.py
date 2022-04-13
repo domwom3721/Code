@@ -4344,77 +4344,140 @@ def MSAEmploymentGrowthLanguage(msa_industry_breakdown):
 
     return(msa_employment_growth_language)
 
-def ProductionLanguage(county_data_frame,msa_data_frame,state_data_frame):
-    print('Writing Production Langauge')
-    county_data_frame['Period'] = county_data_frame['Period'].dt.strftime('%m/%d/%Y')
-    latest_period               = county_data_frame['Period'].iloc[-1]
-    latest_period               = latest_period[-4:]
-    latest_county_gdp           = county_data_frame['GDP'].iloc[-1]
-    latest_county_gdp           = millify(latest_county_gdp)
-    latest_county_gdp           = "$" + latest_county_gdp
-    
-    latest_county_gdp_growth    = ((county_data_frame['GDP'].iloc[-1]/county_data_frame['GDP'].iloc[-2]) - 1) * 100
-    
+def CountyProductionLanguage(county_data_frame,msa_data_frame,state_data_frame):
+    print('Writing County Production/GDP Langauge')
+    try:
+        county_data_frame['Period'] = county_data_frame['Period'].dt.strftime('%m/%d/%Y')
+        latest_period               = county_data_frame['Period'].iloc[-1]
+        latest_period               = latest_period[-4:]
+        latest_county_gdp           = county_data_frame['GDP'].iloc[-1]
+        latest_county_gdp           = millify(latest_county_gdp)
+        latest_county_gdp           = "$" + latest_county_gdp
+        
+        latest_county_gdp_growth    = ((county_data_frame['GDP'].iloc[-1]/county_data_frame['GDP'].iloc[-2]) - 1) * 100
+        
 
-    #determine how to describe GDP growth 
-    if latest_county_gdp_growth > 3.5:
-        gdp_growth_description = 'strong'
-    elif latest_county_gdp_growth < 3.5 and (latest_county_gdp_growth >= 1.25):
-        gdp_growth_description = 'steady'
-    elif latest_county_gdp_growth < 1.25 and (latest_county_gdp_growth >= 0.5):
-        gdp_growth_description = 'modest'
-    elif latest_county_gdp_growth < 0.5 and (latest_county_gdp_growth >= 0.25):
-        gdp_growth_description = 'weak'
-    elif latest_county_gdp_growth < 0.25 and (latest_county_gdp_growth >= 0):
-        gdp_growth_description = 'stagnant'
-    elif latest_county_gdp_growth < 0 :
-        gdp_growth_description = 'negative'
-    else:
-        gdp_growth_description = '[stagnant/steady/strong/weak/negative]'
+        #determine how to describe GDP growth 
+        if latest_county_gdp_growth > 3.5:
+            gdp_growth_description = 'strong'
+        elif latest_county_gdp_growth < 3.5 and (latest_county_gdp_growth >= 1.25):
+            gdp_growth_description = 'steady'
+        elif latest_county_gdp_growth < 1.25 and (latest_county_gdp_growth >= 0.5):
+            gdp_growth_description = 'modest'
+        elif latest_county_gdp_growth < 0.5 and (latest_county_gdp_growth >= 0.25):
+            gdp_growth_description = 'weak'
+        elif latest_county_gdp_growth < 0.25 and (latest_county_gdp_growth >= 0):
+            gdp_growth_description = 'stagnant'
+        elif latest_county_gdp_growth < 0 :
+            gdp_growth_description = 'negative'
+        else:
+            gdp_growth_description = '[stagnant/steady/strong/weak/negative]'
 
 
-    if  isinstance(msa_data_frame, pd.DataFrame) == True and msa_data_frame['GDP'].equals(county_data_frame['GDP']) == False:
-        msa_data_frame          = msa_data_frame.loc[msa_data_frame['Period'] <= (county_data_frame['Period'].max()) ]
-        latest_msa_gdp_growth   = ((msa_data_frame['GDP'].iloc[-1]/msa_data_frame['GDP'].iloc[-2]) - 1) * 100
-        latest_msa_gdp_growth   =  "{:,.1f}%".format(latest_msa_gdp_growth)
-        msa_or_state_gdp_growth = latest_msa_gdp_growth
-        msa_or_state            = 'Metro'
-    else:
-        state_data_frame        = state_data_frame.loc[state_data_frame['Period'] <= (county_data_frame['Period'].max()) ]
+        if  isinstance(msa_data_frame, pd.DataFrame) == True and msa_data_frame['GDP'].equals(county_data_frame['GDP']) == False:
+            msa_data_frame          = msa_data_frame.loc[msa_data_frame['Period'] <= (county_data_frame['Period'].max()) ]
+            latest_msa_gdp_growth   = ((msa_data_frame['GDP'].iloc[-1]/msa_data_frame['GDP'].iloc[-2]) - 1) * 100
+            latest_msa_gdp_growth   =  "{:,.1f}%".format(latest_msa_gdp_growth)
+            msa_or_state_gdp_growth = latest_msa_gdp_growth
+            msa_or_state            = 'Metro'
+        else:
+            state_data_frame        = state_data_frame.loc[state_data_frame['Period'] <= (county_data_frame['Period'].max()) ]
+            latest_state_gdp_growth = ((state_data_frame['GDP'].iloc[-1]/state_data_frame['GDP'].iloc[-2]) - 1) * 100
+            latest_state_gdp_growth =  "{:,.1f}%".format(latest_state_gdp_growth)
+            msa_or_state_gdp_growth = latest_state_gdp_growth
+            msa_or_state            = 'State'
+
+        #Fomrmat variables
+        latest_county_gdp_growth =  "{:,.1f}%".format(latest_county_gdp_growth)
+
+        production_language = ('While GDP data at the county level is not yet available, '      +
+                                latest_period                                                   +
+                                ' data from the U.S. Bureau of Economic Analysis points to '    +
+                                gdp_growth_description                                          +
+                                ' growth for '                                                  +
+                                county                                                          +
+                                ', which produced ~'                                            +
+                                latest_county_gdp                                               +
+                                ' of output that year, '                                        +
+                                'representing an annual change of '                             +
+                                latest_county_gdp_growth                                        +
+                                ' compared to '                                                 +
+                                msa_or_state_gdp_growth                                         +
+                                ' for the '                                                     +
+                                msa_or_state                                                    +
+                                    '.' 
+                            )
+
+        boiler_plate_econ_language = ('Economic activity has slowed after historical annual growth of 6.7% in Q2 2021, softening to 2.3% for the third quarter. '                                                           +
+                                    'The slowdown in third quarter GDP reflected the continued economic impact of the COVID-19 pandemic. '                                                                                +
+                                    'A resurgence of COVID-19 cases resulted in new restrictions and delays in the reopening of establishments in some parts of the country. '                                            +
+                                    'Supply-chain disruptions such as delays at U.S. ports and international manufacturing issues contributed to a sharp increase in inflation and pose a risk to the economic outlook. ' +
+                                    'Despite supply-side challenges, many economic observers expect that the economy regained momentum in the final quarter and is well positioned for growth in 2022. '
+                                    )
+        
+        return[boiler_plate_econ_language, production_language]
+    except Exception as e:
+        print('Unable to create production language')
+        return(['',''])
+
+def MSAProductionLanguage(msa_data_frame, state_data_frame):
+    print('Writing MSA Production/GDP Langauge')
+    try:
+        #Get the most recent GDP level, 1 year growth rate, and year of last observation
+        msa_data_frame['Period']    = msa_data_frame['Period'].dt.strftime('%m/%d/%Y')
+        latest_period               = msa_data_frame['Period'].iloc[-1]
+        latest_period               = latest_period[-4:]
+        latest_msa_gdp              = msa_data_frame['GDP'].iloc[-1]
+        latest_msa_gdp_growth       = ((msa_data_frame['GDP'].iloc[-1]/msa_data_frame['GDP'].iloc[-2]) - 1) * 100
+        
+
+        #Determine how to describe GDP growth 
+        if latest_msa_gdp_growth > 3.5:
+            gdp_growth_description = 'strong'
+        elif latest_msa_gdp_growth < 3.5 and (latest_msa_gdp_growth >= 1.25):
+            gdp_growth_description = 'steady'
+        elif latest_msa_gdp_growth < 1.25 and (latest_msa_gdp_growth >= 0.5):
+            gdp_growth_description = 'modest'
+        elif latest_msa_gdp_growth < 0.5 and (latest_msa_gdp_growth >= 0.25):
+            gdp_growth_description = 'weak'
+        elif latest_msa_gdp_growth < 0.25 and (latest_msa_gdp_growth >= 0):
+            gdp_growth_description = 'stagnant'
+        elif latest_msa_gdp_growth < 0 :
+            gdp_growth_description = 'negative'
+        else:
+            assert False
+
+        #Make sure we are dropping any observations for years in which we have state GDP but not MSA GDP so we compare apples to apples on growth rates
+        state_data_frame        = state_data_frame.loc[state_data_frame['Period'] <= (msa_data_frame['Period'].max()) ]
         latest_state_gdp_growth = ((state_data_frame['GDP'].iloc[-1]/state_data_frame['GDP'].iloc[-2]) - 1) * 100
-        latest_state_gdp_growth =  "{:,.1f}%".format(latest_state_gdp_growth)
-        msa_or_state_gdp_growth = latest_state_gdp_growth
-        msa_or_state            = 'State'
 
-    #Fomrmat variables
-    latest_county_gdp_growth =  "{:,.1f}%".format(latest_county_gdp_growth)
+        production_language = ('Data from the U.S. Bureau of Economic Analysis points to '      +
+                                gdp_growth_description                                          +
+                                ' growth for '                                                  +
+                                cbsa_name                                                       +
+                                ', which produced roughly'                                      +
+                                "$" + millify(latest_msa_gdp)                                   +
+                                ' of output in '                                                +
+                                latest_period                                                   +
+                                ', '                                                            +
+                                'representing an annual change of '                             +
+                                 "{:,.1f}%".format(latest_msa_gdp_growth)                       +
+                                ' compared to '                                                 +
+                                 "{:,.1f}%".format(latest_state_gdp_growth)                     +
+                                ' for the State.'                                               
+                               )
 
-    production_language = ('While GDP data at the county level is not yet available, '      +
-                            latest_period                                                   +
-                            ' data from the U.S. Bureau of Economic Analysis points to '    +
-                            gdp_growth_description                                          +
-                            ' growth for '                                                  +
-                            county                                                          +
-                            ', which produced ~'                                            +
-                            latest_county_gdp                                               +
-                            ' of output that year, '                                        +
-                            'representing an annual change of '                             +
-                            latest_county_gdp_growth                                        +
-                            ' compared to '                                                 +
-                            msa_or_state_gdp_growth                                         +
-                            ' for the '                                                     +
-                            msa_or_state                                                    +
-                                '.' 
-                           )
-
-    boiler_plate_econ_language = ('Economic activity has slowed after historical annual growth of 6.7% in Q2 2021, softening to 2.3% for the third quarter. '                                                           +
-                                  'The slowdown in third quarter GDP reflected the continued economic impact of the COVID-19 pandemic. '                                                                                +
-                                  'A resurgence of COVID-19 cases resulted in new restrictions and delays in the reopening of establishments in some parts of the country. '                                            +
-                                  'Supply-chain disruptions such as delays at U.S. ports and international manufacturing issues contributed to a sharp increase in inflation and pose a risk to the economic outlook. ' +
-                                  'Despite supply-side challenges, many economic observers expect that the economy regained momentum in the final quarter and is well positioned for growth in 2022. '
-                                 )
-    
-    return[boiler_plate_econ_language, production_language]
+        boiler_plate_econ_language = ('Economic activity has slowed after historical annual growth of 6.7% in Q2 2021, softening to 2.3% for the third quarter. '                                                           +
+                                    'The slowdown in third quarter GDP reflected the continued economic impact of the COVID-19 pandemic. '                                                                                +
+                                    'A resurgence of COVID-19 cases resulted in new restrictions and delays in the reopening of establishments in some parts of the country. '                                            +
+                                    'Supply-chain disruptions such as delays at U.S. ports and international manufacturing issues contributed to a sharp increase in inflation and pose a risk to the economic outlook. ' +
+                                    'Despite supply-side challenges, many economic observers expect that the economy regained momentum in the final quarter and is well positioned for growth in 2022. '
+                                    )
+        
+        return[boiler_plate_econ_language, production_language]
+    except Exception as e:
+        print('Unable to create production language')
+        return(['',''])
 
 def IncomeLanguage():
     print('Writing Income Langauge')   
@@ -4966,7 +5029,6 @@ def CreateLanguage():
     global population_language,income_language
     print('Creating Langauge')
     
-    #overview language
     overview_language       = OverviewLanguage()
 
     #County Employment breakdown language
@@ -4984,11 +5046,10 @@ def CreateLanguage():
         msa_employment_industry_breakdown_language    = ['']
 
     #Production language
-    try:
-        production_language     = ProductionLanguage(county_data_frame = county_gdp ,msa_data_frame = msa_gdp,state_data_frame = state_gdp)
-    except Exception as e:
-        print('problem with production language: ', e)
-        production_language = ['']
+    if county_or_msa_report == 'c':
+        production_language     = CountyProductionLanguage(county_data_frame = county_gdp ,msa_data_frame = msa_gdp,state_data_frame = state_gdp)
+    elif county_or_msa_report == 'm':
+        production_language     = MSAProductionLanguage(msa_data_frame = msa_gdp,state_data_frame = state_gdp)
 
     #Infrastructure language
     try:
