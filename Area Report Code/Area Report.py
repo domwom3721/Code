@@ -4455,7 +4455,7 @@ def MSAProductionLanguage(msa_data_frame, state_data_frame):
                                 gdp_growth_description                                          +
                                 ' growth for '                                                  +
                                 cbsa_name                                                       +
-                                ', which produced roughly'                                      +
+                                ', which produced roughly '                                     +
                                 "$" + millify(latest_msa_gdp)                                   +
                                 ' of output in '                                                +
                                 latest_period                                                   +
