@@ -1831,8 +1831,12 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
         msa_5y_growth  = msa_data_frame.iloc[-1]['Per Capita Personal Income_5year_growth'] 
 
     #Make sure we are comparing same years for calculating growth rates for county and state
-    if (isinstance(county_data_frame, pd.DataFrame) == True):
+    if (isinstance(county_data_frame, pd.DataFrame) == True) and county_or_msa_report == 'c':
+
         state_data_frame = state_data_frame.loc[state_data_frame['Period'] <= (county_data_frame['Period'].max())]
+    if county_or_msa_report == 'm':
+        state_data_frame = state_data_frame.loc[state_data_frame['Period'] <= (msa_data_frame['Period'].max())]
+    
     state_data_frame['Per Capita Personal Income_1year_growth'] =  (((state_data_frame['Per Capita Personal Income']/state_data_frame['Per Capita Personal Income'].shift(1))  - 1) * 100)/1
     state_data_frame['Per Capita Personal Income_3year_growth'] =  (((state_data_frame['Per Capita Personal Income']/state_data_frame['Per Capita Personal Income'].shift(3))   - 1) * 100)/3
     state_data_frame['Per Capita Personal Income_5year_growth'] =  (((state_data_frame['Per Capita Personal Income']/state_data_frame['Per Capita Personal Income'].shift(5))   - 1) * 100)/5
@@ -1842,8 +1846,11 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
     state_5y_growth                                             = state_data_frame.iloc[-1]['Per Capita Personal Income_5year_growth'] 
 
     #Make sure we are comparing same years for calculating growth rates for county and state
-    if  (isinstance(county_data_frame, pd.DataFrame) == True):
+    if  (isinstance(county_data_frame, pd.DataFrame) == True) and county_or_msa_report == 'c':
         national_data_frame = national_data_frame.loc[national_data_frame['Period'] <= (county_data_frame['Period'].max())]
+    if county_or_msa_report == 'm':
+        national_data_frame = national_data_frame.loc[national_data_frame['Period'] <= (msa_data_frame['Period'].max())]
+    
     national_data_frame['Per Capita Personal Income_1year_growth'] =  (((national_data_frame['Per Capita Personal Income']/national_data_frame['Per Capita Personal Income'].shift(1))  - 1) * 100)/1
     national_data_frame['Per Capita Personal Income_3year_growth'] =  (((national_data_frame['Per Capita Personal Income']/national_data_frame['Per Capita Personal Income'].shift(3))   - 1) * 100)/3
     national_data_frame['Per Capita Personal Income_5year_growth'] =  (((national_data_frame['Per Capita Personal Income']/national_data_frame['Per Capita Personal Income'].shift(5))   - 1) * 100)/5
@@ -1891,8 +1898,6 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
             row = 1,
             col = 2)
 
-
-    
     #MSA PCI is unavailable, but county is (or county is equal to msa)
     elif ((isinstance(msa_data_frame, pd.DataFrame) == False)  and (isinstance(county_data_frame, pd.DataFrame) == True)):
         print('MSA PCI Unavailable, County PCI is available')
@@ -1941,7 +1946,6 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
                 ),
             row = 1,
             col = 2)
-
 
     #MSA and County are available
     elif (isinstance(msa_data_frame, pd.DataFrame) == True)  and (isinstance(county_data_frame, pd.DataFrame) == True):
