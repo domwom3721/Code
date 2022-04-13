@@ -4871,7 +4871,7 @@ def MSAPopulationLanguage():
                                     'over the last five years.'          
                                     )
     except Exception as e:
-        print(e,'unable to create population language')
+        print(e,'unable to create MSA population language')
         population_language = ''
     
     return([population_language])
