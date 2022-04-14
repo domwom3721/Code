@@ -637,7 +637,7 @@ def GetMSAShape(cbsa):
     except Exception as e:
         print(e,'unable to get msa shape')
 
-def FindAirport():
+def FindAirport(polygon):
     #Specify the file path to the airports shape file
     airport_map_location = os.path.join(general_data_location,'Geographic Data','Airports','Airports.shp')
     
@@ -651,7 +651,7 @@ def FindAirport():
         for i in range(len(airport_map)):
             airport_coords        =  Point(airport_map.shape(i).points[0][0],airport_map.shape(i).points[0][1])
             
-            if county_shape_polygon.contains(airport_coords):
+            if polygon.contains(airport_coords):
                 airports_in_city_index_list.append(i)
 
         airport_info_list = []    
@@ -682,7 +682,7 @@ def FindAirport():
         print(e,'Unable to locate airport inside the county area')
         return(None)
 
-def FindNearestHighways():
+def FindNearestHighways(polygon):
     
     try:
         #Specify the file path to the  shape file
@@ -695,7 +695,7 @@ def FindNearestHighways():
         #Find any airports inside the confines of the city
         for i in range(len(road_map)):
             highway_coords        =  LineString(road_map.shape(i).points)           
-            if county_shape_polygon.contains(highway_coords):
+            if polygon.contains(highway_coords):
                 highways_in_city_index_list.append(i)
         i = 0
         highway_info_list = []    
@@ -4816,14 +4816,15 @@ def MSAPopulationLanguage():
 
 
             #Make sure we are comparing same years for calculating growth rates for msa and USA
-            national_resident_pop['Resident Population_1year_growth'] =  (((national_resident_pop['Resident Population']/national_resident_pop['Resident Population'].shift(1))  - 1) * 100)/1
-            national_resident_pop['Resident Population_5year_growth'] =  (((national_resident_pop['Resident Population']/national_resident_pop['Resident Population'].shift(5))   - 1) * 100)/5
-            national_resident_pop['Resident Population_10year_growth'] =  (((national_resident_pop['Resident Population']/national_resident_pop['Resident Population'].shift(10)) - 1) * 100)/10
-            national_resident_pop = national_resident_pop.loc[national_resident_pop['Period'] <= (msa_resident_pop['Period'].max())]
+            national_resident_pop_local                                      = national_resident_pop.copy()
+            national_resident_pop_local['Resident Population_1year_growth']  =  (((national_resident_pop_local['Resident Population']/national_resident_pop_local['Resident Population'].shift(1))  - 1) * 100)/1
+            national_resident_pop_local['Resident Population_5year_growth']  =  (((national_resident_pop_local['Resident Population']/national_resident_pop_local['Resident Population'].shift(5))   - 1) * 100)/5
+            national_resident_pop_local['Resident Population_10year_growth'] =  (((national_resident_pop_local['Resident Population']/national_resident_pop_local['Resident Population'].shift(10)) - 1) * 100)/10
+            national_resident_pop_local                                      = national_resident_pop_local.loc[national_resident_pop_local['Period'] <= (msa_resident_pop['Period'].max())]
 
-            national_1y_growth  = national_resident_pop.iloc[-1]['Resident Population_1year_growth'] 
-            national_5y_growth  = national_resident_pop.iloc[-1]['Resident Population_5year_growth'] 
-            national_10y_growth = national_resident_pop.iloc[-1]['Resident Population_10year_growth']
+            national_1y_growth  = national_resident_pop_local.iloc[-1]['Resident Population_1year_growth'] 
+            national_5y_growth  = national_resident_pop_local.iloc[-1]['Resident Population_5year_growth'] 
+            national_10y_growth = national_resident_pop_local.iloc[-1]['Resident Population_10year_growth']
 
             #Determine if msa 5 year growth was slower or faster than national growth
             if msa_5y_growth > national_5y_growth:
@@ -5109,8 +5110,11 @@ def CarLanguage():
 
         else:
             print('No major highway information on wikipedia, using geographic data')
-            nearest_highway_language = FindNearestHighways()
-            
+            if county_or_msa_report == 'c':
+                nearest_highway_language = FindNearestHighways(polygon = county_shape_polygon)
+            elif county_or_msa_report == 'm':
+                nearest_highway_language = FindNearestHighways(polygon = msa_shape_polygon)
+
             if nearest_highway_language != None:
                 return(nearest_highway_language)
             else:
@@ -5133,7 +5137,10 @@ def PlaneLanguage():
         else:
             #Check to see if there are any airports within the area    
             print('No Airport Information on Wikipedia, using airport shapefile to see if there are any airports within the area')
-            airport_language = FindAirport()
+            if county_or_msa_report == 'c':
+                airport_language = FindAirport(polygon = county_shape_polygon)
+            elif county_or_msa_report == 'm':
+                airport_language = FindAirport(polygon = msa_shape_polygon)
 
             if airport_language != None:
                 return(airport_language)
