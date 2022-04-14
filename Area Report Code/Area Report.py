@@ -5298,9 +5298,9 @@ def MSAOutlookLanguage():
         assert len(msa_gdp) == len(national_gdp_restricted)
         msa_gdp_sentence = (#Sentence 1
                             'Between, '                       + 
-                                str(msa_gdp_min_year)         +  
+                                str(msa_gdp_min_year)[6:]     +  
                                 ' and '                       +
-                                str(msa_gdp_max_year)         +
+                                str(msa_gdp_max_year)[6:]     +
                                 ', '                          +
                                 cbsa_name                     +
                                 ' GDP grew '                  +
