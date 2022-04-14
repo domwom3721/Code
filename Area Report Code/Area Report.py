@@ -3437,13 +3437,6 @@ def millify(n):
 
 def OverviewLanguage():
     print('Writing Overview Langauge')
-    try:
-        #Section 1A: Identify county and state of subject property
-        subject_property_location_language = ('The subject property is located in ' + county + ', ' + state_name + '. ')
-    except Exception as e:
-        print(e)
-        subject_property_location_language = ''
-
 
     #Section 1B: Grab overview summary from Metro_language CSV using the CBSA Code from IdentifyMSA
     try:
@@ -3476,13 +3469,12 @@ def OverviewLanguage():
 
 
     #Section 1c: Grab summary text from Wikipedia
-
     try:
         wikipeida_summary      =  page.summary
         wikipeida_summary      = wikipeida_summary.replace('the U.S. state of ','')
     
     except Exception as e:
-        print(e)
+        print(e,'Unable to get Wikipedia Summary')
         wikipeida_summary      = ''
 
     try:
@@ -3490,7 +3482,7 @@ def OverviewLanguage():
         assert wikipeida_economy_summary != None
     
     except Exception as e:
-        print(e)
+        print(e,'Unable to get Economy section from Wikipedia')
         wikipeida_economy_summary               = ''
 
 
@@ -4579,7 +4571,7 @@ def CountyIncomeLanguage():
     return([income_language])   
 
 def CountyPopulationLanguage():
-    print('Writing Demographic Langauge')
+    print('Writing County Population Langauge')
     try:
             county_resident_pop['Period'] = county_resident_pop['Period'].dt.strftime('%m/%d/%Y')
             latest_period                 = county_resident_pop['Period'].iloc[-1]
@@ -4623,14 +4615,15 @@ def CountyPopulationLanguage():
 
 
             #Make sure we are comparing same years for calculating growth rates for county and USA
-            national_resident_pop['Resident Population_1year_growth'] =  (((national_resident_pop['Resident Population']/national_resident_pop['Resident Population'].shift(1))  - 1) * 100)/1
-            national_resident_pop['Resident Population_5year_growth'] =  (((national_resident_pop['Resident Population']/national_resident_pop['Resident Population'].shift(5))   - 1) * 100)/5
-            national_resident_pop['Resident Population_10year_growth'] =  (((national_resident_pop['Resident Population']/national_resident_pop['Resident Population'].shift(10)) - 1) * 100)/10
-            national_resident_pop = national_resident_pop.loc[national_resident_pop['Period'] <= (county_resident_pop['Period'].max())]
+            national_resident_pop_local                               = national_resident_pop.copy()
+            national_resident_pop_local['Resident Population_1year_growth'] =  (((national_resident_pop_local['Resident Population']/national_resident_pop_local['Resident Population'].shift(1))  - 1) * 100)/1
+            national_resident_pop_local['Resident Population_5year_growth'] =  (((national_resident_pop_local['Resident Population']/national_resident_pop_local['Resident Population'].shift(5))   - 1) * 100)/5
+            national_resident_pop_local['Resident Population_10year_growth'] =  (((national_resident_pop_local['Resident Population']/national_resident_pop_local['Resident Population'].shift(10)) - 1) * 100)/10
+            national_resident_pop_local = national_resident_pop_local.loc[national_resident_pop_local['Period'] <= (county_resident_pop['Period'].max())]
 
-            national_1y_growth  = national_resident_pop.iloc[-1]['Resident Population_1year_growth'] 
-            national_5y_growth  = national_resident_pop.iloc[-1]['Resident Population_5year_growth'] 
-            national_10y_growth = national_resident_pop.iloc[-1]['Resident Population_10year_growth']
+            national_1y_growth  = national_resident_pop_local.iloc[-1]['Resident Population_1year_growth'] 
+            national_5y_growth  = national_resident_pop_local.iloc[-1]['Resident Population_5year_growth'] 
+            national_10y_growth = national_resident_pop_local.iloc[-1]['Resident Population_10year_growth']
 
             #Determine if county 5 year growth was slower or faster than national growth
             if county_5y_growth > national_5y_growth:
