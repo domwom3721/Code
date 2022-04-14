@@ -96,8 +96,13 @@ def CreateDirectory(state, area_name):
     for folder in [state_folder,county_folder,state_folder_map,county_folder_map]:
          if os.path.exists(folder) == False:
             os.mkdir(folder) 
+    
+    if county_or_msa_report == 'm':
+        document_name            = current_quarter + ' ' + state + ' - ' + area_name + ' MSA' + '_draft.docx'
+    elif county_or_msa_report == 'c':
+        document_name            = current_quarter + ' ' + state + ' - ' + area_name  + '_draft.docx'
 
-    document_name            = current_quarter + ' ' + state + ' - ' + area_name + ' MSA' + '_draft.docx'
+
     report_path              = os.path.join(county_folder, document_name)
     return(county_folder)
 
@@ -1833,9 +1838,9 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
     #Make sure we are comparing same years for calculating growth rates for county and state
     if (isinstance(county_data_frame, pd.DataFrame) == True) and county_or_msa_report == 'c':
 
-        state_data_frame = state_data_frame.loc[state_data_frame['Period'] <= (county_data_frame['Period'].max())]
+        state_data_frame = state_data_frame.loc[state_data_frame['Period'] <= (county_data_frame['Period'].max())].copy()
     if county_or_msa_report == 'm':
-        state_data_frame = state_data_frame.loc[state_data_frame['Period'] <= (msa_data_frame['Period'].max())]
+        state_data_frame = state_data_frame.loc[state_data_frame['Period'] <= (msa_data_frame['Period'].max())].copy()
     
     state_data_frame['Per Capita Personal Income_1year_growth'] =  (((state_data_frame['Per Capita Personal Income']/state_data_frame['Per Capita Personal Income'].shift(1))  - 1) * 100)/1
     state_data_frame['Per Capita Personal Income_3year_growth'] =  (((state_data_frame['Per Capita Personal Income']/state_data_frame['Per Capita Personal Income'].shift(3))   - 1) * 100)/3
@@ -1847,9 +1852,9 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
 
     #Make sure we are comparing same years for calculating growth rates for county and state
     if  (isinstance(county_data_frame, pd.DataFrame) == True) and county_or_msa_report == 'c':
-        national_data_frame = national_data_frame.loc[national_data_frame['Period'] <= (county_data_frame['Period'].max())]
+        national_data_frame = national_data_frame.loc[national_data_frame['Period'] <= (county_data_frame['Period'].max())].copy()
     if county_or_msa_report == 'm':
-        national_data_frame = national_data_frame.loc[national_data_frame['Period'] <= (msa_data_frame['Period'].max())]
+        national_data_frame = national_data_frame.loc[national_data_frame['Period'] <= (msa_data_frame['Period'].max())].copy()
     
     national_data_frame['Per Capita Personal Income_1year_growth'] =  (((national_data_frame['Per Capita Personal Income']/national_data_frame['Per Capita Personal Income'].shift(1))  - 1) * 100)/1
     national_data_frame['Per Capita Personal Income_3year_growth'] =  (((national_data_frame['Per Capita Personal Income']/national_data_frame['Per Capita Personal Income'].shift(3))   - 1) * 100)/3
@@ -2285,9 +2290,9 @@ def CreatePopulationOverTimeWithGrowthGraph(county_resident_pop, state_resident_
 
     #Make sure we are comparing same years for calculating growth rates for county and USA
     if county_or_msa_report == 'c':
-        national_resident_pop = national_resident_pop.loc[national_resident_pop['Period'] <= (county_resident_pop['Period'].max())]
+        national_resident_pop = national_resident_pop.loc[national_resident_pop['Period'] <= (county_resident_pop['Period'].max())].copy()
     elif county_or_msa_report == 'm':
-        national_resident_pop = national_resident_pop.loc[national_resident_pop['Period'] <= (msa_resident_pop['Period'].max())]
+        national_resident_pop = national_resident_pop.loc[national_resident_pop['Period'] <= (msa_resident_pop['Period'].max())].copy()
     
     national_resident_pop['Resident Population_1year_growth'] =  (((national_resident_pop['Resident Population']/national_resident_pop['Resident Population'].shift(1))  - 1) * 100)/1
     national_resident_pop['Resident Population_5year_growth'] =  (((national_resident_pop['Resident Population']/national_resident_pop['Resident Population'].shift(5))   - 1) * 100)/5
@@ -3400,24 +3405,22 @@ def CreateNationalGDPGraph(folder):
 def CreateGraphs():
     print('Creating Graphs')
     CreateUnemploymentRateEmploymentGrowthGraph(                                                                                                                                                                    folder = county_folder)
-    
-    if county_or_msa_report == 'm':
-        county_gdp, county_pci, county_resident_pop, county_mlp = None, None, None, None
-    
-    elif county_or_msa_report == 'c':
+        
+    if county_or_msa_report == 'c':
         CreateEmploymentByIndustryGraph(       county_data_frame = county_industry_breakdown,                                                                                                                            folder = county_folder)
         CreateEmploymentGrowthByIndustryGraph( county_data_frame = county_industry_growth_breakdown,                                                                                                                     folder = county_folder)
-    
-    CreateGDPGraph(                        county_data_frame = county_gdp, msa_data_frame = msa_gdp,state_data_frame=state_gdp,                                                                                    folder = county_folder)
-    CreatePCIGraph(                        county_data_frame = county_pci ,msa_data_frame = msa_pci,state_data_frame=state_pci, national_data_frame = national_pci,                                                  folder = county_folder)
-    CreatePopulationOverTimeWithGrowthGraph(county_resident_pop = county_resident_pop, state_resident_pop = state_resident_pop, msa_resident_pop = msa_resident_pop, national_resident_pop = national_resident_pop, folder = county_folder)
-    
-    #Median list price graph
-    try:
+        CreateGDPGraph(                        county_data_frame = county_gdp, msa_data_frame = msa_gdp,state_data_frame=state_gdp,                                                                                    folder = county_folder)
+        CreatePCIGraph(                        county_data_frame = county_pci ,msa_data_frame = msa_pci,state_data_frame=state_pci, national_data_frame = national_pci,                                                  folder = county_folder)
+        CreatePopulationOverTimeWithGrowthGraph(county_resident_pop = county_resident_pop, state_resident_pop = state_resident_pop, msa_resident_pop = msa_resident_pop, national_resident_pop = national_resident_pop, folder = county_folder)
         CreateMLPWithGrowthGraph(county_data_frame = county_mlp, msa_data_frame = msa_mlp, national_data_frame = national_mlp, folder = county_folder)
-    except Exception as e:
-        print(e)
-    
+
+    #If we are doing a metro only report, we wont have the county data to pass to our graph functions
+    elif county_or_msa_report == 'm':
+        CreateGDPGraph(                        county_data_frame = None, msa_data_frame = msa_gdp,state_data_frame=state_gdp,                                                                                    folder = county_folder)
+        CreatePCIGraph(                        county_data_frame = None ,msa_data_frame = msa_pci,state_data_frame=state_pci, national_data_frame = national_pci,                                                  folder = county_folder)
+        CreatePopulationOverTimeWithGrowthGraph(county_resident_pop = None, state_resident_pop = state_resident_pop, msa_resident_pop = msa_resident_pop, national_resident_pop = national_resident_pop, folder = county_folder)
+        CreateMLPWithGrowthGraph(county_data_frame = None, msa_data_frame = msa_mlp, national_data_frame = national_mlp, folder = county_folder)
+
     #MSA Graphs
     if cbsa != '':
         CreateMSAEmploymentByIndustryGraph(      msa_data_frame = msa_industry_breakdown,              folder = county_folder )
