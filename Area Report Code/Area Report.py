@@ -3459,7 +3459,7 @@ def OverviewLanguage():
 
         #restrict data to only rows with the Subject County CBSA Code
         metro_area_language_df = metro_area_language_df.loc[metro_area_language_df['CBSA_Code'] == cbsa]
-
+        metro_area_language_df = metro_area_language_df.fillna('')
         #If we have a cbsa/msa for the county, then use the excel file text
         if len(metro_area_language_df) == 1:   
             CBSA_overview_language       = metro_area_language_df['Overview'].iloc[-1]
@@ -5304,30 +5304,31 @@ def CreateLanguage():
     print('Creating Langauge')
     
     overview_language                                = OverviewLanguage()
-    county_employment_industry_breakdown_language    = CountyEmploymentBreakdownLanguage(county_industry_breakdown = county_industry_breakdown)
     msa_employment_industry_breakdown_language       = MSAEmploymentBreakdownLanguage(msa_industry_breakdown = msa_industry_breakdown)
     infrastructure_language                          = InfrastructureLanguage()
     bus_language                                     = BusLanguage() 
     train_language                                   = TrainLanguage()
     car_language                                     = CarLanguage()
     plane_language                                   = PlaneLanguage()
-    county_employment_growth_language                = CountyEmploymentGrowthLanguage(county_industry_breakdown=county_industry_growth_breakdown)
     outlook_language                                 = OutlookLanguage()
     msa_employment_growth_language                   = MSAEmploymentGrowthLanguage(msa_industry_breakdown=msa_industry_growth_breakdown)
 
     #If doing a county report, use the functions for that, if doing a metro only report, use those functions
     if county_or_msa_report == 'c':
-        production_language     = CountyProductionLanguage(county_data_frame = county_gdp ,msa_data_frame = msa_gdp,state_data_frame = state_gdp)
-        housing_language        = CountyHousingLanguage()
-        unemployment_language   = CountyUnemploymentLanguage()
-        population_language     = CountyPopulationLanguage()
-        income_language         = CountyIncomeLanguage()
+        county_employment_growth_language                = CountyEmploymentGrowthLanguage(county_industry_breakdown=county_industry_growth_breakdown)
+        county_employment_industry_breakdown_language    = CountyEmploymentBreakdownLanguage(county_industry_breakdown = county_industry_breakdown)
+        production_language                              = CountyProductionLanguage(county_data_frame = county_gdp ,msa_data_frame = msa_gdp,state_data_frame = state_gdp)
+        housing_language                                 = CountyHousingLanguage()
+        unemployment_language                            = CountyUnemploymentLanguage()
+        population_language                              = CountyPopulationLanguage()
+        income_language                                  = CountyIncomeLanguage()
+    
     elif county_or_msa_report == 'm':
-        production_language     = MSAProductionLanguage(msa_data_frame = msa_gdp,state_data_frame = state_gdp)
-        housing_language        = MSAHousingLanguage()
-        unemployment_language   = MSAUnemploymentLanguage()
-        population_language     = MSAPopulationLanguage()
-        income_language         = MSAIncomeLanguage()
+        production_language                              = MSAProductionLanguage(msa_data_frame = msa_gdp,state_data_frame = state_gdp)
+        housing_language                                 = MSAHousingLanguage()
+        unemployment_language                            = MSAUnemploymentLanguage()
+        population_language                              = MSAPopulationLanguage()
+        income_language                                  = MSAIncomeLanguage()
 
 #Table Related functions 
 def GetDataAndLanguageForOverviewTable():
