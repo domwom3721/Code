@@ -3435,8 +3435,8 @@ def millify(n):
 
     return '{:.1f}{}'.format(n / 10**(3 * millidx), millnames[millidx])
 
-def OverviewLanguage():
-    print('Writing Overview Langauge')
+def CountyOverviewLanguage():
+    print('Writing County Overview Langauge')
 
     #Section 1B: Grab overview summary from Metro_language CSV using the CBSA Code from IdentifyMSA
     try:
@@ -3567,6 +3567,157 @@ def OverviewLanguage():
              county                                                                                    +
              '. Between February 2020 and April, '                                                     +
              county                                                                                    +
+             ' employers shed over '                                                                   + 
+             "{:,.0f}".format(pandemic_job_losses)                                                     +
+             ' jobs ('                                                                                 +
+             "{:,.1f}%".format(pandemic_job_losses_pct)                                                +
+             ' of the labor market), as'                                                               +
+            ' social distancing protocols were put in place and operating restrictions were imposed. ' + 
+            'With the availability of vaccines in early 2021, restrictions eased, and growth returned.'
+                                )
+    except Exception as e:
+        print(e,'unable to create covid context paragraph')
+        covid_context_pargaraph = ''
+
+    
+
+    
+    #Section 4: Put together our 3 sections and return it
+    overview_language = [CBSA_overview_language, wikipeida_summary, wikipeida_economy_summary, covid_context_pargaraph, economic_overview_paragraph]
+    return(overview_language)
+
+def MSAOverviewLanguage():
+    print('Writing County Overview Langauge')
+
+    #Section 1a: Grab overview summary from Metro_language CSV using the CBSA Code from IdentifyMSA
+    try:
+        metro_area_language_df = pd.read_csv(os.path.join(data_location,'Metro_Language.csv'),
+                                                    dtype={
+                                                        'CBSA_Code':             object,
+                                                        'metro_name':            object,
+                                                        'Overview':              object,
+                                                        'LaborMarketConditions': object,
+                                                        'growth':                object,
+                                                        'UniqueAspects':         object,
+                                                        'Infrastructure':        object,
+                                                        'Education':             object
+                                                        }
+                                            )
+
+        #restrict data to only rows with the Subject County CBSA Code
+        metro_area_language_df = metro_area_language_df.loc[metro_area_language_df['CBSA_Code'] == cbsa]
+        metro_area_language_df = metro_area_language_df.fillna('')
+        #If we have a cbsa/msa for the county, then use the excel file text
+        if len(metro_area_language_df) == 1:   
+            CBSA_overview_language       = metro_area_language_df['Overview'].iloc[-1]
+        else:
+            CBSA_overview_language       = ''
+    
+    except Exception as e:
+        print(e,'trouble getting cbsa overview language')
+        CBSA_overview_language       = ''
+
+
+
+    #Section 1b: Grab summary text from Wikipedia
+    try:
+        wikipeida_summary      =  page.summary
+        wikipeida_summary      = wikipeida_summary.replace('the U.S. state of ','')
+    
+    except Exception as e:
+        print(e,'Unable to get Wikipedia Summary')
+        wikipeida_summary      = ''
+
+    try:
+        wikipeida_economy_summary                 = page.section('Economy')
+        assert wikipeida_economy_summary != None
+    
+    except Exception as e:
+        print(e,'Unable to get Economy section from Wikipedia')
+        wikipeida_economy_summary               = ''
+
+
+    #Section 2: Create an economic overview paragraph using the data we have on the MSA and state
+    try:
+        current_period                                    = str(msa_employment['period'].iloc[-1])
+        current_unemployment                              = msa_unemployment_rate['unemployment_rate'].iloc[-1]
+        historical_average_unemployment                   = msa_unemployment_rate['unemployment_rate'].mean()
+        current_gdp_growth                                = ((msa_gdp['GDP'].iloc[-1]/county_gdp['GDP'].iloc[-2]) - 1 ) * 100
+        current_state_unemployment                        = state_unemployment_rate['unemployment_rate'].iloc[-1]
+        largest_industry                                  = msa_industry_breakdown['industry_code'].iloc[-1]
+        largest_industry_employment_fraction              = msa_industry_breakdown['employment_fraction'].iloc[-1]
+
+        #Compare current county unemployment rate to hisorical average
+        if current_unemployment > historical_average_unemployment:
+            unemployment_above_below_hist_avg = 'above'
+        elif current_unemployment < historical_average_unemployment:
+            unemployment_above_below_hist_avg = 'below'
+        elif current_unemployment == historical_average_unemployment:
+            unemployment_above_below_hist_avg = 'equal to'
+            
+        #Compare current county unemployment rate to state unemployment
+        if current_unemployment > current_state_unemployment:
+            unemployment_above_below_state = 'above the state level of ' + "{:,.1f}%".format(current_state_unemployment)  
+        elif current_unemployment < current_state_unemployment:
+            unemployment_above_below_state= 'below the state level of ' +"{:,.1f}%".format(current_state_unemployment)
+        elif current_unemployment == current_state_unemployment:
+            unemployment_above_below_state = 'equal to the state level'
+            
+
+        economic_overview_paragraph = (
+                    #GDP Sentence
+                    'As of '                  +
+                    current_period            +
+                    ', '                      +
+                    cbsa_name                 + 
+                    """'s"""                  +
+                    ' economic output is '    +
+                    "{growing_or_contracting}".format(growing_or_contracting = "growing" if (current_gdp_growth >= 0)  else   ('contracting')) +
+                    ' at '                    +
+                    "{:,.1f}%".format(abs(current_gdp_growth))                                                                                 +
+                    ' per year. '             +
+                    
+                    #Unemployment sentence
+                    'The unemployment rate currently sits at '   +
+                    "{:,.1f}%".format(current_unemployment)      +
+                    ', '                                         +
+                    unemployment_above_below_hist_avg            +
+                    ' its five-year average '                    +
+                    'of '                                        +
+                    "{:,.1f}%".format(historical_average_unemployment)                                                                          +
+                    ' and '                                      +
+                    unemployment_above_below_state               +
+                    '. '                                         +
+
+                    #Employment growth and breakdown
+                    'The largest industry in terms of employment in '    +
+                    cbsa_name                                               +
+                    ' is '                                               +
+                    largest_industry                                     +
+                    ', which employs '                                   +
+                "{:,.1f}%".format(largest_industry_employment_fraction)  +
+                    ' of private sector workers in the Metro.'
+
+                
+                                )
+
+    except Exception as e:
+        print(e,'unable to create economic overview paragarph')
+        economic_overview_paragraph = ''
+        
+    #Section 3: Put together a paragraph on the extent to which the MSA faced job losses during the pandemic
+    try:
+        february_2020_employment_level = msa_employment.loc[(msa_employment['year'] == '2020') & (msa_employment['periodName'] == 'February')]['Employment'].iloc[-1]
+        april_2020_employment_level    = msa_employment.loc[(msa_employment['year'] == '2020') & (msa_employment['periodName'] == 'April')]['Employment'].iloc[-1]    
+        pandemic_job_losses            = february_2020_employment_level - april_2020_employment_level 
+        pandemic_job_losses_pct        = (pandemic_job_losses/february_2020_employment_level) * 100
+
+
+        covid_context_pargaraph = (
+            'The COVID-19 pandemic slowed economic growth throughout the country, including here in '  + 
+             cbsa_name                                                                                    +
+             '. Between February 2020 and April, '                                                     +
+             cbsa_name                                                                                    +
              ' employers shed over '                                                                   + 
              "{:,.0f}".format(pandemic_job_losses)                                                     +
              ' jobs ('                                                                                 +
@@ -4898,7 +5049,11 @@ def InfrastructureLanguage():
                 infrastructure_language.append(wikipedia_section)
 
         #Section 2: Create basic phrase we can insert if there is nothing from Wikipedia
-        infrastructure_boiler_plate = 'The '  + county + ' offers a variety of roadways and public transportation infrastructure. With access to multiple interstate systems, travel time to work is about average both within the state and nationally.'    
+        if county_or_msa_report == 'c':
+            infrastructure_boiler_plate =  county + ' offers a variety of roadways and public transportation infrastructure. With access to multiple interstate systems, travel time to work is about average both within the state and nationally.'    
+        elif county_or_msa_report =='m':
+            infrastructure_boiler_plate =  cbsa_name + ' offers a variety of roadways and public transportation infrastructure. With access to multiple interstate systems, travel time to work is about average both within the state and nationally.'    
+
         if infrastructure_language == []:
             infrastructure_language.append(infrastructure_boiler_plate)
 
@@ -5114,7 +5269,11 @@ def CarLanguage():
             if nearest_highway_language != None:
                 return(nearest_highway_language)
             else:
-                return('Major roads serving ' + county  + ' include .')
+                if county_or_msa_report == 'c':
+                    return('Major roads serving ' + county  + ' include .')
+                elif county_or_msa_report == 'm':
+                    return('Major roads serving ' + cbsa_name  + ' include .')
+
     except Exception as e:
         print(e,'Unable to create major roads language')
 
@@ -5404,7 +5563,6 @@ def CreateLanguage():
     global population_language,income_language
     print('Creating Langauge')
     
-    overview_language                                = OverviewLanguage()
     msa_employment_industry_breakdown_language       = MSAEmploymentBreakdownLanguage(msa_industry_breakdown = msa_industry_breakdown)
     infrastructure_language                          = InfrastructureLanguage()
     bus_language                                     = BusLanguage() 
@@ -5415,6 +5573,7 @@ def CreateLanguage():
 
     #If doing a county report, use the functions for that, if doing a metro only report, use those functions
     if county_or_msa_report == 'c':
+        overview_language                                = CountyOverviewLanguage()
         county_employment_growth_language                = CountyEmploymentGrowthLanguage(county_industry_breakdown=county_industry_growth_breakdown)
         county_employment_industry_breakdown_language    = CountyEmploymentBreakdownLanguage(county_industry_breakdown = county_industry_breakdown)
         production_language                              = CountyProductionLanguage(county_data_frame = county_gdp ,msa_data_frame = msa_gdp,state_data_frame = state_gdp)
@@ -5425,6 +5584,7 @@ def CreateLanguage():
         outlook_language                                 = CountyOutlookLanguage()
     
     elif county_or_msa_report == 'm':
+        overview_language                                = MSAOverviewLanguage()
         production_language                              = MSAProductionLanguage(msa_data_frame = msa_gdp,state_data_frame = state_gdp)
         housing_language                                 = MSAHousingLanguage()
         unemployment_language                            = MSAUnemploymentLanguage()
