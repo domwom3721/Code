@@ -5169,23 +5169,9 @@ def TrainLanguage():
     except Exception as e:
         print(e,'Unable to create public rail language')
 
-def OutlookLanguage():
+def CountyOutlookLanguage():
     print('Writing Outlook Langauge')
     try:
-        #First pargarph is the same for every county, second one is specific to the subject county
-
-        #National economy boiler plate
-                                    
-        national_economy_summary = (
-                                'The United States economy continues to recover from the aftermath of the Covid-19 pandemic.' + 
-                                ' The labor market has restored almost 19 million of the 21 million jobs lost at the beginning of the pandemic, as measured by non-farm employment, bringing the unemployment rate to 3.9% as of December 2021. '+
-                                'Employment growth continued in leisure and hospitality, in professional and business services, in retail trade, and in transportation and warehousing. ' + 
-                                'After historical growth in Q2, GDP growth slowed to an annual rate of 2.3% in Q3 2021. ' + 
-                                'The slowdown in third quarter GDP reflected the continued economic impact of the COVID-19 pandemic. A resurgence of COVID-19 cases resulted in new restrictions and delays in the reopening of establishments in some parts of the country. ' +
-                                'Supply-chain disruptions such as delays at U.S. ports and international manufacturing issues contributed to a sharp increase in inflation and pose a risk to the economic outlook. Despite supply-side challenges, many economic observers expect that the economy regained momentum in the final months of the year and is well positioned for continued growth in 2022. ' 
-                                    )
-
-
         #County GDP/GDP Growth Sentence
         county_gdp_growth              =               ( (county_gdp['GDP'].iloc[-1]) / (county_gdp['GDP'].iloc[0]) - 1 ) * 100
         county_gdp_min_year            =                county_gdp['Period'].min()
@@ -5198,10 +5184,10 @@ def OutlookLanguage():
 
         
         county_gdp_sentence = (#Sentence 1
-                            'Between, '                    + 
-                                str(county_gdp_min_year)[6:]  + 
+                            'Between, '                       + 
+                                str(county_gdp_min_year)[0:4] + 
                                 ' and '                       +
-                                str(county_gdp_max_year)[6:]  +
+                                str(county_gdp_max_year)[0:4] +
                                 ', '                          +
                                 county                        +
                                 ' GDP grew '                  +
@@ -5291,11 +5277,12 @@ def OutlookLanguage():
                                 county_unemployment_sentence + 
                                 county_demographic_sentence 
                                 )
+        return([national_economy_summary, county_economy_summary])
     except Exception as e:
         print(e,'Unable to create outlook language')
-        national_economy_summary,county_economy_summary = '',''
+        return(['', ''])
 
-    return([national_economy_summary,county_economy_summary])
+
 
 def CreateLanguage():
     global overview_language
@@ -5313,7 +5300,6 @@ def CreateLanguage():
     train_language                                   = TrainLanguage()
     car_language                                     = CarLanguage()
     plane_language                                   = PlaneLanguage()
-    outlook_language                                 = OutlookLanguage()
     msa_employment_growth_language                   = MSAEmploymentGrowthLanguage(msa_industry_breakdown=msa_industry_growth_breakdown)
 
     #If doing a county report, use the functions for that, if doing a metro only report, use those functions
@@ -5325,6 +5311,7 @@ def CreateLanguage():
         unemployment_language                            = CountyUnemploymentLanguage()
         population_language                              = CountyPopulationLanguage()
         income_language                                  = CountyIncomeLanguage()
+        outlook_language                                 = CountyOutlookLanguage()
     
     elif county_or_msa_report == 'm':
         production_language                              = MSAProductionLanguage(msa_data_frame = msa_gdp,state_data_frame = state_gdp)
@@ -5332,6 +5319,7 @@ def CreateLanguage():
         unemployment_language                            = MSAUnemploymentLanguage()
         population_language                              = MSAPopulationLanguage()
         income_language                                  = MSAIncomeLanguage()
+        outlook_language                                 = MSAOutlookLanguage()
 
 #Table Related functions 
 def GetDataAndLanguageForOverviewTable():
@@ -6359,6 +6347,16 @@ bowery_dark_grey              = "#A6B0BF"
 bowery_dark_blue              = "#4160D3"
 bowery_light_blue             = "#B3C3FF"
 bowery_black                  = "#404858"
+#National economy boiler plate
+                                    
+national_economy_summary = (
+                                'The United States economy continues to recover from the aftermath of the Covid-19 pandemic.' + 
+                                ' The labor market has restored almost 19 million of the 21 million jobs lost at the beginning of the pandemic, as measured by non-farm employment, bringing the unemployment rate to 3.9% as of December 2021. '+
+                                'Employment growth continued in leisure and hospitality, in professional and business services, in retail trade, and in transportation and warehousing. ' + 
+                                'After historical growth in Q2, GDP growth slowed to an annual rate of 2.3% in Q3 2021. ' + 
+                                'The slowdown in third quarter GDP reflected the continued economic impact of the COVID-19 pandemic. A resurgence of COVID-19 cases resulted in new restrictions and delays in the reopening of establishments in some parts of the country. ' +
+                                'Supply-chain disruptions such as delays at U.S. ports and international manufacturing issues contributed to a sharp increase in inflation and pose a risk to the economic outlook. Despite supply-side challenges, many economic observers expect that the economy regained momentum in the final months of the year and is well positioned for continued growth in 2022. ' 
+                                    )
 
 marginInches                  = 1/18
 ppi                           = 96.85 
