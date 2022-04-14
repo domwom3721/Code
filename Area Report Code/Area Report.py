@@ -5176,16 +5176,13 @@ def CountyOutlookLanguage():
         county_gdp_growth              =               ( (county_gdp['GDP'].iloc[-1]) / (county_gdp['GDP'].iloc[0]) - 1 ) * 100
         county_gdp_min_year            =                county_gdp['Period'].min()
         county_gdp_max_year            =                county_gdp['Period'].max()
-        print(county_gdp)
         
         #Restrict to years we have for county
         national_gdp_restricted        =               national_gdp.loc[ (national_gdp['Period'] <= county_gdp_max_year) & (national_gdp['Period'] >= county_gdp_min_year)  ]    
-        print(national_gdp_restricted)
         national_gdp_growth            =               ((   (national_gdp_restricted['GDP'].iloc[-1])/(national_gdp_restricted['GDP'].iloc[0])   - 1 ) * 100)
         county_gdp_growth_difference   =                (county_gdp_growth - national_gdp_growth ) * 100
 
-        print(county_gdp_growth,national_gdp_growth,county_gdp_growth_difference)
-        
+        assert len(county_gdp) == len(national_gdp_restricted)
         county_gdp_sentence = (#Sentence 1
                             'Between, '                       + 
                                 str(county_gdp_min_year)[6:]  +  
@@ -5281,6 +5278,119 @@ def CountyOutlookLanguage():
                                 county_demographic_sentence 
                                 )
         return([national_economy_summary, county_economy_summary])
+    except Exception as e:
+        print(e,'Unable to create outlook language')
+        return(['', ''])
+
+def MSAOutlookLanguage():
+    print('Writing Outlook Langauge')
+    try:
+        #County GDP/GDP Growth Sentence
+        msa_gdp_growth              =               ( (msa_gdp['GDP'].iloc[-1]) / (msa_gdp['GDP'].iloc[0]) - 1 ) * 100
+        msa_gdp_min_year            =                msa_gdp['Period'].min()
+        msa_gdp_max_year            =                msa_gdp['Period'].max()
+        
+        #Restrict to years we have for county
+        national_gdp_restricted        =               national_gdp.loc[ (national_gdp['Period'] <= msa_gdp_max_year) & (national_gdp['Period'] >= msa_gdp_min_year)  ]    
+        national_gdp_growth            =               ((   (national_gdp_restricted['GDP'].iloc[-1])/(national_gdp_restricted['GDP'].iloc[0])   - 1 ) * 100)
+        msa_gdp_growth_difference      =                (msa_gdp_growth - national_gdp_growth ) * 100
+
+        assert len(msa_gdp) == len(national_gdp_restricted)
+        msa_gdp_sentence = (#Sentence 1
+                            'Between, '                       + 
+                                str(msa_gdp_min_year)         +  
+                                ' and '                       +
+                                str(msa_gdp_max_year)         +
+                                ', '                          +
+                                cbsa_name                     +
+                                ' GDP grew '                  +
+                                "{:,.1f}%".format(msa_gdp_growth) +
+                                '. '                          +
+                                
+                                #Sentence 2     
+                                'This growth rate '           +
+                                "{leads_or_lags}".format(leads_or_lags =('led the national average by ' +  "{:,.0f} bps".format(msa_gdp_growth_difference) + ' during this period. ') if (msa_gdp_growth_difference > 0)  else   ('lagged the national average by ' + "{:,.0f} bps".format(abs(msa_gdp_growth_difference)) + ' during this period. ')) 
+                                )
+
+        #Unemployment sentence
+        current_unemployment                              = msa_unemployment_rate['unemployment_rate'].iloc[-1]
+        historical_average_unemployment                   = msa_unemployment_rate['unemployment_rate'].mean()
+        current_state_unemployment                        = state_unemployment_rate['unemployment_rate'].iloc[-1]
+        current_national_unemployment                     = national_unemployment['unemployment_rate'].iloc[-1]
+
+        #Compare current msa unemployment rate to hisorical average
+        if current_unemployment > historical_average_unemployment:
+            unemployment_above_below_hist_avg = 'above'
+        elif current_unemployment < historical_average_unemployment:
+            unemployment_above_below_hist_avg = 'below'
+        elif current_unemployment == historical_average_unemployment:
+            unemployment_above_below_hist_avg = 'equal to'
+
+        #Compare current msa unemployment rate to state average
+        if current_unemployment > current_state_unemployment:
+            unemployment_above_below_state = 'above'
+        elif current_unemployment < current_state_unemployment:
+            unemployment_above_below_state = 'below'
+        elif current_unemployment == current_state_unemployment:
+            unemployment_above_below_state = 'equal to'
+
+        #Compare current msa unemployment rate to natioanl average
+        if current_unemployment > current_national_unemployment:
+            unemployment_above_below_national = 'above'
+        elif current_unemployment < current_national_unemployment:
+            unemployment_above_below_national = 'below'
+        elif current_unemployment == current_national_unemployment:
+            unemployment_above_below_national = 'equal to'
+            
+            
+            
+        msa_unemployment_sentence = (#Sentence 1
+                                        'The current unemployment rate in '     + 
+                                        cbsa_name                               + 
+                                        ' of '                                  + 
+                                        "{:,.1f}%".format(current_unemployment) + 
+                                        ' is '                                  + 
+                                        unemployment_above_below_hist_avg       + 
+                                        ' its five-year average. '              +
+                                        
+                                        #Sentnce 2
+                                        'It is ' + unemployment_above_below_state + ' and ' +  unemployment_above_below_national + ' the state ' +  '(' + "{:,.1f}%".format(current_state_unemployment)  + ')'  + ' and national average '  + '(' "{:,.1f}%".format(current_national_unemployment) + ')' ', respectively. '
+                                        )
+
+        #Demographics/Population
+        msa_resident_pop['Resident Population_1year_growth']  =  (((msa_resident_pop['Resident Population']/msa_resident_pop['Resident Population'].shift(1))  - 1) * 100)/1
+        msa_resident_pop['Resident Population_5year_growth']  =  (((msa_resident_pop['Resident Population']/msa_resident_pop['Resident Population'].shift(5))   - 1) * 100)/5
+        msa_resident_pop['Resident Population_10year_growth'] =  (((msa_resident_pop['Resident Population']/msa_resident_pop['Resident Population'].shift(10)) - 1) * 100)/10
+
+        msa_1y_growth                                         = msa_resident_pop.iloc[-1]['Resident Population_1year_growth'] 
+        msa_5y_growth                                         = msa_resident_pop.iloc[-1]['Resident Population_5year_growth']  
+        msa_10y_growth                                        = msa_resident_pop.iloc[-1]['Resident Population_10year_growth'] 
+
+        if msa_5y_growth < 0 and msa_1y_growth < 0:
+            msa_demographic_sentence = (cbsa_name + ' continues to experience population loss with one- and five-year annual growth rates of ' +  "{:,.1f}%".format(msa_1y_growth) + ' and ' + "{:,.1f}%".format(msa_5y_growth) + '.'  )
+        
+        elif msa_5y_growth > 0 and msa_1y_growth > 0:
+            msa_demographic_sentence = (cbsa_name + ' continues to experience population gains with one- and five-year annual growth rates of ' +  "{:,.1f}%".format(msa_1y_growth) + ' and ' + "{:,.1f}%".format(msa_5y_growth) + '.'  )
+
+        elif  msa_5y_growth < 0 and msa_1y_growth > 0:
+            msa_demographic_sentence = ('Although ' + cbsa_name + ' has experienced population decline of ' +   "{:,.1f}%".format(abs(msa_5y_growth)) +' annually over the past five years, growth has returned to positive levels with a most recent one-year growth rate of ' +  "{:,.1f}%".format(msa_1y_growth) +'.')
+            
+        elif msa_5y_growth > 0 and msa_1y_growth < 0:
+            msa_demographic_sentence = ('Although ' + cbsa_name + ' has experienced population growth of ' + "{:,.1f}%".format(msa_5y_growth) +  ' over the past five years, it most recently saw a one-year contraction of ' +  "{:,.1f}%".format(msa_1y_growth) +'.')
+
+        elif msa_5y_growth == 0 and msa_1y_growth == 0:
+            msa_demographic_sentence = (cbsa_name + """'s""" + ' population has experienced no change over the past five years.') 
+
+        else:
+            msa_demographic_sentence = ('')
+
+        #County Economy Summary
+        msa_economy_summary = (
+                                msa_gdp_sentence + 
+                                msa_unemployment_sentence + 
+                                msa_demographic_sentence 
+                                )
+        return([national_economy_summary, msa_economy_summary])
     except Exception as e:
         print(e,'Unable to create outlook language')
         return(['', ''])
