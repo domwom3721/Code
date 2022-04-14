@@ -1323,7 +1323,7 @@ def GetNationalEmployment(start_year, end_year):
 def GetNationalGDP(observation_start):
     print('Getting National GDP')
     national_gdp_series_code = 'GDP'
-    national_gdp_df          = fred.get_series(series_id = national_gdp_series_code,observation_start = observation_start,frequency = 'q')
+    national_gdp_df          = fred.get_series(series_id = national_gdp_series_code,observation_start = observation_start,frequency = 'a')
     national_gdp_df          = national_gdp_df.to_frame().reset_index()
     national_gdp_df.columns  = ['Period','GDP']
     national_gdp_df['GDP']   = national_gdp_df['GDP'] * 1000000000
