@@ -97,7 +97,7 @@ def CreateDirectory(state, area_name):
          if os.path.exists(folder) == False:
             os.mkdir(folder) 
 
-    document_name            = current_quarter + ' ' + state + ' - ' + area_name + '_draft.docx'
+    document_name            = current_quarter + ' ' + state + ' - ' + area_name + ' MSA' + '_draft.docx'
     report_path              = os.path.join(county_folder, document_name)
     return(county_folder)
 
@@ -6042,7 +6042,6 @@ def WriteReport():
     OutlookSection(       document = document)
 
     #Save report
-    print(report_path)
     document.save(report_path)  
 
 def CleanUpPNGs():
