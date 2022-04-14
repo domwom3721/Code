@@ -5049,6 +5049,56 @@ def CountyHousingLanguage():
     
     return([boiler_plate_housing_language,housing_langage])
 
+def MSAHousingLanguage():
+    print('Writing Housing Langauge')
+    try:
+        current_msa_mlp           = msa_mlp['Median List Price'].iloc[-1]
+        current_msa_mlp_period    = str(msa_mlp['Period'].iloc[-1])[0:7]
+        current_msa_mlp_period    = current_msa_mlp_period[5:] + '/' + current_msa_mlp_period[0:4]
+        yoy_msa_mlp_growth        = ((msa_mlp['Median List Price'].iloc[-1]/msa_mlp['Median List Price'].iloc[-13]) - 1 ) * 100
+        yoy_national_mlp_growth   = ((national_mlp['Median List Price'].iloc[-1]/national_mlp['Median List Price'].iloc[-13]) - 1 ) * 100
+
+        #Determine if county year over year growth was positive or negative
+        if yoy_msa_mlp_growth > 0:
+            increase_or_decrease = 'an increase'
+        elif yoy_msa_mlp_growth < 0 :
+            increase_or_decrease = 'a decrease'
+        else:
+            increase_or_decrease = 'no change'
+        
+        
+        boiler_plate_housing_language = """Historically low mortgage rates, the desire for more space, and the ability to work from home have led to the highest number of home sales while historically low inventory levels have pushed values to record highs in most counties and metros across the Nation. """ 
+
+
+        housing_langage =   (#Sentence 1
+                            "In "                           +                                           
+                            cbsa_name                            +
+                            ', Realtor.com data points to ' +
+                            "{growth_description}".format(growth_description = "continued growth" if  yoy_msa_mlp_growth >= 0  else "negative growth") +                                           
+                            ' in values. '                 +
+                            
+                            #Sentence 2
+                            'In fact, as of '   +
+                            current_msa_mlp_period +
+                            ', the median home list price sits at ' +
+                             "${:,.0f}".format(current_msa_mlp) +
+                            ', ' +                                        
+                            increase_or_decrease+
+                            ' of ' +
+                           "{:,.0f}%".format(abs(yoy_msa_mlp_growth)) +
+                            ' compared to ' +
+                            "{national_growth_description}".format(national_growth_description = "an increase of " if  yoy_national_mlp_growth >= 0  else "a decrease of ") +      
+                            "{:,.0f}%".format(abs(yoy_national_mlp_growth)) +
+                            ' across the Nation over the past year.'
+                            )
+
+
+    except Exception as e:
+        print(e,'Unable to create MSA median list price language')
+        boiler_plate_housing_language, housing_langage = '', ''
+    
+    return([boiler_plate_housing_language,housing_langage])
+
 def CarLanguage():
     print('Creating auto Langauge')
     try:
