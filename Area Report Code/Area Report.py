@@ -1373,7 +1373,7 @@ def GetNationalEmployment(start_year, end_year):
 def GetNationalGDP(observation_start):
     print('Getting National GDP')
     national_gdp_series_code = 'GDP'
-    national_gdp_df          = fred.get_series(series_id = national_gdp_series_code,observation_start = observation_start,frequency = 'q')
+    national_gdp_df          = fred.get_series(series_id = national_gdp_series_code,observation_start = observation_start,frequency = 'a')
     national_gdp_df          = national_gdp_df.to_frame().reset_index()
     national_gdp_df.columns  = ['Period','GDP']
     national_gdp_df['GDP']   = national_gdp_df['GDP'] * 1000000000
@@ -5176,18 +5176,21 @@ def CountyOutlookLanguage():
         county_gdp_growth              =               ( (county_gdp['GDP'].iloc[-1]) / (county_gdp['GDP'].iloc[0]) - 1 ) * 100
         county_gdp_min_year            =                county_gdp['Period'].min()
         county_gdp_max_year            =                county_gdp['Period'].max()
-
+        print(county_gdp)
+        
         #Restrict to years we have for county
         national_gdp_restricted        =               national_gdp.loc[ (national_gdp['Period'] <= county_gdp_max_year) & (national_gdp['Period'] >= county_gdp_min_year)  ]    
+        print(national_gdp_restricted)
         national_gdp_growth            =               ((   (national_gdp_restricted['GDP'].iloc[-1])/(national_gdp_restricted['GDP'].iloc[0])   - 1 ) * 100)
         county_gdp_growth_difference   =                (county_gdp_growth - national_gdp_growth ) * 100
 
+        print(county_gdp_growth,national_gdp_growth,county_gdp_growth_difference)
         
         county_gdp_sentence = (#Sentence 1
                             'Between, '                       + 
-                                str(county_gdp_min_year)[0:4] + 
+                                str(county_gdp_min_year)[6:]  +  
                                 ' and '                       +
-                                str(county_gdp_max_year)[0:4] +
+                                str(county_gdp_max_year)[6:]  +
                                 ', '                          +
                                 county                        +
                                 ' GDP grew '                  +
@@ -5281,8 +5284,6 @@ def CountyOutlookLanguage():
     except Exception as e:
         print(e,'Unable to create outlook language')
         return(['', ''])
-
-
 
 def CreateLanguage():
     global overview_language
