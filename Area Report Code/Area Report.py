@@ -1807,7 +1807,17 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
             secondary_y=False,
             row = 1,
             col = 1)
-    
+    #Add national per capita income when doing metro only reports
+    if county_or_msa_report == 'm':
+        fig.add_trace(
+            go.Scatter(x = national_data_frame['Period'],
+                       y = national_data_frame['Per Capita Personal Income'],
+                    name = 'United States',
+                    line = dict(color="#000F44"),
+                    showlegend=False),
+            secondary_y=False,
+            row = 1,
+            col = 1)
     #Add Growth Subfigure
     
     #Calculate annualized growth rates for the county, msa (if available), and state dataframes
@@ -5592,7 +5602,7 @@ def CreateLanguage():
         outlook_language                                 = MSAOutlookLanguage()
 
 #Table Related functions 
-def GetDataAndLanguageForOverviewTable():
+def CountyGetDataForOverviewTable():
     print('Getting Data for overview table')
     
     #Get most recent County values and get county values from 5 years ago
@@ -5802,7 +5812,7 @@ def GetDataAndLanguageForOverviewTable():
             employment_faster_or_slower = 'Slower than'
         elif comparison_emp_growth < county_employment_growth:
             employment_faster_or_slower = 'Faster than'
-        elif comparison_emp_growth == comparison_emp_growth:
+        elif comparison_emp_growth == county_employment_growth:
             employment_faster_or_slower = 'Equal to'
             
 
@@ -5863,6 +5873,157 @@ def GetDataAndLanguageForOverviewTable():
                             ['Per Capita Personal Income',current_county_pci,county_pci_growth,pci_faster_or_slower + ' State'] 
                             ]
             
+        for list in overview_table:
+            if list[1] == '$0':
+                list[1] = 'NA'
+                list[2] = 'NA'
+                list[3] = 'NA'
+    
+    
+    except Exception as e:
+        print(e,'problem creating list of lists for overview table data')
+        overview_table = [
+                ['Attribute','County Level Value','5 Year Growth Rate','Relative to Baseline (State Code or MSA)'],
+                ['Employment','','','[Faster than/Slower than/Equal to] [State/MSA]'],
+                ['GDP','','','[Faster than/Slower than/Equal to] [State/MSA]'],
+                ['Population','','','[Faster than/Slower than/Equal to] [State/MSA]'],
+                ['Per Capita Personal Income','','','[Faster than/Slower than/Equal to] [State/MSA]']
+                ]
+    
+    try:
+        return(overview_table)
+    except Exception as e:
+        print(e,'failed to return list')
+
+def MSAGetDataForOverviewTable():
+    print('Getting data for metro overview table')
+    
+    #Getting current and lagged state values and calculate growth rates
+    try:
+        #Make sure we are comparing the same month to month change in values between state and metro data
+        state_employment_extra_month_cut_off    = state_employment.loc[state_employment['period']     <= (msa_employment['period'].max())]
+        state_gdp_extra_month_cut_off           = state_gdp.loc[state_gdp['Period']                   <= (msa_gdp['Period'].max())]
+        state_resident_pop_extra_month_cut_off  = state_resident_pop.loc[state_resident_pop['Period'] <= (msa_resident_pop['Period'].max())]
+        state_pci_extra_month_cut_off           = state_pci.loc[state_pci['Period']                   <= (msa_pci['Period'].max())]
+
+        current_state_employment                = state_employment_extra_month_cut_off['Employment'].iloc[-1]
+        current_state_gdp                       = state_gdp_extra_month_cut_off['GDP'].iloc[-1]
+        current_state_pop                       = state_resident_pop_extra_month_cut_off['Resident Population'].iloc[-1]
+        current_state_pci                       = state_pci_extra_month_cut_off['Per Capita Personal Income'].iloc[-1]
+
+        #Get lagged state values from 5 years ago
+        lagged_state_employment = state_employment_extra_month_cut_off['Employment'].iloc[-1 - (growth_period * 12)] #the employment data is monthly
+        lagged_state_gdp        = state_gdp_extra_month_cut_off['GDP'].iloc[-1 - growth_period]
+        lagged_state_pop        = state_resident_pop_extra_month_cut_off['Resident Population'].iloc[-1- growth_period]
+        lagged_state_pci        = state_pci_extra_month_cut_off['Per Capita Personal Income'].iloc[-1- growth_period]
+        
+
+        #Calculate 5-year growth for state
+        state_employment_growth = ((current_state_employment/lagged_state_employment) - 1 ) * 100
+        state_gdp_growth        = ((current_state_gdp/lagged_state_gdp) - 1) * 100
+        state_pop_growth        = ((current_state_pop/lagged_state_pop) - 1) * 100
+        state_pci_growth        = ((current_state_pci/lagged_state_pci) - 1) * 100
+
+    except Exception as e:
+        print(e,'problem getting state values for metro overview table')
+        current_state_employment = 1
+        current_state_gdp        = 1
+        current_state_pop        = 1
+        current_state_pci        = 1
+        lagged_state_employment  = 1
+        lagged_state_gdp         = 1
+        lagged_state_pop         = 1
+        lagged_state_pci         = 1
+        state_employment_growth  = 1
+        state_gdp_growth         = 1
+        state_pop_growth         = 1
+        state_pci_growth         = 1
+
+    #Get most recent values for MSA, lagged values, and calculate growth rates
+    try:
+        #Now get most recent msa level values
+        current_msa_employment                = msa_employment['Employment'].iloc[-1]
+        current_msa_gdp                       = msa_gdp['GDP'].iloc[-1]
+        current_msa_pop                       = msa_resident_pop['Resident Population'].iloc[-1]
+        current_msa_pci                       = msa_pci['Per Capita Personal Income'].iloc[-1]
+
+        #Get lagged msa values from 5 years ago
+        lagged_msa_employment               = msa_employment['Employment'].iloc[-1 - (growth_period * 12)] #the employment data is monthly
+        lagged_msa_gdp                      = msa_gdp['GDP'].iloc[-1 - growth_period]
+        lagged_msa_pop                      = msa_resident_pop['Resident Population'].iloc[-1- growth_period]
+        lagged_msa_pci                      = msa_pci['Per Capita Personal Income'].iloc[-1- growth_period]
+    
+        #Calculate 5-year growth for msa
+        msa_employment_growth               = ((current_msa_employment/lagged_msa_employment) - 1 ) * 100
+        msa_gdp_growth                      = ((current_msa_gdp/lagged_msa_gdp) - 1) * 100
+        msa_pop_growth                      = ((current_msa_pop/lagged_msa_pop) - 1) * 100
+        msa_pci_growth                      = ((current_msa_pci/lagged_msa_pci) - 1) * 100
+
+    except Exception as e:
+            print(e,'problem getting msa values with most recent data')
+
+            #Now get most recent msa level values
+            current_msa_employment                = 1
+            current_msa_gdp                       = 1
+            current_msa_pop                       = 1
+            current_msa_pci                       = 1
+    
+            #Get lagged msa values from 5 years ago
+            lagged_msa_employment                 = 1 
+            lagged_msa_gdp                        = 1
+            lagged_msa_pop                        = 1
+            lagged_msa_pci                        = 1
+
+            msa_employment_growth                 = 1
+            msa_gdp_growth                        = 1
+            msa_pop_growth                        = 1
+            msa_pci_growth                        = 1
+
+
+    try:
+        #Determine if county grew faster or slower than state or MSA
+        if state_employment_growth > msa_employment_growth:
+            employment_faster_or_slower = 'Slower than'
+        elif state_employment_growth < msa_employment_growth:
+            employment_faster_or_slower = 'Faster than'
+        elif state_employment_growth == msa_employment_growth:
+            employment_faster_or_slower = 'Equal to'
+            
+
+        if state_gdp_growth > msa_gdp_growth:
+            gdp_faster_or_slower = 'Slower than'
+        elif state_gdp_growth < msa_gdp_growth:
+            gdp_faster_or_slower = 'Faster than' 
+        elif state_gdp_growth == msa_gdp_growth:
+            gdp_faster_or_slower = 'Equal to' 
+
+        if state_pop_growth > msa_pop_growth:
+            pop_faster_or_slower = 'Slower than'
+        elif state_pop_growth < msa_pop_growth:
+            pop_faster_or_slower = 'Faster than'
+        elif state_pop_growth == msa_pop_growth :
+            pop_faster_or_slower = 'Equal to'
+
+        if state_pci_growth > msa_pci_growth:
+            pci_faster_or_slower = 'Slower than'
+        elif state_pci_growth < msa_pci_growth:
+            pci_faster_or_slower = 'Faster than' 
+        elif state_pci_growth == msa_pci_growth:
+            pci_faster_or_slower = 'Equal to'
+        
+    except Exception as e:
+        print(e,'problem getting growth comparison descriptions')
+            
+    try:
+
+        overview_table =[ 
+                        ['Attribute','Metro Level Value',str(growth_period) + ' Year Growth Rate','Relative to Baseline ('+ state + ')' ], 
+                        ['Employment',"{:,.0f}".format(current_msa_employment),"{:,.1f}%".format(msa_employment_growth),employment_faster_or_slower + ' State' ], 
+                        ['GDP', '$' + millify(current_msa_gdp) , "{:,.1f}%".format(msa_gdp_growth),gdp_faster_or_slower + ' State'],
+                        ['Population',"{:,.0f}".format(current_msa_pop), "{:,.1f}%".format(msa_pop_growth),pop_faster_or_slower + ' State'], 
+                        ['Per Capita Personal Income',"${:,.0f}".format(current_msa_pci),"{:,.1f}%".format(msa_pci_growth),pci_faster_or_slower + ' State'] 
+                        ]
+        
         for list in overview_table:
             if list[1] == '$0':
                 list[1] = 'NA'
@@ -6196,7 +6357,10 @@ def OverviewSection(document):
 
     #Creating Overview Table
     try:
-        data_for_table = GetDataAndLanguageForOverviewTable()
+        if county_or_msa_report == 'c':
+            data_for_table = CountyGetDataForOverviewTable()
+        elif county_or_msa_report == 'm':
+            data_for_table = MSAGetDataForOverviewTable()
     except Exception as e:
         print(e,'problem getting data for overview table')
     
