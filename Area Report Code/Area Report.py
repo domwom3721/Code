@@ -671,8 +671,11 @@ def FindAirport(polygon):
 
         if airport_info_list == []:
             return(None)
-        airport_sentence = (county + ' is served by the following facilities: ')
-
+        
+        if county_or_msa_report == 'c':
+            airport_sentence = (county + ' is served by the following facilities: ')
+        elif county_or_msa_report == 'm':
+            airport_sentence = (cbsa_name + ' is served by the following facilities: ')
         for count,airport in enumerate(airport_info_list):
             if count < len(airport_info_list) -1 :
                 airport_sentence = airport_sentence + (airport['name'].title())  + ', ' 
