@@ -5876,7 +5876,7 @@ def CountyGetDataForOverviewTable():
                             ]
         else:
             overview_table =[ 
-                            ['Attribute','County Level Value',str(growth_period) + ' Year Growth Rate','Relative to Baseline ('+ state + ')' ], 
+                            ['Attribute','County Level Value',str(growth_period) + ' Year Annualized Growth Rate','Relative to Baseline ('+ state + ')' ], 
                             ['Employment',current_county_employment,county_employment_growth,employment_faster_or_slower + ' State' ], 
                             ['GDP',current_county_gdp,county_gdp_growth,gdp_faster_or_slower + ' State'],
                             ['Population',current_county_pop,county_pop_growth,pop_faster_or_slower + ' State'], 
@@ -5893,7 +5893,7 @@ def CountyGetDataForOverviewTable():
     except Exception as e:
         print(e,'problem creating list of lists for overview table data')
         overview_table = [
-                ['Attribute','County Level Value','5 Year Growth Rate','Relative to Baseline (State Code or MSA)'],
+                ['Attribute','County Level Value','5 Year Annualized Growth Rate','Relative to Baseline (State Code or MSA)'],
                 ['Employment','','','[Faster than/Slower than/Equal to] [State/MSA]'],
                 ['GDP','','','[Faster than/Slower than/Equal to] [State/MSA]'],
                 ['Population','','','[Faster than/Slower than/Equal to] [State/MSA]'],
