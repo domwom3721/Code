@@ -213,8 +213,7 @@ def FindBLSEndYear():
         return(current_year)
     elif current_month > 3:
         return(current_year)
-
-
+    
 #####################################################Data Related Functions####################################
 #County Data
 def GetCountyGDP(fips, observation_start):
