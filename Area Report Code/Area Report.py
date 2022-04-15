@@ -199,13 +199,14 @@ def FindBLSEndYear():
     current_day    = todays_date.day
     previous_year  = current_year - 1
     
-    #Once we are in March, the latest employment data will be from January so we can use current year as "end_year"
-    return(current_year)
-    
-    # if current_month >= 3 and current_day >=14:
-    #     return(current_year)
-    # else:
-    #     return(previous_year)
+    if (current_month == 1) or(current_month == 2):
+        return(previous_year)
+    elif (current_month == 3 and current_day <=14) :
+        return(previous_year)
+    elif current_month == 3 and current_day > 14:
+        return(current_year)
+    elif current_month > 3:
+        return(current_year)
 
 #####################################################Data Related Functions####################################
 #County Data
