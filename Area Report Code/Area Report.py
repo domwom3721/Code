@@ -736,8 +736,10 @@ def FindNearestHighways(polygon):
             i+=1
 
 
-
-        sentence = (county + ' is served by the following roads: ')
+        if county_or_msa_report == 'c':
+            sentence = (county + ' is served by the following roads: ')
+        elif county_or_msa_report == 'm':
+            sentence = (cbsa_name + ' is served by the following roads: ')
 
         for count,highway in enumerate(highway_info_list):
             if count < len(highway_info_list) -1 :
@@ -3587,7 +3589,7 @@ def CountyOverviewLanguage():
     return(overview_language)
 
 def MSAOverviewLanguage():
-    print('Writing County Overview Langauge')
+    print('Writing MSA Overview Langauge')
 
     #Section 1a: Grab overview summary from Metro_language CSV using the CBSA Code from IdentifyMSA
     try:
@@ -3642,7 +3644,7 @@ def MSAOverviewLanguage():
         current_period                                    = str(msa_employment['period'].iloc[-1])
         current_unemployment                              = msa_unemployment_rate['unemployment_rate'].iloc[-1]
         historical_average_unemployment                   = msa_unemployment_rate['unemployment_rate'].mean()
-        current_gdp_growth                                = ((msa_gdp['GDP'].iloc[-1]/county_gdp['GDP'].iloc[-2]) - 1 ) * 100
+        current_gdp_growth                                = ((msa_gdp['GDP'].iloc[-1]/msa_gdp['GDP'].iloc[-2]) - 1 ) * 100
         current_state_unemployment                        = state_unemployment_rate['unemployment_rate'].iloc[-1]
         largest_industry                                  = msa_industry_breakdown['industry_code'].iloc[-1]
         largest_industry_employment_fraction              = msa_industry_breakdown['employment_fraction'].iloc[-1]
@@ -5076,7 +5078,10 @@ def WikipediaTransitLanguage(category):
         #Loop throuhg each search term looking for text, if we find any, return it as a list
         for search_term in search_term_list:
             if search_term == 'Major highways':
-                langauge_paragraphs = [('Major highways in ' + county + ' include ')]
+                if county_or_msa_report == 'c':
+                    langauge_paragraphs = [('Major highways in ' + county + ' include ')]
+                elif county_or_msa_report == 'm':
+                    langauge_paragraphs = [('Major highways in ' + cbsa_name + ' include ')]
             else:
                 langauge_paragraphs = []
 
@@ -5192,12 +5197,11 @@ def CountyHousingLanguage():
                                     ' across the Nation over the past year.'
                                 )
 
+        return([boiler_plate_housing_language,housing_langage])
     except Exception as e:
         print(e,'Unable to create county median list price language')
-        boiler_plate_housing_language, housing_langage = '', ''
+        return(['',''])
     
-    return([boiler_plate_housing_language,housing_langage])
-
 def MSAHousingLanguage():
     print('Writing Housing Langauge')
     try:
@@ -5241,11 +5245,10 @@ def MSAHousingLanguage():
                             )
 
 
+        return([boiler_plate_housing_language,housing_langage])
     except Exception as e:
         print(e,'Unable to create MSA median list price language')
-        boiler_plate_housing_language, housing_langage = '', ''
-    
-    return([boiler_plate_housing_language,housing_langage])
+        return(['',''])
 
 def CarLanguage():
     print('Creating auto Langauge')
