@@ -88,10 +88,10 @@ def UpdateSalesforceList():
 def CreateDirectory(state, area_name):
     global county_folder, county_folder_map, report_path, document_name
     state_folder             = os.path.join(main_output_location, state)
-    county_folder            = os.path.join(main_output_location, state, area_name)
-    
     state_folder_map         = os.path.join(map_location, state)
     county_folder_map        = os.path.join(map_location, state, area_name)
+    county_folder            = os.path.join(main_output_location, state, area_name)
+    
 
     for folder in [state_folder,county_folder,state_folder_map,county_folder_map]:
          if os.path.exists(folder) == False:
@@ -5307,7 +5307,11 @@ def PlaneLanguage():
                 return(airport_language)
 
             else:
-                return(county + ' is served by  .')
+                if county_or_msa_report == 'c':
+                    return(county + ' is served by  .')
+                elif county_or_msa_report == 'm':
+                    return(cbsa_name + ' is served by  .')
+
     except Exception as e:
         print(e,'Unable to create local airport language')
 
@@ -5319,7 +5323,10 @@ def BusLanguage():
         if wikipedia_bus_language != None:
             return(wikipedia_bus_language)
         else:
-            return(county + ' does not have public bus service.')
+            if county_or_msa_report == 'c':
+                return(county + ' does not have public bus service.')
+            elif county_or_msa_report == 'm':
+                return(cbsa_name + ' does not have public bus service.')
     except Exception as e:
         print(e,'Unable to create public bus language')
 
@@ -5330,7 +5337,10 @@ def TrainLanguage():
         if wikipedia_train_language != None:
             return(wikipedia_train_language)
         else:
-            return(county + ' is not served by any commuter or light rail lines.')
+            if county_or_msa_report == 'c':
+                return(county + ' is not served by any commuter or light rail lines.')
+            elif county_or_msa_report == 'm':
+                return(cbsa_name + ' is not served by any commuter or light rail lines.')
     except Exception as e:
         print(e,'Unable to create public rail language')
 
@@ -5916,10 +5926,10 @@ def MSAGetDataForOverviewTable():
         
 
         #Calculate 5-year growth for state
-        state_employment_growth = ((current_state_employment/lagged_state_employment) - 1 ) * 100
-        state_gdp_growth        = ((current_state_gdp/lagged_state_gdp) - 1) * 100
-        state_pop_growth        = ((current_state_pop/lagged_state_pop) - 1) * 100
-        state_pci_growth        = ((current_state_pci/lagged_state_pci) - 1) * 100
+        state_employment_growth = (((current_state_employment/lagged_state_employment) - 1 ) * 100)/growth_period
+        state_gdp_growth        = (((current_state_gdp/lagged_state_gdp) - 1) * 100)/growth_period
+        state_pop_growth        = (((current_state_pop/lagged_state_pop) - 1) * 100)/growth_period
+        state_pci_growth        = (((current_state_pci/lagged_state_pci) - 1) * 100)/growth_period
 
     except Exception as e:
         print(e,'problem getting state values for metro overview table')
@@ -5951,10 +5961,10 @@ def MSAGetDataForOverviewTable():
         lagged_msa_pci                      = msa_pci['Per Capita Personal Income'].iloc[-1- growth_period]
     
         #Calculate 5-year growth for msa
-        msa_employment_growth               = ((current_msa_employment/lagged_msa_employment) - 1 ) * 100
-        msa_gdp_growth                      = ((current_msa_gdp/lagged_msa_gdp) - 1) * 100
-        msa_pop_growth                      = ((current_msa_pop/lagged_msa_pop) - 1) * 100
-        msa_pci_growth                      = ((current_msa_pci/lagged_msa_pci) - 1) * 100
+        msa_employment_growth               = (((current_msa_employment/lagged_msa_employment) - 1 ) * 100)/growth_period
+        msa_gdp_growth                      = (((current_msa_gdp/lagged_msa_gdp) - 1) * 100)/growth_period
+        msa_pop_growth                      = (((current_msa_pop/lagged_msa_pop) - 1) * 100)/growth_period
+        msa_pci_growth                      = (((current_msa_pci/lagged_msa_pci) - 1) * 100)/growth_period
 
     except Exception as e:
             print(e,'problem getting msa values with most recent data')
@@ -5977,8 +5987,8 @@ def MSAGetDataForOverviewTable():
             msa_pci_growth                        = 1
 
 
+    #Determine if msa grew faster or slower than state or MSA
     try:
-        #Determine if county grew faster or slower than state or MSA
         if state_employment_growth > msa_employment_growth:
             employment_faster_or_slower = 'Slower than'
         elif state_employment_growth < msa_employment_growth:
@@ -6014,7 +6024,7 @@ def MSAGetDataForOverviewTable():
     try:
 
         overview_table =[ 
-                        ['Attribute','Metro Level Value',str(growth_period) + ' Year Growth Rate','Relative to Baseline ('+ state + ')' ], 
+                        ['Attribute','Metro Level Value',str(growth_period) + ' Year Annualized Growth Rate','Relative to Baseline ('+ state + ')' ], 
                         ['Employment',"{:,.0f}".format(current_msa_employment),"{:,.1f}%".format(msa_employment_growth),employment_faster_or_slower + ' State' ], 
                         ['GDP', '$' + millify(current_msa_gdp) , "{:,.1f}%".format(msa_gdp_growth),gdp_faster_or_slower + ' State'],
                         ['Population',"{:,.0f}".format(current_msa_pop), "{:,.1f}%".format(msa_pop_growth),pop_faster_or_slower + ' State'], 
@@ -6589,7 +6599,7 @@ def Main():
 
     elif  county_or_msa_report == 'm':
         print('Creating Report for: ', cbsa_name)
-        CreateDirectory(state = state, area_name =cbsa_name )
+        CreateDirectory(state = state, area_name =cbsa_name + ' MSA' )
         
     GetWikipediaPage()
     GetMSAData()
