@@ -5135,9 +5135,6 @@ def CountyHousingLanguage():
             #Format variables
             current_county_mlp      = "${:,.0f}".format(current_county_mlp)
             
-            boiler_plate_housing_language = """Historically low mortgage rates, the desire for more space, and the ability to work from home have led to the highest number of home sales while historically low inventory levels have pushed values to record highs in most counties and metros across the Nation. """ 
-
-
             #If we have the metro realtor data
             if isinstance(msa_mlp, pd.DataFrame) == True:
                 yoy_msa_mlp_growth = ((msa_mlp['Median List Price'].iloc[-1]/msa_mlp['Median List Price'].iloc[-13]) - 1 ) * 100
@@ -5219,7 +5216,6 @@ def MSAHousingLanguage():
             increase_or_decrease = 'no change'
         
         
-        boiler_plate_housing_language = """Historically low mortgage rates, the desire for more space, and the ability to work from home have led to the highest number of home sales while historically low inventory levels have pushed values to record highs in most counties and metros across the Nation. """ 
 
 
         housing_langage =   (#Sentence 1
@@ -6629,6 +6625,9 @@ national_economy_summary = (
                                 'Supply-chain disruptions such as delays at U.S. ports and international manufacturing issues contributed to a sharp increase in inflation and pose a risk to the economic outlook. Despite supply-side challenges, many economic observers expect that the economy regained momentum in the final months of the year and is well positioned for continued growth in 2022. ' 
                                     )
 
+boiler_plate_housing_language = """Historically low mortgage rates, the desire for more space, and the ability to work from home have led to the highest number of home sales while historically low inventory levels have pushed values to record highs in most counties and metros across the Nation. """ 
+
+
 marginInches                  = 1/18
 ppi                           = 96.85 
 width_inches                  = 6.5
@@ -6764,9 +6763,6 @@ elif county_or_msa_report == 'c':
         except Exception as e:
             print(e)
             print('Report Creation Failed for : ',fips)
-
-else:
-    assert False
 
 #Now that we are done creating reports, crawl through our directory and create CSV file on exisiting reports
 CreateDirectoryCSV()
