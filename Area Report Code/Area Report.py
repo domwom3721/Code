@@ -42,7 +42,7 @@ from shapely.geometry import LineString, Point, Polygon
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
 project_location               =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Projects','Research Report Automation Project') 
 main_output_location           =  os.path.join(project_location,'Output', 'Area')                 #Testing
-# main_output_location           =  os.path.join(dropbox_root,'Research', 'Market Analysis','Area') #Production
+main_output_location           =  os.path.join(dropbox_root,'Research', 'Market Analysis','Area') #Production
 general_data_location          =  os.path.join(project_location,'Data', 'General Data')
 data_location                  =  os.path.join(project_location,'Data', 'Area Reports Data')
 graphics_location              =  os.path.join(project_location,'Data', 'General Data','Graphics')
@@ -6785,7 +6785,7 @@ bowery_black                  = "#404858"
                                     
 national_economy_summary = (
                                 'The United States economy continues to recover from the aftermath of the Covid-19 pandemic.' + 
-                                ' The labor market has restored almost 19 million of the 21 million jobs lost at the beginning of the pandemic, as measured by non-farm employment, bringing the unemployment rate to 3.9% as of December 2021. '+
+                                ' The labor market has restored over 20 million of the 21 million jobs lost at the beginning of the pandemic, as measured by non-farm employment, bringing the unemployment rate to 3.6% as of March 2022. '+
                                 'Employment growth continued in leisure and hospitality, in professional and business services, in retail trade, and in transportation and warehousing. ' + 
                                 'After historical growth in Q2, GDP growth slowed to an annual rate of 2.3% in Q3 2021. ' + 
                                 'The slowdown in third quarter GDP reflected the continued economic impact of the COVID-19 pandemic. A resurgence of COVID-19 cases resulted in new restrictions and delays in the reopening of establishments in some parts of the country. ' +
