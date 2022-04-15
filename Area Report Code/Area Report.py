@@ -5657,10 +5657,10 @@ def CountyGetDataForOverviewTable():
 
     #Calculate county 5-year growth
     try:
-        county_employment_growth = ((current_county_employment/lagged_county_employment) - 1 ) * 100
-        county_gdp_growth        = ((current_county_gdp/lagged_county_gdp) - 1) * 100
-        county_pop_growth        = ((current_county_pop/lagged_county_pop) - 1) * 100
-        county_pci_growth        = ((current_county_pci/lagged_county_pci) - 1) * 100
+        county_employment_growth = (((current_county_employment/lagged_county_employment) - 1 ) * 100)/growth_period
+        county_gdp_growth        = (((current_county_gdp/lagged_county_gdp) - 1) * 100)/growth_period
+        county_pop_growth        = (((current_county_pop/lagged_county_pop) - 1) * 100)/growth_period
+        county_pci_growth        = (((current_county_pci/lagged_county_pci) - 1) * 100)/growth_period
 
     except Exception as e:
         print(e,'problem calculating growth rates for county in overview table')
@@ -5724,10 +5724,10 @@ def CountyGetDataForOverviewTable():
 
     #Calculate 5-year growth for state
     try:
-        state_employment_growth = ((current_state_employment/lagged_state_employment) - 1 ) * 100
-        state_gdp_growth        = ((current_state_gdp/lagged_state_gdp) - 1) * 100
-        state_pop_growth        = ((current_state_pop/lagged_state_pop) - 1) * 100
-        state_pci_growth        = ((current_state_pci/lagged_state_pci) - 1) * 100
+        state_employment_growth = (((current_state_employment/lagged_state_employment) - 1 ) * 100)/growth_period
+        state_gdp_growth        = (((current_state_gdp/lagged_state_gdp) - 1) * 100)/growth_period
+        state_pop_growth        = (((current_state_pop/lagged_state_pop) - 1) * 100)/growth_period
+        state_pci_growth        = (((current_state_pci/lagged_state_pci) - 1) * 100)/growth_period
 
     except Exception as e:
         print(e,'problem getting state growth rates for overivew table')
@@ -5788,10 +5788,10 @@ def CountyGetDataForOverviewTable():
 
         try:
             #Calculate 5-year growth for msa
-            msa_employment_growth               = ((current_msa_employment/lagged_msa_employment) - 1 ) * 100
-            msa_gdp_growth                      = ((current_msa_gdp/lagged_msa_gdp) - 1) * 100
-            msa_pop_growth                      = ((current_msa_pop/lagged_msa_pop) - 1) * 100
-            msa_pci_growth                      = ((current_msa_pci/lagged_msa_pci) - 1) * 100
+            msa_employment_growth               = (((current_msa_employment/lagged_msa_employment) - 1 ) * 100)/growth_period
+            msa_gdp_growth                      = (((current_msa_gdp/lagged_msa_gdp) - 1) * 100)/growth_period
+            msa_pop_growth                      = (((current_msa_pop/lagged_msa_pop) - 1) * 100)/growth_period
+            msa_pci_growth                      = (((current_msa_pci/lagged_msa_pci) - 1) * 100)/growth_period
 
         except Exception as e:
             print(e,'problem getting msa growth rates for overview table data')
@@ -5868,7 +5868,7 @@ def CountyGetDataForOverviewTable():
     try:
         if cbsa != '':
             overview_table =[ 
-                            ['Attribute','County Level Value',str(growth_period) + ' Year Growth Rate','Relative to Baseline ('+ 'MSA' + ')' ], 
+                            ['Attribute','County Level Value',str(growth_period) + ' Year Annualized Growth Rate','Relative to Baseline ('+ 'MSA' + ')' ], 
                             ['Employment',current_county_employment,county_employment_growth,employment_faster_or_slower + ' MSA' ], 
                             ['GDP',current_county_gdp,county_gdp_growth,gdp_faster_or_slower + ' MSA'],
                             ['Population',current_county_pop,county_pop_growth,pop_faster_or_slower + ' MSA'], 
