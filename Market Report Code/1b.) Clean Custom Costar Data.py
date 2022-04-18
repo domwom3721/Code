@@ -57,10 +57,15 @@ if sector != 'Multifamily':
 
     raw_download_market_rent_file     = os.path.join(os.environ['USERPROFILE'], 'Downloads','Market Rent Per SF.xlsx') 
     raw_market_rent_file              = os.path.join(costar_data_location,'Raw Data','Custom County Data','Market Rent Per SF.xlsx')
-    
-    clean_main_data_file              = os.path.join(costar_data_location,'Clean Data','retail_clean.csv')
 
-else:
+    if sector == 'Office':
+        clean_main_data_file              = os.path.join(costar_data_location,'Clean Data','office_clean.csv')
+    elif sector == 'Retail':
+        clean_main_data_file              = os.path.join(costar_data_location,'Clean Data','retail_clean.csv')
+    elif sector == 'Industrial':
+        clean_main_data_file              = os.path.join(costar_data_location,'Clean Data','industrial_clean.csv')
+
+elif sector == 'Multifamily':
     raw_download_data_file            = os.path.join(os.environ['USERPROFILE'], 'Downloads','MultifamilyDataGrid.xlsx') 
     raw_main_data_file                = os.path.join(costar_data_location,'Raw Data','Custom County Data','MultifamilyDataGrid.xlsx') 
     
@@ -69,9 +74,6 @@ else:
     
     raw_download_market_cap_rate_file = os.path.join(os.environ['USERPROFILE'], 'Downloads','Market Cap Rate.xlsx') 
     raw_market_cap_rate_file          = os.path.join(costar_data_location,'Raw Data','Custom County Data','Market Cap Rate.xlsx')
-
-    raw_download_market_rent_file     = os.path.join(os.environ['USERPROFILE'], 'Downloads','Market Rent Per SF.xlsx') 
-    raw_market_rent_file              = os.path.join(costar_data_location,'Raw Data','Custom County Data','Market Rent Per SF.xlsx')
     
     clean_main_data_file              = os.path.join(costar_data_location,'Clean Data','mf_clean.csv')
 
@@ -86,8 +88,9 @@ if os.path.exists(raw_download_sales_volume_file):
 if os.path.exists(raw_download_market_cap_rate_file):
     shutil.move(raw_download_market_cap_rate_file,raw_market_cap_rate_file)
 
-if os.path.exists(raw_download_market_rent_file) and (sector != 'Multifamily'):
-    shutil.move(raw_download_market_rent_file,raw_market_rent_file)
+if  (sector != 'Multifamily'):
+    if os.path.exists(raw_download_market_rent_file):
+        shutil.move(raw_download_market_rent_file,raw_market_rent_file)
 
 #Section 4: Read in our downloaded files as dataframes 
 # Now our downloaded data files are in the raw data folder, we will merge them together into a single clean file we export
@@ -275,7 +278,6 @@ def MainClean(df,sector): #Calls all cleaning functions and returns cleaned data
     df = NameGeography(df)
     df = StripVarName(df)
     df = SortData(df)
-    df = KeepLast10Years(df,['Geography Name'])
     df = CreateYearAndQuarterVariables(df)
     df = RenameVariables(df,sector)
     df = CleanAssetValue(df,sector)
@@ -324,6 +326,11 @@ if sector == 'Multifamily':
     df_custom['QoQ Market Effective Rent/Unit Growth']        = round( (((df_custom['Market Effective Rent/Unit']   / df_custom['Previous Quarter Market Effective Rent/Unit']) - 1) * 100),                    1)
     df_custom['YoY Market Effective Rent/Unit Growth']        = round( (((df_custom['Market Effective Rent/Unit']  / df_custom['4 Quarters Ago Market Effective Rent/Unit'])   - 1) * 100),                    1)
     
+    #Net Delivered Sqft 12mo
+    df_custom['1 Year Lagged Inventory Units']                  = df_custom.groupby('Geography Name')['Inventory Units'].shift(4) 
+    df_custom['Net Delivered Units 12 Mo']                      = df_custom['Inventory Units']  - df_custom['1 Year Lagged Inventory Units']
+    df_custom                                                   = df_custom.drop(columns=['1 Year Lagged Inventory Units'])
+
     #Absorption Units
     df_custom['Previous Quarter Absorption Units']            = df_custom.groupby('Geography Name')['Absorption Units'].shift(1)
     df_custom['4 Quarters Ago Absorption Units']              = df_custom.groupby('Geography Name')['Absorption Units'].shift(4)
@@ -368,6 +375,11 @@ else:
 
     #Create variable for percent under construction
     df_custom['Under Construction %']                       = (df_custom['Under Construction SF']/df_custom['Inventory SF'] ) *100
+
+    #Net Delivered Sqft 12mo
+    df_custom['1 Year Lagged Inventory SF']                  = df_custom.groupby('Geography Name')['Inventory SF'].shift(4) 
+    df_custom['Net Delivered SF 12 Mo']                       = df_custom['Inventory SF']  - df_custom['1 Year Lagged Inventory SF']
+    df_custom                                                = df_custom.drop(columns=['1 Year Lagged Inventory SF'])
 
     #Asset Value per sqft
     df_custom['Asset Value/Sqft']                           = round((df_custom['Asset Value']/df_custom['Inventory SF']),2)
@@ -421,6 +433,6 @@ df_custom['Market Cap Rate']                            = round(df_custom['Marke
 df_custom['Vacancy Rate']                               = round(df_custom['Vacancy Rate'], 2)
 df_custom['Absorption Rate']                            = round(df_custom['Absorption Rate'], 2)
 
-
+df_custom = KeepLast10Years(df_custom, ['Geography Name'])
 #Section 8: Export cleaned data as excel file
 df_custom.to_excel(clean_custom_file)
