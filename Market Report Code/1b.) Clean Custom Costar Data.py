@@ -337,8 +337,9 @@ if sector == 'Multifamily':
 
     df_custom['QoQ Absorption Units Growth']                  = round((df_custom['Absorption Units']   - df_custom['Previous Quarter Absorption Units'])    / abs(df_custom['Previous Quarter Absorption Units'])  * 100,1)              
     df_custom['YoY Absorption Units Growth']                  = round((df_custom['Absorption Units']   - df_custom['4 Quarters Ago Absorption Units'])      /  abs(df_custom['4 Quarters Ago Absorption Units'])   * 100 ,1)           
-        
-
+    
+    #12 mo Net Absorption
+    df_custom['Absorption Units 12 Mo']                       = df_custom['Absorption Units'].rolling(min_periods = 1, window=4).sum()
 else:            
     #Create laggd variables
     df_custom['Lagged Inventory SF']                         = df_custom.groupby('Geography Name')['Inventory SF'].shift(1)
@@ -390,7 +391,8 @@ else:
     df_custom['QoQ Asset Value/Sqft Growth']                = round( (((df_custom['Asset Value/Sqft']  / df_custom['Previous Quarter Asset Value/Sqft']) - 1) * 100),                    1)
     df_custom['YoY Asset Value/Sqft Growth']                = round( (((df_custom['Asset Value/Sqft']  / df_custom['4 Quarters Ago Asset Value/Sqft'])   - 1) * 100),                    1)
 
-
+    #12 mo Net Absorption
+    df_custom['Net Absorption SF 12 Mo']                    = df_custom['Net Absorption SF'].rolling(min_periods = 1, window=4).sum()
 
 #Making Variables for all sectors
 df_custom['Previous Quarter Vacancy']                   = df_custom.groupby('Geography Name')['Vacancy Rate'].shift(1)
@@ -435,4 +437,4 @@ df_custom['Absorption Rate']                            = round(df_custom['Absor
 
 df_custom = KeepLast10Years(df_custom, ['Geography Name'])
 #Section 8: Export cleaned data as excel file
-df_custom.to_excel(clean_custom_file)
+df_custom.to_excel(clean_custom_file,index = False)
