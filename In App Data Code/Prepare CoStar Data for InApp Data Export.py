@@ -6,8 +6,10 @@
 #Author: Mike Leahy 04/15/2022
 
 #Import packages we will be using
+
 import os
 import pandas as pd
+import re
 
 #Define file location pre paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)')  
@@ -18,7 +20,7 @@ df_combined     = pd.concat([ pd.read_excel(os.path.join(costar_data_location,'m
                              pd.read_excel(os.path.join(costar_data_location,'office_raw.xlsx')), 
                              pd.read_excel(os.path.join(costar_data_location,'retail_raw.xlsx')),
                             pd.read_excel(os.path.join(costar_data_location,'industrial_raw.xlsx'))
-                             ])
+                             ],ignore_index=True)
 
 #Define data cleaning functions
 def DropClustersAndLocation(df): 
@@ -39,29 +41,25 @@ def MetroToMarketAndMarketResearchName(df):
     df['Property Class Name']       = df['Property Class Name'].str.replace('Multi-Family', 'Multifamily', regex=False)
     df['Market Research Name']      = '' 
     
-    #Create Market research name for markets
-    # df['Market Research Name'].loc[df['Geography Type']=='Market']          = df['Geography Name'].str[-2:] + ' - ' + df['Geography Name'].str[:-5] + ' - ' + df['Property Class Name']  
-    
-    #Create Market research name for nation
-    # df['Market Research Name'].loc[df['Geography Type']=='Nation']          = df['Geography Name'].str[-2:] + ' - ' + df['Geography Name'].str[:-5] + ' - ' + df['Property Class Name']  
-    
-    #Create Market research name for submarkets
-    # df['Last Dash Location'] = df['Geography Name'].str.index(sub=' - ',start = 0, end =len)
-    # print(df[['Geography Name', 'Last Dash Location']])
-    
-    # df['Market Research Name'].loc[df['Geography Type']=='Submarket']       =  df['Geography Name'].str[0:] + ' - ' + df['Geography Name'].str[:-5] + ' - ' + df['Property Class Name'] 
-    
-    # .str.rindex(('-') + 1)
-    # Boston - MA - Quincy/Braintree
-    
 
-    #Move to first column
+    #Create Market research name for markets. Example: ("Albany - NY" --- > "NY - Albany - Office")
+    df['Market Research Name'].loc[df['Geography Type']=='Market']          = df['Geography Name'].str[-2:] + ' - ' + df['Geography Name'].str[:-5] + ' - ' + df['Property Class Name']  
+    
+    #Create Market research name for nation. Example: ("United States of America" --- > "US - United States of America - Multifamily" )
+    df['Market Research Name'].loc[df['Geography Type']=='National']          = 'US' + ' - ' + 'United States of America' + ' - ' + df['Property Class Name']  
+    
+    #Create Market research name for submarkets.  Example: ("Boston - MA - Quincy/Braintree" --- > "MA - Quincy/Braintree - Multifamily" )
+    df['Market Research Name'].loc[df['Geography Type']=='Submarket']       =  df['Geography Name'].str.extract(r'( [A-Z][A-Z] )',expand = False).str.strip() + ' - '  + df['Geography Name'].str.replace(r'(\w+ - [A-Z][A-Z] - )','',regex = True).str.strip() + ' - ' + df['Property Class Name'] 
+
+    #Create a new column that combines the market research name and CoStar Metric 
     df['Market Research Name & Metric']       = df['Market Research Name'] + ' - ' + df['Concept Name'] 
-    df = df[ ['Market Research Name & Metric'] + [ col for col in df.columns if col != 'Market Research Name & Metric' ]]
+    
+    #Move it to first column
+    df                                        = df[ ['Market Research Name & Metric'] + [ col for col in df.columns if col != 'Market Research Name & Metric' ]]
     
     #Replace the original Geography name variable with our constructed market research name
-    df['Geography Name'] = df['Market Research Name']
-    df                   = df.drop(columns=['Market Research Name'])
+    df['Geography Name']                      = df['Market Research Name']
+    df                                        = df.drop(columns=['Market Research Name'])
     
     return(df.copy())
 
@@ -74,7 +72,6 @@ df_combined = DropColumns(df=df_combined)
 df_combined = DropClustersAndLocation(df=df_combined)
 df_combined = MetroToMarketAndMarketResearchName(df=df_combined)
 df_combined = RenameVariable(df=df_combined)
-print(df_combined)
 
 #Append our cleaned dataframes together
 df_combined.to_excel(os.path.join(costar_data_location,'InAppData.xlsx'),index=False)
