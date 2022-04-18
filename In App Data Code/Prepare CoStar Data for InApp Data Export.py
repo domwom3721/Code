@@ -9,7 +9,6 @@
 
 import os
 import pandas as pd
-import re
 
 #Define file location pre paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)')  
