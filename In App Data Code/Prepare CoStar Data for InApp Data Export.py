@@ -14,27 +14,67 @@ dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropb
 costar_data_location           =  os.path.join(dropbox_root, 'Research','Projects','App','Data')  
 
 #Import raw CoStar data as pandas dataframes
-df_multifamily  = pd.read_excel(os.path.join(costar_data_location,'multifamily_raw.xlsx') ,
-                dtype={
-                      }      ) 
+df_combined     = pd.concat([ pd.read_excel(os.path.join(costar_data_location,'multifamily_raw.xlsx')),
+                             pd.read_excel(os.path.join(costar_data_location,'office_raw.xlsx')), 
+                             pd.read_excel(os.path.join(costar_data_location,'retail_raw.xlsx')),
+                            pd.read_excel(os.path.join(costar_data_location,'industrial_raw.xlsx'))
+                             ])
 
-df_office       = pd.read_excel(os.path.join(costar_data_location,'office_raw.xlsx') ,
-                  dtype={
-                        }     
-                            )
+#Define data cleaning functions
+def DropClustersAndLocation(df): 
+    #Drops rows that report data on the cluster geography type
+    df = df.loc[df['Geography Type'] != 'Cluster']
+    df = df.loc[df['Geography Type'] != 'Location Type:Urban']
+    df = df.loc[df['Geography Type'] != 'Location Type:CBD']
+    df = df.loc[df['Geography Type'] != 'Location Type:Suburban']
+    return(df.copy())
 
-df_retail       = pd.read_excel(os.path.join(costar_data_location,'retail_raw.xlsx') ,
-                  dtype={
-                       }
-                            )
+def DropColumns(df): 
+    columns_to_drop = ['Slice', 'As Of']
+    df              = df.drop(columns=columns_to_drop)
+    return(df.copy())
 
-df_industrial   = pd.read_excel(os.path.join(costar_data_location,'industrial_raw.xlsx') ,
-                  dtype={
-                        }
-                             )
+def MetroToMarketAndMarketResearchName(df):
+    df['Geography Type']            = df['Geography Type'].str.replace('Metro', 'Market', regex=False)
+    df['Property Class Name']       = df['Property Class Name'].str.replace('Multi-Family', 'Multifamily', regex=False)
+    df['Market Research Name']      = '' 
+    
+    #Create Market research name for markets
+    # df['Market Research Name'].loc[df['Geography Type']=='Market']          = df['Geography Name'].str[-2:] + ' - ' + df['Geography Name'].str[:-5] + ' - ' + df['Property Class Name']  
+    
+    #Create Market research name for nation
+    # df['Market Research Name'].loc[df['Geography Type']=='Nation']          = df['Geography Name'].str[-2:] + ' - ' + df['Geography Name'].str[:-5] + ' - ' + df['Property Class Name']  
+    
+    #Create Market research name for submarkets
+    # df['Last Dash Location'] = df['Geography Name'].str.index(sub=' - ',start = 0, end =len)
+    # print(df[['Geography Name', 'Last Dash Location']])
+    
+    # df['Market Research Name'].loc[df['Geography Type']=='Submarket']       =  df['Geography Name'].str[0:] + ' - ' + df['Geography Name'].str[:-5] + ' - ' + df['Property Class Name'] 
+    
+    # .str.rindex(('-') + 1)
+    # Boston - MA - Quincy/Braintree
+    
 
+    #Move to first column
+    df['Market Research Name & Metric']       = df['Market Research Name'] + ' - ' + df['Concept Name'] 
+    df = df[ ['Market Research Name & Metric'] + [ col for col in df.columns if col != 'Market Research Name & Metric' ]]
+    
+    #Replace the original Geography name variable with our constructed market research name
+    df['Geography Name'] = df['Market Research Name']
+    df                   = df.drop(columns=['Market Research Name'])
+    
+    return(df.copy())
 
-print(df_multifamily)
-print(df_office)
-print(df_retail)
-print(df_industrial)
+def RenameVariable(df):
+    df = df.rename(columns={"Property Class Name": "Property Type", })
+    return(df.copy())
+
+#Drop columns
+df_combined = DropColumns(df=df_combined)
+df_combined = DropClustersAndLocation(df=df_combined)
+df_combined = MetroToMarketAndMarketResearchName(df=df_combined)
+df_combined = RenameVariable(df=df_combined)
+print(df_combined)
+
+#Append our cleaned dataframes together
+df_combined.to_excel(os.path.join(costar_data_location,'InAppData.xlsx'),index=False)
