@@ -1,4 +1,4 @@
-#Summary: This program reads 4 csv files from CoStar.com, 1 for each major proprety type. 
+#Summary: This program reads 4 excel files from CoStar.com, 1 for each major proprety type. 
 #         Each file contains quarterly summary statistics on different markets and submarkets.
 #         It appends them together and does some light manipulation as well as creating some new variables and exports a clean file.
 #         This clean file will then be pasted directly into a Google Sheet that is connected to the Bowery Appraisal WebApp. 
@@ -74,4 +74,4 @@ df_combined = MetroToMarketAndMarketResearchName(df=df_combined)
 df_combined = RenameVariable(df=df_combined)
 
 #Append our cleaned dataframes together
-df_combined.to_excel(os.path.join(costar_data_location,'InAppData.xlsx'),index=False)
+df_combined.to_excel(os.path.join(costar_data_location,'InAppData.xlsx'),index=False,sheet_name= 'In App CoStar Data')
