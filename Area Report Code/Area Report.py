@@ -762,7 +762,7 @@ def GetCountyData():
 
     #County GDP
     try:
-        county_gdp                    = GetCountyGDP(fips = fips,observation_start = observation_start_less1)
+        county_gdp                    = GetCountyGDP(fips = fips,observation_start = observation_start_less2)
     except Exception as e:
         print(e,' - Unable to Get County GDP Data')
         county_gdp                    = ''
@@ -1184,7 +1184,7 @@ def GetMSAData():
             msa_industry_growth_breakdown   = ''
     else:
         print('Getting MSA Data')
-        msa_gdp                         = GetMSAGDP(cbsa = cbsa, observation_start = observation_start_less1)
+        msa_gdp                         = GetMSAGDP(cbsa = cbsa, observation_start = observation_start_less2)
         msa_pci                         = GetMSAPCI(cbsa = cbsa, observation_start = observation_start_less1)
         msa_unemployment_rate           = GetMSAUnemploymentRate(cbsa = cbsa, start_year = start_year, end_year = end_year)
         msa_employment                  = GetMSAEmployment(cbsa = cbsa, start_year = start_year, end_year = end_year)
@@ -1282,7 +1282,7 @@ def GetStateData():
     global state_unemployment_rate, state_employment
     global state_resident_pop
     
-    state_gdp                        = GetStateGDP(state = state, observation_start = observation_start_less1)
+    state_gdp                        = GetStateGDP(state = state, observation_start = observation_start_less2)
     state_pci                        = GetStatePCI(state = state, observation_start = observation_start_less1)
     state_resident_pop               = GetStateResidentPopulation(state = state, observation_start = ('01/01/' + str(end_year -12)))
     
@@ -1398,7 +1398,7 @@ def GetNationalData():
     national_mlp                       = GetNationalMedianListPrice(observation_start = observation_start)
     national_unemployment              = GetNationalUnemploymentRate(start_year = start_year, end_year=end_year)
     national_employment                = GetNationalEmployment(start_year = start_year, end_year=end_year)
-    national_gdp                       = GetNationalGDP(observation_start = observation_start_less1)
+    national_gdp                       = GetNationalGDP(observation_start = observation_start_less2)
 
 def GetWikipediaPage():
     global page
@@ -4519,15 +4519,13 @@ def MSAEmploymentGrowthLanguage(msa_industry_breakdown):
 def CountyProductionLanguage(county_data_frame,msa_data_frame,state_data_frame):
     print('Writing County Production/GDP Langauge')
     try:
-        county_data_frame['Period'] = county_data_frame['Period'].dt.strftime('%m/%d/%Y')
+        county_data_frame['Period'] = county_data_frame['Period'].dt.strftime('%m/%d/%Y').copy()
         latest_period               = county_data_frame['Period'].iloc[-1]
         latest_period               = latest_period[-4:]
         latest_county_gdp           = county_data_frame['GDP'].iloc[-1]
-        latest_county_gdp           = millify(latest_county_gdp)
-        latest_county_gdp           = "$" + latest_county_gdp
-        
+        latest_county_gdp           = "$" + millify(latest_county_gdp)
         latest_county_gdp_growth    = ((county_data_frame['GDP'].iloc[-1]/county_data_frame['GDP'].iloc[-2]) - 1) * 100
-        
+        pre_pandemic_county_gdp_growth = (((county_data_frame.loc[county_data_frame['Period'] == '01/01/2019' ]['GDP'].iloc[-1])/(county_data_frame.loc[county_data_frame['Period'] == '01/01/2014']['GDP'].iloc[-1])) - 1) * 100
 
         #determine how to describe GDP growth 
         if latest_county_gdp_growth > 3.5:
@@ -4547,32 +4545,42 @@ def CountyProductionLanguage(county_data_frame,msa_data_frame,state_data_frame):
 
 
         if  isinstance(msa_data_frame, pd.DataFrame) == True and msa_data_frame['GDP'].equals(county_data_frame['GDP']) == False:
-            msa_data_frame          = msa_data_frame.loc[msa_data_frame['Period'] <= (county_data_frame['Period'].max()) ]
-            latest_msa_gdp_growth   = ((msa_data_frame['GDP'].iloc[-1]/msa_data_frame['GDP'].iloc[-2]) - 1) * 100
-            latest_msa_gdp_growth   =  "{:,.1f}%".format(latest_msa_gdp_growth)
-            msa_or_state_gdp_growth = latest_msa_gdp_growth
-            msa_or_state            = 'Metro'
+            msa_data_frame                  = msa_data_frame.loc[msa_data_frame['Period'] <= (county_data_frame['Period'].max()) ]
+            pre_pandemic_msa_gdp_growth     = (((msa_data_frame.loc[msa_data_frame['Period'] == '01/01/2019' ]['GDP'].iloc[-1])/(msa_data_frame.loc[msa_data_frame['Period'] == '01/01/2014']['GDP'].iloc[-1])) - 1) * 100     
+            latest_msa_gdp_growth           = ((msa_data_frame['GDP'].iloc[-1]/msa_data_frame['GDP'].iloc[-2]) - 1) * 100
+            latest_msa_gdp_growth           =  "{:,.1f}%".format(latest_msa_gdp_growth)
+            msa_or_state_gdp_growth         = latest_msa_gdp_growth
+            msa_or_state                    = 'Metro'
+            msa_or_state_pre_pandemic_gdp_growth  = pre_pandemic_msa_gdp_growth
+
         else:
             state_data_frame        = state_data_frame.loc[state_data_frame['Period'] <= (county_data_frame['Period'].max()) ]
+            pre_pandemic_state_gdp_growth     = (((state_data_frame.loc[state_data_frame['Period'] == '01/01/2019' ]['GDP'].iloc[-1])/(state_data_frame.loc[state_data_frame['Period'] == '01/01/2014']['GDP'].iloc[-1])) - 1) * 100
             latest_state_gdp_growth = ((state_data_frame['GDP'].iloc[-1]/state_data_frame['GDP'].iloc[-2]) - 1) * 100
             latest_state_gdp_growth =  "{:,.1f}%".format(latest_state_gdp_growth)
             msa_or_state_gdp_growth = latest_state_gdp_growth
             msa_or_state            = 'State'
+            msa_or_state_pre_pandemic_gdp_growth  = pre_pandemic_state_gdp_growth
 
-        #Fomrmat variables
-        latest_county_gdp_growth =  "{:,.1f}%".format(latest_county_gdp_growth)
-
-        production_language = ('While GDP data at the county level is not yet available, '      +
-                                latest_period                                                   +
-                                ' data from the U.S. Bureau of Economic Analysis points to '    +
-                                gdp_growth_description                                          +
-                                ' growth for '                                                  +
+        
+        production_language = ('For the five years prior to the pandemic, '                     +
                                 county                                                          +
-                                ', which produced ~'                                            +
+                                ' experienced annual growth of '                                +
+                                "{:,.1f}%".format((pre_pandemic_county_gdp_growth/5))           +
+                                ' compared to '                                                 +
+                                "{:,.1f}%".format((msa_or_state_pre_pandemic_gdp_growth/5))     +
+                                ' for the '                                                     +
+                                msa_or_state                                                    +
+                                '. '                                                            +
+                                
+                                'In '                                                           +
+                                latest_period                                                   +
+                                ', '                                                            +
+                                county                                                          +
+                                ' produced about '                                              +
                                 latest_county_gdp                                               +
-                                ' of output that year, '                                        +
-                                'representing an annual change of '                             +
-                                latest_county_gdp_growth                                        +
+                                ' of output, representing an annual change of '                 +
+                                "{:,.1f}%".format(latest_county_gdp_growth)                     +
                                 ' compared to '                                                 +
                                 msa_or_state_gdp_growth                                         +
                                 ' for the '                                                     +
@@ -4580,12 +4588,7 @@ def CountyProductionLanguage(county_data_frame,msa_data_frame,state_data_frame):
                                     '.' 
                             )
 
-        boiler_plate_econ_language = ('Economic activity has slowed after historical annual growth of 6.7% in Q2 2021, softening to 2.3% for the third quarter. '                                                           +
-                                    'The slowdown in third quarter GDP reflected the continued economic impact of the COVID-19 pandemic. '                                                                                +
-                                    'A resurgence of COVID-19 cases resulted in new restrictions and delays in the reopening of establishments in some parts of the country. '                                            +
-                                    'Supply-chain disruptions such as delays at U.S. ports and international manufacturing issues contributed to a sharp increase in inflation and pose a risk to the economic outlook. ' +
-                                    'Despite supply-side challenges, many economic observers expect that the economy regained momentum in the final quarter and is well positioned for growth in 2022. '
-                                    )
+
         
         return[boiler_plate_econ_language, production_language]
     except Exception as e:
@@ -4601,6 +4604,8 @@ def MSAProductionLanguage(msa_data_frame, state_data_frame):
         latest_period               = latest_period[-4:]
         latest_msa_gdp              = msa_data_frame['GDP'].iloc[-1]
         latest_msa_gdp_growth       = ((msa_data_frame['GDP'].iloc[-1]/msa_data_frame['GDP'].iloc[-2]) - 1) * 100
+        pre_pandemic_msa_gdp_growth     = (((msa_data_frame.loc[msa_data_frame['Period'] == '01/01/2019' ]['GDP'].iloc[-1])/(msa_data_frame.loc[msa_data_frame['Period'] == '01/01/2014']['GDP'].iloc[-1])) - 1) * 100
+        pre_pandemic_state_gdp_growth     = (((state_data_frame.loc[state_data_frame['Period'] == '01/01/2019' ]['GDP'].iloc[-1])/(state_data_frame.loc[state_data_frame['Period'] == '01/01/2014']['GDP'].iloc[-1])) - 1) * 100
         
 
         #Determine how to describe GDP growth 
@@ -4623,7 +4628,19 @@ def MSAProductionLanguage(msa_data_frame, state_data_frame):
         state_data_frame        = state_data_frame.loc[state_data_frame['Period'] <= (msa_data_frame['Period'].max()) ]
         latest_state_gdp_growth = ((state_data_frame['GDP'].iloc[-1]/state_data_frame['GDP'].iloc[-2]) - 1) * 100
 
-        production_language = ('Data from the U.S. Bureau of Economic Analysis points to '      +
+        production_language = ('For the five years prior to the pandemic, '                     +
+                                cbsa_name                                                       +
+                                ' experienced annual growth of '                                +
+                                "{:,.1f}%".format((pre_pandemic_msa_gdp_growth/5))              +
+                                ' compared to '                                                 +
+                                "{:,.1f}%".format((pre_pandemic_state_gdp_growth/5))            +
+                                ' for the '                                                     +
+                                'State'                                                         +
+                                '. '                                                            +
+                                
+                                
+                                
+                                'Data from the U.S. Bureau of Economic Analysis points to '      +
                                 gdp_growth_description                                          +
                                 ' growth for '                                                  +
                                 cbsa_name                                                       +
@@ -5211,7 +5228,7 @@ def CountyHousingLanguage():
     except Exception as e:
         print(e,'Unable to create county median list price language')
         return(['',''])
-    
+
 def MSAHousingLanguage():
     print('Writing Housing Langauge')
     try:
@@ -6804,6 +6821,12 @@ national_economy_summary = (
 
 boiler_plate_housing_language = """Historically low mortgage rates, the desire for more space, and the ability to work from home have led to the highest number of home sales while historically low inventory levels have pushed values to record highs in most counties and metros across the Nation. """ 
 
+boiler_plate_econ_language = ('Economic activity has slowed after historical annual growth of 6.7% in Q2 2021, softening to 2.3% for the third quarter. '                                                           +
+                            'The slowdown in third quarter GDP reflected the continued economic impact of the COVID-19 pandemic. '                                                                                +
+                            'A resurgence of COVID-19 cases resulted in new restrictions and delays in the reopening of establishments in some parts of the country. '                                            +
+                            'Supply-chain disruptions such as delays at U.S. ports and international manufacturing issues contributed to a sharp increase in inflation and pose a risk to the economic outlook. ' +
+                            'Despite supply-side challenges, many economic observers expect that the economy regained momentum in the final quarter and is well positioned for growth in 2022. '
+                            )
 
 marginInches                  = 1/18
 ppi                           = 96.85 
@@ -6843,6 +6866,7 @@ end_year                      = FindBLSEndYear()
 start_year                    = end_year - growth_period        #For BLS Series 
 observation_start             = '01/01/' + str(start_year -1)   #For FRED
 observation_start_less1       = '01/01/' + str(start_year -2)   #For FRED for series 1 year behind the rest
+observation_start_less2       = '01/01/' + str(start_year -3)   #For FRED for series 1 year behind the rest
 qcew_year                     = current_year                    #for quarterly census of employment and wages
 qcew_qtr                      = '3'                             #for quarterly census of employment and wages
 
