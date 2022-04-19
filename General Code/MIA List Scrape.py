@@ -44,8 +44,9 @@ def process_rows(rows):
         info = info.replace(city + ', ', '')
         state = info[0:2]
         info  = info[2:]
+        email = info[0:info.find('MAI')]
+        info = info[info.find('MAI') + 3:]
         print(info)
-        email = info
         address = info
         phone_number = info
         if count > 0:
@@ -57,7 +58,7 @@ def process_rows(rows):
             addresses.append(address)   
 
 #Step 4: Get HTML for page 1
-time.sleep(20)
+time.sleep(30)
 html        = browser.page_source
 soup_data   = BeautifulSoup(html, 'html.parser')
 rows       = soup_data.findAll("tr", {"role":"row"})
@@ -75,21 +76,23 @@ time.sleep(5)
 
 
 
-# #Step 5: Keep hitting next page save the html and add the info to our lists
-# while True:
-#     next_page_button = browser.find_element(By.ID, "faaSearchResults_next")
-#     time.sleep(3)
-#     next_page_button.click()
-#     process_rows(rows = BeautifulSoup(browser.page_source, 'html.parser').findAll("tr", {"role":"row"}))
-#     time.sleep(5)   
-
+# Step 5: Keep hitting next page save the html and add the info to our lists
+for i in range(624):
+    try:
+        next_page_button = browser.find_element(By.ID, "faaSearchResults_next")
+        time.sleep(1)
+        next_page_button.click()
+        process_rows(rows = BeautifulSoup(browser.page_source, 'html.parser').findAll("tr", {"role":"row"}))
+        time.sleep(1)   
+    except:
+        break
 
 df = pd.DataFrame({'Name':names,
-                'Email':emails,
-                'Adress': addresses,
+                # 'Email':emails,
+                # 'Adress': addresses,
                 'State':         states,
                 "City":cities,
-                'Phone Number':phone_numbers,
+                # 'Phone Number':phone_numbers,
                 })
 df = df.sort_values(by=['State','City'], ascending = (True, True))
 print(df)
