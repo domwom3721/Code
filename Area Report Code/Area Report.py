@@ -4604,7 +4604,6 @@ def MSAProductionLanguage(msa_data_frame, state_data_frame):
         latest_period                   = latest_period[-4:]
         latest_msa_gdp                  = msa_data_frame['GDP'].iloc[-1]
         latest_msa_gdp_growth           = ((msa_data_frame['GDP'].iloc[-1]/msa_data_frame['GDP'].iloc[-2]) - 1) * 100
-              
         pre_pandemic_msa_gdp_growth     = (((msa_data_frame.loc[msa_data_frame['Period'] == '01/01/2019' ]['GDP'].iloc[-1])/(msa_data_frame.loc[msa_data_frame['Period'] == '01/01/2014']['GDP'].iloc[-1])) - 1) * 100
         _2020_msa_gdp_growth            = (((msa_data_frame.loc[msa_data_frame['Period'] == '01/01/2020' ]['GDP'].iloc[-1])/(msa_data_frame.loc[msa_data_frame['Period'] == '01/01/2019']['GDP'].iloc[-1])) - 1) * 100
 
@@ -4628,7 +4627,6 @@ def MSAProductionLanguage(msa_data_frame, state_data_frame):
         state_data_frame                  = state_data_frame.loc[state_data_frame['Period'] <= (msa_data_frame['Period'].max()) ]
         latest_state_gdp_growth           = ((state_data_frame['GDP'].iloc[-1]/state_data_frame['GDP'].iloc[-2]) - 1) * 100
         pre_pandemic_state_gdp_growth     = (((state_data_frame.loc[state_data_frame['Period'] == '01/01/2019' ]['GDP'].iloc[-1])/(state_data_frame.loc[state_data_frame['Period'] == '01/01/2014']['GDP'].iloc[-1])) - 1) * 100
-        _2020_state_gdp_growth            = (((state_data_frame.loc[state_data_frame['Period'] == '01/01/2020' ]['GDP'].iloc[-1])/(state_data_frame.loc[state_data_frame['Period'] == '01/01/2019']['GDP'].iloc[-1])) - 1) * 100
 
         production_language = ('For the five years prior to the pandemic, '                     +
                                 cbsa_name                                                       +
@@ -4642,33 +4640,16 @@ def MSAProductionLanguage(msa_data_frame, state_data_frame):
                                 
                                 
                                 'GDP '                                                          + 
-                                "{growth_description}".format(_growth_description = ("increased " + "{:,.1f}%".format(latest_msa_gdp_growth)  ) if  latest_msa_gdp_growth >= 0  else ("decreased " + "{:,.1f}%".format(abs(latest_msa_gdp_growth)))) +      
+                                "{growth_description}".format(growth_description = ("increased " + "{:,.1f}%".format(latest_msa_gdp_growth)  ) if  latest_msa_gdp_growth >= 0  else ("decreased " + "{:,.1f}%".format(abs(latest_msa_gdp_growth)))) +      
                                 ' in '                                                          +
-                                "{:,.0f}".format(latest_period)                                 +
-                                ' to'                                                           +
+                                latest_period                                                   +
+                                ' to '                                                           +
                                 "$" + millify(latest_msa_gdp)                                   +
                                 ' compared to '                                                 +
                                "{:,.1f}%".format(latest_state_gdp_growth)                       + 
                                 ' for the '                                                     +
                                 'State'                                                         +
-                                '.'     
-
-
-
-
-                                # 'Data from the U.S. Bureau of Economic Analysis points to '     +
-                                # gdp_growth_description                                          +
-                                # ' growth for '                                                  +
-                                # cbsa_name                                                       +
-                                # ', which produced roughly '                                     +
-                                # ' of output in '                                                +
-                                # latest_period                                                   +
-                                # ', '                                                            +
-                                # 'representing an annual change of '                             +
-                                #  "{:,.1f}%".format(latest_msa_gdp_growth)                       +
-                                # ' compared to '                                                 +
-                                #  "{:,.1f}%".format(latest_state_gdp_growth)                     +
-                                # ' for the State.'                                               
+                                '.'                 
                                )
 
         boiler_plate_econ_language = ('Economic activity has slowed after historical annual growth of 6.7% in Q2 2021, softening to 2.3% for the third quarter. '                                                           +
