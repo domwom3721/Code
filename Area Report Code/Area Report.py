@@ -629,7 +629,8 @@ def GetMSAShape(cbsa):
                 msa_shape        =  msa_map.shape(i)
                 msa_shape_polygon = Polygon(msa_shape.points)
                 try:
-                    PolygonToShapeFile(poly = msa_shape_polygon)
+                    if county_or_msa_report == 'm':
+                        PolygonToShapeFile(poly = msa_shape_polygon)
                     print('Successfully created polygon object from msa shape')
                 except Exception as e:
                     print(e,'unable to export msa polygon as shape')
