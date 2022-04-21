@@ -3190,10 +3190,12 @@ def CreateMLPGraph(county_data_frame,msa_data_frame,folder):
 def CreateNationalUnemploymentGraph(folder):
     fig = make_subplots(specs=[[{"secondary_y": False}]])
 
+    national_unemployment_local = national_unemployment.iloc[-61:]
+
     #County unemployment rate
     fig.add_trace(
-        go.Scatter(x = national_unemployment['period'],
-                  y  = national_unemployment['unemployment_rate'],
+        go.Scatter(x = national_unemployment_local['period'],
+                  y  = national_unemployment_local['unemployment_rate'],
                 name = 'United States of America',
                 line = dict(color = bowery_dark_blue,)),
         secondary_y  = False
@@ -3241,9 +3243,9 @@ def CreateNationalUnemploymentGraph(folder):
     
                     
     #Set x axis ticks
-    quarter_list      = [i for i in range(len(county_unemployment_rate['period']))]
+    quarter_list      = [i for i in range(len(national_unemployment_local['period']))]
     quarter_list      = quarter_list[::-12]
-    quarter_list_text = [period for period in county_unemployment_rate['period']]
+    quarter_list_text = [period for period in national_unemployment_local['period']]
     quarter_list_text = quarter_list_text[::-12]
 
     fig.update_xaxes(
@@ -3269,10 +3271,12 @@ def CreateNationalEmploymentGrowthGraph(folder):
     
     fig = make_subplots(specs=[[{"secondary_y": False}]])
 
+    #Restrict to last 5 years
+    national_employment_local = national_employment.iloc[-61:].copy()
     
     fig.add_trace(
-        go.Scatter(x = national_employment['period'],
-                  y  = national_employment['Employment Growth'],
+        go.Scatter(x = national_employment_local['period'],
+                  y  = national_employment_local['Employment Growth'],
                 name = county,
                 line = dict(color = bowery_dark_blue)
                 ),
@@ -3324,10 +3328,10 @@ def CreateNationalEmploymentGrowthGraph(folder):
     
     
     #Set x axis ticks
-    quarter_list = [i for i in range(len(county_employment['period']))]
+    quarter_list = [i for i in range(len(national_employment_local['period']))]
     quarter_list = quarter_list[::-12]
 
-    quarter_list_text = [period for period in county_employment['period']]
+    quarter_list_text = [period for period in national_employment_local['period']]
     quarter_list_text = quarter_list_text[::-12]
 
     fig.update_xaxes(tickmode = 'array',
