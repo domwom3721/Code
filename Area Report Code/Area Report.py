@@ -43,6 +43,7 @@ dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropb
 project_location               =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Projects','Research Report Automation Project') 
 main_output_location           =  os.path.join(project_location,'Output', 'Area')                 #Testing
 main_output_location           =  os.path.join(dropbox_root,'Research', 'Market Analysis','Area') #Production
+national_folder                =  os.path.join(dropbox_root,'Research', 'Market Analysis','Area','US') #Production
 general_data_location          =  os.path.join(project_location,'Data', 'General Data')
 data_location                  =  os.path.join(project_location,'Data', 'Area Reports Data')
 graphics_location              =  os.path.join(project_location,'Data', 'General Data','Graphics')
@@ -3426,6 +3427,9 @@ def CreateGraphs():
         CreatePCIGraph(                        county_data_frame = county_pci ,msa_data_frame = msa_pci,state_data_frame=state_pci, national_data_frame = national_pci,                                                  folder = county_folder)
         CreatePopulationOverTimeWithGrowthGraph(county_resident_pop = county_resident_pop, state_resident_pop = state_resident_pop, msa_resident_pop = msa_resident_pop, national_resident_pop = national_resident_pop, folder = county_folder)
         CreateMLPWithGrowthGraph(county_data_frame = county_mlp, msa_data_frame = msa_mlp, national_data_frame = national_mlp, folder = county_folder)
+        CreateNationalUnemploymentGraph(folder = national_folder)
+        CreateNationalEmploymentGrowthGraph(folder = national_folder)
+        CreateNationalGDPGraph(folder = national_folder)
 
     #If we are doing a metro only report, we wont have the county data to pass to our graph functions
     elif county_or_msa_report == 'm':
