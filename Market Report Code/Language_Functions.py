@@ -489,7 +489,7 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
         elif  yoy_rent_growth > 0 and vacancy_change < 0:
             overview_sector_specific_language = ('Economic growth and strong consumer demand in 2021 benefited the retail sector as a whole, including the ' + market_or_submarket +  
                                                  '. Retail properties in ' + 
-                                                 market_or_submarket + ' have shown resounding strength over the past year. In fact, vacancy rates have compressed to ' + "{:,.1f}%".format(vacancy) + ' while rents have increased ' + "{:,.1f}%".format(yoy_rent_growth) + '.')  
+                                                 market_or_submarket + ' have shown strength over the past year. In fact, vacancy rates have compressed to ' + "{:,.1f}%".format(vacancy) + ' while rents have increased ' + "{:,.1f}%".format(yoy_rent_growth) + '.')  
         
         #Positive rent growth, no vacancy growth
         elif  yoy_rent_growth > 0 and vacancy_change == 0:
