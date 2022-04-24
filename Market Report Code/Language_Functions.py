@@ -1308,7 +1308,7 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_
             quarter                                                     +
             ' quarter, vacancy rates have '                             +
             qoq_submarket_vacancy_growth_description                    +
-            "{number_bps}".format(number_bps = (qoq_submarket_vacancy_growth + ' bps') if qoq_submarket_vacancy_growth != '0'  else ('') ) +
+            "{number_bps}".format(number_bps = (' ' + qoq_submarket_vacancy_growth + ' bps') if qoq_submarket_vacancy_growth != '0'  else ('') ) +
             ' since '                                               +
             previous_quarter[5:]                                        +
             '. '                                                        +
