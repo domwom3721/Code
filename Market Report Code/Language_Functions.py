@@ -558,7 +558,7 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
             overview_sector_specific_language = ("""The pandemic shifted renter preferences, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
                                                 'Multiple factors inspired the shift, including an ability to work-from-home, the need for more affordable rents, or the desire for more space. ' + 
                                                 'These shifts have positively affected the ' + 
-                                                market_or_submarket + ', which has shown resounding strength despite stable vacancy rates. In fact, rents have increased ' + "{:,.1f}%".format(yoy_rent_growth) + '. ')
+                                                market_or_submarket + ', which has shown strength despite stable vacancy rates. In fact, rents have increased ' + "{:,.1f}%".format(yoy_rent_growth) + '. ')
         
         #no rent growth, negative vacancy growth
         elif  yoy_rent_growth == 0 and vacancy_change < 0:
