@@ -1148,25 +1148,34 @@ def GetCensusValue(geographic_level,hood_or_comparison_area,field,operator,aggre
 #Households by number of memebrs
 def GetHouseholdSizeData(geographic_level,hood_or_comparison_area):
     print('Getting household size data for: ',hood_or_comparison_area)
-    neighborhood_household_size_distribution       = GetCensusFrequencyDistribution(geographic_level = geographic_level, hood_or_comparison_area = hood_or_comparison_area, fields_list=['H013002','H013003','H013004','H013005','H013006','H013007','H013008'],operator=c.sf1)          #Neighborhood households by size
-    return(neighborhood_household_size_distribution)
-    
+    try:
+        neighborhood_household_size_distribution       = GetCensusFrequencyDistribution(geographic_level = geographic_level, hood_or_comparison_area = hood_or_comparison_area, fields_list=['H013002','H013003','H013004','H013005','H013006','H013007','H013008'],operator=c.sf1)          #Neighborhood households by size
+        return(neighborhood_household_size_distribution)
+    except Exception as e:
+        print(e,'Could not get housing size data')
+
 #Household Tenure (owner-occupied vs renter-occupied)
 def GetHousingTenureData(geographic_level,hood_or_comparison_area):
     #Occupied Housing Units by Tenure
     print('Getting tenure data for: ',hood_or_comparison_area)
-    neighborhood_tenure_distribution  = GetCensusFrequencyDistribution(     geographic_level = geographic_level, hood_or_comparison_area = hood_or_comparison_area, fields_list = ['H004004','H004003','H004002'],operator=c.sf1) 
+    try:
+        neighborhood_tenure_distribution  = GetCensusFrequencyDistribution(     geographic_level = geographic_level, hood_or_comparison_area = hood_or_comparison_area, fields_list = ['H004004','H004003','H004002'],operator=c.sf1) 
 
-    #add together the owned free and clear percentage with the owned with a mortgage percentage to simply an owner-occupied fraction
-    neighborhood_tenure_distribution[1] = neighborhood_tenure_distribution[1] +  neighborhood_tenure_distribution[2]
-    del neighborhood_tenure_distribution[2]
-    return(neighborhood_tenure_distribution)
+        #add together the owned free and clear percentage with the owned with a mortgage percentage to simply an owner-occupied fraction
+        neighborhood_tenure_distribution[1] = neighborhood_tenure_distribution[1] +  neighborhood_tenure_distribution[2]
+        del neighborhood_tenure_distribution[2]
+        return(neighborhood_tenure_distribution)
+    except Exception as e:
+        print(e,'Unable to get housing tenure data')
 
 #Housing related data functions
 def GetHousingValues(geographic_level,hood_or_comparison_area):
     print('Getting housing value data for: ',hood_or_comparison_area)
-    household_value_data = GetCensusFrequencyDistribution(geographic_level = geographic_level, hood_or_comparison_area = hood_or_comparison_area, fields_list = ["B25075_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,28)],operator=c.acs5)  
-    return(household_value_data)
+    try:
+        household_value_data = GetCensusFrequencyDistribution(geographic_level = geographic_level, hood_or_comparison_area = hood_or_comparison_area, fields_list = ["B25075_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,28)],operator=c.acs5)  
+        return(household_value_data)
+    except Exception as e:
+        print(e,'Could not get housing value data')
 
 #Year Housing Built Data
 def GetHouseYearBuiltData(geographic_level,hood_or_comparison_area):
@@ -1181,194 +1190,206 @@ def GetHouseYearBuiltData(geographic_level,hood_or_comparison_area):
 #Travel Method to work
 def GetTravelMethodData(geographic_level,hood_or_comparison_area):
     print('Getting travel method to work data for: ' + hood_or_comparison_area)
-    neighborhood_method_to_work_distribution = GetCensusFrequencyDistribution(geographic_level = geographic_level, hood_or_comparison_area = hood_or_comparison_area, fields_list =['B08006_003E','B08006_004E','B08006_008E','B08006_015E','B08006_017E','B08006_014E','B08006_016E'],operator=c.acs5)  
-    return(neighborhood_method_to_work_distribution) 
+    try:
+        neighborhood_method_to_work_distribution = GetCensusFrequencyDistribution(geographic_level = geographic_level, hood_or_comparison_area = hood_or_comparison_area, fields_list =['B08006_003E','B08006_004E','B08006_008E','B08006_015E','B08006_017E','B08006_014E','B08006_016E'],operator=c.acs5)  
+        return(neighborhood_method_to_work_distribution) 
+    except Exception as e:
+        print(e,'Could not get travel method data')
 
 #Household Income data functions
 def GetHouseholdIncomeValues(geographic_level,hood_or_comparison_area):
     print('Getting household income data for: ',hood_or_comparison_area)
-    total_income_breakdown = GetCensusFrequencyDistribution( geographic_level = geographic_level, hood_or_comparison_area = hood_or_comparison_area, fields_list = ["B19001_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,18)],operator=c.acs5) 
-    return(total_income_breakdown)
+    try:
+        total_income_breakdown = GetCensusFrequencyDistribution( geographic_level = geographic_level, hood_or_comparison_area = hood_or_comparison_area, fields_list = ["B19001_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,18)],operator=c.acs5) 
+        return(total_income_breakdown)
+    except Exception as e:
+        print(e,'Could not get household income values')
 
 #Travel Time to Work
 def GetTravelTimeData(geographic_level,hood_or_comparison_area):
     print('Getting travel time data for: ', hood_or_comparison_area)
-     #5 Year ACS travel time range:   B08012_003E - B08012_013E
-    travel_time_data = GetCensusFrequencyDistribution(        geographic_level = geographic_level, hood_or_comparison_area = hood_or_comparison_area,fields_list = ["B08012_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,14)],operator=c.acs5)   
-    return(travel_time_data)
+    try:
+        #5 Year ACS travel time range:   B08012_003E - B08012_013E
+        travel_time_data = GetCensusFrequencyDistribution(        geographic_level = geographic_level, hood_or_comparison_area = hood_or_comparison_area,fields_list = ["B08012_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,14)],operator=c.acs5)   
+        return(travel_time_data)
+    except Exception as e:
+        print(e,'Could not get travel time data')
 
 #Age Related Data Functions
 def GetAgeData(geographic_level,hood_or_comparison_area):
     print('Getting age breakdown for: ',hood_or_comparison_area)
-    #Return a list with the fraction of the population in different age groups 
+    try:
+        #Return a list with the fraction of the population in different age groups 
 
-    #Define 2 lists of variables, 1 for male age groups and another for female
-    male_fields_list   =  ["B01001_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(3,26)]  #5 Year ACS age variables for men range:  B01001_003E - B01001_025E
-    female_fields_list =  ["B01001_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(27,50)] #5 Year ACS age variables for women range:  B01001_027E - B01001_049E
+        #Define 2 lists of variables, 1 for male age groups and another for female
+        male_fields_list   =  ["B01001_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(3,26)]  #5 Year ACS age variables for men range:  B01001_003E - B01001_025E
+        female_fields_list =  ["B01001_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(27,50)] #5 Year ACS age variables for women range:  B01001_027E - B01001_049E
 
-   
-    if geographic_level == 'place':
-        try:
-            if hood_or_comparison_area == 'hood':
-                place_fips  = hood_place_fips
-                state_fips  = hood_state_fips
-
-
-            elif hood_or_comparison_area == 'comparison area':
-                place_fips  = comparison_place_fips
-                state_fips  = comparison_state_fips
-
-            male_age_data   = c.acs5.state_place(fields=male_fields_list, state_fips=state_fips,place=place_fips,year=acs_5y_year)[0]
-            female_age_data = c.acs5.state_place(fields=female_fields_list,state_fips=state_fips,place=place_fips,year=acs_5y_year)[0]
-        except Exception as e:
-            print(e, 'Problem getting age data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
     
-    elif geographic_level == 'county':
-        try:
-            if hood_or_comparison_area == 'hood':
-                county_fips = hood_county_fips
-                state_fips  = hood_state_fips
-
-            elif hood_or_comparison_area == 'comparison area':
-                county_fips = comparison_county_fips
-                state_fips  = comparison_state_fips
-
-            male_age_data   = c.acs5.state_county(fields=male_fields_list,state_fips=state_fips,county_fips=county_fips,year=acs_5y_year)[0]
-            female_age_data = c.acs5.state_county(fields=female_fields_list,state_fips=state_fips,county_fips=county_fips,year=acs_5y_year)[0]
-
-        except Exception as e:
-            print(e, 'Problem getting age data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-    
-    elif geographic_level == 'county subdivision':
-        try:
-            if hood_or_comparison_area == 'hood':
-                county_fips = hood_county_fips
-                subdiv_fips = hood_suvdiv_fips
-                state_fips  = hood_state_fips
-
-
-            elif hood_or_comparison_area == 'comparison area':
-                county_fips = comparison_county_fips
-                subdiv_fips = comparison_suvdiv_fips
-                state_fips  = comparison_state_fips
-
-
-            male_age_data   = c.acs5.state_county_subdivision(fields = male_fields_list, state_fips = state_fips, county_fips = county_fips, subdiv_fips = subdiv_fips, year = acs_5y_year)[0]
-            female_age_data = c.acs5.state_county_subdivision(fields = female_fields_list, state_fips = state_fips, county_fips = county_fips, subdiv_fips = subdiv_fips, year = acs_5y_year)[0]
-        except Exception as e:
-            print(e, 'Problem getting age data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
-
-    elif geographic_level == 'zip':
-            try:        
+        if geographic_level == 'place':
+            try:
                 if hood_or_comparison_area == 'hood':
-                    zcta = hood_zip
+                    place_fips  = hood_place_fips
+                    state_fips  = hood_state_fips
+
 
                 elif hood_or_comparison_area == 'comparison area':
-                    zcta = comparison_zip
-            
-                male_age_data         = c.acs5.zipcode(fields = male_fields_list, zcta = '*',year=acs_5y_year)
-                male_age_data         = FindZipCodeDictionary(zip_code_data_dictionary_list =   male_age_data  , zcta = zcta, state_fips = state_fips )
+                    place_fips  = comparison_place_fips
+                    state_fips  = comparison_state_fips
 
-                female_age_data       = c.acs5.zipcode(fields = female_fields_list, zcta = '*',year=acs_5y_year)
-                female_age_data       = FindZipCodeDictionary(zip_code_data_dictionary_list =   female_age_data  , zcta = zcta, state_fips = state_fips )
+                male_age_data   = c.acs5.state_place(fields=male_fields_list, state_fips=state_fips,place=place_fips,year=acs_5y_year)[0]
+                female_age_data = c.acs5.state_place(fields=female_fields_list,state_fips=state_fips,place=place_fips,year=acs_5y_year)[0]
+            except Exception as e:
+                print(e, 'Problem getting age data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+                return()
+        
+        elif geographic_level == 'county':
+            try:
+                if hood_or_comparison_area == 'hood':
+                    county_fips = hood_county_fips
+                    state_fips  = hood_state_fips
+
+                elif hood_or_comparison_area == 'comparison area':
+                    county_fips = comparison_county_fips
+                    state_fips  = comparison_state_fips
+
+                male_age_data   = c.acs5.state_county(fields=male_fields_list,state_fips=state_fips,county_fips=county_fips,year=acs_5y_year)[0]
+                female_age_data = c.acs5.state_county(fields=female_fields_list,state_fips=state_fips,county_fips=county_fips,year=acs_5y_year)[0]
 
             except Exception as e:
                 print(e, 'Problem getting age data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
                 return()
-
-    elif geographic_level == 'tract':
-        try:
-            if hood_or_comparison_area == 'hood':
-                tract       = hood_tract 
-                county_fips = hood_county_fips
-
-            elif hood_or_comparison_area == 'comparison area':
-                tract       = comparison_tract
-                county_fips = comparison_county_fips
-
-            male_age_data   = c.acs5.state_county_tract(fields = male_fields_list, state_fips = state_fips, county_fips = county_fips, tract = tract, year = acs_5y_year)[0]
-            female_age_data = c.acs5.state_county_tract(fields = female_fields_list, state_fips = state_fips, county_fips = county_fips, tract = tract, year = acs_5y_year)[0]
-        except Exception as e:
-            print(e, 'Problem getting age data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
-            return()
         
-    elif geographic_level == 'custom':
+        elif geographic_level == 'county subdivision':
+            try:
+                if hood_or_comparison_area == 'hood':
+                    county_fips = hood_county_fips
+                    subdiv_fips = hood_suvdiv_fips
+                    state_fips  = hood_state_fips
+
+
+                elif hood_or_comparison_area == 'comparison area':
+                    county_fips = comparison_county_fips
+                    subdiv_fips = comparison_suvdiv_fips
+                    state_fips  = comparison_state_fips
+
+
+                male_age_data   = c.acs5.state_county_subdivision(fields = male_fields_list, state_fips = state_fips, county_fips = county_fips, subdiv_fips = subdiv_fips, year = acs_5y_year)[0]
+                female_age_data = c.acs5.state_county_subdivision(fields = female_fields_list, state_fips = state_fips, county_fips = county_fips, subdiv_fips = subdiv_fips, year = acs_5y_year)[0]
+            except Exception as e:
+                print(e, 'Problem getting age data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+                return()
+
+        elif geographic_level == 'zip':
+                try:        
+                    if hood_or_comparison_area == 'hood':
+                        zcta = hood_zip
+
+                    elif hood_or_comparison_area == 'comparison area':
+                        zcta = comparison_zip
+                
+                    male_age_data         = c.acs5.zipcode(fields = male_fields_list, zcta = '*',year=acs_5y_year)
+                    male_age_data         = FindZipCodeDictionary(zip_code_data_dictionary_list =   male_age_data  , zcta = zcta, state_fips = state_fips )
+
+                    female_age_data       = c.acs5.zipcode(fields = female_fields_list, zcta = '*',year=acs_5y_year)
+                    female_age_data       = FindZipCodeDictionary(zip_code_data_dictionary_list =   female_age_data  , zcta = zcta, state_fips = state_fips )
+
+                except Exception as e:
+                    print(e, 'Problem getting age data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+                    return()
+
+        elif geographic_level == 'tract':
+            try:
+                if hood_or_comparison_area == 'hood':
+                    tract       = hood_tract 
+                    county_fips = hood_county_fips
+
+                elif hood_or_comparison_area == 'comparison area':
+                    tract       = comparison_tract
+                    county_fips = comparison_county_fips
+
+                male_age_data   = c.acs5.state_county_tract(fields = male_fields_list, state_fips = state_fips, county_fips = county_fips, tract = tract, year = acs_5y_year)[0]
+                female_age_data = c.acs5.state_county_tract(fields = female_fields_list, state_fips = state_fips, county_fips = county_fips, tract = tract, year = acs_5y_year)[0]
+            except Exception as e:
+                print(e, 'Problem getting age data for: Geographic Level - ' + geographic_level + ' for ' + hood_or_comparison_area )
+                return()
+            
+        elif geographic_level == 'custom':
+            
+            try:
+                #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
+                neighborhood_male_tracts_data   = []
+                neighborhood_female_tracts_data = []
+
+                #Fetch census data for all relevant census tracts within the neighborhood
+                raw_male_census_data   = c_area.acs5.geo_blockgroup(male_fields_list, neighborhood_shape,year=acs_5y_year)
+                raw_female_census_data = c_area.acs5.geo_blockgroup(female_fields_list, neighborhood_shape,year=acs_5y_year)
+                
+
+                for tract_geojson, tract_data, tract_proportion in raw_male_census_data:
+                    neighborhood_male_tracts_data.append((tract_data))
+                
+                for tract_geojson, tract_data, tract_proportion in raw_female_census_data:
+                    neighborhood_female_tracts_data.append((tract_data))
+
+                #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
+                male_age_data   = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_male_tracts_data, fields_list   = male_fields_list )
+                female_age_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_female_tracts_data, fields_list = female_fields_list )
+            except Exception as e:
+                print(e,'unable to use blockgroup level, using tract')
+                #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
+                neighborhood_male_tracts_data   = []
+                neighborhood_female_tracts_data = []
+
+                #Fetch census data for all relevant census tracts within the neighborhood
+                raw_male_census_data   = c_area.acs5.geo_tract(male_fields_list, neighborhood_shape,year=acs_5y_year)
+                raw_female_census_data = c_area.acs5.geo_tract(female_fields_list, neighborhood_shape,year=acs_5y_year)
+                
+
+                for tract_geojson, tract_data, tract_proportion in raw_male_census_data:
+                    neighborhood_male_tracts_data.append((tract_data))
+                
+                for tract_geojson, tract_data, tract_proportion in raw_female_census_data:
+                    neighborhood_female_tracts_data.append((tract_data))
+
+                #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
+                male_age_data   = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_male_tracts_data, fields_list   = male_fields_list )
+                female_age_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_female_tracts_data, fields_list = female_fields_list )
+
+        #Create an empty list and place the age values from the dictionary inside of it
+        male_age_breakdown = []
+        for field in male_fields_list:
+            male_age_breakdown.append(male_age_data[field])
+
+
+        #Create an empty list and place the age values from the dictionary inside of it
+        female_age_breakdown = []
+        for field in female_fields_list:
+            female_age_breakdown.append(female_age_data[field])
         
-        try:
-            #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
-            neighborhood_male_tracts_data   = []
-            neighborhood_female_tracts_data = []
 
-            #Fetch census data for all relevant census tracts within the neighborhood
-            raw_male_census_data   = c_area.acs5.geo_blockgroup(male_fields_list, neighborhood_shape,year=acs_5y_year)
-            raw_female_census_data = c_area.acs5.geo_blockgroup(female_fields_list, neighborhood_shape,year=acs_5y_year)
-            
+        total_age_breakdown = []
+        for (men, women) in zip(male_age_breakdown, female_age_breakdown):
+            total = (men + women)
+            total_age_breakdown.append(total)
 
-            for tract_geojson, tract_data, tract_proportion in raw_male_census_data:
-                neighborhood_male_tracts_data.append((tract_data))
-            
-            for tract_geojson, tract_data, tract_proportion in raw_female_census_data:
-                neighborhood_female_tracts_data.append((tract_data))
-
-            #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
-            male_age_data   = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_male_tracts_data, fields_list   = male_fields_list )
-            female_age_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_female_tracts_data, fields_list = female_fields_list )
-        except Exception as e:
-            print(e,'unable to use blockgroup level, using tract')
-            #Create empty list we will fill with dictionaries (one for each census tract within the custom shape/neighborhood)
-            neighborhood_male_tracts_data   = []
-            neighborhood_female_tracts_data = []
-
-            #Fetch census data for all relevant census tracts within the neighborhood
-            raw_male_census_data   = c_area.acs5.geo_tract(male_fields_list, neighborhood_shape,year=acs_5y_year)
-            raw_female_census_data = c_area.acs5.geo_tract(female_fields_list, neighborhood_shape,year=acs_5y_year)
-            
-
-            for tract_geojson, tract_data, tract_proportion in raw_male_census_data:
-                neighborhood_male_tracts_data.append((tract_data))
-            
-            for tract_geojson, tract_data, tract_proportion in raw_female_census_data:
-                neighborhood_female_tracts_data.append((tract_data))
-
-            #Convert the list of dictionaries into a single dictionary where we aggregate all values across keys
-            male_age_data   = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_male_tracts_data, fields_list   = male_fields_list )
-            female_age_data = AggregateAcrossDictionaries(neighborhood_tracts_data = neighborhood_female_tracts_data, fields_list = female_fields_list )
-
-    #Create an empty list and place the age values from the dictionary inside of it
-    male_age_breakdown = []
-    for field in male_fields_list:
-        male_age_breakdown.append(male_age_data[field])
+        
+        #Consolidate some of the age groups into larger groups
+        total_age_breakdown[0] = sum(total_age_breakdown[0:5])
+        total_age_breakdown[1] = sum(total_age_breakdown[5:8])
+        total_age_breakdown[2] = sum(total_age_breakdown[8:10])
+        total_age_breakdown[3] = sum(total_age_breakdown[10:13])
+        total_age_breakdown[4] = sum(total_age_breakdown[13:18])
+        total_age_breakdown[5] = sum(total_age_breakdown[18:])
+        del[total_age_breakdown[6:]]
 
 
-    #Create an empty list and place the age values from the dictionary inside of it
-    female_age_breakdown = []
-    for field in female_fields_list:
-        female_age_breakdown.append(female_age_data[field])
-    
+        #Convert from raw numbers to fractions of total
+        total_age_breakdown = ConvertListElementsToFractionOfTotal(total_age_breakdown)
 
-    total_age_breakdown = []
-    for (men, women) in zip(male_age_breakdown, female_age_breakdown):
-        total = (men + women)
-        total_age_breakdown.append(total)
-
-    
-    #Consolidate some of the age groups into larger groups
-    total_age_breakdown[0] = sum(total_age_breakdown[0:5])
-    total_age_breakdown[1] = sum(total_age_breakdown[5:8])
-    total_age_breakdown[2] = sum(total_age_breakdown[8:10])
-    total_age_breakdown[3] = sum(total_age_breakdown[10:13])
-    total_age_breakdown[4] = sum(total_age_breakdown[13:18])
-    total_age_breakdown[5] = sum(total_age_breakdown[18:])
-    del[total_age_breakdown[6:]]
-
-
-    #Convert from raw numbers to fractions of total
-    total_age_breakdown = ConvertListElementsToFractionOfTotal(total_age_breakdown)
-
-    return(total_age_breakdown)
+        return(total_age_breakdown)
+    except Exception as e:
+        print(e,'Could not get age data')
 
 #Number of Housing Units based on number of units in building
 def GetNumberUnitsData(geographic_level,hood_or_comparison_area):
@@ -1533,8 +1554,11 @@ def GetNumberUnitsData(geographic_level,hood_or_comparison_area):
 #Occupations Data
 def GetTopOccupationsData(geographic_level,hood_or_comparison_area):
     print('Getting occupation data for: ',hood_or_comparison_area)
-    top_occupations_data = GetCensusFrequencyDistribution(        geographic_level = geographic_level, hood_or_comparison_area = hood_or_comparison_area,fields_list =  ['B24011_002E','B24011_018E','B24011_026E','B24011_029E','B24011_036E'],operator=c.acs5)   
-    return(top_occupations_data)
+    try:
+        top_occupations_data = GetCensusFrequencyDistribution(        geographic_level = geographic_level, hood_or_comparison_area = hood_or_comparison_area,fields_list =  ['B24011_002E','B24011_018E','B24011_026E','B24011_029E','B24011_036E'],operator=c.acs5)   
+        return(top_occupations_data)
+    except Exception as e:
+        print(e,'Could not get occupations data')
 
 def GetCurrentPopulation(geographic_level, hood_or_comparison_area):
     acs_total_pop_field           = 'B01001_001E'
