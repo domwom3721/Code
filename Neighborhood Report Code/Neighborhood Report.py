@@ -1171,9 +1171,12 @@ def GetHousingValues(geographic_level,hood_or_comparison_area):
 #Year Housing Built Data
 def GetHouseYearBuiltData(geographic_level,hood_or_comparison_area):
     print('Getting year built data for: ',hood_or_comparison_area)
-    year_built_data = GetCensusFrequencyDistribution(    geographic_level = geographic_level, hood_or_comparison_area = hood_or_comparison_area,  fields_list = ["B25034_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,12)],operator= c.acs5)
-    year_built_data.reverse()
-    return(year_built_data)
+    try:
+        year_built_data = GetCensusFrequencyDistribution(    geographic_level = geographic_level, hood_or_comparison_area = hood_or_comparison_area,  fields_list = ["B25034_0" + ("0" *  (2 -len(str(i)))) + str(i) + "E" for i in range(2,12)],operator= c.acs5)
+        year_built_data.reverse()
+        return(year_built_data)
+    except Exception as e:
+        print(e,'Unable to get Year Built data')
 
 #Travel Method to work
 def GetTravelMethodData(geographic_level,hood_or_comparison_area):
@@ -2250,7 +2253,7 @@ def GetData():
     
     overview_table_data     = GetOverviewTable(hood_geographic_level = neighborhood_level ,comparison_geographic_level = comparison_level)
     nyc_community_district  = DetermineNYCCommunityDistrict(lat = latitude, lon = longitude )
-    
+
 #####################################################Graph Related Functions####################################
 def SetGraphFormatVariables():
     
@@ -3150,7 +3153,7 @@ def BusLanguage():
         return(bus_lang)
     else:
         return( neighborhood + ' does not have public bus service.' ) 
-                
+
 def TrainLanguage():
     print('Creating train Langauge')
     wikipedia_train_language = WikipediaTransitLanguage(category='train')
@@ -3703,7 +3706,7 @@ def TravelMethodLanguage():
         travel_method_language = ''
     
     return([travel_method_language])
-    
+
 def TravelTimeLanguage():
     print('Creating Travel Time Langauge')
     try:
@@ -4119,7 +4122,7 @@ def OverlayMapImages():
     img1.paste(img2, (img1.size[1] - 25,875))
     
     img1.save(map3_path)
-    
+
 def AddMap(document):
     map_path        = os.path.join(hood_folder_map,'map.png')
     map2_path       = os.path.join(hood_folder_map,'map2.png')
@@ -4135,7 +4138,7 @@ def AddMap(document):
         paragraph = document.add_paragraph('')
         paragraph.add_run().add_picture(map3_path,width=Inches(6.5))
         paragraph.paragraph_format.space_after         = Pt(0)
-        
+
 def PageBreak(document):
     #Add page break
     page_break_paragraph = document.add_paragraph('')
@@ -4551,7 +4554,7 @@ def OutlookSection(document):
     AddHeading(document = document, title = 'Conclusion',            heading_level = 1,heading_number='Heading 3',font_size=11)
 
     AddDocumentParagraph(document = document,language_variable =  conclusion_langauge)
-    
+
 def WriteReport():
     print('Writing Report')
     #Create Document
