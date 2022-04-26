@@ -1786,8 +1786,8 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
                     col = 1)
         
 
-   #Add MSA PCI if applicable
-    if (isinstance(msa_data_frame, pd.DataFrame) == True) and (msa_data_frame.equals(county_data_frame) == False):
+   #Add MSA PCI if applicable 
+    if (isinstance(msa_data_frame, pd.DataFrame) == True) and (msa_data_frame.equals(county_data_frame) == False) and (len(cbsa_all_county_fips) > 1):
         fig.add_trace(
             go.Scatter(x = msa_data_frame['Period'],
                     y    = msa_data_frame['Per Capita Personal Income'],
@@ -1984,21 +1984,37 @@ def CreatePCIGraph(county_data_frame,msa_data_frame,state_data_frame,national_da
             row = 1,
             col = 2)
 
+        if (len(cbsa_all_county_fips) > 1):
+            #Add MSA Growth
+            fig.add_trace( 
+                go.Bar(
+                    name         = cbsa_name + ' (MSA)',  
+                    x            = years, 
+                    y            = [msa_5y_growth, msa_3y_growth, msa_1y_growth],
+                    marker_color = bowery_light_blue,
+                    text         = [msa_5y_growth, msa_3y_growth, msa_1y_growth],
+                    texttemplate = "%{value:.2f}%",
+                    textposition = annotation_position,
+                    cliponaxis   =  False
+                    ),
+                row = 1,
+                col = 2)
+        else:
+            #Add State Growth
+            fig.add_trace(
+                go.Bar(
+                    name         = state_name,  
+                    x            = years, 
+                    y            = [state_5y_growth, state_3y_growth, state_1y_growth],
+                    marker_color = bowery_dark_grey,
+                    text         = [state_5y_growth, state_3y_growth, state_1y_growth],
+                    texttemplate = "%{value:.2f}%",
+                    textposition = annotation_position,
+                    cliponaxis   =  False
+                    ),
+                row = 1,
+                col = 2)
 
-        #Add MSA Growth
-        fig.add_trace( 
-            go.Bar(
-                name         = cbsa_name + ' (MSA)',  
-                x            = years, 
-                y            = [msa_5y_growth, msa_3y_growth, msa_1y_growth],
-                marker_color = bowery_light_blue,
-                text         = [msa_5y_growth, msa_3y_growth, msa_1y_growth],
-                texttemplate = "%{value:.2f}%",
-                textposition = annotation_position,
-                cliponaxis   =  False
-                  ),
-            row = 1,
-            col = 2)
 
         #Add County Growth
         fig.add_trace(
@@ -2111,7 +2127,7 @@ def CreateGDPGraph(county_data_frame,msa_data_frame,state_data_frame,folder):
                         )
 
     #Add MSA GDP if applicable
-        if (isinstance(msa_data_frame, pd.DataFrame) == True) and ( (msa_data_frame['GDP'].equals(county_data_frame['GDP']))  == False  ):
+        if (isinstance(msa_data_frame, pd.DataFrame) == True) and ( (msa_data_frame['GDP'].equals(county_data_frame['GDP']))  == False  ) and (len(cbsa_all_county_fips) > 1):
             fig.add_trace(
             go.Scatter(x=msa_data_frame['Period'],
                     y=msa_data_frame['GDP'],
@@ -6405,11 +6421,11 @@ def EmploymentSection(document):
     print('Writing Employment Section')
     AddHeading(document = document, title = 'Labor Market Conditions', heading_level = 2)
 
-    #Add MSA Employment Breakdown Language
-    AddDocumentParagraph(document = document, language_variable = msa_employment_industry_breakdown_language)
-
-    #Add MSA employment treemap chart
-    AddDocumentPicture(document = document, image_path = os.path.join(county_folder,'msa_employment_by_industry.png') ,citation = 'U.S. Bureau of Labor Statistics')
+    #Add MSA employment treemap chart (Skip this if a metro only comprises 1 county when doing a county report)
+    if (county_or_msa_report == 'm') or ((county_or_msa_report == 'c') and (len(cbsa_all_county_fips) > 1)):
+        #Add MSA Employment Breakdown Language
+        AddDocumentParagraph(document = document, language_variable = msa_employment_industry_breakdown_language)
+        AddDocumentPicture(document = document, image_path = os.path.join(county_folder,'msa_employment_by_industry.png') ,citation = 'U.S. Bureau of Labor Statistics')
 
     if county_or_msa_report == 'c':
         #Add County Employment Breakdown Language
@@ -6423,11 +6439,13 @@ def EmploymentSection(document):
     #Add combined unemployment rate and employment growth graph
     AddDocumentPicture(document = document, image_path = os.path.join(county_folder,'unemployment_rate_employment_growth.png') ,citation = 'U.S. Bureau of Labor Statistics')
 
-    #MSA Employment growth language
-    AddDocumentParagraph(document = document, language_variable = msa_employment_growth_language)
 
-    #Add MSA employment growth by industry bar chart
-    AddDocumentPicture(document = document, image_path = os.path.join(county_folder,'msa_employment_growth_by_industry.png') ,citation = 'U.S. Bureau of Labor Statistics')
+    #Add MSA employment growth by industry bar chart  (Skip this if a metro only comprises 1 county when doing a county report)
+    if (county_or_msa_report == 'm') or ((county_or_msa_report == 'c') and (len(cbsa_all_county_fips) > 1)):
+        #MSA Employment growth language
+        AddDocumentParagraph(document = document, language_variable = msa_employment_growth_language)
+        AddDocumentPicture(document = document, image_path = os.path.join(county_folder,'msa_employment_growth_by_industry.png') ,citation = 'U.S. Bureau of Labor Statistics')
+    
     if county_or_msa_report == 'c':
         #County Employment growth language
         AddDocumentParagraph(document = document, language_variable = county_employment_growth_language)
