@@ -104,8 +104,12 @@ def user_selects_sector():
             df_industrial_slices           = pd.read_csv(os.path.join(costar_data_location,'Clean Data','industrial_slices_clean.csv')) 
 
         df_list                        = [df_multifamily, df_office, df_retail, df_industrial]
-        df_slices_list                 = [df_multifamily_slices, df_office_slices, df_retail_slices, df_industrial_slices]
         sector_name_list               = ['Multifamily','Office','Retail','Industrial']
+        try:
+            df_slices_list                 = [df_multifamily_slices, df_office_slices, df_retail_slices, df_industrial_slices]
+        except:
+            df_slices_list                 = [0, 0, 0, 0]
+
         return('')
 
     #GUI that lets user specify which sectors they want to run
