@@ -6816,21 +6816,21 @@ bowery_black                  = "#404858"
 #National economy boiler plate
                                     
 national_economy_summary = (
-                                'The United States economy continues to recover from the aftermath of the Covid-19 pandemic.' + 
-                                ' The labor market has restored over 20 million of the 21 million jobs lost at the beginning of the pandemic, as measured by non-farm employment, bringing the unemployment rate to 3.6% as of March 2022. '+
+                                'The United States economy continues to recover from the aftermath of the Covid-19 pandemic.'                   + 
+                                ' The labor market has restored over 20 million of the 21 million jobs lost at the beginning of the pandemic, ' +
+                                'as measured by non-farm employment, bringing the unemployment rate to 3.6% as of March 2022. '                 +
                                 'Employment growth continued in leisure and hospitality, in professional and business services, in retail trade, and in transportation and warehousing. ' + 
-                                'After historical growth in Q2, GDP growth slowed to an annual rate of 2.3% in Q3 2021. ' + 
-                                'The slowdown in third quarter GDP reflected the continued economic impact of the COVID-19 pandemic. A resurgence of COVID-19 cases resulted in new restrictions and delays in the reopening of establishments in some parts of the country. ' +
-                                'Supply-chain disruptions such as delays at U.S. ports and international manufacturing issues contributed to a sharp increase in inflation and pose a risk to the economic outlook. Despite supply-side challenges, many economic observers expect that the economy regained momentum in the final months of the year and is well positioned for continued growth in 2022. ' 
+                                'After slowing to 2.3% in the third quarter of 2021 due to a resurgence of COVID-19 cases and associated restrictions, growth accelerated to 6.9% in the fourth quarter primarily due to increases in private inventory investment and exports. ' + 
+                                'Supply-chain disruptions such as delays at U.S. ports and international manufacturing issues contributed to a sharp increase in inflation and pose a risk to the economic outlook. ' + 
+                                'Despite supply-side challenges, many economic observers expect that the economy regained momentum in the final months of the year and is well positioned for continued growth in 2022. ' 
                                     )
 
-boiler_plate_housing_language = """Historically low mortgage rates, the desire for more space, and the ability to work from home have led to the highest number of home sales while historically low inventory levels have pushed values to record highs in most counties and metros across the Nation. """ 
+boiler_plate_housing_language = ("""Historically low mortgage rates, the desire for more space, and the ability to work from home have led to the highest number of home sales """ +
+                                 """while historically low inventory levels have pushed values to record highs in most counties and metros across the Nation. """ )
 
-boiler_plate_econ_language = ('Economic activity has slowed after historical annual growth of 6.7% in Q2 2021, softening to 2.3% for the third quarter. '                                                           +
-                            'The slowdown in third quarter GDP reflected the continued economic impact of the COVID-19 pandemic. '                                                                                +
-                            'A resurgence of COVID-19 cases resulted in new restrictions and delays in the reopening of establishments in some parts of the country. '                                            +
-                            'Supply-chain disruptions such as delays at U.S. ports and international manufacturing issues contributed to a sharp increase in inflation and pose a risk to the economic outlook. ' +
-                            'Despite supply-side challenges, many economic observers expect that the economy regained momentum in the final quarter and is well positioned for growth in 2022. '
+boiler_plate_econ_language = ('After softening to 2.3% in the third quarter, the pace of the economic recovery has accelerated with annualized GDP growth reaching 6.9% in the fourth quarter. '   +
+                              'While historically high inflation, global supply chain issues, and Federal Reserve interest rate hikes pose threats to the recovery, '                     +
+                               'many economic observers expect that the economy is well positioned for growth in 2022. '
                             )
 
 marginInches                  = 1/18
