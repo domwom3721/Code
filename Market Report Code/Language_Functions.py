@@ -632,7 +632,7 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
                                                 'Economic growth has been largely attributed to increased spending power, which has in turn driven a spike in e-commerce sales. ' + 
                                                 'This, when combined with global supply chain issues, has pushed nationwide industrial leasing activity to a historical high. '   +  
                                                 'These macro trends have positively affected ' + sector + ' properties in the ' + market_or_submarket + '. '                      + 
-                                                'While vacancy rates have remained stable, rents have continued to expand, increasing' + "{:,.1f}%".format(abs(yoy_rent_growth))  + ' over the past year.')
+                                                'While vacancy rates have remained stable, rents have continued to expand, increasing' + "{:,.1f}%".format(yoy_rent_growth)  + ' over the past year.')
                         
         #no rent growth, negative vacancy growth
         elif  yoy_rent_growth == 0 and vacancy_change < 0:
@@ -728,7 +728,6 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
     market_inventory                    = millify(market_inventory,'') 
     submarket_inventory_fraction        = "{:,.1f}%".format(submarket_inventory_fraction) 
     asset_value                         = "${:,.0f}/". format(asset_value)
-    yoy_rent_growth                     = "{:,.1f}%".format(abs(yoy_rent_growth))
     current_sale_volume                 = millify(current_sale_volume,'$')
     current_transaction_count           = "{:,.0f}".format(current_transaction_count) 
     vacancy                             = "{:,.1f}%".format(vacancy)
@@ -889,10 +888,7 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_
 
     #Track 10 year growth in vacancy 
     lagged_submarket_vacancy            = submarket_data_frame['Vacancy Rate'].iloc[0]
-    ten_year_growth                     = (abs(submarket_vacancy -  lagged_submarket_vacancy)) * 100
     
-
-
     #Section 2: Begin making variables that are conditional upon the variables created from the data itself:
 
     #Describe quarter over quarter change
@@ -1239,7 +1235,6 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_
     submarket_avg_vacancy               = "{:,.1f}%".format(submarket_avg_vacancy)
     market_avg_vacancy                  = "{:,.1f}%".format(market_avg_vacancy)
     lagged_submarket_vacancy            = "{:,.1f}%".format(lagged_submarket_vacancy)
-    ten_year_growth                     = "{:,.0f}".format(ten_year_growth)
     submarket_vacancy                   = "{:,.1f}%".format(submarket_vacancy)
     year_ago_submarket_vacancy          = "{:,.1f}%".format(year_ago_submarket_vacancy)
     market_vacancy                      = "{:,.1f}%".format(market_vacancy)
