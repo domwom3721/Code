@@ -342,10 +342,10 @@ df_office               =  MainClean(df_office,'Office')
 df_retail               =  MainClean(df_retail,'Retail')
 df_industrial           =  MainClean(df_industrial,'Industrial')
 
-df_multifamily_slices   =  MainCleanSlices(df_multifamily_slices,'Multifamily')
-df_office_slices        =  MainCleanSlices(df_office_slices,'Office')
-df_retail_slices        =  MainCleanSlices(df_retail_slices,'Retail')
-df_industrial_slices    =  MainCleanSlices(df_industrial_slices,'Industrial')
+# df_multifamily_slices   =  MainCleanSlices(df_multifamily_slices,'Multifamily')
+# df_office_slices        =  MainCleanSlices(df_office_slices,'Office')
+# df_retail_slices        =  MainCleanSlices(df_retail_slices,'Retail')
+# df_industrial_slices    =  MainCleanSlices(df_industrial_slices,'Industrial')
 
 
 
@@ -488,11 +488,10 @@ df_office               =  KeepLast10Years(df_office,groupbylist= ['Geography Na
 df_retail               =  KeepLast10Years(df_retail,groupbylist= ['Geography Name'])
 df_industrial           =  KeepLast10Years(df_industrial,groupbylist= ['Geography Name'])
 
-df_multifamily_slices   =  KeepLast10Years(df_multifamily_slices,groupbylist= ['Geography Name','Slice'])
-df_office_slices        =  KeepLast10Years(df_office_slices,groupbylist= ['Geography Name','Slice'])
-df_retail_slices        =  KeepLast10Years(df_retail_slices,groupbylist= ['Geography Name','Slice'])
-df_industrial_slices    =  KeepLast10Years(df_industrial_slices,groupbylist= ['Geography Name','Slice'])
-
+# df_multifamily_slices   =  KeepLast10Years(df_multifamily_slices,groupbylist= ['Geography Name','Slice'])
+# df_office_slices        =  KeepLast10Years(df_office_slices,groupbylist= ['Geography Name','Slice'])
+# df_retail_slices        =  KeepLast10Years(df_retail_slices,groupbylist= ['Geography Name','Slice'])
+# df_industrial_slices    =  KeepLast10Years(df_industrial_slices,groupbylist= ['Geography Name','Slice'])
 
 
 #Export Cleaned Data Files
@@ -501,9 +500,9 @@ df_office.to_csv(os.path.join(costar_data_location, 'Clean Data','office_clean.c
 df_retail.to_csv(os.path.join(costar_data_location,'Clean Data','retail_clean.csv',),index=False)
 df_industrial.to_csv(os.path.join(costar_data_location,'Clean Data','industrial_clean.csv'),index=False)
 
-df_multifamily_slices.to_csv(os.path.join(costar_data_location,'Clean Data','mf_slices_clean.csv'),index=False)
-df_office_slices.to_csv(os.path.join(costar_data_location,'Clean Data','office_slices_clean.csv'),index=False)
-df_retail_slices.to_csv(os.path.join(costar_data_location,'Clean Data','retail_slices_clean.csv',),index=False)
-df_industrial_slices.to_csv(os.path.join(costar_data_location,'Clean Data','industrial_slices_clean.csv'),index=False)
+# df_multifamily_slices.to_csv(os.path.join(costar_data_location,'Clean Data','mf_slices_clean.csv'),index=False)
+# df_office_slices.to_csv(os.path.join(costar_data_location,'Clean Data','office_slices_clean.csv'),index=False)
+# df_retail_slices.to_csv(os.path.join(costar_data_location,'Clean Data','retail_slices_clean.csv',),index=False)
+# df_industrial_slices.to_csv(os.path.join(costar_data_location,'Clean Data','industrial_slices_clean.csv'),index=False)
 
 print('Cleaning Complete')
