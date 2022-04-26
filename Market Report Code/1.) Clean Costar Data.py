@@ -3,7 +3,6 @@
 
 #Import packages we will be using
 import os
-from unicodedata import numeric
 from numpy import int64
 import pandas as pd
 
@@ -89,47 +88,50 @@ df_industrial   = pd.read_csv(raw_industrial_file,
                              )  		
 
 #Import the raw slices data from Costar where the markets are broken down by the quality or type of the properties
-df_multifamily_slices  = pd.read_csv(raw_multifamily_slices_file,
-                dtype={'Sales Volume Transactions': object
-                      }      
-                                    ) 
+if os.path.exists(raw_multifamily_slices_file):
+    df_multifamily_slices  = pd.read_csv(raw_multifamily_slices_file,
+                    dtype={'Sales Volume Transactions': object
+                        }      
+                                        ) 
 
-df_office_slices       = pd.read_csv(raw_office_slices_file,
-                  dtype={'Sales Volume Transactions':   object,
+if os.path.exists(raw_office_slices_file):
+    df_office_slices       = pd.read_csv(raw_office_slices_file,
+                    dtype={'Sales Volume Transactions':   object,
+                            'Total Sales Volume':           object,
+                            'Transaction Sale Price/SF':    object,
+                            'Under Construction Buildings': object,
+                            'Vacancy Rate':                 object,
+                            'Inventory SF':                 str,
+                            }     
+                                        )
+
+if os.path.exists(raw_retail_slices_file):
+    df_retail_slices       = pd.read_csv(raw_retail_slices_file,
+                    dtype={'Sales Volume Transactions':  object,
+                        'Cap Rate Transactions':        object,
+                        'Gross Delivered Buildings':    object,
+                        'Sold Building SF':             object,
                         'Total Sales Volume':           object,
+                        'Office Gross Rent Sublet':     object,
+                        'Office Gross Rent Direct':     object,
+                        'Office Gross Rent Overall':    object,
                         'Transaction Sale Price/SF':    object,
                         'Under Construction Buildings': object,
-                        'Vacancy Rate':                 object,
                         'Inventory SF':                 str,
-                        }     
-                                    )
-
-df_retail_slices       = pd.read_csv(raw_retail_slices_file,
-                  dtype={'Sales Volume Transactions':  object,
-                       'Cap Rate Transactions':        object,
-                       'Gross Delivered Buildings':    object,
-                       'Sold Building SF':             object,
-                       'Total Sales Volume':           object,
-                       'Office Gross Rent Sublet':     object,
-                       'Office Gross Rent Direct':     object,
-                       'Office Gross Rent Overall':    object,
-                       'Transaction Sale Price/SF':    object,
-                       'Under Construction Buildings': object,
-                       'Inventory SF':                 str,
-                       }
-                                    )
-
-df_industrial_slices   = pd.read_excel(raw_industrial_slices_file,
-                  dtype={'Sales Volume Transactions':    object,
-                         'Sold Building SF':             object,
-                         'Total Sales Volume':           object,
-                         'Transaction Sale Price/SF':    object,
-                         'Under Construction Buildings': object,
-                         'Vacancy Rate':                 float,
-                         'Inventory SF':                 str,
                         }
-                                      )
+                                        )
 
+if os.path.exists(raw_industrial_slices_file):
+    df_industrial_slices   = pd.read_excel(raw_industrial_slices_file,
+                    dtype={'Sales Volume Transactions':    object,
+                            'Sold Building SF':             object,
+                            'Total Sales Volume':           object,
+                            'Transaction Sale Price/SF':    object,
+                            'Under Construction Buildings': object,
+                            'Vacancy Rate':                 float,
+                            'Inventory SF':                 str,
+                            }
+                                        )
 
 #Define data cleaning functions
 def DropClusters(df): 
