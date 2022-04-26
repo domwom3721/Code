@@ -8,6 +8,7 @@
 
 import os
 import pandas as pd
+import numpy as np
 from tkinter import *
 from tkinter import ttk
 
@@ -33,7 +34,7 @@ from Table_Functions import *
 dropbox_root                   = os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
 project_location               = os.path.join(dropbox_root,'Research','Projects','Research Report Automation Project')                        #Main Folder that stores all output, code, and documentation
 output_location                = os.path.join(project_location,'Output','Market')                                                             #The folder where we store our current reports, testing folder
-output_location                = os.path.join(dropbox_root,'Research','Market Analysis','Market')                                             #The folder where we store our current reports, production
+# output_location                = os.path.join(dropbox_root,'Research','Market Analysis','Market')                                             #The folder where we store our current reports, production
 map_location                   = os.path.join(project_location,'Data','Market Reports Data','CoStar Maps')                                    #Folders with maps png files  
 general_data_location          = os.path.join(project_location,'Data','General Data')                                                         #Folder with data for all report types
 costar_data_location           = os.path.join(project_location,'Data','Market Reports Data','CoStar Data')                                    #Folder with clean CoStar CSV files
@@ -90,10 +91,17 @@ def user_selects_sector():
         df_retail                      = pd.read_csv(os.path.join(costar_data_location,'Clean Data','retail_clean.csv'))
         df_industrial                  = pd.read_csv(os.path.join(costar_data_location,'Clean Data','industrial_clean.csv')) 
         
-        df_multifamily_slices          = pd.read_csv(os.path.join(costar_data_location,'Clean Data','mf_slices_clean.csv')) 
-        df_office_slices               = pd.read_csv(os.path.join(costar_data_location,'Clean Data','office_slices_clean.csv'))
-        df_retail_slices               = pd.read_csv(os.path.join(costar_data_location,'Clean Data','retail_slices_clean.csv'))
-        df_industrial_slices           = pd.read_csv(os.path.join(costar_data_location,'Clean Data','industrial_slices_clean.csv')) 
+        if os.path.exists(os.path.join(costar_data_location,'Clean Data','mf_slices_clean.csv')):
+            df_multifamily_slices          = pd.read_csv(os.path.join(costar_data_location,'Clean Data','mf_slices_clean.csv')) 
+        
+        if os.path.exists(os.path.join(costar_data_location,'Clean Data','office_slices_clean.csv')):
+            df_office_slices               = pd.read_csv(os.path.join(costar_data_location,'Clean Data','office_slices_clean.csv'))
+        
+        if os.path.exists(os.path.join(costar_data_location,'Clean Data','retail_slices_clean.csv')):
+            df_retail_slices               = pd.read_csv(os.path.join(costar_data_location,'Clean Data','retail_slices_clean.csv'))
+    
+        if os.path.exists(os.path.join(costar_data_location,'Clean Data','industrial_slices_clean.csv')):
+            df_industrial_slices           = pd.read_csv(os.path.join(costar_data_location,'Clean Data','industrial_slices_clean.csv')) 
 
         df_list                        = [df_multifamily, df_office, df_retail, df_industrial]
         df_slices_list                 = [df_multifamily_slices, df_office_slices, df_retail_slices, df_industrial_slices]
@@ -131,10 +139,17 @@ def user_selects_sector():
         df_retail                      = pd.read_csv(os.path.join(costar_data_location, 'Clean Data', 'retail_clean.csv'))
         df_industrial                  = pd.read_csv(os.path.join(costar_data_location, 'Clean Data', 'industrial_clean.csv')) 
 
-        df_multifamily_slices          = pd.read_csv(os.path.join(costar_data_location, 'Clean Data', 'mf_slices_clean.csv')) 
-        df_office_slices               = pd.read_csv(os.path.join(costar_data_location, 'Clean Data', 'office_slices_clean.csv'))
-        df_retail_slices               = pd.read_csv(os.path.join(costar_data_location, 'Clean Data', 'retail_slices_clean.csv'))
-        df_industrial_slices           = pd.read_csv(os.path.join(costar_data_location, 'Clean Data', 'industrial_slices_clean.csv')) 
+        if os.path.exists(os.path.join(costar_data_location, 'Clean Data', 'mf_slices_clean.csv')):
+            df_multifamily_slices          = pd.read_csv(os.path.join(costar_data_location, 'Clean Data', 'mf_slices_clean.csv')) 
+        
+        if os.path.exists(os.path.join(costar_data_location, 'Clean Data', 'office_slices_clean.csv')):
+            df_office_slices               = pd.read_csv(os.path.join(costar_data_location, 'Clean Data', 'office_slices_clean.csv'))
+        
+        if os.path.exists(os.path.join(costar_data_location, 'Clean Data', 'retail_slices_clean.csv')):
+            df_retail_slices               = pd.read_csv(os.path.join(costar_data_location, 'Clean Data', 'retail_slices_clean.csv'))
+
+        if os.path.exists(os.path.join(costar_data_location, 'Clean Data', 'industrial_slices_clean.csv')):    
+            df_industrial_slices           = pd.read_csv(os.path.join(costar_data_location, 'Clean Data', 'industrial_slices_clean.csv')) 
 
         #Import supplemental data as pandas data frames. This is data we store for ourselves on the differnet markets and submarkets (we will merge into our main data dfs)
         df_multifamily_supplemental   = pd.read_csv(os.path.join(costar_data_location,'Supplemental Data', 'mf_supplemental.csv'),         dtype={'Town': object,}) 
@@ -157,14 +172,21 @@ def user_selects_sector():
 
 
         df_list                       = [df_multifamily, df_office, df_retail, df_industrial]
-        df_slices_list                = [df_multifamily_slices, df_office_slices, df_retail_slices, df_industrial_slices]
         sector_name_list              = ['Multifamily', 'Office', 'Retail', 'Industrial']
+        
+        #Need this to deal with situations when do not have the slices data
+        try:
+            df_slices_list                = [df_multifamily_slices, df_office_slices, df_retail_slices, df_industrial_slices]
+        except:
+            df_slices_list                = [0, 0, 0, 0]
 
     elif selected_sector == 'Office':
 
         #Import cleaned data from 1.) Clean Costar Data.py
         df_office                      = pd.read_csv(os.path.join(costar_data_location,'Clean Data', 'office_clean.csv'))
-        df_office_slices               = pd.read_csv(os.path.join(costar_data_location,'Clean Data', 'office_slices_clean.csv'))
+        
+        if os.path.exists(os.path.join(costar_data_location,'Clean Data', 'office_slices_clean.csv')):
+            df_office_slices               = pd.read_csv(os.path.join(costar_data_location,'Clean Data', 'office_slices_clean.csv'))
 
         #Import supplemental data as pandas data frames. This is data we store for ourselves on the differnet markets and submarkets (we will merge into our main data dfs)
         df_office_supplemental        = pd.read_csv(os.path.join(costar_data_location, 'Supplemental Data', 'office_supplemental.csv'), dtype = {'Town': object,})      
@@ -180,13 +202,19 @@ def user_selects_sector():
         except:
             pass
         df_list                        = [df_office]
-        df_slices_list                 = [df_office_slices]
         sector_name_list               = ['Office']
+        
+        try:
+            df_slices_list                 = [df_office_slices]
+        except:
+            df_slices_list                 = [0]
 
     elif selected_sector == 'Retail':
         #Import cleaned data from 1.) Clean Costar Data.py
         df_retail                      = pd.read_csv(os.path.join(costar_data_location,'Clean Data','retail_clean.csv'))
-        df_retail_slices               = pd.read_csv(os.path.join(costar_data_location,'Clean Data','retail_slices_clean.csv'))
+        
+        if os.path.exists(os.path.join(costar_data_location,'Clean Data','retail_slices_clean.csv')):
+            df_retail_slices               = pd.read_csv(os.path.join(costar_data_location,'Clean Data','retail_slices_clean.csv'))
 
         #Import supplemental data as pandas data frames. This is data we store for ourselves on the differnet markets and submarkets (we will merge into our main data dfs)
         df_retail_supplemental        = pd.read_csv(os.path.join(costar_data_location,'Supplemental Data','retail_supplemental.csv') ,dtype={'Town': object,})
@@ -203,14 +231,19 @@ def user_selects_sector():
             pass
         
         df_list                        = [df_retail]
-        df_slices_list                 = [df_retail_slices]
         sector_name_list               = ['Retail']
+        try:
+            df_slices_list                 = [df_retail_slices]
+        except:
+            df_slices_list                 = [0]
 
     elif selected_sector == 'Multifamily':
 
         #Import cleaned data from 1.) Clean Costar Data.py
         df_multifamily                 = pd.read_csv(os.path.join(costar_data_location, 'Clean Data', 'mf_clean.csv')) 
-        df_multifamily_slices          = pd.read_csv(os.path.join(costar_data_location, 'Clean Data', 'mf_slices_clean.csv')) 
+        
+        if os.path.exists(os.path.join(costar_data_location, 'Clean Data', 'mf_slices_clean.csv')):
+            df_multifamily_slices          = pd.read_csv(os.path.join(costar_data_location, 'Clean Data', 'mf_slices_clean.csv')) 
 
         #Import supplemental data as pandas data frames. This is data we store for ourselves on the differnet markets and submarkets (we will merge into our main data dfs)
         df_multifamily_supplemental   = pd.read_csv(os.path.join(costar_data_location, 'Supplemental Data', 'mf_supplemental.csv'), dtype={'Town': object,}) 
@@ -227,13 +260,18 @@ def user_selects_sector():
             pass
         
         df_list                       = [df_multifamily]
-        df_slices_list                = [df_multifamily_slices]
         sector_name_list              = ['Multifamily']
+        try:
+            df_slices_list                = [df_multifamily_slices]
+        except:
+            df_slices_list                = [0]
 
     elif selected_sector == 'Industrial':
         #Import cleaned data from 1.) Clean Costar Data.py
         df_industrial                  = pd.read_csv(os.path.join(costar_data_location,'Clean Data','industrial_clean.csv')) 
-        df_industrial_slices           = pd.read_csv(os.path.join(costar_data_location,'Clean Data','industrial_slices_clean.csv')) 
+        
+        if os.path.exists(os.path.join(costar_data_location,'Clean Data','industrial_slices_clean.csv')):
+            df_industrial_slices           = pd.read_csv(os.path.join(costar_data_location,'Clean Data','industrial_slices_clean.csv')) 
 
         #Import supplemental data as pandas data frames. This is data we store for ourselves on the differnet markets and submarkets (we will merge into our main data dfs)
         df_industrial_supplemental    = pd.read_csv(os.path.join(costar_data_location,'Supplemental Data','industrial_supplemental.csv'),dtype={'Town': object,})  	
@@ -250,9 +288,12 @@ def user_selects_sector():
             pass
         
         df_list                       = [df_industrial]
-        df_slices_list                = [df_industrial_slices]
         sector_name_list              = ['Industrial']
-
+        try:
+            df_slices_list                = [df_industrial_slices]
+        except:
+            df_slices_list                = [0]
+            
 #Define functions used to handle the clean CoStar data and help write our repots
 def CreateMarketDictionary(df): 
     #Creates a dictionary where each key is a market and the items are lists of its submarkets
@@ -1165,7 +1206,11 @@ def CreateMarketReport():
             df_nation         = df[df['Geography Type'] == 'National'].copy()              #df for the USA
             df_primary_market = df[df['Geography Name'] == primary_market].copy()          #df for the market only
 
-        df_slices             = df2[df2['Geography Name'] == market].copy()        #df for the primary market with the quality/subtype slices
+        try:
+            df_slices             = df2[df2['Geography Name'] == market].copy()        #df for the primary market with the quality/subtype slices
+        except:
+            column_names = ['Slice', 'Period', 'Vacancy Rate','Market Effective Rent/Unit','Inventory Units','Inventory SF','Market Rent/SF']
+            df_slices = pd.DataFrame(columns = column_names)
 
         #A dataframe that tracks all submarkets in a market at the latest quarter
         df_submarkets         = df.loc[(df['Geography Name'].isin(submarkets) == True) & (df['Period'] == latest_quarter)].copy()
