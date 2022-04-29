@@ -3195,36 +3195,39 @@ def TrainLanguage():
 
 def OutlookLanguage():
     print('Creating Outlook Langauge')
+    try:
+        if hood_pop_growth < 0:
+            pop_growth_description = 'negative'
+        elif  hood_pop_growth == 0.0:
+            pop_growth_description = 'stagnant'
+        elif  hood_pop_growth > 0 and hood_pop_growth < 0.5 :
+            pop_growth_description = 'modest'
+        elif  hood_pop_growth >= 0.5 and hood_pop_growth < 1.5 :
+            pop_growth_description = 'moderate'
+        elif  hood_pop_growth >= 1.5:
+            pop_growth_description = 'strong'
+        else:
+            assert False
 
-    if hood_pop_growth < 0:
-        pop_growth_description = 'negative'
-    elif  hood_pop_growth == 0.0:
-        pop_growth_description = 'stagnant'
-    elif  hood_pop_growth > 0 and hood_pop_growth < 0.5 :
-        pop_growth_description = 'modest'
-    elif  hood_pop_growth >= 0.5 and hood_pop_growth < 1.5 :
-        pop_growth_description = 'moderate'
-    elif  hood_pop_growth >= 1.5:
-        pop_growth_description = 'strong'
-    else:
-        assert False
+        outlook_language = (neighborhood + 
+                            ' is a '     + 
+                            hood_place_type + 
+                            ' in '          + 
+                            comparison_area + 
+                            ', '            + 
+                            comparison_state_full_name + 
+                            ' with limited/access to interstate highways, public transportation, a diverse housing stock, recreational amenities, and businesses for everyday use. ' +
+                            
+                            #Growth sentance
+                            neighborhood + ' has experienced ' +
+                            pop_growth_description +
+                            ' population growth over the past decade, a trend that may continue in the near-term.'
+                            
+                            )
+    except Exception as e:
+        print(e,'Unable to create outlook language')
+        outlook_language = ''
 
-    outlook_language = (neighborhood + 
-                        ' is a '     + 
-                        hood_place_type + 
-                        ' in '          + 
-                        comparison_area + 
-                        ', '            + 
-                        comparison_state_full_name + 
-                        ' with limited/access to interstate highways, public transportation, a diverse housing stock, recreational amenities, and businesses for everyday use. ' +
-                        
-                        #Growth sentance
-                        neighborhood + ' has experienced ' +
-                        pop_growth_description +
-                        ' population growth over the past decade, a trend that may continue in the near-term.'
-                        
-                         )
-    
     return([outlook_language])
 
 def HousingIntroLanguage():
