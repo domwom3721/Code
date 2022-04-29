@@ -16,8 +16,8 @@ raw_office_file                =  os.path.join(costar_data_location,'Raw Data','
 raw_retail_file                =  os.path.join(costar_data_location,'Raw Data','retail.csv') 
 raw_industrial_file            =  os.path.join(costar_data_location,'Raw Data','industrial.csv') 
 
-raw_multifamily_slices_file    =  os.path.join(costar_data_location,'Raw Data','mf_slices.csv') 
-raw_office_slices_file         =  os.path.join(costar_data_location,'Raw Data','office_slices.csv') 
+raw_multifamily_slices_file    =  os.path.join(costar_data_location,'Raw Data','mf_slices.xlsx') 
+raw_office_slices_file         =  os.path.join(costar_data_location,'Raw Data','office_slices.xlsx') 
 raw_retail_slices_file         =  os.path.join(costar_data_location,'Raw Data','retail_slices.csv') 
 raw_industrial_slices_file     =  os.path.join(costar_data_location,'Raw Data','industrial_slices.xlsx') 
 
@@ -89,19 +89,21 @@ df_industrial   = pd.read_csv(raw_industrial_file,
 
 #Import the raw slices data from Costar where the markets are broken down by the quality or type of the properties
 if os.path.exists(raw_multifamily_slices_file):
-    df_multifamily_slices  = pd.read_csv(raw_multifamily_slices_file,
-                    dtype={'Sales Volume Transactions': object
+    df_multifamily_slices  = pd.read_excel(raw_multifamily_slices_file,
+                    dtype={'Sales Volume Transactions': object,
+                          'Market Effective Rent/Unit': float,
+                          'Inventory Units': int64
                         }      
                                         ) 
-
+    
 if os.path.exists(raw_office_slices_file):
-    df_office_slices       = pd.read_csv(raw_office_slices_file,
+    df_office_slices       = pd.read_excel(raw_office_slices_file,
                     dtype={'Sales Volume Transactions':   object,
                             'Total Sales Volume':           object,
                             'Transaction Sale Price/SF':    object,
-                            'Under Construction Buildings': object,
-                            'Vacancy Rate':                 object,
-                            'Inventory SF':                 str,
+                            'Under Construction Buildings': int64,
+                            'Vacancy Rate':                 float,
+                            'Inventory SF':                 int64,
                             }     
                                         )
 
@@ -117,7 +119,7 @@ if os.path.exists(raw_retail_slices_file):
                         'Office Gross Rent Overall':    object,
                         'Transaction Sale Price/SF':    object,
                         'Under Construction Buildings': object,
-                        'Inventory SF':                 str,
+                        'Inventory SF':                 int64,
                         }
                                         )
 
@@ -129,7 +131,7 @@ if os.path.exists(raw_industrial_slices_file):
                             'Transaction Sale Price/SF':    object,
                             'Under Construction Buildings': object,
                             'Vacancy Rate':                 float,
-                            'Inventory SF':                 str,
+                            'Inventory SF':                 int64,
                             }
                                         )
 
@@ -304,17 +306,15 @@ def MainCleanSlices(df,sector): #Calls cleaning functions and returns cleaned da
     if df['Vacancy Rate'].dtype == 'object':
         df['Vacancy Rate'] = df['Vacancy Rate'].str.replace('%','')
     else:
-        df['Vacancy Rate'] = round(df['Vacancy Rate'] * 100,1)
+        df['Vacancy Rate'] = round(df['Vacancy Rate'] * 100,2)
 
     #Clean the rent variables by removing the dollar sign and commas
     if sector == 'Multifamily':
-        df['Market Effective Rent/Unit'] = df['Market Effective Rent/Unit'].str.replace('$','')
-        df['Market Effective Rent/Unit'] = df['Market Effective Rent/Unit'].str.replace(',','',5)
-        df['Market Effective Rent/Unit'] = df['Market Effective Rent/Unit'].astype(float)
+        if df['Market Effective Rent/Unit'].dtype == 'object':
+            df['Market Effective Rent/Unit'] = df['Market Effective Rent/Unit'].str.replace('$','')
+            df['Market Effective Rent/Unit'] = df['Market Effective Rent/Unit'].str.replace(',','',5)
+            df['Market Effective Rent/Unit'] = df['Market Effective Rent/Unit'].astype(float)
         
-
-        df['Inventory Units']             = df['Inventory Units'].str.replace(',','')
-        df['Inventory Units']             = df['Inventory Units'].astype(int)
 
     else:
         if df['Vacancy Rate'].dtype == 'object':
@@ -322,9 +322,10 @@ def MainCleanSlices(df,sector): #Calls cleaning functions and returns cleaned da
             df['Market Rent/SF'] = df['Market Rent/SF'].str.replace(',','',5)
             df['Market Rent/SF'] = df['Market Rent/SF'].astype(float)
         
-        df['Inventory SF']             = df['Inventory SF'].str.replace(',','')
-        df['Inventory SF']             = df['Inventory SF'].astype(int64)
-        
+        if df['Inventory SF'].dtype == 'object':
+            df['Inventory SF']             = df['Inventory SF'].str.replace(',','')
+            df['Inventory SF']             = df['Inventory SF'].astype(int64)
+            
     #Remove "Center" from slice name
     df['Slice']                = df['Slice'].str.replace(' Center', '', regex=False)
     df['Geography Name']       = df['Geography Name'].str.replace('New York City', 'Manhattan', regex=False)
@@ -342,10 +343,10 @@ df_office               =  MainClean(df_office,'Office')
 df_retail               =  MainClean(df_retail,'Retail')
 df_industrial           =  MainClean(df_industrial,'Industrial')
 
-# df_multifamily_slices   =  MainCleanSlices(df_multifamily_slices,'Multifamily')
-# df_office_slices        =  MainCleanSlices(df_office_slices,'Office')
-# df_retail_slices        =  MainCleanSlices(df_retail_slices,'Retail')
-# df_industrial_slices    =  MainCleanSlices(df_industrial_slices,'Industrial')
+df_multifamily_slices   =  MainCleanSlices(df_multifamily_slices,'Multifamily')
+df_office_slices        =  MainCleanSlices(df_office_slices,'Office')
+df_retail_slices        =  MainCleanSlices(df_retail_slices,'Retail')
+df_industrial_slices    =  MainCleanSlices(df_industrial_slices,'Industrial')
 
 
 
@@ -488,10 +489,10 @@ df_office               =  KeepLast10Years(df_office,groupbylist= ['Geography Na
 df_retail               =  KeepLast10Years(df_retail,groupbylist= ['Geography Name'])
 df_industrial           =  KeepLast10Years(df_industrial,groupbylist= ['Geography Name'])
 
-# df_multifamily_slices   =  KeepLast10Years(df_multifamily_slices,groupbylist= ['Geography Name','Slice'])
-# df_office_slices        =  KeepLast10Years(df_office_slices,groupbylist= ['Geography Name','Slice'])
-# df_retail_slices        =  KeepLast10Years(df_retail_slices,groupbylist= ['Geography Name','Slice'])
-# df_industrial_slices    =  KeepLast10Years(df_industrial_slices,groupbylist= ['Geography Name','Slice'])
+df_multifamily_slices   =  KeepLast10Years(df_multifamily_slices,groupbylist= ['Geography Name','Slice'])
+df_office_slices        =  KeepLast10Years(df_office_slices,groupbylist= ['Geography Name','Slice'])
+df_retail_slices        =  KeepLast10Years(df_retail_slices,groupbylist= ['Geography Name','Slice'])
+df_industrial_slices    =  KeepLast10Years(df_industrial_slices,groupbylist= ['Geography Name','Slice'])
 
 
 #Export Cleaned Data Files
@@ -500,9 +501,9 @@ df_office.to_csv(os.path.join(costar_data_location, 'Clean Data','office_clean.c
 df_retail.to_csv(os.path.join(costar_data_location,'Clean Data','retail_clean.csv',),index=False)
 df_industrial.to_csv(os.path.join(costar_data_location,'Clean Data','industrial_clean.csv'),index=False)
 
-# df_multifamily_slices.to_csv(os.path.join(costar_data_location,'Clean Data','mf_slices_clean.csv'),index=False)
-# df_office_slices.to_csv(os.path.join(costar_data_location,'Clean Data','office_slices_clean.csv'),index=False)
-# df_retail_slices.to_csv(os.path.join(costar_data_location,'Clean Data','retail_slices_clean.csv',),index=False)
-# df_industrial_slices.to_csv(os.path.join(costar_data_location,'Clean Data','industrial_slices_clean.csv'),index=False)
+df_multifamily_slices.to_csv(os.path.join(costar_data_location,'Clean Data','mf_slices_clean.csv'),index=False)
+df_office_slices.to_csv(os.path.join(costar_data_location,'Clean Data','office_slices_clean.csv'),index=False)
+df_retail_slices.to_csv(os.path.join(costar_data_location,'Clean Data','retail_slices_clean.csv',),index=False)
+df_industrial_slices.to_csv(os.path.join(costar_data_location,'Clean Data','industrial_slices_clean.csv'),index=False)
 
 print('Cleaning Complete')
