@@ -4046,6 +4046,7 @@ def GetMap():
         
         #Step 2: Write neighborhood name in search box
         Place = browser.find_element(By.CLASS_NAME, "tactile-searchbox-input")
+        print('Found Google Maps Search Box')
 
         if neighborhood_level != 'custom':
             Place.send_keys((neighborhood + ', ' + hood_state))
