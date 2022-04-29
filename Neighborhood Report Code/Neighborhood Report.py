@@ -4055,7 +4055,7 @@ def GetMap():
             Place.send_keys((neighborhood + ', ' + comparison_area))
 
         #Submit hood name for search
-        Submit = browser.find_element(By.CLASS_NAME, "nhb85d-BIqFsb") 
+        Submit = browser.find_element(By.CLASS_NAME, "pzfvzf") 
         Submit.click()
 
         #Step 3: Collapse Side Panel
