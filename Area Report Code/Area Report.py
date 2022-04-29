@@ -6269,7 +6269,7 @@ def GetMap():
         Place.send_keys(search_term)
         
         #Submit county name for search
-        Submit = browser.find_element(By.CLASS_NAME,'nhb85d-BIqFsb')
+        Submit = browser.find_element(By.CLASS_NAME,'pzfvzf')
         Submit.click()
 
         time.sleep(5)
