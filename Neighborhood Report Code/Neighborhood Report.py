@@ -4419,6 +4419,11 @@ def LandUseandZoningSection(document):
 
 def CommunityAssetsSection(document):
     print('Writing Community Assets Section')
+    
+    #Skip this for ML
+    if 'Leahy' in os.environ['USERPROFILE']:
+        return()
+
     #Community Assets Section
     AddHeading(document = document, title = 'Community Assets',            heading_level = 1,heading_number='Heading 3',font_size=11)
 
