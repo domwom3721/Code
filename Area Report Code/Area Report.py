@@ -6247,7 +6247,7 @@ def Note(document, text):
     font.italic                                      = True
     font.color.rgb                                   = RGBColor.from_string('929292')
     citation_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.RIGHT
-
+d
 def GetMap():
     try:
         print('Getting map image from Google Maps')
