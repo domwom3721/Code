@@ -70,11 +70,13 @@ for condo_or_sf in ['condo', 'sf']:
 
         #Now we can merge the main data and the price per sqft data
         df = pd.merge(df, df_ppsf, on=(['Type','Month of Period End','Region']), how='left')
-        
+        df['Region Type'] = geographic_level.title()
         df_master = df_master.append(df)
 
 #Clean master df
 for col_name in df_master.columns[3:]:
+    if col_name == 'Region Type':
+        continue
     
     df_master[col_name] = df_master[col_name].str.replace('$','',regex=False)
     df_master[col_name] = df_master[col_name].str.replace('%','',regex=False)
