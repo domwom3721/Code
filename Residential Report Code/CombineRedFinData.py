@@ -3,15 +3,13 @@
 #Summary: Combines multiple RedFin residential real estate data files togeteher
 
 import os
-from turtle import st
 import pandas as pd
 
 #Define file pre-paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
-project_location               =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Projects','Research Report Automation Project') 
+project_location               =  os.path.join(dropbox_root,'Research','Projects','Research Report Automation Project') 
 raw_data_location              =  os.path.join(project_location,'Data\Residential Reports Data\RedFin Data\Raw')
 clean_data_location            =  os.path.join(project_location,'Data\Residential Reports Data\RedFin Data\Clean') 
-
 
 
 #Start with a blank dataframe we will append
