@@ -223,6 +223,9 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
         rent_var                        = 'Market Effective Rent/Unit'
         inventory_var                   = 'Inventory Units'
         yoy_rent_growth                 = submarket_data_frame['YoY Market Effective Rent/Unit Growth'].iloc[-1]
+        slice_a_vacancy                 = slices_data_frame.loc[slices_data_frame['Slice'] == ('Class A')]['Vacancy Rate'].iloc[-1] #cut down to slice A then index to last observation.iloc[-1]
+        slice_b_vacancy                 = slices_data_frame.loc[slices_data_frame['Slice'] == ('Class B')]['Vacancy Rate'].iloc[-1] #cut down to slice B then index to last observation.iloc[-1]
+        slice_c_vacancy                 = slices_data_frame.loc[slices_data_frame['Slice'] == ('Class C')]['Vacancy Rate'].iloc[-1] #cut down to slice C then index to last observation.iloc[-1]
         qoq_rent_growth                 = submarket_data_frame['QoQ Market Effective Rent/Unit Growth'].iloc[-1]
         under_construction              = submarket_data_frame['Under Construction Units'].iloc[-1]
         under_construction_share        = submarket_data_frame['Under Construction %'].iloc[-1]
