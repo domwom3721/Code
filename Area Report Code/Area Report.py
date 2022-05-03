@@ -1,6 +1,7 @@
 #By Mike Leahy, April 30 2021
     #Summary: Takes a United States County and fips code as input, prepares economic report for it using data accessed from different APIs
 
+from glob import escape
 import json
 import math
 import msvcrt
@@ -10,6 +11,7 @@ import sys
 import time
 from datetime import date, datetime
 from random import choice
+from tkinter import E
 
 import numpy as np
 import pandas as pd
@@ -1200,9 +1202,17 @@ def GetMSAData():
             msa_mlp                     = ''
 
 
-        
-        msa_industry_breakdown            = GetMSAIndustryBreakdown(      cbsa = cbsa, year = qcew_year, qtr = qcew_qtr)    
-        msa_industry_growth_breakdown     = GetMSAIndustryGrowthBreakdown(cbsa = cbsa, year = qcew_year, qtr = qcew_qtr)
+        try:
+            msa_industry_breakdown            = GetMSAIndustryBreakdown(      cbsa = cbsa, year = qcew_year, qtr = qcew_qtr)    
+        except Exception as e:
+            print(e,'Unable to get MSA Industry breakdowbn')
+            msa_industry_breakdown            = '' 
+        try:
+            msa_industry_growth_breakdown     = GetMSAIndustryGrowthBreakdown(cbsa = cbsa, year = qcew_year, qtr = qcew_qtr)
+        except Exception as e:
+            print(e,'Unable to get MSA industry growth breakdown')
+            msa_industry_growth_breakdown     = ''
+
         msa_shape                         = GetMSAShape(cbsa = cbsa)
 
 #State Data
@@ -2856,257 +2866,269 @@ def CreateMLPWithGrowthGraph(county_data_frame,msa_data_frame,national_data_fram
 
 def CreateEmploymentByIndustryGraph(county_data_frame,folder):
     print('Creating County Employment by Industry Breakdown Graph')
+    try:
     
-    def format(x):
-        return "Weekly Wage: ${:,.0f}".format(x)
-    county_data_frame['avg_wkly_wage_string'] = county_data_frame['avg_wkly_wage'].apply(format)
-    
+        def format(x):
+            return "Weekly Wage: ${:,.0f}".format(x)
+        county_data_frame['avg_wkly_wage_string'] = county_data_frame['avg_wkly_wage'].apply(format)
+        
 
-    #Employment By Supersector Treemap
-    fig = go.Figure(
-            go.Treemap(
-                values       = county_data_frame['month3_emplvl'],
-                labels       = county_data_frame['industry_code'],
-                parents      = county_data_frame['county'],
-                text         = county_data_frame['avg_wkly_wage_string'],
-                textinfo     = "label+text",
-                textposition = 'top left',
-                marker=dict(
-                        colors     = county_data_frame['avg_wkly_wage'],
-                        colorscale = 'Blues',),
+        #Employment By Supersector Treemap
+        fig = go.Figure(
+                go.Treemap(
+                    values       = county_data_frame['month3_emplvl'],
+                    labels       = county_data_frame['industry_code'],
+                    parents      = county_data_frame['county'],
+                    text         = county_data_frame['avg_wkly_wage_string'],
+                    textinfo     = "label+text",
+                    textposition = 'top left',
+                    marker=dict(
+                            colors     = county_data_frame['avg_wkly_wage'],
+                            colorscale = 'Blues',),
 
-                              
-                     )
-                  )
-
-
-    #Set font               
-    #Set Title
-    fig.update_layout(
-        title={
-            'text':    'County Employment Composition & Wages by Industry' + ' (' + qcew_year + ' Q' + qcew_qtr + ')',
-            'y':       .985 ,
-            'x':       0.5,
-            'xanchor': 'center',
-            'yanchor': 'top'
-            },  
-
-        font_family   = "Avenir Next LT Pro",
-        font_color    = '#262626',
-        font_size     = 10.5,
-        paper_bgcolor = paper_backgroundcolor,
-        plot_bgcolor  = "White",
-    
-        margin        = dict(l=left_margin, r=right_margin, t=20, b= 0),
-        height        = graph_height,
-        width         = graph_width,
+                                
+                        )
                     )
 
-    fig.write_image(os.path.join(folder,'employment_by_industry.png'), engine='kaleido', scale=scale)
+
+        #Set font               
+        #Set Title
+        fig.update_layout(
+            title={
+                'text':    'County Employment Composition & Wages by Industry' + ' (' + qcew_year + ' Q' + qcew_qtr + ')',
+                'y':       .985 ,
+                'x':       0.5,
+                'xanchor': 'center',
+                'yanchor': 'top'
+                },  
+
+            font_family   = "Avenir Next LT Pro",
+            font_color    = '#262626',
+            font_size     = 10.5,
+            paper_bgcolor = paper_backgroundcolor,
+            plot_bgcolor  = "White",
+        
+            margin        = dict(l=left_margin, r=right_margin, t=20, b= 0),
+            height        = graph_height,
+            width         = graph_width,
+                        )
+
+        fig.write_image(os.path.join(folder,'employment_by_industry.png'), engine='kaleido', scale=scale)
+    except Exception as e:
+        print(e,'Unable to create county employment by industry graph')
 
 def CreateEmploymentGrowthByIndustryGraph(county_data_frame,folder):
     print('Creating County Employment Growth by Industry Graph')
-    annotation_position = 'outside'
-    county_data_frame   = county_data_frame.loc[county_data_frame['industry_code'] != 'Unclassified'] 
+    try:
+        annotation_position = 'outside'
+        county_data_frame   = county_data_frame.loc[county_data_frame['industry_code'] != 'Unclassified'] 
 
-    #Drop industreis where we are missing 5 and 1 year growth
-    county_data_frame  = county_data_frame.loc[(county_data_frame['emp_growth_invalid'] != 1) | (county_data_frame['one_year_emp_growth_invalid'] != 1)] 
+        #Drop industreis where we are missing 5 and 1 year growth
+        county_data_frame  = county_data_frame.loc[(county_data_frame['emp_growth_invalid'] != 1) | (county_data_frame['one_year_emp_growth_invalid'] != 1)] 
 
-    fig = go.Figure(
-            data=[
-            #Add 5 Year Growth Bars
-            go.Bar(
-                name=str(growth_period) + ' Year Growth',      
-                x=county_data_frame['industry_code'], 
-                y=county_data_frame['Employment Growth'],
-                marker_color= bowery_grey,
+        fig = go.Figure(
+                data=[
+                #Add 5 Year Growth Bars
+                go.Bar(
+                    name=str(growth_period) + ' Year Growth',      
+                    x=county_data_frame['industry_code'], 
+                    y=county_data_frame['Employment Growth'],
+                    marker_color= bowery_grey,
 
-                  ),
-
-            #Add 1 year growth circles       
-            go.Scatter(
-                    name   = '1 Year Growth',      
-                    x      = county_data_frame['industry_code'], 
-                    y      = county_data_frame['1 Year Employment Growth'],
-                    marker = dict(color = bowery_dark_blue, size=9),
-                    mode   = 'markers',
                     ),
-                    ]
+
+                #Add 1 year growth circles       
+                go.Scatter(
+                        name   = '1 Year Growth',      
+                        x      = county_data_frame['industry_code'], 
+                        y      = county_data_frame['1 Year Employment Growth'],
+                        marker = dict(color = bowery_dark_blue, size=9),
+                        mode   = 'markers',
+                        ),
+                        ]
+                            )
+
+        fig.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
+
+        #Set X-axes format
+        fig.update_xaxes(
+            tickfont = dict(size=tickfont_size),
+            title_standoff = 0.10
+            )
+
+        #Set Y-Axes format
+        fig.update_yaxes(
+            ticksuffix = '%',
+            tickfont   = dict(size=tickfont_size),
+            )                 
+
+        #Set Title
+        fig.update_layout(
+            title_text= "Private Employment Growth by Industry (County)" + ' (' + qcew_year + ' Q' + qcew_qtr + ')',    
+
+            title={
+                'y':title_position,
+                'x':0.5,
+                'xanchor': 'center',
+                'yanchor': 'top'
+                },
+                        
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=legend_position ,
+                xanchor="center",
+                x=0.5,
+                font_size = tickfont_size
+                        ),
+
+
+            font_family   = "Avenir Next LT Pro",
+            font_color    = '#262626',
+            font_size     = 10.5,
+            paper_bgcolor = paper_backgroundcolor,
+            plot_bgcolor  = "White",
+
+            margin        = dict(l=left_margin, r=right_margin, t=(top_margin + .2), b = (bottom_margin + .2)),
+            height        = graph_height,
+            width         = graph_width,
                         )
 
-    fig.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
 
-    #Set X-axes format
-    fig.update_xaxes(
-        tickfont = dict(size=tickfont_size),
-        title_standoff = 0.10
-        )
-
-    #Set Y-Axes format
-    fig.update_yaxes(
-        ticksuffix = '%',
-        tickfont   = dict(size=tickfont_size),
-        )                 
-
-    #Set Title
-    fig.update_layout(
-        title_text= "Private Employment Growth by Industry (County)" + ' (' + qcew_year + ' Q' + qcew_qtr + ')',    
-
-        title={
-            'y':title_position,
-            'x':0.5,
-            'xanchor': 'center',
-            'yanchor': 'top'
-              },
-                    
-        legend=dict(
-            orientation="h",
-            yanchor="bottom",
-            y=legend_position ,
-            xanchor="center",
-            x=0.5,
-            font_size = tickfont_size
-                    ),
-
-
-        font_family   = "Avenir Next LT Pro",
-        font_color    = '#262626',
-        font_size     = 10.5,
-        paper_bgcolor = paper_backgroundcolor,
-        plot_bgcolor  = "White",
-
-        margin        = dict(l=left_margin, r=right_margin, t=(top_margin + .2), b = (bottom_margin + .2)),
-        height        = graph_height,
-        width         = graph_width,
-                    )
-
-
-    fig.write_image(os.path.join(folder,'employment_growth_by_industry.png'),engine='kaleido',scale=scale)
+        fig.write_image(os.path.join(folder,'employment_growth_by_industry.png'),engine='kaleido',scale=scale)
+    except Exception as e:
+        print(e, 'Unable to create county employment growth by industry graph')
 
 def CreateMSAEmploymentByIndustryGraph(msa_data_frame,folder):
     print('Creating MSA Employment by Industry Breakdown Graph')
+    try:
+        def format(x):
+            return "Weekly Wage: ${:,.0f}".format(x)
+        msa_data_frame['avg_wkly_wage_string'] = msa_data_frame['avg_wkly_wage'].apply(format)
+        
+
+        #Employment By Supersector Treemap
+        fig = go.Figure(
+                go.Treemap(
+                    values       = msa_data_frame['month3_emplvl'],
+                    labels       = msa_data_frame['industry_code'],
+                    parents      = msa_data_frame['msa'],
+                    text         = msa_data_frame['avg_wkly_wage_string'],
+                    textinfo     = "label+text",
+                    textposition = 'top left',
+                    marker       = dict(
+                                    colors     = msa_data_frame['avg_wkly_wage'],
+                                    colorscale ='Blues',
+                            ),
+
+                                
+                        )
+                        )
+
     
-    def format(x):
-        return "Weekly Wage: ${:,.0f}".format(x)
-    msa_data_frame['avg_wkly_wage_string'] = msa_data_frame['avg_wkly_wage'].apply(format)
-    
+        fig.update_layout(
 
-    #Employment By Supersector Treemap
-    fig = go.Figure(
-            go.Treemap(
-                values       = msa_data_frame['month3_emplvl'],
-                labels       = msa_data_frame['industry_code'],
-                parents      = msa_data_frame['msa'],
-                text         = msa_data_frame['avg_wkly_wage_string'],
-                textinfo     = "label+text",
-                textposition = 'top left',
-                marker       = dict(
-                                colors     = msa_data_frame['avg_wkly_wage'],
-                                colorscale ='Blues',
-                          ),
+            title={
+                'text': 'MSA Private Employment Composition & Wages by Industry' + ' (' + qcew_year + ' Q' + qcew_qtr + ')',
+                'y':.985 ,
+                'x':0.5,
+                'xanchor': 'center',
+                'yanchor': 'top'
+                },  
 
-                              
-                      )
-                    )
+            font_family="Avenir Next LT Pro",
+            font_color='#262626',
+            font_size = 10.5,
+            paper_bgcolor=paper_backgroundcolor,
+            plot_bgcolor ="White",
 
- 
-    fig.update_layout(
+            margin    =dict(l=left_margin, r=right_margin, t=20, b= 0),
+            height    = graph_height,
+            width     = graph_width,
+                        )
 
-        title={
-            'text': 'MSA Private Employment Composition & Wages by Industry' + ' (' + qcew_year + ' Q' + qcew_qtr + ')',
-            'y':.985 ,
-            'x':0.5,
-            'xanchor': 'center',
-            'yanchor': 'top'
-              },  
-
-        font_family="Avenir Next LT Pro",
-        font_color='#262626',
-        font_size = 10.5,
-        paper_bgcolor=paper_backgroundcolor,
-        plot_bgcolor ="White",
-
-        margin    =dict(l=left_margin, r=right_margin, t=20, b= 0),
-        height    = graph_height,
-        width     = graph_width,
-                    )
-
-    fig.write_image(os.path.join(folder,'msa_employment_by_industry.png'),engine='kaleido',scale=scale)
+        fig.write_image(os.path.join(folder,'msa_employment_by_industry.png'),engine='kaleido',scale=scale)
+    except Exception as e:
+        print(e, 'Unable to create MSA Employment industry breakdown graph')
 
 def CreateMSAEmploymentGrowthByIndustryGraph(msa_data_frame,folder):
     print('Creating MSA Employment Growth by Industry Graph')
-    annotation_position = 'outside'
-    msa_data_frame  = msa_data_frame.loc[msa_data_frame['industry_code'] != 'Unclassified'] 
+    try:
+        annotation_position = 'outside'
+        msa_data_frame  = msa_data_frame.loc[msa_data_frame['industry_code'] != 'Unclassified'] 
 
-    #Drop industreis where we are missing 5 and 1 year growth
-    msa_data_frame  = msa_data_frame.loc[(msa_data_frame['emp_growth_invalid'] != 1) | (msa_data_frame['one_year_emp_growth_invalid'] != 1)] 
+        #Drop industreis where we are missing 5 and 1 year growth
+        msa_data_frame  = msa_data_frame.loc[(msa_data_frame['emp_growth_invalid'] != 1) | (msa_data_frame['one_year_emp_growth_invalid'] != 1)] 
 
-    fig = go.Figure(data=[
-        #Add 5 Year Growth Bars
-        go.Bar(
-                name=str(growth_period) + ' Year Growth',      
-                x=msa_data_frame['industry_code'], 
-                y=msa_data_frame['Employment Growth'],
-                marker_color = bowery_grey,
-                ),
-
-        #Add 1 year growth circles       
-        go.Scatter(
-                name='1 Year Growth',      
-                x=msa_data_frame['industry_code'], 
-                y=msa_data_frame['1 Year Employment Growth'],
-                marker=dict(color = bowery_dark_blue, size=9),
-                mode = 'markers',
-                ),
-                            ]
-                     )
-
-    fig.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
-
-    #Set X-axes format
-    fig.update_xaxes(
-        tickfont = dict(size=tickfont_size),
-        title_standoff = 0.10
-        )
-
-    #Set Y-Axes format
-    fig.update_yaxes(
-        ticksuffix = '%',
-        tickfont = dict(size=tickfont_size),
-        )                 
-
-    #Set Title
-    fig.update_layout(
-        title_text= "Private Employment Growth by Industry (MSA) " + ' (' + qcew_year + ' Q' + qcew_qtr + ')',    
-
-        title={
-            'y':title_position,
-            'x':0.5,
-            'xanchor': 'center',
-            'yanchor': 'top'},
-                    
-        legend=dict(
-            orientation="h",
-            yanchor="bottom",
-            y=legend_position ,
-            xanchor="center",
-            x=0.5,
-            font_size = tickfont_size
+        fig = go.Figure(data=[
+            #Add 5 Year Growth Bars
+            go.Bar(
+                    name=str(growth_period) + ' Year Growth',      
+                    x=msa_data_frame['industry_code'], 
+                    y=msa_data_frame['Employment Growth'],
+                    marker_color = bowery_grey,
                     ),
 
+            #Add 1 year growth circles       
+            go.Scatter(
+                    name='1 Year Growth',      
+                    x=msa_data_frame['industry_code'], 
+                    y=msa_data_frame['1 Year Employment Growth'],
+                    marker=dict(color = bowery_dark_blue, size=9),
+                    mode = 'markers',
+                    ),
+                                ]
+                        )
 
-        font_family   = "Avenir Next LT Pro",
-        font_color    = '#262626',
-        font_size     = 10.5,
-        paper_bgcolor = paper_backgroundcolor,
-        plot_bgcolor  = "White",
+        fig.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
 
-        margin        = dict(l=left_margin, r=right_margin, t=(top_margin + .2), b = (bottom_margin + .2)),
-        height        = graph_height,
-        width         = graph_width,
-                    )
+        #Set X-axes format
+        fig.update_xaxes(
+            tickfont = dict(size=tickfont_size),
+            title_standoff = 0.10
+            )
 
-    fig.write_image(os.path.join(folder,'msa_employment_growth_by_industry.png'), engine='kaleido', scale=scale)
+        #Set Y-Axes format
+        fig.update_yaxes(
+            ticksuffix = '%',
+            tickfont = dict(size=tickfont_size),
+            )                 
+
+        #Set Title
+        fig.update_layout(
+            title_text= "Private Employment Growth by Industry (MSA) " + ' (' + qcew_year + ' Q' + qcew_qtr + ')',    
+
+            title={
+                'y':title_position,
+                'x':0.5,
+                'xanchor': 'center',
+                'yanchor': 'top'},
+                        
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=legend_position ,
+                xanchor="center",
+                x=0.5,
+                font_size = tickfont_size
+                        ),
+
+
+            font_family   = "Avenir Next LT Pro",
+            font_color    = '#262626',
+            font_size     = 10.5,
+            paper_bgcolor = paper_backgroundcolor,
+            plot_bgcolor  = "White",
+
+            margin        = dict(l=left_margin, r=right_margin, t=(top_margin + .2), b = (bottom_margin + .2)),
+            height        = graph_height,
+            width         = graph_width,
+                        )
+
+        fig.write_image(os.path.join(folder,'msa_employment_growth_by_industry.png'), engine='kaleido', scale=scale)
+    
+    except Exception as e:
+        print(e, 'Unable to create MSA Employment growth by industry graph')
 
 def CreateMLPGraph(county_data_frame,msa_data_frame,folder):
     print('Creating Median List Price Graph')
