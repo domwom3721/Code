@@ -6912,7 +6912,9 @@ start_year                    = end_year - growth_period        #For BLS Series
 observation_start             = '01/01/' + str(start_year -1)   #For FRED
 observation_start_less1       = '01/01/' + str(start_year -2)   #For FRED for series 1 year behind the rest
 observation_start_less2       = '01/01/' + str(start_year -3)   #For FRED for series 1 year behind the rest
-qcew_year                     = current_year                    #for quarterly census of employment and wages
+
+#The QCEW is released at a lag, the following 2 variables need to be changed with each new release
+qcew_year                     = '2021'                          #for quarterly census of employment and wages
 qcew_qtr                      = '3'                             #for quarterly census of employment and wages
 
 county_or_msa_report = input('County report (c) or Metropolitan Statistical Area report (m)?').strip()
