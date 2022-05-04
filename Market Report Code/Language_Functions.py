@@ -747,7 +747,7 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
     #Section 4.1: Create the first subsection (overview_intro_language)
     #Market
     if  market_or_submarket == 'Market':
-        overview_intro_language = ('The subject property is located in the '         +
+        overview_intro_language = ('The subject property is in the '         +
                                     market_title                                     +
                                     ' '                                              +
                                     market_or_submarket                              +
@@ -770,7 +770,7 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
 
     #Submarket
     else:
-        overview_intro_language = ('The subject property is located in the ' +
+        overview_intro_language = ('The subject property is in the ' +
                                     market_title                             +
                                     ' Submarket of the '                     +
                                     primary_market                           +
