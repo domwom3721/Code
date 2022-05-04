@@ -309,9 +309,9 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
             inventory_breakdown    = ''
 
 
-        #Make sure the total invetory from adding together the inventory from each slice addds up to our inventory total from the main data
+        #Make sure the total invetory from adding together the inventory from each slice addds up to our inventory total from the main data (or at least within 1%)
         try:
-            assert int(total_slices_inventory) == int(market_inventory)
+            assert (0.99 <= (total_slices_inventory/market_inventory) <= 1.01) 
         except Exception as e:
             print(e, 'Slices inventory does not add up to total, not including quality breakdown in overview language')
             inventory_breakdown = ''
