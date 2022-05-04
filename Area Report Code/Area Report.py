@@ -6868,9 +6868,9 @@ national_economy_summary = (
 boiler_plate_housing_language = ("""Historically low mortgage rates, the desire for more space, and the ability to work from home have led to the highest number of home sales """ +
                                  """while historically low inventory levels have pushed values to record highs in most counties and metros across the Nation. """ )
 
-boiler_plate_econ_language = ('After softening to 2.3% in the third quarter, the pace of the economic recovery has accelerated with annualized GDP growth reaching 6.9% in the fourth quarter. '   +
+boiler_plate_econ_language = ('After accelerating to 6.9% in the fourth quarter of 2021, GDP growth fell to negative levels at a -1.4% annualized growth rate in the first quarter of 2022 due to a widening trade deficit and falling private inventory investment. '   +
                               'While historically high inflation, global supply chain issues, and Federal Reserve interest rate hikes pose threats to the recovery, '                     +
-                               'many economic observers expect that the economy is well positioned for growth in 2022. '
+                               'many economic observers expect that the economy is well positioned for modest growth throughout the rest of 2022. '
                             )
 
 marginInches                  = 1/18
