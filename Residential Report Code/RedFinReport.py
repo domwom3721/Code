@@ -3,8 +3,6 @@
 #Summary: Injests RedFin residential real estate data and produces report documents on the selcted areas
 
 import os
-from pydoc import doc
-from tkinter.tix import MAIN
 import pandas as pd
 from docx import Document
 from docx.enum.table import WD_ALIGN_VERTICAL, WD_TABLE_ALIGNMENT
@@ -12,7 +10,9 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK, WD_LINE_SPACING
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Inches, Pt, RGBColor
-from pyrsistent import v
+from tkinter import *
+from tkinter import ttk
+
 
 #Define file pre-paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
@@ -21,6 +21,88 @@ data_location                  =  os.path.join(project_location,'Data\Residentia
 output_location                =  os.path.join(project_location,'Output\Residential Reports') #Testing Output
 # output_location                =  os.path.join(project_location,'Output\Residential Reports') #Production Output
 
+#Data Related functions
+def DetermineSubjectAndComp():
+    #This function presents the user with options for what geographic level, area, and report type (Condo vs SF) they would like to create a report for as well as the comparison area \
+    #Creates 2 pandas dataframes, 1 with data on the subject, and another with data on the comparsion area
+    global df_subject, df_comparison
+    pass
+
+    #Import our clean RedFin data
+    df = pd.read_csv(os.path.join(data_location, 'Clean RedFin Data.csv'), 
+                dtype={         'Type': str,
+                                'Region':str,
+                                'Month of Period End':str,
+                                'Median Sale Price':float	,
+                                'Median Sale Price MoM':float ,	
+                                'Median Sale Price YoY':float ,	
+                                'Homes Sold':float,
+                                'Homes Sold MoM':float,
+                                'Homes Sold YoY':float,	
+                                'New Listings':float,
+                                'New Listings MoM':float, 	
+                                'New Listings YoY':float,	
+                                'Inventory':float,
+                                'Inventory MoM':float,	 
+                                'Inventory YoY':float,	
+                                'Days on Market':float,	
+                                'Days on Market MoM':float ,	
+                                'Days on Market YoY':float	,
+                                'Average Sale To List':float ,
+                                'Average Sale To List MoM':float ,	
+                                'Average Sale To List YoY':float,
+                                },                         
+                            )
+    
+    #Create a list with all possible subject areas
+    possible_subject_areas = df['Market Research Name'].unique().tolist()
+
+
+    #Launches GUI for user to select subject area
+    def select_market(event):
+        global  selected_subject
+        selected_subject = comboExample.get()
+        
+    app = Tk() 
+    app.geometry('600x300')
+    app.config(bg='#404858')
+    app.title('Research Automation Project - Residential Reports') 
+
+    labelTop = Label(app, text = ("Choose your subject area"))
+    labelTop.grid(column=0, row=0)
+
+    comboExample = ttk.Combobox(app, values = possible_subject_areas, width=50)
+
+    comboExample.grid(column=0, row=1)
+    comboExample.current(0)
+    comboExample.bind("<<ComboboxSelected>>", select_market)
+    app.mainloop()
+
+         
+    print(selected_subject)
+
+    #Launches GUI for user to select comparsion area
+    def select_comp(event):
+        global  selected_comparsion
+        selected_comparsion = comboExample.get()
+        
+    app = Tk() 
+    app.geometry('600x300')
+    app.config(bg='#404858')
+    app.title('Research Automation Project - Residential Reports') 
+
+    labelTop = Label(app, text = ("Choose your comparison area"))
+    labelTop.grid(column=0, row=0)
+
+    comboExample = ttk.Combobox(app, values = possible_subject_areas, width=50)
+
+    comboExample.grid(column=0, row=1)
+    comboExample.current(0)
+    comboExample.bind("<<ComboboxSelected>>", select_comp)
+    app.mainloop()
+
+         
+    print(selected_subject, selected_comparsion)
 
 #Language Related functions
 def OverviewLanguage():
@@ -218,35 +300,22 @@ def WriteReport():
     document.save(os.path.join(output_location,'test.docx'))  
 
 def Main():
+    DetermineSubjectAndComp()
     CreateLanguage()
     CreateGraphs()
     WriteReport()
 
-#Import our clean RedFin data
-df = pd.read_csv(os.path.join(data_location, 'Clean RedFin Data.csv'), 
-                dtype={         'Type': str,
-                                'Region':str,
-                                'Month of Period End':str,
-                                'Median Sale Price':float	,
-                                'Median Sale Price MoM':float ,	
-                                'Median Sale Price YoY':float ,	
-                                'Homes Sold':float,
-                                'Homes Sold MoM':float,
-                                'Homes Sold YoY':float,	
-                                'New Listings':float,
-                                'New Listings MoM':float, 	
-                                'New Listings YoY':float,	
-                                'Inventory':float,
-                                'Inventory MoM':float,	 
-                                'Inventory YoY':float,	
-                                'Days on Market':float,	
-                                'Days on Market MoM':float ,	
-                                'Days on Market YoY':float	,
-                                'Average Sale To List':float ,
-                                'Average Sale To List MoM':float ,	
-                                'Average Sale To List YoY':float,
-                                },                         
-                            )
+
+
+
+
+
+
+
+
+
+
+
 
 #Set formatting paramaters for reports
 primary_font                  = 'Avenir Next LT Pro Light' 
