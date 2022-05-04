@@ -6860,9 +6860,8 @@ national_economy_summary = (
                                 ' The labor market has restored over 20 million of the 21 million jobs lost at the beginning of the pandemic, ' +
                                 'as measured by non-farm employment, bringing the unemployment rate to 3.6% as of March 2022. '                 +
                                 'Employment growth continued in leisure and hospitality, in professional and business services, in retail trade, and in transportation and warehousing. ' + 
-                                'After slowing to 2.3% in the third quarter of 2021 due to a resurgence of COVID-19 cases and associated restrictions, growth accelerated to 6.9% in the fourth quarter primarily due to increases in private inventory investment and exports. ' + 
                                 'Supply-chain disruptions such as delays at U.S. ports and international manufacturing issues contributed to a sharp increase in inflation and pose a risk to the economic outlook. ' + 
-                                'Despite supply-side challenges, many economic observers expect that the economy regained momentum in the final months of the year and is well positioned for continued growth in 2022. ' 
+                                'Despite supply-side challenges, many economic observers expect growth to return to moderate levels in the final 3 quarters of 2022.' 
                                     )
 
 boiler_plate_housing_language = ("""Historically low mortgage rates, the desire for more space, and the ability to work from home have led to the highest number of home sales """ +
