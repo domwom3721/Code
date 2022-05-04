@@ -1250,7 +1250,7 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_
             #Sentance 1 (Supply sentence)
             'The '                                                      +
             market_or_submarket                                         +
-            ' is home to '                                              +
+            ' has '                                                     +
             submarket_inventory                                         +
             ' '                                                         +
             unit_or_sqft                                                +
@@ -1829,7 +1829,7 @@ def CreateConstructionLanguage(submarket_data_frame, market_data_frame, natioanl
     if under_construction > 0:
         currently_active_or_inactive = 'Developers are currently active in the ' + market_or_submarket + ' with ' + millify(under_construction,'') + ' ' + unit_or_sqft + ', or the equivalent of ' + "{:,.1f}%".format(under_construction_share)   + ' of existing inventory, underway. '
         
-        #Vacancy rates have expanded over the past year
+        #Vacancy rates have increased over the past year
         if yoy_submarket_vacancy_growth > 0:
             pipeline_vacancy_pressure    = 'The active pipeline will likely add upward pressure to vacancy rates in the near term.'
         
@@ -2067,8 +2067,8 @@ def CreateSaleLanguage(submarket_data_frame,market_data_frame, natioanl_data_fra
                     asset_value_change_description                                      +
                     ' '                                                                 +
                     "{asset_value_change}".format(asset_value_change = (asset_value_change + ' ') if asset_value_change_description != 'remained stable'  else "") +
-                    'over the past year, '                                              +
-                    'while the market cap rate has '                                    +
+                    'over the past year. '                                              +
+                    'Capitalization rates have '                                    +
                     cap_rate_change_description                                         +
                     ' '                                                                 +
                     "{cap_rate_change}".format(cap_rate_change = (cap_rate_change + ' ') if cap_rate_change_description != 'remained stable'  else "") +
@@ -2079,8 +2079,8 @@ def CreateSaleLanguage(submarket_data_frame,market_data_frame, natioanl_data_fra
                     '.'                                                                 +
                     
                     #Sentence 6
-                    ' Although capital markets have held up relatively well, uncertainty still remains.' +
-                    ' Some investors may need to see signs of sustained economic growth before engaging. ')
+                    ' The capital markets remain active throughout the country including ' + market_title + '. ' +
+                    ' However, the recent increases in interest rates will likely cause the pace of price growth and cap rate compression to slow this year. ')
                 ]
 
     #Combine CoStar writeup with our generated langauge            
