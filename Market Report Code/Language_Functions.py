@@ -469,263 +469,232 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
        #sector_intro =  
        #if sector == Multifamily: sector_intro = ("""Elevated demand for apartments, combined with the vacancy rate hitting a historic low, created record-breaking rent growth in 2021. """ + 
         # 'The sector remains healthy in Q1 though signs point to a deceleration in growth. ') 
-       #Retail = """The retail sector continues to improve due to a financially healthy and active consumer, pushing retail sales to record highs. Tenants are active, although selective by region and subtype. """
-       #Industrial = 
-       #office = 
+       #Retail = """The retail sector continues to improve due to a financially healthy and active consumer, pushing retail sales to record highs. Tenants and investors remain active, although selective by region, subtype, and tenant. """
+       #Industrial = """“After a record year for the industrial sector in 2021, strong demand for space continued in 2022. U.S. Industrial production, consumer spending, and inventories all increased in 2022 Q1, driving warehouse space demand. ”"""
+       #office = """On the back of continued office-using employment growth and positive absorption, the Office sector demonstrated signs of durability and resiliency since hitting a trough in late 2020. """ + 
+        #"""Office leasing activity has exceeded 100 million square feet for three consecutive quarters with positive absorption in Q4 2021 and into Q1 2022. 
 
     #Retail specific langauge
     if sector == "Retail":
         
         #Negative Rent Growth, positive vacancy growth
-        if yoy_rent_growth < 0 and vacancy_change > 0:
-            overview_sector_specific_language =  ('Economic growth and strong consumer demand in 2021 has benefited the retail sector as a whole, but trends that were common prior to the pandemic continue to plague the retail sector in ' + market_title + ', putting pressure on vacancy rates and rent growth . ' + 
-                                                  'This disruption has increased vacancy rates ' + "{:,.0f} bps".format(vacancy_change) + ' to ' + "{:,.1f}%".format(vacancy) + '. ' + 'With vacancy rates expanding over the past year, rents have contracted ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + '. ') 
+        #if yoy_rent_growth < 0 and vacancy_change > 0:
+        #    overview_sector_specific_language =  sector_intro  +  ' For the ' + market_title + 
+        #                                          'This selectivity has increased vacancy rates ' + "{:,.0f} bps".format(vacancy_change) + ' to ' + "{:,.1f}%".format(vacancy) + '. ' + 'With vacancy rates expanding over the past year, rents have decreased ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + '. ') 
         
         #Negative Rent Growth, Negative vacancy growth
-        elif yoy_rent_growth < 0 and vacancy_change < 0:
-            overview_sector_specific_language =  ('Economic growth and strong consumer demand in 2021 has benefited the retail sector as a whole, but trends that were common prior to the pandemic continue to plague the retail sector in ' + market_title + '. ' +
-                                                  'Despite vacancy rate compression in the ' +
-                                                   market_or_submarket + ' over the past year, rents contracted, decreasing ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + '.')
+        # # elif yoy_rent_growth < 0 and vacancy_change < 0:
+        #     overview_sector_specific_language =  (sector_intro  +
+        #                                           'Despite vacancy rates decreasing over the past year, ' + market_or_submarket + 'rents declined, decreasing ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + ' during the same time.')
         
-        #Negative rent growth, no vacancy growth
-        elif  yoy_rent_growth < 0 and vacancy_change == 0:
-            overview_sector_specific_language = ('Economic growth and strong consumer demand in 2021 benefited the retail sector as a whole, but trends that were common prior to the pandemic continue to plague the retail sector in ' + market_title + '. ' +
-                                                'While vacacny rates have managed to remain stable over the past year, rents have contracted '  "{:,.1f}%".format(abs(yoy_rent_growth)) + '. ')
+        # #Negative rent growth, no vacancy growth
+        # elif  yoy_rent_growth < 0 and vacancy_change == 0:
+        #     overview_sector_specific_language = (sector_intro  +
+        #                                         'While vacacny rates have managed to remain stable over the past year for retail properties in ' + market_title + ', rents have decreased '  "{:,.1f}%".format(abs(yoy_rent_growth)) + '. ')
         
-        #Positive rent growth, positive vacancy growth
-        elif yoy_rent_growth > 0 and vacancy_change > 0:
-            overview_sector_specific_language =  ('Economic growth and strong consumer demand in 2021 benefited the retail sector as a whole, but trends that were common prior to the pandemic continue to be a cause for concern. ' + 
-                                                  'Vacancy rates have increased over the past year for retail properties in ' +
-                                                   market_title +
-                                                  ' but over the past year, rents have managed to grow, expanding ' + "{:,.1f}%".format(yoy_rent_growth) + '.')
+        # #Positive rent growth, positive vacancy growth
+        # elif yoy_rent_growth > 0 and vacancy_change > 0:
+        #     overview_sector_specific_language =  (sector_intro  + 
+        #                                           'Vacancy rates have increased over the past year for retail properties in ' +
+        #                                            market_title + '. ' +
+        #                                           ' Despite this, rents managed to grow, increasing ' + "{:,.1f}%".format(yoy_rent_growth) + '.')
 
-        #Positive rent growth, negative vacancy growth
-        elif  yoy_rent_growth > 0 and vacancy_change < 0:
-            overview_sector_specific_language = ('Economic growth and strong consumer demand in 2021 benefited the retail sector as a whole, including the ' + market_or_submarket +  
-                                                 '. Retail properties in ' + 
-                                                 market_title + ' have shown strength over the past year. In fact, vacancy rates have compressed to ' + "{:,.1f}%".format(vacancy) + ' while rents have increased ' + "{:,.1f}%".format(yoy_rent_growth) + '.')  
+        # #Positive rent growth, negative vacancy growth
+        # elif  yoy_rent_growth > 0 and vacancy_change < 0:
+        #     overview_sector_specific_language = ('sector_intro +  
+        #                                          market_title + ' retail properties have shown strength over the past year. In fact, vacancy rates decreased to ' + "{:,.1f}%".format(vacancy) + ' while rents have increased ' + "{:,.1f}%".format(yoy_rent_growth) + '.')  
         
-        #Positive rent growth, no vacancy growth
-        elif  yoy_rent_growth > 0 and vacancy_change == 0:
-            overview_sector_specific_language = ('Economic growth and strong consumer demand in 2021 benefited the retail sector as a whole.' +
-                                                 market_or_submarket + ' demand kept vacancy rates stable and rents have increased '  "{:,.1f}%".format(yoy_rent_growth) + ' over the past year. ')
+        # #Positive rent growth, no vacancy growth
+        # elif  yoy_rent_growth > 0 and vacancy_change == 0:
+        #     overview_sector_specific_language = (sector_intro +
+        #                                          market_or_submarket + ' demand kept vacancy rates stable and rents have increased '  "{:,.1f}%".format(yoy_rent_growth) + ' over the past year. ')
                                                 
-        #no rent growth, negative vacancy growth
-        elif  yoy_rent_growth == 0 and vacancy_change < 0:
-            overview_sector_specific_language = ('Economic growth and strong consumer demand in 2021 benefited the retail sector as a whole. ' + 
-                                                  market_title + ' properties have seen very limited rent growth over the past year despite vacancy rates compressing to ' + "{:,.1f}%".format(vacancy) + '. ')  
+        # #no rent growth, negative vacancy growth
+        # elif  yoy_rent_growth == 0 and vacancy_change < 0:
+        #     overview_sector_specific_language = ('sector_intro + 
+        #                                           market_title + ' properties have seen very limited rent growth over the past year despite vacancy rates compressing to ' + "{:,.1f}%".format(vacancy) + '. ')  
         
-        #no rent growth, postive vacancy growth
-        elif  yoy_rent_growth == 0 and vacancy_change > 0:
-            overview_sector_specific_language = ('Prior to 2020 consumer demand was shifting from brick-and-mortar stores towards online channels, putting pressure on vacancy rates and rent growth across most markets. ' +
-                                                 'Although rent levels have been stable over the past year, vacancy rates have increased to ' + "{:,.1f}%".format(vacancy) + '. ' )
+        # #no rent growth, postive vacancy growth
+        # elif  yoy_rent_growth == 0 and vacancy_change > 0:
+        #     overview_sector_specific_language = ('sector_intro +
+        #                                          'Although rent levels have been stable over the past year, vacancy rates have increased to ' + "{:,.1f}%".format(vacancy) + '. ' )
         
-        #no rent growth, no vacancy growth
-        elif  yoy_rent_growth == 0 and vacancy_change == 0:
-            overview_sector_specific_language = ('Prior to 2020 consumer demand was shifting from brick-and-mortar stores towards online channels, putting pressure on vacancy rates and rent growth across most markets.' +
-                                                'However, fundamentals have been stable with no change in rent levels or vacancy over the past year. ')
+        # #no rent growth, no vacancy growth
+        # elif  yoy_rent_growth == 0 and vacancy_change == 0:
+        #     overview_sector_specific_language = ('sector_intro +
+        #                                         'However, fundamentals have been stable with no change in rent levels or vacancy over the past year. ')
 
-        else:
-            overview_sector_specific_language = ('Prior to 2020 consumer demand was shifting from brick-and-mortar stores towards online channels, putting pressure on vacancy rates and rent growth across most markets. ' + 
-                                                 'While these trends have continued across the retail sector as a whole, retail properties in the ' + 
-                                                 market_or_submarket + ' have shown....')  
+        # else:
+        #     overview_sector_specific_language = ('sector_intro + 
+        #                                          'While these trends have continued across the retail sector as a whole, retail properties in the ' + 
+        #                                          market_or_submarket + ' have shown....')  
 
     #Create the Multifamily sepecific language
 
-    if sector == "Multifamily":
-        #Negative Rent Growth, positive vacancy growth
-        if yoy_rent_growth < 0 and vacancy_change > 0:
-            overview_sector_specific_language =  (sector_intro + 
-                                                 sector + ' properties in the ' + market_or_submarket + 
-                                                 """ have been negatively affected by these shifts in demand, leading to rising vacancy rates and contracting rents. """)
+    # if sector == "Multifamily":
+    #     #Negative Rent Growth, positive vacancy growth
+    #     if yoy_rent_growth < 0 and vacancy_change > 0:
+    #         overview_sector_specific_language =  (sector_intro + 
+    #                                              sector + ' properties in the ' + market_or_submarket + 
+    #                                              """ have been negatively affected by these shifts in demand, leading to rising vacancy rates and contracting rents. """)
  	
-	    #Negative Rent Growth, Negative vacancy growth
-        elif yoy_rent_growth < 0 and vacancy_change < 0:
-            overview_sector_specific_language =  ("""The pandemic dramatically shifted renter preferences in 2020, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
-                                                  'Multiple factors inspired the shift, including an ability to work-from-home, the need for more affordable rents, or the desire for more space. ' +  
-                                                  'Despite vacancy rate compression in the ' +
-                                                  market_or_submarket + ' over the past year, multifamily rents have contracted, decreasing ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + '.')
+	#     #Negative Rent Growth, Negative vacancy growth
+    #     elif yoy_rent_growth < 0 and vacancy_change < 0:
+    #         overview_sector_specific_language =  (sector_intro +  
+    #                                               'Despite vacancy rate compression in the ' +
+    #                                               market_or_submarket + ' over the past year, multifamily rents have contracted, decreasing ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + '.')
         
-        #Negative rent growth, no vacancy growth
-        elif  yoy_rent_growth < 0 and vacancy_change == 0:
-            overview_sector_specific_language = ("""The pandemic dramatically shifted renter preferences, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
-                                                'Multiple factors inspired the shift, including an ability to work-from-home, the need for more affordable rents, or the desire for more space. ' +  
-                                                'Despite no change in vacancy rates for properties in the ' +
-                                                 market_or_submarket + ' over the past year, multifamily rents have contracted, decreasing ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + '.')
+    #     #Negative rent growth, no vacancy growth
+    #     elif  yoy_rent_growth < 0 and vacancy_change == 0:
+    #         overview_sector_specific_language = (sector_intro +  
+    #                                             'Despite no change in vacancy rates for properties in the ' +
+    #                                              market_or_submarket + ' over the past year, multifamily rents have contracted, decreasing ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + '.')
         
-        #Positive rent growth, positive vacancy growth
-        elif yoy_rent_growth > 0 and vacancy_change > 0:
-            overview_sector_specific_language =  ("""The pandemic shifted renter preferences in 2020, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
-                                                  'Multiple factors inspired the shift, including an ability to work-from-home, the need for more affordable rents, or the desire for more space. The ' + 
-                                                  market_or_submarket + 
-                                                  ' has been positively affected by these shifts, despite an increase in vacancy over the past year. During that time, rents have managed to grow, expanding ' + "{:,.1f}%".format(yoy_rent_growth) + '.')
+    #     #Positive rent growth, positive vacancy growth
+    #     elif yoy_rent_growth > 0 and vacancy_change > 0:
+    #         overview_sector_specific_language =  (sector_intro + 
+    #                                               market_or_submarket + 
+    #                                               ' has been positively affected by these shifts, despite an increase in vacancy over the past year. During that time, rents have managed to grow, expanding ' + "{:,.1f}%".format(yoy_rent_growth) + '.')
 
-        #Positive rent growth, negative vacancy growth
-        elif  yoy_rent_growth > 0 and vacancy_change < 0:
-            overview_sector_specific_language = ("""The pandemic shifted renter preferences in 2020, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
-                                                 'Multiple factors inspired the shift, including an ability to work-from-home, the need for more affordable rents, or the desire for more space. ' + 
-                                                 'These shifts positively affected the ' + 
-                                                 market_or_submarket + ' over the past year. In fact, vacancy rates have compressed to ' + "{:,.1f}%".format(vacancy) + ' while rents have increased ' + "{:,.1f}%".format(yoy_rent_growth) + '. ')  
+    #     #Positive rent growth, negative vacancy growth
+    #     elif  yoy_rent_growth > 0 and vacancy_change < 0:
+    #         overview_sector_specific_language = (sector_intro + 
+    #                                              'These shifts positively affected the ' + 
+    #                                              market_or_submarket + ' over the past year. In fact, vacancy rates have compressed to ' + "{:,.1f}%".format(vacancy) + ' while rents have increased ' + "{:,.1f}%".format(yoy_rent_growth) + '. ')  
         
-        #Positive rent growth, no vacancy growth
-        elif  yoy_rent_growth > 0 and vacancy_change == 0:
-            overview_sector_specific_language = ("""The pandemic shifted renter preferences, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
-                                                'Multiple factors inspired the shift, including an ability to work-from-home, the need for more affordable rents, or the desire for more space. ' + 
-                                                'These shifts have positively affected the ' + 
-                                                market_or_submarket + ', which has shown strength despite stable vacancy rates. In fact, rents have increased ' + "{:,.1f}%".format(yoy_rent_growth) + '. ')
+    #     #Positive rent growth, no vacancy growth
+    #     elif  yoy_rent_growth > 0 and vacancy_change == 0:
+    #         overview_sector_specific_language = sector_intro + 
+    #                                             'These shifts have positively affected the ' + 
+    #                                             market_or_submarket + ', which has shown strength despite stable vacancy rates. In fact, rents have increased ' + "{:,.1f}%".format(yoy_rent_growth) + '. ')
         
-        #no rent growth, negative vacancy growth
-        elif  yoy_rent_growth == 0 and vacancy_change < 0:
-            overview_sector_specific_language = ("""The pandemic shifted renter preferences, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
-                                                 'Multiple factors inspired the shift, including an ability to work-from-home, the need for more affordable rents, or the desire for more space. ' + 
-                                                 'While vacancy rates have compressed over the past year to ' + "{:,.1f}%".format(vacancy) + ' rents have seen no growth. ')  
+    #     #no rent growth, negative vacancy growth
+    #     elif  yoy_rent_growth == 0 and vacancy_change < 0:
+    #         overview_sector_specific_language = (sector_intro + 
+    #                                              'While vacancy rates have compressed over the past year to ' + "{:,.1f}%".format(vacancy) + ' rents have seen no growth. ')  
         
-	    #no rent growth, postive vacancy growth
-        elif  yoy_rent_growth == 0 and vacancy_change > 0:
-            overview_sector_specific_language = ("""The pandemic shifted renter preferences in 2020, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
-                                                'Multiple factors inspired the shift, including an ability to work-from-home, the need for more affordable rents, or the desire for more space. ' + 
-                                                'These shifts have negatively affected the ' + 
-                                                market_or_submarket + ', where vacancy rates have increased to ' + "{:,.1f}%".format(vacancy) + '. Despite this, rents have managed to remain stable. ')
+	#     #no rent growth, postive vacancy growth
+    #     elif  yoy_rent_growth == 0 and vacancy_change > 0:
+    #         overview_sector_specific_language = (sector_intro + 
+    #                                             'These shifts have negatively affected the ' + 
+    #                                             market_or_submarket + ', where vacancy rates have increased to ' + "{:,.1f}%".format(vacancy) + '. Despite this, rents have managed to remain stable. ')
         
-        #no rent growth, no vacancy growth
-        elif  yoy_rent_growth == 0 and vacancy_change == 0:
-            overview_sector_specific_language = ("""The pandemic shifted renter preferences in 2020, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
-                                                'Multiple factors inspired the shift, including an ability to work-from-home, the need for more affordable rents, or the desire for more space. ' + 
-                                                'These shifts have resulted in steady vacancy rates and no growth in rents. ')
-        else:
-            overview_sector_specific_language = ("""The pandemic dramatically shifted renter preferences, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
-                                                 'Multiple factors inspired the shift, including an ability to work-from-home, the need for more affordable rents, or the desire for more space. ' ) 
+    #     #no rent growth, no vacancy growth
+    #     elif  yoy_rent_growth == 0 and vacancy_change == 0:
+    #         overview_sector_specific_language = sector_intro + 
+    #                                             'These shifts have resulted in steady vacancy rates and no growth in rents. ')
+    #     else:
+    #         overview_sector_specific_language = sector_intro 
                                 
     #Create the Industrial sepecific language
-    if sector == "Industrial": 
+    # if sector == "Industrial": 
         
- 	    #Negative Rent Growth, positive vacancy growth
-        if yoy_rent_growth < 0 and vacancy_change > 0:
-            overview_sector_specific_language =  ('The industrial sector enters 2022 in the best shape of any of the major property types. '                                      +
-                                                'Economic growth has been largely attributed to increased spending power, which has in turn driven a spike in e-commerce sales. ' + 
-                                                'This, when combined with global supply chain issues, has pushed nationwide industrial leasing activity to a historical high. '   + 
-                                                'Despite these macro trends, '  + sector.lower() + ' properties in the ' + market_or_submarket                                    +     
-                                                ' have not felt the affects of these demand drivers, leading to softened levels of leasing activity and rent growth. ')
+ 	#     #Negative Rent Growth, positive vacancy growth
+    #     if yoy_rent_growth < 0 and vacancy_change > 0:
+    #         overview_sector_specific_language =  sector_intro   + 
+    #                                             'Despite these macro trends, '  + sector.lower() + ' properties in the ' + market_or_submarket                                    +     
+    #                                             ' have not felt the affects of these demand drivers, leading to softened levels of leasing activity and rent growth. ')
  	
-	    #Negative Rent Growth, Negative vacancy growth
-        elif yoy_rent_growth < 0 and vacancy_change < 0:
-            overview_sector_specific_language =  ('Industrial enters 2022 in the best shape of any of the major property types. '                                                  + 
-                                                'Economic growth has been largely attributed to increased spending power, which has in turn driven a spike in e-commerce sales. '  +
-                                                'This, when combined with global supply chain issues, has pushed nationwide industrial leasing activity to a historical high. '    + 
-                                                'Despite these macro trends leading to a decrease in vacancy rates, '  + sector.lower() + 'rents in the market_or_submarket have decreased ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + '.')
+	#     #Negative Rent Growth, Negative vacancy growth
+    #     elif yoy_rent_growth < 0 and vacancy_change < 0:
+    #         overview_sector_specific_language =  (sector_intro +
+    #                                             'Despite these macro trends leading to a decrease in vacancy rates, '  + sector.lower() + 'rents in the market_or_submarket have decreased ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + '.')
         
-        #Negative rent growth, no vacancy growth
-        elif  yoy_rent_growth < 0 and vacancy_change == 0:
-            overview_sector_specific_language = ('Industrial enters 2022 in the best shape of any of the major property types. '                                                    + 
-                                                'Economic growth has been largely attributed to increased spending power, which has in turn driven a spike in e-commerce sales. '   +
-                                                'This, when combined with global supply chain issues, has pushed nationwide industrial leasing activity to a historical high. '     + 
-                                                'Unfortunately, these macro trends have had little affect on ' + sector.lower() + ' properties in the ' + market_or_submarket + '.' + 
-                                                ' Despite stable vacacny rates, rents have contracted, decreasing ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + ' over the past year.')
+    #     #Negative rent growth, no vacancy growth
+    #     elif  yoy_rent_growth < 0 and vacancy_change == 0:
+    #         overview_sector_specific_language = (sector_intro +
+    #                                             'Unfortunately, these macro trends have had little affect on ' + sector.lower() + ' properties in the ' + market_or_submarket + '.' + 
+    #                                             ' Despite stable vacacny rates, rents have contracted, decreasing ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + ' over the past year.')
                         
-        #Positive rent growth, positive vacancy growth
-        elif yoy_rent_growth > 0 and vacancy_change > 0:
-            overview_sector_specific_language =  ('Industrial enters 2022 in the best shape of any of the major property types. '                                                 + 
-                                                'Economic growth has been largely attributed to increased spending power, which has in turn driven a spike in e-commerce sales. ' +
-                                                'This, when combined with global supply chain issues, has pushed nationwide industrial leasing activity to a historical high. '   + 
-                                                'Despite these strong macro trends, vacancy rates have increased over the past year, but rents have managed to grow, expanding '  + "{:,.1f}%".format(yoy_rent_growth) + '.')
+    #     #Positive rent growth, positive vacancy growth
+    #     elif yoy_rent_growth > 0 and vacancy_change > 0:
+    #         overview_sector_specific_language =  (sector_intro +
+    #                                             'Despite these strong macro trends, vacancy rates have increased over the past year, but rents have managed to grow, expanding '  + "{:,.1f}%".format(yoy_rent_growth) + '.')
 
-        #Positive rent growth, negative vacancy growth
-        elif  yoy_rent_growth > 0 and vacancy_change < 0:
-            overview_sector_specific_language = ('Industrial enters 2022 in the best shape of any of the major property types. '                                                  + 
-                                                'Economic growth has been largely attributed to increased spending power, which has in turn driven a spike in e-commerce sales. ' + 
-                                                'This, when combined with global supply chain issues, has pushed nationwide industrial leasing activity to a historical high. '   + 
-                                                'These macro trends have positively affected ' + sector.lower() + ' properties in the ' + market_or_submarket + '. '              +
-                                                'With vacancy rates compressing over the past year, rents have increased ' + "{:,.1f}%".format(yoy_rent_growth) + '.')
+    #     #Positive rent growth, negative vacancy growth
+    #     elif  yoy_rent_growth > 0 and vacancy_change < 0:
+    #         overview_sector_specific_language = (sector_intro + 
+    #                                             'These macro trends have positively affected ' + sector.lower() + ' properties in the ' + market_or_submarket + '. '              +
+    #                                             'With vacancy rates compressing over the past year, rents have increased ' + "{:,.1f}%".format(yoy_rent_growth) + '.')
                         
-        #Positive rent growth, no vacancy growth
-        elif  yoy_rent_growth > 0 and vacancy_change == 0:
-            overview_sector_specific_language = ('Industrial enters 2022 in the best shape of any of the major property types. '                                                  + 
-                                                'Economic growth has been largely attributed to increased spending power, which has in turn driven a spike in e-commerce sales. ' + 
-                                                'This, when combined with global supply chain issues, has pushed nationwide industrial leasing activity to a historical high. '   +  
-                                                'These macro trends have positively affected ' + sector + ' properties in the ' + market_or_submarket + '. '                      + 
-                                                'While vacancy rates have remained stable, rents have continued to expand, increasing' + "{:,.1f}%".format(yoy_rent_growth)  + ' over the past year.')
+    #     #Positive rent growth, no vacancy growth
+    #     elif  yoy_rent_growth > 0 and vacancy_change == 0:
+    #         overview_sector_specific_language = (sector_intro +  
+    #                                             'These macro trends have positively affected ' + sector + ' properties in the ' + market_or_submarket + '. '                      + 
+    #                                             'While vacancy rates have remained stable, rents have continued to expand, increasing' + "{:,.1f}%".format(yoy_rent_growth)  + ' over the past year.')
                         
-        #no rent growth, negative vacancy growth
-        elif  yoy_rent_growth == 0 and vacancy_change < 0:
-            overview_sector_specific_language = ('Industrial enters 2022 in the best shape of any of the major property types. '                                                  + 
-                                                'Economic growth has been largely attributed to increased spending power, which has in turn driven a spike in e-commerce sales. ' +
-                                                'This, when combined with global supply chain issues, has pushed nationwide industrial leasing activity to a historical high. '   +
-                                                'These strong macro trends have led to vacancy rate compression, but industrial rents have seen no growth over the past year. ')
+    #     #no rent growth, negative vacancy growth
+    #     elif  yoy_rent_growth == 0 and vacancy_change < 0:
+    #         overview_sector_specific_language = (sector_intro +
+    #                                             'These strong macro trends have led to vacancy rate compression, but industrial rents have seen no growth over the past year. ')
                     
-        #no rent growth, postive vacancy growth
-        elif  yoy_rent_growth == 0 and vacancy_change > 0:
-            overview_sector_specific_language = ('Industrial enters 2022 in the best shape of any of the major property types. '                                                   + 
-                                                'Economic growth has been largely attributed to increased spending power, which has in turn driven a spike in e-commerce sales. '  +
-                                                'This, when combined with global supply chain issues, has pushed nationwide industrial leasing activity to a historical high. '    +
-                                                'Despite these macro trends, vacancy rates have increased over the past year. Fortunately, rents have managed to stay put, but at 0%, are close to moving into negative territory. ' )
+    #     #no rent growth, postive vacancy growth
+    #     elif  yoy_rent_growth == 0 and vacancy_change > 0:
+    #         overview_sector_specific_language = (sector_intro +
+    #                                             'Despite these macro trends, vacancy rates have increased over the past year. Fortunately, rents have managed to stay put, but at 0%, are close to moving into negative territory. ' )
 
-        #no rent growth, no vacancy growth
-        elif  yoy_rent_growth == 0 and vacancy_change == 0:
-            overview_sector_specific_language = ('Industrial is in the best shape of any of the major property types. ' + 
-                                                 'Economic growth has been largely attributed to increased spending power, which has in turn driven a spike in e-commerce sales. This, when combined with global supply chain issues, has pushed nationwide industrial leasing activity to a historical high. ')
-        else:
-            overview_sector_specific_language = ('Industrial is in among the best shape of any of the major property types. ' + 
-                                                 'A pandemic driven spike in e-commerce sales along with significant growth in third-party logistics providers continues to drive demand for industrial space. ')
+    #     #no rent growth, no vacancy growth
+    #     elif  yoy_rent_growth == 0 and vacancy_change == 0:
+    #         overview_sector_specific_language = (sector_intro
+    #     else:
+    #         overview_sector_specific_language = (sector_intro
 
-    #Create the Office sepecific language
-    if sector == "Office": 
+    # #Create the Office sepecific language
+    # if sector == "Office": 
 
-        #Negative Rent Growth, positive vacancy growth
-        if yoy_rent_growth < 0 and vacancy_change > 0:
-            overview_sector_specific_language =  ('Some of the adverse market trends established during the pandemic continue to plague the office sector. ' + 
-                                                  'Vacancy rates have increased as increasingly more businesses and tenants adopt remote work policies. '    +
-                                                  'While some markets and submarkets have fared better than others, '                                        + 
-                                                    sector.lower() + ' properties in the ' + market_or_submarket                                             + 
-                                                    ' have not. With vacancy rates rising over the year, annual rent growth remains in negative territory. ')
+    #     #Negative Rent Growth, positive vacancy growth
+    #     if yoy_rent_growth < 0 and vacancy_change > 0:
+    #         overview_sector_specific_language =  (sector_intro
+    #                                               'While some markets and submarkets have fared better than others, '                                        + 
+    #                                                 sector.lower() + ' properties in the ' + market_or_submarket                                             + 
+    #                                                 ' have not. With vacancy rates rising over the year, annual rent growth remains in negative territory. ')
  	
-	    #Negative Rent Growth, Negative vacancy growth
-        elif yoy_rent_growth < 0 and vacancy_change < 0:
-            overview_sector_specific_language =  ('Some of the adverse market trends established during the pandemic continue to plague the office sector. ' + 
-                                                'Vacancy rates have increased as increasingly more businesses and tenants adopt remote work policies. '      +
-                                                'While some markets and submarkets have fared better than others, '                                          + 
-                                                sector.lower() + ' properties in the ' + market_or_submarket                                                  +  
-                                                ' continue to see negative rent growth despite vacancy rate compression. In fact, office rents have decreased ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + ' over the past year. ')
+	#     #Negative Rent Growth, Negative vacancy growth
+    #     elif yoy_rent_growth < 0 and vacancy_change < 0:
+    #         overview_sector_specific_language =  (sector_intro +
+    #                                             'While some markets and submarkets have fared better than others, '                                          + 
+    #                                             sector.lower() + ' properties in the ' + market_or_submarket                                                  +  
+    #                                             ' continue to see negative rent growth despite vacancy rate compression. In fact, office rents have decreased ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + ' over the past year. ')
                         
-        #Negative rent growth, no vacancy growth
-        elif  yoy_rent_growth < 0 and vacancy_change == 0:
-            overview_sector_specific_language = ('Some of the adverse market trends established during the pandemic continue to plague the office sector. ' + 
-                                                'Vacancy rates have increased as increasingly more businesses and tenants adopt remote work policies. ' + 
-                                                'Despite stable vacancy rates for ' +  sector.lower() + ' properties in the ' + market_or_submarket +  ' rents have contracted, decreasing ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + ' over the past year. ')
+    #     #Negative rent growth, no vacancy growth
+    #     elif  yoy_rent_growth < 0 and vacancy_change == 0:
+    #         overview_sector_specific_language = (sector_intro + 
+    #                                             'Vacancy rates have increased as increasingly more businesses and tenants adopt remote work policies. ' + 
+    #                                             'Despite stable vacancy rates for ' +  sector.lower() + ' properties in the ' + market_or_submarket +  ' rents have contracted, decreasing ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + ' over the past year. ')
                         
-        #Positive rent growth, positive vacancy growth
-        elif yoy_rent_growth > 0 and vacancy_change > 0:
-            overview_sector_specific_language =  ('Some of the adverse market trends established during the pandemic continue to plague the office sector. ' + 
-                                                'Vacancy rates have increased as increasingly more businesses and tenants adopt remote work policies. Some markets and submarkets have fared better than others. In ' + market_title + ', ' +  
-                                                'vacancy rates have increased over the past year, but landlords have been able to push rents, which increased ' + "{:,.1f}%".format(yoy_rent_growth) + ' over the past year. ')
+    #     #Positive rent growth, positive vacancy growth
+    #     elif yoy_rent_growth > 0 and vacancy_change > 0:
+    #         overview_sector_specific_language =  (sector_intro + 
+    #                                             'Vacancy rates have increased as increasingly more businesses and tenants adopt remote work policies. Some markets and submarkets have fared better than others. In ' + market_title + ', ' +  
+    #                                             'vacancy rates have increased over the past year, but landlords have been able to push rents, which increased ' + "{:,.1f}%".format(yoy_rent_growth) + ' over the past year. ')
 
-        #Positive rent growth, negative vacancy growth
-        elif  yoy_rent_growth > 0 and vacancy_change < 0:
-            overview_sector_specific_language = ('Adverse market trends that plagued the office sector during the pandemic are no longer affecting the ' + market_or_submarket + '. ' +
-				                                 'With vacancy rates compressing over the year, annual rent growth is in positive territory. In fact, vacancy rates have compressed to ' + "{:,.1f}%".format(vacancy) + ' while rents have increased ' + "{:,.1f}%".format(yoy_rent_growth) + '. ')  
+    #     #Positive rent growth, negative vacancy growth
+    #     elif  yoy_rent_growth > 0 and vacancy_change < 0:
+    #         overview_sector_specific_language = (sector_intro + 'Adverse market trends that plagued the office sector during the pandemic are no longer affecting the ' + market_or_submarket + '. ' +
+	# 			                                 'With vacancy rates compressing over the year, annual rent growth is in positive territory. In fact, vacancy rates have compressed to ' + "{:,.1f}%".format(vacancy) + ' while rents have increased ' + "{:,.1f}%".format(yoy_rent_growth) + '. ')  
         
-        #Positive rent growth, no vacancy growth
-        elif  yoy_rent_growth > 0 and vacancy_change == 0:
-            overview_sector_specific_language = ('Some of the adverse market trends established during the pandemic continue to plague the office sector. ' + 
-                                                 'Vacancy rates have increased as increasingly more businesses and tenants adopt remote work policies. '                          +
-                                                 'Some markets and submarkets have fared better than others. '                                                                    + 
-                                                 'With stable vacancy rates over the past year, rents have managed to grow, expanding ' + "{:,.1f}%".format(yoy_rent_growth) + ' over the past year. ')
+    #     #Positive rent growth, no vacancy growth
+    #     elif  yoy_rent_growth > 0 and vacancy_change == 0:
+    #         overview_sector_specific_language = (sector_intro +
+    #                                              'Some markets and submarkets have fared better than others. '                                                                    + 
+    #                                              'With stable vacancy rates over the past year, rents have managed to grow, expanding ' + "{:,.1f}%".format(yoy_rent_growth) + ' over the past year. ')
         
-        #no rent growth, negative vacancy growth
-        elif  yoy_rent_growth == 0 and vacancy_change < 0:
-            overview_sector_specific_language = ('Some of the adverse market trends established during the pandemic continue to plague the office sector. ' + 
-                                                 'Despite vacancy rates compressing over the past year, rents have not increased, although they do remain stable, which is a welcome sign as well. ')
+    #     #no rent growth, negative vacancy growth
+    #     elif  yoy_rent_growth == 0 and vacancy_change < 0:
+    #         overview_sector_specific_language = (sector_intro + 'Some of the adverse market trends established during the pandemic continue to plague the office sector. ' + 
+    #                                              'Despite vacancy rates compressing over the past year, rents have not increased, although they do remain stable, which is a welcome sign as well. ')
 
-	    #no rent growth, postive vacancy growth
-        elif  yoy_rent_growth == 0 and vacancy_change > 0:
-            overview_sector_specific_language = ('Some of the adverse market trends established during the pandemic continue to plague the office sector. ' + 
-                                                 'Despite vacancy rates expanding over the past year, rents have managed to remain stable. ' ) 
+	#     #no rent growth, postive vacancy growth
+    #     elif  yoy_rent_growth == 0 and vacancy_change > 0:
+    #         overview_sector_specific_language = (sector_intro + 'Some of the adverse market trends established during the pandemic continue to plague the office sector. ' + 
+    #                                              'Despite vacancy rates expanding over the past year, rents have managed to remain stable. ' ) 
         
-        #no rent growth, no vacancy growth
-        elif  yoy_rent_growth == 0 and vacancy_change == 0:
-            overview_sector_specific_language = ('Some of the adverse market trends established during the pandemic continue to plague the office sector. ')
+    #     #no rent growth, no vacancy growth
+    #     elif  yoy_rent_growth == 0 and vacancy_change == 0:
+    #         overview_sector_specific_language = sector_intro
         
-        else:
-            overview_sector_specific_language = ('Some of the adverse market trends established during the pandemic continue to plague the office sector. ')
+    #     else:
+    #         overview_sector_specific_language = (sector_intro
 
 
 
