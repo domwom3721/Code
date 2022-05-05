@@ -465,17 +465,20 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
         market_or_submarket = 'Submarket'
 
     #Create the sector sepecific language
-     #IDEA IS TO ADD INTRO SENTENCE FOR EACH SECTOR, SLIMMING DOWN THE SECTOR SPECIFIC LANGUAGE
        #sector_intro =  
-       #if sector == Multifamily: sector_intro = ("""Elevated demand for apartments, combined with the vacancy rate hitting a historic low, created record-breaking rent growth in 2021. """ + 
-        # 'The sector remains healthy in Q1 though signs point to a deceleration in growth. ') 
-       #Retail = """The retail sector continues to improve due to a financially healthy and active consumer, pushing retail sales to record highs. Tenants and investors remain active, although selective by region, subtype, and tenant. """
-       #Industrial = """“After a record year for the industrial sector in 2021, strong demand for space continued in 2022. U.S. Industrial production, consumer spending, and inventories all increased in 2022 Q1, driving warehouse space demand. ”"""
-       #office = """On the back of continued office-using employment growth and positive absorption, the Office sector demonstrated signs of durability and resiliency since hitting a trough in late 2020. """ + 
-        #"""Office leasing activity has exceeded 100 million square feet for three consecutive quarters with positive absorption in Q4 2021 and into Q1 2022. 
+       #if sector == Multifamily:
+           #sector_intro = ("""Elevated demand for apartments, combined with the vacancy rate hitting a historic low, created record-breaking rent growth in 2021. """ + 
+            # 'The sector remains healthy in Q1 though signs point to a deceleration in growth. ') 
+       #if sector == Retail 
+        #sector_intro = ("""The retail sector continues to improve due to a financially healthy and active consumer, pushing retail sales to record highs. Tenants and investors remain active, although selective by region, subtype, and tenant. """)
+       #if sector == Industrial = 
+                #sector_intro = ("""“After a record year for the industrial sector in 2021, strong demand for space continued in 2022. U.S. Industrial production, consumer spending, and inventories all increased in 2022 Q1, driving warehouse space demand. ”""")
+       #if sector == office = 
+        #sector_intro = ("""On the back of continued office-using employment growth and positive absorption, the Office sector demonstrated signs of durability and resiliency since hitting a trough in late 2020. """ + 
+        #"""Office leasing activity has exceeded 100 million square feet for three consecutive quarters with positive absorption in Q4 2021 and into Q1 2022. """)"
 
     #Retail specific langauge
-    if sector == "Retail":
+    #if sector == "Retail":
         
         #Negative Rent Growth, positive vacancy growth
         #if yoy_rent_growth < 0 and vacancy_change > 0:
