@@ -465,6 +465,14 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
         market_or_submarket = 'Submarket'
 
     #Create the sector sepecific language
+     #IDEA IS TO ADD INTRO SENTENCE FOR EACH SECTOR, SLIMMING DOWN THE SECTOR SPECIFIC LANGUAGE
+       #sector_intro =  
+       #if sector == Multifamily: sector_intro = ("""Elevated demand for apartments, combined with the vacancy rate hitting a historic low, created record-breaking rent growth in 2021. """ + 
+        # 'The sector remains healthy in Q1 though signs point to a deceleration in growth. ') 
+       #Retail = """The retail sector continues to improve due to a financially healthy and active consumer, pushing retail sales to record highs. Tenants are active, although selective by region and subtype. """
+       #Industrial = 
+       #office = 
+
     #Retail specific langauge
     if sector == "Retail":
         
@@ -523,11 +531,11 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
                                                  market_or_submarket + ' have shown....')  
 
     #Create the Multifamily sepecific language
+
     if sector == "Multifamily":
         #Negative Rent Growth, positive vacancy growth
         if yoy_rent_growth < 0 and vacancy_change > 0:
-            overview_sector_specific_language =  ("""The pandemic dramatically shifted renter preferences in 2020, reversing a multi-year trend of urbanization across many of the Nation's largest metros. """ + 
-                                                 'Multiple factors inspired the shift, including an ability to work-from-home, the need for more affordable rents, or the desire for more space. ' + 
+            overview_sector_specific_language =  (sector_intro + 
                                                  sector + ' properties in the ' + market_or_submarket + 
                                                  """ have been negatively affected by these shifts in demand, leading to rising vacancy rates and contracting rents. """)
  	
@@ -2151,19 +2159,19 @@ def CreateOutlookLanguage(submarket_data_frame, market_data_frame, natioanl_data
     #Describe out change in fundamentals
     if submarket_yoy_growth >= 0     and vacancy_change <= 0: #if rent is growing (or flat) and vacancy is falling (or flat) we call fundamentals improving
         fundamentals_change  = 'improving'
-        values_likely_change = 'expand'
+        values_likely_change = 'continue to grow'
 
     elif submarket_yoy_growth < 0 and vacancy_change > 0 :    #if rent is falling and vacancy is rising we call fundamentals softening
         fundamentals_change  = 'softening'
-        values_likely_change = 'compress'
+        values_likely_change = ''
     
     elif (submarket_yoy_growth > 0   and vacancy_change  > 0) or (submarket_yoy_growth < 0 and vacancy_change < 0 ) : #if rents are falling but vacancy is also falling OR vice versa, then mixed
         fundamentals_change  = 'mixed'
-        values_likely_change = 'stabilize'
+        values_likely_change = 'remain stable'
 
     elif (submarket_yoy_growth == 0 and vacancy_change == 0): #no change in rent or vacancy
         fundamentals_change  = 'stable'
-        values_likely_change = 'stabilize'
+        values_likely_change = 'remain stable'
         
     else:
         fundamentals_change  = '[improving/softening/mixed/stable]'
