@@ -2308,20 +2308,18 @@ def CreateOutlookLanguage(submarket_data_frame, market_data_frame, natioanl_data
     
     #Sector Specific language
     if sector == "Multifamily":
-        sector_specific_outlook_language=('The U.S. multifamily sector finished 2021 with overall occupancy and net effective rents above pre-pandemic levels. While certain markets and submarkets face challenges, the overall health of the sector will lead to continued growth in 2022. ' + 
+        sector_specific_outlook_language=('The U.S. multifamily sector finished 2021 with overall occupancy and net effective rents above pre-pandemic levels. While markets and submarkets with elevated pipelines will face challenges, the overall strength of the sector will lead to continued growth in 2022. ' + 
                                         "{headwinds_description}".format(headwinds_description = "" if under_construction_share < large_supply_pipeline_threshold  else ('') ) 
-                                        )
-                                          
+          
     elif sector == "Office":
-        sector_specific_outlook_language=("""While office demand does remain below prepandemic levels for many markets, the U.S. office sector strengthened as a whole over the second half of 2021. Despite an improved outlook, much of the sector's performance depends on case counts and how tenants will utilize office space if and when they return to the office.""" + 
-                                          ' If COVID cases wane during the first quarter, office usage and demand will likely improve. If a new variant emergees, the recovery for the sector will likely be extended. Many office markets will likely contend with elevated vacancy rates and limited rent growth over the near term. ')
+        sector_specific_outlook_language=("""While office demand does remain below prepandemic levels for many markets, the U.S. office sector strengthened as a whole over the second half of 2021 and improved further in the first quarter of 2022. ' + 
+                                          'Still, many office markets are contending with elevated vacancy rates and will experience limited rent growth over the near term. ')
 
     elif sector == "Retail":
-        sector_specific_outlook_language=('The retail sector is recovering relatively well from the pandemics major disruptions.  Retail sales and foot traffic surged throughout the year and leasing activity among many tenant segments remains strong. ' + 
-                                          'With developers focused primarily on industrial and multifamily projects, the retail pipeline will remain modest in 2022, aiding improvement.' + ' Still, Property performance continues to vary significantly by subtype, location, class, and tenant composition. ') 
-    
+        sector_specific_outlook_language=('The retail sector has recovered relatively well from the pandemics major disruptions.  Retail sales and foot traffic remained elevated throughout the year and have been strong so far in 2022 despite high inflation.  With strong consumption, tenants continue to lease new space.' +  
+                                          ' Still, property performance continues to vary significantly by subtype, location, class, and tenant composition. ')
     elif sector == "Industrial":
-        sector_specific_outlook_language=("""On the heels of record transaction volume and rent growth amid extremely tight supply and high demand, the industrial real estate market will remain very strong in 2022. The expansion of E-commerce will fuel the need for more warehouse space, as will the growing economy, population migration, and onshoring.""")
+        sector_specific_outlook_language=("""Historically high levels of consumer goods spending continue to power record levels of U.S. industrial leasing. With very low vacanancy rates, the industrial sector will remain strong in 2022. """)
 
 
 
