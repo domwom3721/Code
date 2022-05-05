@@ -449,14 +449,14 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
         #Negative rent growth, no vacancy growth
         elif  yoy_rent_growth < 0 and vacancy_change == 0:
             overview_sector_specific_language = (sector_intro  +
-                                                'While vacacny rates have managed to remain stable over the past year for retail properties in ' + market_title + ', rents have decreased '  "{:,.1f}%".format(abs(yoy_rent_growth)) + '. ')
+                                                'While vacacny rates have managed to remain stable over the past year for retail properties in the ' + market_title + ' Submarket, rents have decreased '  "{:,.1f}%".format(abs(yoy_rent_growth)) + '. ')
         
         #Positive rent growth, positive vacancy growth
         elif yoy_rent_growth > 0 and vacancy_change > 0:
             overview_sector_specific_language =  (sector_intro  + 
-                                                  'Vacancy rates have increased over the past year for retail properties in ' +
-                                                   market_title + '. ' +
-                                                  ' Despite this, rents managed to grow, increasing ' + "{:,.1f}%".format(yoy_rent_growth) + '.')
+                                                  'Vacancy rates have increased over the past year for retail properties in the ' +
+                                                   market_title + ' Submarket. ' +
+                                                  'Despite this, rents managed to grow, increasing ' + "{:,.1f}%".format(yoy_rent_growth) + '.')
 
         #Positive rent growth, negative vacancy growth
         elif  yoy_rent_growth > 0 and vacancy_change < 0:
@@ -1265,14 +1265,14 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_
             '. '                                                        +
             
             #Sentence 5
-            'Combined, net absorption through '                         +
-            number_of_quarters                                          +
-            latest_year                                                 +
-            ' totaled '                                                 +
-            current_year_total_net_absorption                           +
-            ' '                                                         +
-            "{unit_or_sqft}".format(unit_or_sqft = unit_or_sqft if current_year_total_net_absorption != '1' or sector != 'Multifamily'  else ( 'unit') ) +
-            '. ') 
+            #'Combined, net absorption through '                         +
+            #number_of_quarters                                          +
+            #latest_year                                                 +
+            #' totaled '                                                 +
+            #current_year_total_net_absorption                           +
+            #' '                                                         +
+            #"{unit_or_sqft}".format(unit_or_sqft = unit_or_sqft if current_year_total_net_absorption != '1' or sector != 'Multifamily'  else ( 'unit') ) +
+            #'. ') 
                     ]
     #Add the CoStar Writeup language to our generated langauge
     demand_language = CoStarWriteUp + demand_language
