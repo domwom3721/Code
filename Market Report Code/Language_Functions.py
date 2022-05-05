@@ -508,7 +508,7 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
         elif yoy_rent_growth > 0 and vacancy_change > 0:
             overview_sector_specific_language =  (sector_intro + 
                                                   'While absorption has slowed in the ' + market_or_submarket + 
-                                                  ' rents contiunue to grow, expanding ' + "{:,.1f}%".format(yoy_rent_growth) + 'over the past year.')
+                                                  ' rents contiunue to grow, expanding ' + "{:,.1f}%".format(yoy_rent_growth) + ' over the past year.')
 
         #Positive rent growth, negative vacancy growth
         elif  yoy_rent_growth > 0 and vacancy_change < 0:
