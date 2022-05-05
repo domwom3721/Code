@@ -271,7 +271,7 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
         if len(slices_data_frame) == 1:
             slice_fraction                   = slices_data_frame['Slices Fraction'].iloc[1]
             slice_name                       = slices_data_frame['Slices'].iloc[1]
-            inventory_breakdown              = 'The inventory is roughly ' + "{:,.1f}% ".format(slice_fraction) + slice_name + '. '
+            inventory_breakdown              = 'The inventory is roughly ' + "{:,.0f}% ".format(slice_fraction) + slice_name + '. '
             total_slices_inventory           = slices_data_frame[inventory_var].iloc[1]
 
 
@@ -282,7 +282,7 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
             slice_name_1           = slices_data_frame['Slice'].iloc[0]
             slice_name_2           = slices_data_frame['Slice'].iloc[1]
             total_slices_inventory = slices_data_frame[inventory_var].iloc[0] + slices_data_frame[inventory_var].iloc[1]
-            inventory_breakdown    ='The inventory is roughly ' + "{:,.1f}% ".format(slice_fraction_1) + slice_name_1 + ' and '  "{:,.1f}% ".format(slice_fraction_2) + slice_name_2 + '. '   
+            inventory_breakdown    ='The inventory is roughly ' + "{:,.0f}% ".format(slice_fraction_1) + slice_name_1 + ' and '  "{:,.0f}% ".format(slice_fraction_2) + slice_name_2 + '. '   
             
 
         if len(slices_data_frame) >= 3:
@@ -298,9 +298,9 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
 
                 #Add the slice name and fraction to a string variable that will be inserted into our language below
                 if i == (len(slices_data_frame) - 1):
-                    inventory_breakdown = inventory_breakdown + 'and '+ "{:,.1f}% ".format(slice_fraction)  + slice_name  + '. ' 
+                    inventory_breakdown = inventory_breakdown + 'and '+ "{:,.0f}% ".format(slice_fraction)  + slice_name  + '. ' 
                 else:
-                    inventory_breakdown = inventory_breakdown + "{:,.1f}% ".format(slice_fraction)  + slice_name + ', '          
+                    inventory_breakdown = inventory_breakdown + "{:,.0f}% ".format(slice_fraction)  + slice_name + ', '          
         else:
             total_slices_inventory = 0
             inventory_breakdown    = ''
@@ -536,7 +536,7 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
         #no rent growth, no vacancy growth
         elif  yoy_rent_growth == 0 and vacancy_change == 0:
             overview_sector_specific_language = (sector_intro + 
-                                                'For the ' + market_pr_submarket ', vacancy rates have held steady along with no growth in rents over the past year. ')
+                                                'For the ' + market_or_submarket + ', vacancy rates have held steady along with no growth in rents over the past year. ')
         else:
             overview_sector_specific_language = sector_intro 
                                 
@@ -660,7 +660,6 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
     under_construction_share            = "{:,.0f}%".format(under_construction_share)
     submarket_inventory                 = millify(submarket_inventory,'') 
     market_inventory                    = millify(market_inventory,'') 
-    submarket_inventory_fraction        = "{:,.1f}%".format(submarket_inventory_fraction) 
     asset_value                         = "${:,.0f}/". format(asset_value)
     current_sale_volume                 = millify(current_sale_volume,'$')
     current_transaction_count           = "{:,.0f}".format(current_transaction_count) 
@@ -686,7 +685,7 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
                                     
                                     #Sentence 2
                                     'This Market accounts for '                      +
-                                    "{:,.2f}% ".format(market_inventory_fraction)    +
+                                    "{inventory_fraction}".format(inventory_fraction =   "{:,.1f}% ".format(market_inventory_fraction)  if  market_inventory_fraction >= 1  else "less than 1% ") + 
                                     """of the Nation's total inventory with """      + 
                                     market_inventory                                 +
                                     ' '                                              +
@@ -710,8 +709,8 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
                                     
                                     #Sentence 2
                                     'This Submarket accounts for '           +
-                                    submarket_inventory_fraction +
-                                    """ of the Market’s total inventory with """ +
+                                    "{inventory_fraction}".format(inventory_fraction =   "{:,.1f}% ".format(submarket_inventory_fraction)  if  submarket_inventory_fraction >= 1  else "less than 1% ") + 
+                                    """of the Market’s total inventory with """ +
                                     submarket_inventory +
                                     ' ' +
                                     unit_or_sqft + extra_s +
@@ -1262,7 +1261,8 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_
             "{number_bps}".format(number_bps = (' ' + qoq_submarket_vacancy_growth + ' bps') if qoq_submarket_vacancy_growth != '0'  else ('') ) +
             ' since '                                               +
             previous_quarter[5:]                                        +
-            '. '                                                        +
+            '. '     
+                                                            )                                                   
             
             #Sentence 5
             #'Combined, net absorption through '                         +
@@ -2309,11 +2309,11 @@ def CreateOutlookLanguage(submarket_data_frame, market_data_frame, natioanl_data
     #Sector Specific language
     if sector == "Multifamily":
         sector_specific_outlook_language=('The U.S. multifamily sector finished 2021 with overall occupancy and net effective rents above pre-pandemic levels. While markets and submarkets with elevated pipelines will face challenges, the overall strength of the sector will lead to continued growth in 2022. ' + 
-                                        "{headwinds_description}".format(headwinds_description = "" if under_construction_share < large_supply_pipeline_threshold  else ('') ) 
+                                        "{headwinds_description}".format(headwinds_description = "" if under_construction_share < large_supply_pipeline_threshold  else ('') ) )
           
     elif sector == "Office":
         sector_specific_outlook_language=("""While office demand does remain below prepandemic levels for many markets, the U.S. office sector strengthened as a whole over the second half of 2021 and improved further in the first quarter of 2022. ' + 
-                                          'Still, many office markets are contending with elevated vacancy rates and will experience limited rent growth over the near term. ')
+                                          'Still, many office markets are contending with elevated vacancy rates and will experience limited rent growth over the near term. """)
 
     elif sector == "Retail":
         sector_specific_outlook_language=('The retail sector has recovered relatively well from the pandemics major disruptions.  Retail sales and foot traffic remained elevated throughout the year and have been strong so far in 2022 despite high inflation.  With strong consumption, tenants continue to lease new space.' +  
