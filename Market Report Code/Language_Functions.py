@@ -507,20 +507,20 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
         #Positive rent growth, positive vacancy growth
         elif yoy_rent_growth > 0 and vacancy_change > 0:
             overview_sector_specific_language =  (sector_intro + 
-                                                  market_or_submarket + 
-                                                  ' has been positively affected by these shifts, despite an increase in vacancy over the past year. During that time, rents have managed to grow, expanding ' + "{:,.1f}%".format(yoy_rent_growth) + '.')
+                                                  'While absorption has slowed in the ' + market_or_submarket + 
+                                                  ' rents contiunue to grow, expanding ' + "{:,.1f}%".format(yoy_rent_growth) + 'over the past year.')
 
         #Positive rent growth, negative vacancy growth
         elif  yoy_rent_growth > 0 and vacancy_change < 0:
             overview_sector_specific_language = (sector_intro + 
-                                                 'These shifts positively affected the ' + 
-                                                 market_or_submarket + ' over the past year. In fact, vacancy rates have compressed to ' + "{:,.1f}%".format(vacancy) + ' while rents have increased ' + "{:,.1f}%".format(yoy_rent_growth) + '. ')  
+                                                 'For the ' + 
+                                                 market_or_submarket + ', demand continues to drive rent growth. In fact, vacancy rates have compressed to ' + "{:,.1f}%".format(vacancy) + ' while rents have increased ' + "{:,.1f}%".format(yoy_rent_growth) + '. ')  
         
         #Positive rent growth, no vacancy growth
         elif  yoy_rent_growth > 0 and vacancy_change == 0:
             overview_sector_specific_language = (sector_intro + 
-                                                'These shifts have positively affected the ' + 
-                                                market_or_submarket + ', which has shown strength despite stable vacancy rates. In fact, rents have increased ' + "{:,.1f}%".format(yoy_rent_growth) + '. ')
+                                                'Vacancy rates have been stable over the past year for multifamily properties in the ' + 
+                                                market_or_submarket + '. With stable occupancy, rents have increased ' + "{:,.1f}%".format(yoy_rent_growth) + ' over the past year. ')
         
         #no rent growth, negative vacancy growth
         elif  yoy_rent_growth == 0 and vacancy_change < 0:
@@ -530,13 +530,13 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
 	    #no rent growth, postive vacancy growth
         elif  yoy_rent_growth == 0 and vacancy_change > 0:
             overview_sector_specific_language = (sector_intro + 
-                                                'These shifts have negatively affected the ' + 
-                                                market_or_submarket + ', where vacancy rates have increased to ' + "{:,.1f}%".format(vacancy) + '. Despite this, rents have managed to remain stable. ')
+                                                'Vacancy rates have increased ' + "{:,.1f}%".format(vacancy) + 'in the ' + 
+                                                market_or_submarket + '. Despite this, rents have managed to remain stable. ')
         
         #no rent growth, no vacancy growth
         elif  yoy_rent_growth == 0 and vacancy_change == 0:
             overview_sector_specific_language = (sector_intro + 
-                                                'These shifts have resulted in steady vacancy rates and no growth in rents. ')
+                                                'For the ' + market_pr_submarket ', vacancy rates have held steady along with no growth in rents over the past year. ')
         else:
             overview_sector_specific_language = sector_intro 
                                 
