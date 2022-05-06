@@ -12,7 +12,7 @@ from docx.oxml.ns import qn
 from docx.shared import Inches, Pt, RGBColor
 from tkinter import *
 from tkinter import ttk
-
+import us
 
 #Define file pre-paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
@@ -103,14 +103,42 @@ def DetermineSubjectAndComp():
     df_subject    = df.loc[df['Unique Subject Name']== selected_subject].copy()
     df_comparison = df.loc[df['Unique Subject Name']== selected_comparsion].copy()
 
-def ParseSubAndCompDFs():
-    #Uses the df_subject and df_comparison to create key variables on the subject and comparsion area
-    #thse will be used to create lanugauge and the directory
-    df_subject
-    df_comparison
-
 def CreateDirectory():
-    pass
+    global report_path, report_folder
+    #This function creates a folder for the report within a 2 letter state folder, it also returns a file path for the report document
+    if subject_geo_level == 'Place' or  subject_geo_level == "County":
+        state_code  = subject_name.split(', ')[1]
+        folder_name = subject_name.split(', ')[0]
+    
+    elif subject_geo_level == 'Metro':
+        state_code  = subject_name.split(', ')[1][0:2]
+        folder_name = subject_name.split(', ')[0] + " Metro Area"
+
+
+    elif subject_geo_level == 'State':
+        state_code  =us.states.lookup(subject_name).abbr  
+    else:
+        assert False
+    
+    #Make State Folder
+    assert len(state_code) == 2
+    state_folder_path = os.path.join(output_location,state_code) 
+    if os.path.exists(state_folder_path) == False:
+        os.mkdir(state_folder_path)
+
+    #Make Report folder
+    if subject_geo_level != 'State':
+        report_folder = os.path.join(state_folder_path,folder_name) 
+        if os.path.exists(report_folder) == False:
+             os.mkdir(report_folder)
+        
+
+    elif subject_geo_level == 'State':
+        report_folder = state_folder_path 
+
+
+    document_name =  ('2022 Q1' + ' - ' + state_code + ' - ' +  subject_name.split(', ')[0].replace('/','')  + ' - ' + subject_property_type + '_draft.docx')
+    report_path = os.path.join(report_folder,document_name)
 
 #Language Related functions
 def OverviewLanguage():
@@ -166,7 +194,7 @@ def SetDocumentStyle(document):
     font.size = Pt(9)
 
 def AddTitle(document):
-    title_text = 'Geography Name Property Type Market Analysis'
+    title_text = subject_name + ' ' + subject_property_type + ' Market Analysis'
     title                               = document.add_heading(title_text,level=1)
     title.style                         = document.styles['Heading 2']
     title.paragraph_format.space_after  = Pt(6)
@@ -180,7 +208,7 @@ def AddTitle(document):
     rFonts                              = title_style.element.rPr.rFonts
     rFonts.set(qn("w:asciiTheme"), "Avenir Next LT Pro Light")
 
-    above_map_paragraph = document.add_paragraph("""This report was created using data from Redfin, a national real estate brokerage. Data represents Property_Type's in "Geography_Name" with monthly data through current_period.""")
+    above_map_paragraph = document.add_paragraph("""This report was created using data from Redfin, a national real estate brokerage. Data represents """ + "{property_type}".format(property_type = """Condos""" if subject_property_type == 'Condo' else 'Single Family Homes') + """ in """ + subject_name + """ with monthly data through """ +  subject_latest_period + """.""")
     above_map_style                                   = above_map_paragraph.style
     above_map_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
     above_map_style.font.size                         = Pt(9)
@@ -210,6 +238,90 @@ def AddHeading(document, title, heading_level):
     heading_style.element.xml
     rFonts                                = heading_style.element.rPr.rFonts
     rFonts.set(qn("w:asciiTheme"), "Avenir Next LT Pro")
+
+def AddOverviewTable(document, number_cols, row_data): #Function we use to insert our overview table into the report document
+
+    #Make sure each row has the same number of items 
+    for row in row_data:
+        for row2 in row_data:
+            assert len(row) == len(row2)
+
+
+    #create table object
+    tab = document.add_table(rows=len(row_data), cols=len(row_data[0]))
+    tab.alignment     = WD_TABLE_ALIGNMENT.CENTER
+    tab.allow_autofit = True
+    #decide if we use standard style or custom
+
+    #loop through the rows in the table
+    for current_row ,(row,row_data_list) in enumerate(zip(tab.rows,row_data)): 
+        assert (len(row_data_list) == number_cols) and (isinstance(row_data_list, list)) #make sure there is an item for each column in this row
+        
+        #Set height for row
+        row.height = Inches(0.17)
+        
+        #loop through all cells in the current row
+        for current_column,(cell,cell_data) in enumerate(zip(row.cells,row_data_list)):
+
+            cell.text = str(cell_data)
+
+            if current_row == 0:
+                cell.vertical_alignment = WD_ALIGN_VERTICAL.BOTTOM
+
+            #set column widths
+            if current_column == 0:
+                cell.width = Inches(1.25)
+
+            elif current_column == 1:
+                cell.width = Inches(1.19)
+
+            elif current_column == 2:
+                cell.width = Inches(0.8)
+
+            elif current_column == 3:
+                cell.width = Inches(0.8)
+
+            elif current_column == 4:
+                cell.width = Inches(1.18)
+
+            elif current_column == 5:
+                cell.width = Inches(0.8)
+
+            elif current_column == 6:
+                cell.width = Inches(0.8)
+
+            #add border to top row
+            if current_row == 1:
+                    tcPr      = cell._element.tcPr
+                    tcBorders = OxmlElement("w:tcBorders")
+                    top       = OxmlElement('w:top')
+                    top.set(qn('w:val'), 'single')
+
+                    tcBorders.append(top)
+                    tcPr.append(tcBorders)
+
+            #loop through the paragraphs in the cell and set font and style
+            for paragraph in cell.paragraphs:
+                if current_column > 0:
+                    paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+                else:
+                     paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                
+                #Paragaph spacing before and after
+                paragraph.paragraph_format.space_after  = Pt(0)
+                paragraph.paragraph_format.space_before = Pt(0)
+                
+                for run in paragraph.runs:
+                    font          = run.font
+                    font.size     = Pt(7)
+                    run.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+                    
+                    #make first row bold
+                    if current_row == 0: 
+                        font      = run.font
+                        font.size = Pt(8)
+                        font.bold = True
+                        font.name = 'Avenir Next LT Pro Demi'
 
 def AddDocumentParagraph(document, language_variable):
     assert type(language_variable) == list
@@ -268,6 +380,7 @@ def OverviewSection(document):
     AddDocumentParagraph(document = document, language_variable = overview_language)
 
     AddTableTitle(document=document,title = 'Market Fundamentals')
+    AddOverviewTable(document=document,number_cols=2,row_data=[[1,2],[1,2]])
 
 def SupplyandDemandSection(document):
     print('Writing Supply and Demand Section')
@@ -305,23 +418,7 @@ def WriteReport():
     
     
     #Save report
-    document.save(os.path.join(output_location,'test.docx'))  
-
-def Main():
-    DetermineSubjectAndComp()
-    ParseSubAndCompDFs()
-    CreateDirectory()
-    CreateLanguage()
-    CreateGraphs()
-    WriteReport()
-
-
-
-
-
-
-
-
+    document.save(report_path)  
 
 
 
@@ -340,4 +437,26 @@ bowery_light_blue             = "#B3C3FF"
 bowery_black                  = "#404858"
 
 
-Main()
+#Heart of script starts here
+DetermineSubjectAndComp()
+
+#Use our 2 dataframes to create key variables 
+subject_name           = (df_subject['Region'].iloc[-1]).title()
+subject_geo_level      = df_subject['Region Type'].iloc[-1]
+subject_property_type  = df_subject['Type'].iloc[-1]
+subject_latest_period  = df_subject['Month of Period End'].iloc[-1]
+
+
+comparison_name          = df_comparison['Region'].iloc[-1]
+comparison_geo_level     = df_comparison['Region Type'].iloc[-1]
+comparison_property_type = df_comparison['Type'].iloc[-1]
+comparison_latest_period = df_comparison['Month of Period End'].iloc[-1]
+
+#Make sure the subject and comparison area have the same last period
+# assert subject_latest_period == comparison_latest_period
+
+CreateDirectory()
+CreateLanguage()
+CreateGraphs()
+WriteReport()
+
