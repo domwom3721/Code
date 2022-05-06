@@ -55,7 +55,7 @@ def DetermineSubjectAndComp():
                             )
     
     #Create a list with all possible subject areas
-    possible_subject_areas = df['Market Research Name'].unique().tolist()
+    possible_subject_areas = df['Unique Subject Name'].unique().tolist()
 
 
     #Launches GUI for user to select subject area

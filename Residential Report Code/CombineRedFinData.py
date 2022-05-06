@@ -87,7 +87,7 @@ for col_name in df_master.columns[3:]:
     if col_name == 'Median Sale Price':
         df_master[col_name] = df_master[col_name] * 1000
 
-df_master['Market Research Name'] = df_master['Type'] + ' - ' +  df_master['Region Type'] + ' - ' +  df_master['Region']
+df_master['Unique Subject Name'] = df_master['Type'] + ' - ' +  df_master['Region Type'] + ' - ' +  df_master['Region']
 
 #Export the master df as csv file
 df_master.to_csv(os.path.join(clean_data_location,'Clean RedFin Data.csv'),index=False)
