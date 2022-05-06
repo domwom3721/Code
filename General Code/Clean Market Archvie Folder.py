@@ -4,7 +4,7 @@
 import os
 
 
-market_archive_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Market Analysis','Market','Archive','2021 Q4') 
+market_archive_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Market Analysis','Market','Archive','2022 Q1') 
 assert os.path.exists(market_archive_root)
 
 #Loop through the folders in the archive folder and delete any empty ones
@@ -23,7 +23,7 @@ for (dirpath, dirnames, filenames) in os.walk(market_root):
     if ('Archive'   in dirpath):
         continue
     for file in filenames:
-        if ('2022 Q1' in file): #skip files that are for the most current quarter
+        if ('2022 Q2' in file): #skip files that are for the most current quarter
             continue
         print('Deleting',os.path.join(dirpath,file))
         os.remove(os.path.join(dirpath,file))

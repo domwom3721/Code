@@ -3,7 +3,7 @@
 #Date: 9/24/2021
 import os
 
-area_archive_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Market Analysis','Area','Archive','2021 Q4') 
+area_archive_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Market Analysis','Area','Archive','2022 Q1') 
 assert os.path.exists(area_archive_root)
 
 
@@ -25,7 +25,7 @@ for (dirpath, dirnames, filenames) in os.walk(area_root):
     if 'Archive' in dirpath:
         continue
     for file in filenames:
-        if ('2022 Q1' in file):
+        if ('2022 Q2' in file):
             continue
         print('Deleting',file)
         # os.remove(os.path.join(dirpath,file))
