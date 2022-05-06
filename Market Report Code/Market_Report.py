@@ -1564,6 +1564,7 @@ def CreateDirectoryCSV():
         dropbox_df.to_csv(os.path.join(output_location, csv_name), index=False)
 
         if output_location == os.path.join(dropbox_root,'Research','Market Analysis','Market'):
+            dropbox_df = dropbox_df.loc[dropbox_df['Version'] == latest_quarter]
             dropbox_df.to_csv(os.path.join(output_location, service_api_csv_name), index=False)
 
 def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
