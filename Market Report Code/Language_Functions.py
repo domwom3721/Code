@@ -2312,8 +2312,8 @@ def CreateOutlookLanguage(submarket_data_frame, market_data_frame, natioanl_data
                                         "{headwinds_description}".format(headwinds_description = "" if under_construction_share < large_supply_pipeline_threshold  else ('') ) )
           
     elif sector == "Office":
-        sector_specific_outlook_language=("""While office demand does remain below prepandemic levels for many markets, the U.S. office sector strengthened as a whole over the second half of 2021 and improved further in the first quarter of 2022. ' + 
-                                          'Still, many office markets are contending with elevated vacancy rates and will experience limited rent growth over the near term. """)
+        sector_specific_outlook_language=("""While office demand does remain below prepandemic levels for many markets, the U.S. office sector strengthened as a whole over the second half of 2021 and improved further in the first quarter of 2022. """ + 
+                                          """Still, many office markets are contending with elevated vacancy rates and will experience limited rent growth over the near term. """)
 
     elif sector == "Retail":
         sector_specific_outlook_language=('The retail sector has recovered relatively well from the pandemics major disruptions.  Retail sales and foot traffic remained elevated throughout the year and have been strong so far in 2022 despite high inflation.  With strong consumption, tenants continue to lease new space.' +  
