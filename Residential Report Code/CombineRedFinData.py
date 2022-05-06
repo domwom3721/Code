@@ -4,7 +4,6 @@
 
 import os
 import pandas as pd
-
 #Define file pre-paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
 project_location               =  os.path.join(dropbox_root,'Research','Projects','Research Report Automation Project') 
@@ -32,7 +31,6 @@ for condo_or_sf in ['condo', 'sf']:
                         
                            dtype={'Type': str,
                                 'Region':str,
-                                'Month of Period End':str,
                                 'Median Sale Price':str	,
                                 'Median Sale Price MoM':str ,	
                                 'Median Sale Price YoY':str ,	
@@ -51,14 +49,15 @@ for condo_or_sf in ['condo', 'sf']:
                                 'Average Sale To List':str ,
                                 'Average Sale To List MoM':str ,	
                                 'Average Sale To List YoY':str ,
-                                },                         
+                                },           
+                                parse_dates=['Month of Period End'],              
                             )
         
         #Now Read in the price per square foot file
         df_ppsf = pd.read_csv(ppsf_file_path, 
                              encoding='UTF-16 LE', 
                              sep="\t",
-                             header=1         
+                             header=1,             
                             )
         
 

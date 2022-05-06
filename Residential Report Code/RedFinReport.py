@@ -13,6 +13,9 @@ from docx.shared import Inches, Pt, RGBColor
 from tkinter import *
 from tkinter import ttk
 import us
+from datetime import date, datetime
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 #Define file pre-paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
@@ -31,7 +34,7 @@ def DetermineSubjectAndComp():
     df = pd.read_csv(os.path.join(data_location, 'Clean RedFin Data.csv'), 
                 dtype={         'Type': str,
                                 'Region':str,
-                                'Month of Period End':str,
+                                'Month of Period End':object,
                                 'Median Sale Price':float	,
                                 'Median Sale Price MoM':float ,	
                                 'Median Sale Price YoY':float ,	
@@ -50,8 +53,12 @@ def DetermineSubjectAndComp():
                                 'Average Sale To List':float ,
                                 'Average Sale To List MoM':float ,	
                                 'Average Sale To List YoY':float,
-                                },                         
+                                },
+                                parse_dates=['Month of Period End'],
                             )
+    
+  
+    
     
     #Create a list with all possible subject areas
     possible_subject_areas = df['Unique Subject Name'].unique().tolist()
@@ -102,6 +109,19 @@ def DetermineSubjectAndComp():
 
     df_subject    = df.loc[df['Unique Subject Name']== selected_subject].copy()
     df_comparison = df.loc[df['Unique Subject Name']== selected_comparsion].copy()
+
+def GetDataForOverviewTable():
+    #Each list in the list of lists is a row in the overivew table
+    row1  = ['',subject_name,'YoY','MoM',comparison_name,'YoY','MoM']
+    row2  = ['Median Sales Price', 2, 3, 4, 5, 6, 7]
+    row3  = ['Price Per Sqft', 2,3,4,5,6,7]
+    row4  = ['Homes Sold', 2,3,4,5,6,7]
+    row5  = ['Inventory', 2,3,4,5,6,7]
+    row6  = ['Days on Market',2,3,4,5,6,7]
+    row7  = ['Average Sale To List',2,3,4,5,6,7]
+
+    
+    return([row1, row2, row3, row4, row5, row6, row7])
 
 def CreateDirectory():
     global report_path, report_folder
@@ -176,7 +196,64 @@ def CreateLanguage():
 #Graph related functions
 def CreateGraphs():
     print('Creating Graphs')
-    pass
+    CreateHomesSoldGraph()
+
+def CreateHomesSoldGraph():
+
+
+    #Create figure with secondary y-axis
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+    
+    #Add Bars with Asset Values
+    fig.add_trace(
+    go.Bar(x            = df_subject['Month of Period End'],
+           y            = df_subject['Homes Sold'],
+           name         = 'Number of Homes Sold',
+           marker_color = bowery_grey
+           ),
+           secondary_y=False
+                )
+   
+    #Set formatting 
+    fig.update_layout(
+        title_text    = "Number of Homes Sold",    
+        font_family   = font_family,
+        font_color    = font_color,
+        font_size     = font_size,
+        height        = graph_height,
+        width         = graph_width,
+        margin        = dict(l = left_margin, r = right_margin, t = top_margin, b = bottom_margin),
+        paper_bgcolor = backgroundcolor,
+        plot_bgcolor  = backgroundcolor,
+        
+        title = {
+            'y':       title_position,
+            'x':       0.5,
+            'xanchor': 'center',
+            'yanchor': 'top'
+                },
+
+        legend = dict(
+                    orientation = "h",
+                    yanchor     = "bottom",
+                    y           = legend_position,
+                    xanchor     = "center",
+                    x           = 0.5,
+                    font_size   = tickfont_size
+                    ),
+
+                  )
+
+    fig.update_xaxes(
+        tickmode = 'array',
+        tickfont = dict(size=tickfont_size)
+                    )
+    
+    #Set y axis format
+    fig.update_yaxes(tickfont = dict(size=tickfont_size), secondary_y = False,)  #left axis
+    
+    #Export figure as PNG file
+    fig.write_image(os.path.join(report_folder,'sales_volume.png'), engine = 'kaleido', scale = scale)
 
 #Document related functions
 def SetPageMargins(document, margin_size):
@@ -380,7 +457,7 @@ def OverviewSection(document):
     AddDocumentParagraph(document = document, language_variable = overview_language)
 
     AddTableTitle(document=document,title = 'Market Fundamentals')
-    AddOverviewTable(document=document,number_cols=2,row_data=[[1,2],[1,2]])
+    AddOverviewTable(document=document,number_cols=7,row_data= GetDataForOverviewTable())
 
 def SupplyandDemandSection(document):
     print('Writing Supply and Demand Section')
@@ -388,6 +465,8 @@ def SupplyandDemandSection(document):
 
     #Add Overview langauge
     AddDocumentParagraph(document = document, language_variable = supply_and_demand_language)
+
+    AddDocumentPicture(document = document, image_path=(os.path.join(report_folder,'sales_volume,png')),citation='RedFin.com')
 
 def ValuesSection(document):
     print('Writing Values Section')
@@ -437,15 +516,46 @@ bowery_light_blue             = "#B3C3FF"
 bowery_black                  = "#404858"
 
 
+#Set Graph Size
+marginInches      = 1/18
+ppi               = 96.85 
+width_inches      = 6.5
+height_inches     = 3.3
+
+graph_width       = (width_inches  - marginInches)   * ppi 
+graph_height      = (height_inches - marginInches)   * ppi
+
+#Set scale for resolution 1 = no change, > 1 increases resolution. Very important for run time of main script. 
+scale             = 6
+
+#Set tick font size (also controls legend font size)
+tickfont_size     = 8 
+
+#Set Margin parameters/legend location
+left_margin       = 0
+right_margin      = 0
+top_margin        = 75
+bottom_margin     = 10
+legend_position   = 1.05
+title_position    = .95
+font_size         = 10.5
+backgroundcolor   = 'white'
+bowery_grey       = "#D7DEEA"
+bowery_dark_grey  = "#A6B0BF"
+bowery_dark_blue  = "#4160D3"
+bowery_light_blue = "#B3C3FF"
+bowery_black      = "#404858"
+font_family       = "Avenir Next LT Pro"
+font_color        = '#262626'
+
 #Heart of script starts here
 DetermineSubjectAndComp()
 
 #Use our 2 dataframes to create key variables 
-subject_name           = (df_subject['Region'].iloc[-1]).title()
+subject_name           = (df_subject['Region'].iloc[-1])
 subject_geo_level      = df_subject['Region Type'].iloc[-1]
 subject_property_type  = df_subject['Type'].iloc[-1]
 subject_latest_period  = df_subject['Month of Period End'].iloc[-1]
-
 
 comparison_name          = df_comparison['Region'].iloc[-1]
 comparison_geo_level     = df_comparison['Region Type'].iloc[-1]
@@ -453,9 +563,14 @@ comparison_property_type = df_comparison['Type'].iloc[-1]
 comparison_latest_period = df_comparison['Month of Period End'].iloc[-1]
 
 #Make sure the subject and comparison area have the same last period
-# assert subject_latest_period == comparison_latest_period
+assert subject_latest_period == comparison_latest_period
 
 CreateDirectory()
+
+#After making our directory, we can manipulate our subject name
+if subject_geo_level == 'Metro':
+    subject_name           =subject_name.replace('metro area', 'Metro Area')
+
 CreateLanguage()
 CreateGraphs()
 WriteReport()
