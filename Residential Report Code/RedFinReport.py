@@ -19,7 +19,6 @@ dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropb
 project_location               =  os.path.join(dropbox_root,'Research','Projects','Research Report Automation Project') 
 data_location                  =  os.path.join(project_location,'Data\Residential Reports Data\RedFin Data\Clean') 
 output_location                =  os.path.join(project_location,'Output\Residential Reports') #Testing Output
-# output_location                =  os.path.join(project_location,'Output\Residential Reports') #Production Output
 
 #Data Related functions
 def DetermineSubjectAndComp():
@@ -78,8 +77,7 @@ def DetermineSubjectAndComp():
     comboExample.bind("<<ComboboxSelected>>", select_market)
     app.mainloop()
 
-         
-    print(selected_subject)
+
 
     #Launches GUI for user to select comparsion area
     def select_comp(event):
@@ -101,8 +99,18 @@ def DetermineSubjectAndComp():
     comboExample.bind("<<ComboboxSelected>>", select_comp)
     app.mainloop()
 
-         
-    print(selected_subject, selected_comparsion)
+
+    df_subject    = df.loc[df['Unique Subject Name']== selected_subject].copy()
+    df_comparison = df.loc[df['Unique Subject Name']== selected_comparsion].copy()
+
+def ParseSubAndCompDFs():
+    #Uses the df_subject and df_comparison to create key variables on the subject and comparsion area
+    #thse will be used to create lanugauge and the directory
+    df_subject
+    df_comparison
+
+def CreateDirectory():
+    pass
 
 #Language Related functions
 def OverviewLanguage():
@@ -301,6 +309,8 @@ def WriteReport():
 
 def Main():
     DetermineSubjectAndComp()
+    ParseSubAndCompDFs()
+    CreateDirectory()
     CreateLanguage()
     CreateGraphs()
     WriteReport()
