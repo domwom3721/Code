@@ -219,7 +219,6 @@ def CreateHomesSoldGraph():
 
     #Create figure with secondary y-axis
     fig = make_subplots(specs=[[{"secondary_y": True}]])
-    print(df_subject['Inventory'])
     #Add Inventory
     fig.add_trace(
     go.Scatter(x        = df_subject['Month of Period End'],
@@ -302,47 +301,35 @@ def CreateHomesSoldGraph():
 def CreateDaysOnMarketGraph():
     #Create figure with secondary y-axis
     fig = make_subplots(specs=[[{"secondary_y": True}]])
-    print(df_subject['Inventory'])
-    #Add Inventory
+    
+    # Add Inventory
     fig.add_trace(
     go.Scatter(x        = df_subject['Month of Period End'],
-           y            = df_subject['Inventory'],
-           name         = 'Inventory',
-           mode         = 'none',
-           fill         = 'tozeroy',
-           fillcolor    = bowery_dark_blue,
+           y            = df_subject['Days on Market'],
+           name         = subject_name,
+           mode         = 'lines',
+          line = dict(color = bowery_dark_blue, ) 
            ),
            secondary_y=False
                 )
 
-    #Add Sales Volume
-    fig.add_trace(
-    go.Scatter(x        = df_subject['Month of Period End'],
-           y            = df_subject['Homes Sold'],
-           name         = '# of Homes Sold',
-           marker_color = bowery_grey,
-           mode         = 'none',
-            fill        = 'tozeroy',
-            fillcolor   = bowery_grey
-           ),
-           secondary_y=False
-                )
+
     
     #Add Avg Salt to List Ratio
     fig.add_trace(
-    go.Scatter(x        = df_subject['Month of Period End'],
-           y            = df_subject['Average Sale To List'],
-           name         = 'Average Sale To List',
+    go.Scatter(x        = df_comparison['Month of Period End'],
+           y            = df_comparison['Days on Market'],
+           name         = comparison_name,
            mode         = 'lines',
-           line = dict(color = bowery_black, dash = 'dash') 
+           line = dict(color = bowery_light_blue,) 
           
            ),
-           secondary_y=True_
+           secondary_y=False
                 )
 
     #Set formatting 
     fig.update_layout(
-        title_text    = "",    
+        title_text    = "Average Days on Market",    
         font_family   = font_family,
         font_color    = font_color,
         font_size     = font_size,
@@ -377,7 +364,7 @@ def CreateDaysOnMarketGraph():
     
     #Set y axis format
     fig.update_yaxes(tickfont = dict(size=tickfont_size), secondary_y = False,)  #left axis
-    fig.update_yaxes(tickfont = dict(size=tickfont_size), secondary_y = True, ticksuffix = '%')  #right
+    fig.update_yaxes(tickfont = dict(size=tickfont_size), secondary_y = True, )  #right
     
     #Export figure as PNG file
     fig.write_image(os.path.join(report_folder,'days_on_market.png'), engine = 'kaleido', scale = scale)
@@ -385,7 +372,6 @@ def CreateDaysOnMarketGraph():
 def CreateMedianSalePriceGraph():
     #Create figure with secondary y-axis
     fig = make_subplots(specs=[[{"secondary_y": True}]])
-    print(df_subject['Inventory'])
     #Add Inventory
     fig.add_trace(
     go.Scatter(x        = df_subject['Month of Period End'],
@@ -681,7 +667,6 @@ def SupplyandDemandSection(document):
 
     AddDocumentPicture(document = document, image_path=(os.path.join(report_folder,'days_on_market.png')),citation='RedFin.com')
 
-
 def ValuesSection(document):
     print('Writing Values Section')
     AddHeading(document = document, title = 'Values', heading_level = 2)
@@ -690,7 +675,6 @@ def ValuesSection(document):
     AddDocumentParagraph(document = document, language_variable = values_language)
 
     AddDocumentPicture(document = document, image_path=(os.path.join(report_folder,'sales_price.png')),citation='RedFin.com')
-
 
 def ConclusionSection(document):
     print('Writing Conclusion Section')
