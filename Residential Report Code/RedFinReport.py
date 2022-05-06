@@ -3,6 +3,8 @@
 #Summary: Injests RedFin residential real estate data and produces report documents on the selcted areas
 
 import os
+from turtle import fillcolor
+from numpy import True_
 import pandas as pd
 from docx import Document
 from docx.enum.table import WD_ALIGN_VERTICAL, WD_TABLE_ALIGNMENT
@@ -16,6 +18,7 @@ import us
 from datetime import date, datetime
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+from validator_collection import none
 
 #Define file pre-paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
@@ -160,6 +163,17 @@ def CreateDirectory():
     document_name =  ('2022 Q1' + ' - ' + state_code + ' - ' +  subject_name.split(', ')[0].replace('/','')  + ' - ' + subject_property_type + '_draft.docx')
     report_path = os.path.join(report_folder,document_name)
 
+def CleanUpPNGs():
+    #Report writing done, delete figures
+    files = os.listdir(report_folder)
+    for image in files:
+        if image.endswith(".png"):
+            while os.path.exists(os.path.join(report_folder, image)):
+                try:
+                    os.remove(os.path.join(report_folder, image))
+                except Exception as e: 
+                    print(e)
+
 #Language Related functions
 def OverviewLanguage():
     try:
@@ -197,26 +211,55 @@ def CreateLanguage():
 def CreateGraphs():
     print('Creating Graphs')
     CreateHomesSoldGraph()
+    CreateDaysOnMarketGraph()
+    CreateMedianSalePriceGraph()
 
 def CreateHomesSoldGraph():
 
 
     #Create figure with secondary y-axis
     fig = make_subplots(specs=[[{"secondary_y": True}]])
-    
-    #Add Bars with Asset Values
+    print(df_subject['Inventory'])
+    #Add Inventory
     fig.add_trace(
-    go.Bar(x            = df_subject['Month of Period End'],
-           y            = df_subject['Homes Sold'],
-           name         = 'Number of Homes Sold',
-           marker_color = bowery_grey
+    go.Scatter(x        = df_subject['Month of Period End'],
+           y            = df_subject['Inventory'],
+           name         = 'Inventory',
+           mode         = 'none',
+           fill         = 'tozeroy',
+           fillcolor    = bowery_dark_blue,
            ),
            secondary_y=False
                 )
-   
+
+    #Add Sales Volume
+    fig.add_trace(
+    go.Scatter(x        = df_subject['Month of Period End'],
+           y            = df_subject['Homes Sold'],
+           name         = '# of Homes Sold',
+           marker_color = bowery_grey,
+           mode         = 'none',
+            fill        = 'tozeroy',
+            fillcolor   = bowery_grey
+           ),
+           secondary_y=False
+                )
+    
+    #Add Avg Salt to List Ratio
+    fig.add_trace(
+    go.Scatter(x        = df_subject['Month of Period End'],
+           y            = df_subject['Average Sale To List'],
+           name         = 'Average Sale To List',
+           mode         = 'lines',
+           line = dict(color = bowery_black, dash = 'dash') 
+          
+           ),
+           secondary_y=True_
+                )
+
     #Set formatting 
     fig.update_layout(
-        title_text    = "Number of Homes Sold",    
+        title_text    = "",    
         font_family   = font_family,
         font_color    = font_color,
         font_size     = font_size,
@@ -251,9 +294,177 @@ def CreateHomesSoldGraph():
     
     #Set y axis format
     fig.update_yaxes(tickfont = dict(size=tickfont_size), secondary_y = False,)  #left axis
+    fig.update_yaxes(tickfont = dict(size=tickfont_size), secondary_y = True, ticksuffix = '%')  #right
     
     #Export figure as PNG file
     fig.write_image(os.path.join(report_folder,'sales_volume.png'), engine = 'kaleido', scale = scale)
+
+def CreateDaysOnMarketGraph():
+    #Create figure with secondary y-axis
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+    print(df_subject['Inventory'])
+    #Add Inventory
+    fig.add_trace(
+    go.Scatter(x        = df_subject['Month of Period End'],
+           y            = df_subject['Inventory'],
+           name         = 'Inventory',
+           mode         = 'none',
+           fill         = 'tozeroy',
+           fillcolor    = bowery_dark_blue,
+           ),
+           secondary_y=False
+                )
+
+    #Add Sales Volume
+    fig.add_trace(
+    go.Scatter(x        = df_subject['Month of Period End'],
+           y            = df_subject['Homes Sold'],
+           name         = '# of Homes Sold',
+           marker_color = bowery_grey,
+           mode         = 'none',
+            fill        = 'tozeroy',
+            fillcolor   = bowery_grey
+           ),
+           secondary_y=False
+                )
+    
+    #Add Avg Salt to List Ratio
+    fig.add_trace(
+    go.Scatter(x        = df_subject['Month of Period End'],
+           y            = df_subject['Average Sale To List'],
+           name         = 'Average Sale To List',
+           mode         = 'lines',
+           line = dict(color = bowery_black, dash = 'dash') 
+          
+           ),
+           secondary_y=True_
+                )
+
+    #Set formatting 
+    fig.update_layout(
+        title_text    = "",    
+        font_family   = font_family,
+        font_color    = font_color,
+        font_size     = font_size,
+        height        = graph_height,
+        width         = graph_width,
+        margin        = dict(l = left_margin, r = right_margin, t = top_margin, b = bottom_margin),
+        paper_bgcolor = backgroundcolor,
+        plot_bgcolor  = backgroundcolor,
+        
+        title = {
+            'y':       title_position,
+            'x':       0.5,
+            'xanchor': 'center',
+            'yanchor': 'top'
+                },
+
+        legend = dict(
+                    orientation = "h",
+                    yanchor     = "bottom",
+                    y           = legend_position,
+                    xanchor     = "center",
+                    x           = 0.5,
+                    font_size   = tickfont_size
+                    ),
+
+                  )
+
+    fig.update_xaxes(
+        tickmode = 'array',
+        tickfont = dict(size=tickfont_size)
+                    )
+    
+    #Set y axis format
+    fig.update_yaxes(tickfont = dict(size=tickfont_size), secondary_y = False,)  #left axis
+    fig.update_yaxes(tickfont = dict(size=tickfont_size), secondary_y = True, ticksuffix = '%')  #right
+    
+    #Export figure as PNG file
+    fig.write_image(os.path.join(report_folder,'days_on_market.png'), engine = 'kaleido', scale = scale)
+
+def CreateMedianSalePriceGraph():
+    #Create figure with secondary y-axis
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+    print(df_subject['Inventory'])
+    #Add Inventory
+    fig.add_trace(
+    go.Scatter(x        = df_subject['Month of Period End'],
+           y            = df_subject['Inventory'],
+           name         = 'Inventory',
+           mode         = 'none',
+           fill         = 'tozeroy',
+           fillcolor    = bowery_dark_blue,
+           ),
+           secondary_y=False
+                )
+
+    #Add Sales Volume
+    fig.add_trace(
+    go.Scatter(x        = df_subject['Month of Period End'],
+           y            = df_subject['Homes Sold'],
+           name         = '# of Homes Sold',
+           marker_color = bowery_grey,
+           mode         = 'none',
+            fill        = 'tozeroy',
+            fillcolor   = bowery_grey
+           ),
+           secondary_y=False
+                )
+    
+    #Add Avg Salt to List Ratio
+    fig.add_trace(
+    go.Scatter(x        = df_subject['Month of Period End'],
+           y            = df_subject['Average Sale To List'],
+           name         = 'Average Sale To List',
+           mode         = 'lines',
+           line = dict(color = bowery_black, dash = 'dash') 
+          
+           ),
+           secondary_y=True_
+                )
+
+    #Set formatting 
+    fig.update_layout(
+        title_text    = "",    
+        font_family   = font_family,
+        font_color    = font_color,
+        font_size     = font_size,
+        height        = graph_height,
+        width         = graph_width,
+        margin        = dict(l = left_margin, r = right_margin, t = top_margin, b = bottom_margin),
+        paper_bgcolor = backgroundcolor,
+        plot_bgcolor  = backgroundcolor,
+        
+        title = {
+            'y':       title_position,
+            'x':       0.5,
+            'xanchor': 'center',
+            'yanchor': 'top'
+                },
+
+        legend = dict(
+                    orientation = "h",
+                    yanchor     = "bottom",
+                    y           = legend_position,
+                    xanchor     = "center",
+                    x           = 0.5,
+                    font_size   = tickfont_size
+                    ),
+
+                  )
+
+    fig.update_xaxes(
+        tickmode = 'array',
+        tickfont = dict(size=tickfont_size)
+                    )
+    
+    #Set y axis format
+    fig.update_yaxes(tickfont = dict(size=tickfont_size), secondary_y = False,)  #left axis
+    fig.update_yaxes(tickfont = dict(size=tickfont_size), secondary_y = True, ticksuffix = '%')  #right
+    
+    #Export figure as PNG file
+    fig.write_image(os.path.join(report_folder,'sales_price.png'), engine = 'kaleido', scale = scale)
+
 
 #Document related functions
 def SetPageMargins(document, margin_size):
@@ -466,7 +677,10 @@ def SupplyandDemandSection(document):
     #Add Overview langauge
     AddDocumentParagraph(document = document, language_variable = supply_and_demand_language)
 
-    AddDocumentPicture(document = document, image_path=(os.path.join(report_folder,'sales_volume,png')),citation='RedFin.com')
+    AddDocumentPicture(document = document, image_path=(os.path.join(report_folder,'sales_volume.png')),citation='RedFin.com')
+
+    AddDocumentPicture(document = document, image_path=(os.path.join(report_folder,'days_on_market.png')),citation='RedFin.com')
+
 
 def ValuesSection(document):
     print('Writing Values Section')
@@ -474,6 +688,9 @@ def ValuesSection(document):
 
     #Add Overview langauge
     AddDocumentParagraph(document = document, language_variable = values_language)
+
+    AddDocumentPicture(document = document, image_path=(os.path.join(report_folder,'sales_price.png')),citation='RedFin.com')
+
 
 def ConclusionSection(document):
     print('Writing Conclusion Section')
@@ -574,4 +791,5 @@ if subject_geo_level == 'Metro':
 CreateLanguage()
 CreateGraphs()
 WriteReport()
+CleanUpPNGs()
 
