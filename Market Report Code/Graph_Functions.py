@@ -107,12 +107,13 @@ def CreateSalesVolumeGraph(submarket_data_frame, folder):
     #Format right axis ticks
     fig.update_yaxes(tickfont = dict(size = tickfont_size), tickformat = ',d', title = None, secondary_y = True, separatethousands= True)                  
     
-    #Set x axis ticks
-    #Get list with number of quarters
-    quarter_list      = [i for i in range(len(submarket_data_frame['Period']))]
+    #Set x-axis ticks
+    quarter_list      = [i for i in range(len(submarket_data_frame['Period']))] #Get list with number of quarters
+    quarter_list.reverse()
     quarter_list      = quarter_list[0::4]
 
     quarter_list_text = [period for period in submarket_data_frame['Period']]
+    quarter_list_text.reverse()
     quarter_list_text = quarter_list_text[0::4]
 
     fig.update_xaxes(
@@ -226,12 +227,13 @@ def CreateAssetValueGraph(submarket_data_frame, market_data_frame, natioanl_data
                   )
 
 
-    #Set x axis format
-    #Get list with number of quarters
-    quarter_list      = [i for i in range(len(submarket_data_frame['Period']))]
+    #Set x-axis ticks
+    quarter_list      = [i for i in range(len(submarket_data_frame['Period']))] #Get list with number of quarters
+    quarter_list.reverse()
     quarter_list      = quarter_list[0::4]
 
     quarter_list_text = [period for period in submarket_data_frame['Period']]
+    quarter_list_text.reverse()
     quarter_list_text = quarter_list_text[0::4]
 
     fig.update_xaxes(
@@ -331,9 +333,11 @@ def CreateAbsorptionGraph(submarket_data_frame, market_data_frame, natioanl_data
     
     #Set x-axis ticks
     quarter_list      = [i for i in range(len(submarket_data_frame['Period']))] #Get list with number of quarters
+    quarter_list.reverse()
     quarter_list      = quarter_list[0::4]
 
     quarter_list_text = [period for period in submarket_data_frame['Period']]
+    quarter_list_text.reverse()
     quarter_list_text = quarter_list_text[0::4]
 
     fig.update_xaxes(
@@ -387,7 +391,7 @@ def CreateAbsorptionGraph(submarket_data_frame, market_data_frame, natioanl_data
     fig.update_xaxes(automargin = True)  
     fig.update_layout(margin    = dict(r = 0))
     fig.write_image(os.path.join(folder,'absorption_rate.png'), engine = 'kaleido', scale = scale)
-           
+
 def CreateConstructionGraph(submarket_data_frame, folder, sector):
     
     #Define the MF variables and labels vs the non MF
@@ -477,11 +481,12 @@ def CreateConstructionGraph(submarket_data_frame, folder, sector):
                     )
 
     #Set x-axis ticks
-    #Get list with number of quarters
-    quarter_list      = [i for i in range(len(submarket_data_frame['Period']))]
+    quarter_list      = [i for i in range(len(submarket_data_frame['Period']))] #Get list with number of quarters
+    quarter_list.reverse()
     quarter_list      = quarter_list[0::4]
 
     quarter_list_text = [period for period in submarket_data_frame['Period']]
+    quarter_list_text.reverse()
     quarter_list_text = quarter_list_text[0::4]
 
     fig.update_xaxes(
@@ -613,12 +618,13 @@ def CreateRentGrowthGraph(submarket_data_frame, market_data_frame, natioanl_data
     fig.update_yaxes(ticksuffix = '%', tickfont = dict(size=tickfont_size), tickformat='.1f',                        secondary_y=False)  #right axis  
     fig.update_yaxes(tickprefix = '$', tickfont = dict(size=tickfont_size), separatethousands= True,                 secondary_y=True)   #left axis
 
-    #Set x axis ticks
-    #Get list with number of quarters
-    quarter_list      = [i for i in range(len(submarket_data_frame['Period']))]
+    #Set x-axis ticks
+    quarter_list      = [i for i in range(len(submarket_data_frame['Period']))] #Get list with number of quarters
+    quarter_list.reverse()
     quarter_list      = quarter_list[0::4]
 
     quarter_list_text = [period for period in submarket_data_frame['Period']]
+    quarter_list_text.reverse()
     quarter_list_text = quarter_list_text[0::4]
 
     fig.update_xaxes(
