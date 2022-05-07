@@ -425,7 +425,7 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
         sector_intro = ("""The retail sector continues to improve due to a financially healthy and active consumer, pushing retail sales to record highs. Tenants and investors remain active, although selective by region, subtype, and tenant. """)
        
     elif sector == 'Industrial': 
-            sector_intro = ("""“After a record year for the industrial sector in 2021, strong demand for space continued in 2022. U.S. Industrial production, consumer spending, and inventories all increased in 2022 Q1, driving warehouse space demand. ”""")
+            sector_intro = ("""After a record year for the industrial sector in 2021, strong demand for space continued in 2022. U.S. Industrial production, consumer spending, and inventories all increased in 2022 Q1, driving warehouse space demand. """)
   
     elif sector == 'Office':
         sector_intro = ("""On the back of continued office-using employment growth and positive absorption, the Office sector demonstrated signs of durability and resiliency since hitting a trough in late 2020. """ + 
