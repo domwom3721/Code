@@ -5498,10 +5498,10 @@ def CountyOutlookLanguage():
             county_demographic_sentence = (county + ' continues to experience population gains with one- and five-year annual growth rates of ' +  "{:,.1f}%".format(county_1y_growth) + ' and ' + "{:,.1f}%".format(county_5y_growth) + '.'  )
 
         elif  county_5y_growth < 0 and county_1y_growth > 0:
-            county_demographic_sentence = ('Although ' + county + ' has experienced population decline of ' +   "{:,.1f}%".format(abs(county_5y_growth)) +' annually over the past five years, growth has returned to positive levels with a most recent one-year growth rate of ' +  "{:,.1f}%".format(county_1y_growth) +'.')
+            county_demographic_sentence = ('Although ' + county + ' has experienced population decline of ' +   "{:,.1f}% per year".format(abs(county_5y_growth)) +' annually over the past five years, growth has returned to positive levels with a most recent one-year growth rate of ' +  "{:,.1f}%".format(county_1y_growth) +'.')
             
         elif county_5y_growth > 0 and county_1y_growth < 0:
-            county_demographic_sentence = ('Although ' + county + ' has experienced population growth of ' + "{:,.1f}%".format(county_5y_growth) +  ' over the past five years, it most recently saw a one-year contraction of ' +  "{:,.1f}%".format(county_1y_growth) +'.')
+            county_demographic_sentence = ('Although ' + county + ' has experienced population growth of ' + "{:,.1f}% per year".format(county_5y_growth) +  ' over the past five years, it most recently saw a one-year contraction of ' +  "{:,.1f}%".format(county_1y_growth) +'.')
 
         elif county_5y_growth == 0 and county_1y_growth == 0:
             county_demographic_sentence = (county + """'s""" + ' population has experienced no change over the past five years.') 
