@@ -5239,7 +5239,8 @@ def CountyHousingLanguage():
                                     ' Metro, and ' +
                                     "{national_growth_description}".format(national_growth_description = "an increase of " if  yoy_national_mlp_growth >= 0  else "a decrease of ") +      
                                     "{:,.0f}%".format(abs(yoy_national_mlp_growth)) +
-                                    ' across the Nation over the past year.'
+                                    ' across the Nation over the past year.' +
+                                    """With the recent sharp rise in mortgage rates, demand is expected to soften along with growth in values. """
                                     )
 
             #If we don't have metro realtor.com data                        
@@ -6864,8 +6865,8 @@ national_economy_summary = (
                                 'Despite supply-side challenges, many economic observers expect growth to return to moderate levels in the final 3 quarters of 2022.' 
                                     )
 
-boiler_plate_housing_language = ("""Historically low mortgage rates, the desire for more space, and the ability to work from home have led to the highest number of home sales """ +
-                                 """while historically low inventory levels have pushed values to record highs in most counties and metros across the Nation. """ )
+boiler_plate_housing_language = ("""Historically low mortgage rates, the desire for more space, and the ability to work from home have led to an increase in demand for housing. This, combined with """ +
+                                 """historically low inventory levels pushed values to record highs in most counties and metros across the Nation in 2021. """ )
 
 boiler_plate_econ_language = ('After accelerating to 6.9% in the fourth quarter of 2021, GDP growth fell to negative levels at a -1.4% annualized growth rate in the first quarter of 2022 due to a widening trade deficit and falling private inventory investment. '   +
                               'While historically high inflation, global supply chain issues, and Federal Reserve interest rate hikes pose threats to the recovery, '                     +
