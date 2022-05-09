@@ -444,7 +444,7 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
         # Negative Rent Growth, Negative vacancy growth
         elif yoy_rent_growth < 0 and vacancy_change < 0:
             overview_sector_specific_language =  (sector_intro  +
-                                                  'Despite vacancy rates decreasing over the past year, ' + market_or_submarket + 'rents declined, decreasing ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + ' during the same time.')
+                                                  'Despite vacancy rates decreasing over the past year, ' + market_or_submarket + ' rents declined, decreasing ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + ' during the same time.')
         
         #Negative rent growth, no vacancy growth
         elif  yoy_rent_growth < 0 and vacancy_change == 0:
@@ -2345,6 +2345,7 @@ def CreateOutlookLanguage(submarket_data_frame, market_data_frame, natioanl_data
     
     general_outlook_language = (sector                                  +    
                             ' fundamentals in the '                     +
+                            market_title + ' ' +
                             market_or_submarket                         +
                             ' indicate '                                +    
                             fundamentals_clause                         +
