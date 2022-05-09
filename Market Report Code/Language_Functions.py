@@ -2113,11 +2113,11 @@ def CreateOutlookLanguage(submarket_data_frame, market_data_frame, natioanl_data
     
     #Forcast demand growth in 4th quarter
     if vacancy_change > 0:
-       demand_future_path= 'remain muted'
+       demand_future_path= 'will remain muted'
     elif vacancy_change < 0:
-        demand_future_path= 'continue to pick up'
+        demand_future_path= 'will pick up'
     elif vacancy_change == 0:
-        demand_future_path= 'stabilize'
+        demand_future_path= 'will stabilize'
     else:
         demand_future_path = '[continue to pick up/stabilize/remain muted]' 
     
@@ -2360,7 +2360,7 @@ def CreateOutlookLanguage(submarket_data_frame, market_data_frame, natioanl_data
                             
     outlook_conclusion_language =  ('Looking ahead to the '             +
                                     'near-term'                         + 
-                                    ', it is likely that demand will '  +
+                                    ', it is likely that demand '       +
                                     demand_future_path                  +
                                     ' with rents '                      +
                                     rent_future_path                    +
