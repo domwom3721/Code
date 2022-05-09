@@ -5239,7 +5239,7 @@ def CountyHousingLanguage():
                                     ' Metro, and ' +
                                     "{national_growth_description}".format(national_growth_description = "an increase of " if  yoy_national_mlp_growth >= 0  else "a decrease of ") +      
                                     "{:,.0f}%".format(abs(yoy_national_mlp_growth)) +
-                                    ' across the Nation over the past year.' +
+                                    ' across the Nation over the past year. ' +
                                     """With the recent sharp rise in mortgage rates, demand is expected to soften along with growth in values. """
                                     )
 
