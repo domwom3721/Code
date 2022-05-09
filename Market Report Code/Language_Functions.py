@@ -2113,7 +2113,7 @@ def CreateOutlookLanguage(submarket_data_frame, market_data_frame, natioanl_data
     
     #Forcast demand growth in 4th quarter
     if vacancy_change > 0:
-       demand_future_path= 'will remain muted'
+       demand_future_path= 'remains muted'
     elif vacancy_change < 0:
         demand_future_path= 'will pick up'
     elif vacancy_change == 0:
