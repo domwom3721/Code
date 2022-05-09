@@ -601,7 +601,7 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
             overview_sector_specific_language =  (sector_intro +
                                                   'While some markets and submarkets have fared better than others, '                                        + 
                                                     sector.lower() + ' properties in the ' + market_or_submarket                                             + 
-                                                    ' have not. With vacancy rates rising over the year, annual rent growth remains in negative territory. ')
+                                                    ' experienced limited improvement. With vacancy rates rising over the year, annual rent growth remains in negative territory. ')
  	
 	    #Negative Rent Growth, Negative vacancy growth
         elif yoy_rent_growth < 0 and vacancy_change < 0:
