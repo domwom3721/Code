@@ -6862,7 +6862,7 @@ national_economy_summary = (
                                 'as measured by non-farm employment, bringing the unemployment rate to 3.6% as of March 2022. '                 +
                                 'Employment growth continued in leisure and hospitality, in professional and business services, in retail trade, and in transportation and warehousing. ' + 
                                 'Supply-chain disruptions such as delays at U.S. ports and international manufacturing issues contributed to a sharp increase in inflation and pose a risk to the economic outlook. ' + 
-                                'Despite supply-side challenges, many economic observers expect growth to return to moderate levels in the final 3 quarters of 2022.' 
+                                'Despite supply-side challenges, many economic observers expect growth to return to moderate levels in the final three quarters of 2022.' 
                                     )
 
 boiler_plate_housing_language = ("""Historically low mortgage rates, the desire for more space, and the ability to work from home have led to an increase in demand for housing. This, combined with """ +
