@@ -1766,7 +1766,7 @@ def CreateConstructionLanguage(submarket_data_frame, market_data_frame, natioanl
         
         #Vacancy rates have contracted or stayed flat over the past year
         elif yoy_submarket_vacancy_growth <= 0:
-            pipeline_vacancy_pressure    = 'Demand in the ' + market_or_submarket + ' has outpaced new deliveries but could slow in the near term due to seasonal trends.'
+            pipeline_vacancy_pressure    = 'Demand in the ' + market_title + ' ' + market_or_submarket + ' has outpaced new deliveries over the past year but could slow along with softening economic growth.'
 
     #Inactive pipeline
     elif under_construction <= 0 :
