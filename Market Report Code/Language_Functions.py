@@ -1562,7 +1562,7 @@ def CreateRentLanguage(submarket_data_frame, market_data_frame, natioanl_data_fr
             
 
             #Sentence 6
-            'Quarterly growth in '                         +
+            'Quarterly rent growth in '                    +
             current_period                                 +
             ' reached '                                    +
             submarket_qoq_growth                           +
@@ -1638,7 +1638,7 @@ def CreateRentLanguage(submarket_data_frame, market_data_frame, natioanl_data_fr
             '. '                                           +
 
             #Sentence 6                   
-            'Quarterly growth in '                         +
+            'Quarterly rent growth in '                    +
             current_period                                 +
             ' reached '                                    +
             submarket_qoq_growth                           +
@@ -2349,7 +2349,7 @@ def CreateOutlookLanguage(submarket_data_frame, market_data_frame, natioanl_data
                             market_or_submarket                         +
                             ' indicate '                                +    
                             fundamentals_clause                         +
-                            ' quarterly growth in '                     +
+                            ' quarterly rent growth in '                +
                              current_period + ' reached '               +
                             "{:,.1f}%".format(submarket_qoq_growth)     +
                              ', '                                       + 
