@@ -355,7 +355,7 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
 
         #Cap Rate a year ago was below the historical average
         elif year_ago_cap_rate < avg_cap_rate:
-            cap_rate_above_below_average = 'remaining below'
+            cap_rate_above_below_average = 'moving further below'
         
         #Cap Rate a year ago was equal to the historical average
         elif year_ago_cap_rate == avg_cap_rate:
@@ -366,7 +366,7 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
                 
         #Cap Rate a year ago was above the historical average
         if year_ago_cap_rate > avg_cap_rate:
-            cap_rate_above_below_average = 'remaining above'
+            cap_rate_above_below_average = 'moving further above'
             
         #Cap Rate a year ago was below the historical average
         elif year_ago_cap_rate < avg_cap_rate:
@@ -2374,6 +2374,10 @@ def CreateOutlookLanguage(submarket_data_frame, market_data_frame, natioanl_data
                                     '.'
                                     )
 
+    #With demand outpacing new inventory, vacancy rates have compressed, accelerating rent growth. 
+    #Looking ahead to the near-term, it is likely that demand picks up during the spring leasing season, 
+    #although the supply pipeline has now reached a ten year high. 
+    #Upward pressure on vacancy rates is expected, potentially slowing growth in rents.
 
     #Section 5: Combine sentences and return the conclusion langage
     outlook_language = [sector_specific_outlook_language, general_outlook_language, outlook_conclusion_language]
