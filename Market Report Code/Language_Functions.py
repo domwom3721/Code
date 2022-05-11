@@ -2379,6 +2379,13 @@ def CreateOutlookLanguage(submarket_data_frame, market_data_frame, natioanl_data
     #although the supply pipeline has now reached a ten year high. 
     #Upward pressure on vacancy rates is expected, potentially slowing growth in rents.
 
+    #indicate softening demand along with rising inventory levels, increasing vacancy rates over the past year. 
+    #Despite vacancy rates expanding, quarterly growth in 2022 Q1 reached X.X%, pushing annual growth to X.X%. 
+    #Looking ahead to the near-term, it is likely that demand picks up during the spring leasing season.  
+    #With the construction pipeline slowing, vacancy rates could stabilize.
+
+    #Though the pace of rent gains will likely slow, the outlook for rents here remains positive.
+
     #Section 5: Combine sentences and return the conclusion langage
     outlook_language = [sector_specific_outlook_language, general_outlook_language, outlook_conclusion_language]
 
