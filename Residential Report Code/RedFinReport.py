@@ -223,7 +223,7 @@ def CreateHomesSoldGraph():
     fig.add_trace(
     go.Scatter(x        = df_subject['Month of Period End'],
            y            = df_subject['Inventory'],
-           name         = 'Inventory',
+           name         = 'Inventory (L)',
            mode         = 'none',
            fill         = 'tozeroy',
            fillcolor    = bowery_dark_blue,
@@ -235,7 +235,7 @@ def CreateHomesSoldGraph():
     fig.add_trace(
     go.Scatter(x        = df_subject['Month of Period End'],
            y            = df_subject['Homes Sold'],
-           name         = '# of Homes Sold',
+           name         = '# of Homes Sold (L)',
            marker_color = bowery_grey,
            mode         = 'none',
             fill        = 'tozeroy',
@@ -247,7 +247,7 @@ def CreateHomesSoldGraph():
     #Add Avg Salt to List Ratio
     fig.add_trace(
     go.Scatter(x        = df_subject['Month of Period End'],
-           y            = df_subject['Average Sale To List'],
+           y            = df_subject['Average Sale To List (R)'],
            name         = 'Average Sale To List',
            mode         = 'lines',
            line = dict(color = bowery_black, dash = 'dash') 
