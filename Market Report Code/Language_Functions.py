@@ -763,7 +763,7 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
     overview_language = [(overview_intro_language     + overview_sector_specific_language + overview_conclusion_language)]
     overview_language = CoStarWriteUp + overview_language
     return(overview_language)    
-    
+
 #Language for Supply and Demand Section
 def CreateDemandLanguage(submarket_data_frame, market_data_frame, natioanl_data_frame, market_title, primary_market, sector, writeup_directory):
     
@@ -1818,7 +1818,7 @@ def CreateSaleLanguage(submarket_data_frame,market_data_frame, natioanl_data_fra
     over_last_year_transactions             = submarket_data_frame['Sales Volume Transactions'][-1:-5:-1].sum()
     
     #Collapse down the data to the annual total sales info
-    data_frame_annual                    = submarket_data_frame
+    data_frame_annual                    = submarket_data_frame.copy()
     data_frame_annual['n']               = 1
     data_frame_annual['n']               = 1
     data_frame_annual['n']               = 1
