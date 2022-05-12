@@ -116,8 +116,11 @@ def AddTable(document, row_data, col_width): #Function we use to insert our wide
             
             #loop through all cells in the current row
             for current_column,(cell,cell_data) in enumerate(zip(row.cells,row_data_list)):
-
-                cell.text =  re.sub('202[0-9] ', '', str(cell_data)) 
+                
+                #We do these replacements so the last 2 column titles dont spill over onto 2 lines
+                text_for_cell =  str(cell_data) 
+                text_for_cell =  re.sub('202[0-9] Q[0-9]', ("""’""" +  text_for_cell[2:]), text_for_cell) 
+                cell.text =  text_for_cell
         
                 if current_row == 0:
                     cell.vertical_alignment = WD_ALIGN_VERTICAL.BOTTOM
