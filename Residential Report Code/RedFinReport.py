@@ -302,7 +302,7 @@ def CreateDaysOnMarketGraph():
     #Create figure with secondary y-axis
     fig = make_subplots(specs=[[{"secondary_y": True}]])
     
-    # Add Inventory
+    #Add Days on market for subject area
     fig.add_trace(
     go.Scatter(x        = df_subject['Month of Period End'],
            y            = df_subject['Days on Market'],
@@ -315,7 +315,7 @@ def CreateDaysOnMarketGraph():
 
 
     
-    #Add Avg Salt to List Ratio
+    #Add Days on market for comparsion area
     fig.add_trace(
     go.Scatter(x        = df_comparison['Month of Period End'],
            y            = df_comparison['Days on Market'],
@@ -372,46 +372,47 @@ def CreateDaysOnMarketGraph():
 def CreateMedianSalePriceGraph():
     #Create figure with secondary y-axis
     fig = make_subplots(specs=[[{"secondary_y": True}]])
-    #Add Inventory
-    fig.add_trace(
-    go.Scatter(x        = df_subject['Month of Period End'],
-           y            = df_subject['Inventory'],
-           name         = 'Inventory',
-           mode         = 'none',
-           fill         = 'tozeroy',
-           fillcolor    = bowery_dark_blue,
-           ),
-           secondary_y=False
-                )
-
-    #Add Sales Volume
-    fig.add_trace(
-    go.Scatter(x        = df_subject['Month of Period End'],
-           y            = df_subject['Homes Sold'],
-           name         = '# of Homes Sold',
-           marker_color = bowery_grey,
-           mode         = 'none',
-            fill        = 'tozeroy',
-            fillcolor   = bowery_grey
-           ),
-           secondary_y=False
-                )
     
-    #Add Avg Salt to List Ratio
+    #Add Price Per Sqft for subject area
     fig.add_trace(
     go.Scatter(x        = df_subject['Month of Period End'],
-           y            = df_subject['Average Sale To List'],
-           name         = 'Average Sale To List',
+           y            = df_subject['Median Price Per Sqft'],
+           name         = subject_name,
            mode         = 'lines',
-           line = dict(color = bowery_black, dash = 'dash') 
+            line = dict(color = bowery_dark_blue, ) 
           
            ),
-           secondary_y=True_
+           secondary_y=False,
                 )
+    
+        
+    #Add Price Per Sqft for comparison area
+    fig.add_trace(
+    go.Scatter(x        = df_comparison['Month of Period End'],
+           y            = df_comparison['Median Price Per Sqft'],
+           name         = comparison_name,
+           mode         = 'lines',
+           line = dict(color = bowery_light_blue,) 
+          
+           ),
+           secondary_y=False,
+                )
+    
+    #Add bars with YoY Median Price/SF % Growth
+    fig.add_trace(
+        go.Bar(
+            x            = df_subject['Month of Period End'],
+            y            = df_subject['YoY Median Sale Price/SF Growth'],
+            name         = 'YoY Median Price Per Sqft Growth',
+            marker_color = bowery_grey,
+            base         = dict(layer = 'Below')        
+               ),
+        secondary_y = True
+            )
 
     #Set formatting 
     fig.update_layout(
-        title_text    = "",    
+        title_text    = "Median Sale Price/SF",    
         font_family   = font_family,
         font_color    = font_color,
         font_size     = font_size,
