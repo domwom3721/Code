@@ -4,6 +4,7 @@
 
 import os
 from unicodedata import numeric
+from numpy import datetime64
 import pandas as pd
 #Define file pre-paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
@@ -25,6 +26,11 @@ for condo_or_sf in ['condo', 'sf']:
         data_file_path = os.path.join(raw_data_location, (condo_or_sf + '_' +geographic_level+ '_data.csv'))
         ppsf_file_path = os.path.join(raw_data_location, (condo_or_sf + '_' +geographic_level+ '_ppsf.csv'))
         
+        if condo_or_sf == 'condo':
+            geo_type = 'Condo'
+        elif condo_or_sf == 'Single Family':
+            geo_type = 'Single Family'
+
         #Read in the main data file
         df = pd.read_csv(data_file_path, 
                            encoding='UTF-16 LE', 
@@ -53,7 +59,8 @@ for condo_or_sf in ['condo', 'sf']:
                                 },           
                                 parse_dates=['Month of Period End'],              
                             )
-        
+        df['Type'] = geo_type
+
         #Now Read in the price per square foot file
         df_ppsf = pd.read_csv(ppsf_file_path, 
                              encoding='UTF-16 LE', 
@@ -63,8 +70,13 @@ for condo_or_sf in ['condo', 'sf']:
         
 
         #The ppsf file has a column for each month, we need to convert this data so that each month has a row
+        df_ppsf['Type'] = geo_type
         df_ppsf = pd.melt(df_ppsf,  ['Type', 'Region'], value_name='Median Price Per Sqft', var_name='Month of Period End')
         
+        #Format our Month variable
+        df_ppsf['Month of Period End'] = df_ppsf['Month of Period End'].astype(datetime64) 
+        
+
         #Format our Median Price Per Sqft variable
         if df_ppsf['Median Price Per Sqft'].dtype == object:
             df_ppsf['Median Price Per Sqft'] = df_ppsf['Median Price Per Sqft'].str.replace(',','',regex=False)
