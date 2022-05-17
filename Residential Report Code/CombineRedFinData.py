@@ -26,6 +26,9 @@ for condo_or_sf in ['condo', 'sf']:
         data_file_path = os.path.join(raw_data_location, (condo_or_sf + '_' +geographic_level+ '_data.csv'))
         ppsf_file_path = os.path.join(raw_data_location, (condo_or_sf + '_' +geographic_level+ '_ppsf.csv'))
         
+        if (os.path.exists(data_file_path) == False) or (os.path.exists(ppsf_file_path) == False ):
+            continue
+
         if condo_or_sf == 'condo':
             geo_type = 'Condo'
         elif condo_or_sf == 'Single Family':
