@@ -24,7 +24,6 @@ from validator_collection import none
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
 project_location               =  os.path.join(dropbox_root,'Research','Projects','Research Report Automation Project') 
 data_location                  =  os.path.join(project_location,'Data\Residential Reports Data\RedFin Data\Clean') 
-output_location                =  os.path.join(project_location,'Output\Residential Reports') #Testing Output
 
 #Data Related functions
 def DetermineSubjectAndComp():
@@ -244,7 +243,7 @@ def CreateHomesSoldGraph():
            secondary_y=False
                 )
     
-    #Add Avg Salt to List Ratio
+    #Add Avg Sale to List Ratio
     fig.add_trace(
     go.Scatter(x        = df_subject['Month of Period End'],
            y            = df_subject['Average Sale To List'],
@@ -313,8 +312,6 @@ def CreateDaysOnMarketGraph():
            secondary_y=False
                 )
 
-
-    
     #Add Days on market for comparsion area
     fig.add_trace(
     go.Scatter(x        = df_comparison['Month of Period End'],
@@ -763,6 +760,11 @@ comparison_name          = df_comparison['Region'].iloc[-1]
 comparison_geo_level     = df_comparison['Region Type'].iloc[-1]
 comparison_property_type = df_comparison['Type'].iloc[-1]
 comparison_latest_period = df_comparison['Month of Period End'].iloc[-1]
+
+#Declare output folder
+# output_location                =  os.path.join(dropbox_root,'Research', 'Market Analysis',subject_property_type) #Production Output
+output_location                =  os.path.join(project_location,'Output\Residential Reports',subject_property_type)      #Testing Output
+
 
 #Make sure the subject and comparison area have the same last period
 assert subject_latest_period == comparison_latest_period
