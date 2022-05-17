@@ -3216,7 +3216,7 @@ def OutlookLanguage():
                             comparison_area + 
                             ', '            + 
                             comparison_state_full_name + 
-                            ' with limited/access to interstate highways, public transportation, a diverse housing stock, recreational amenities, and businesses for everyday use. ' +
+                            ' with limited/access to interstate highways, public transportation, a diverse housing stock, recreational amenities, and businesses and retailers for everyday use. ' +
                             
                             #Growth sentance
                             neighborhood + ' has experienced ' +
