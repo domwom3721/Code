@@ -247,8 +247,8 @@ def CreateHomesSoldGraph():
     #Add Avg Salt to List Ratio
     fig.add_trace(
     go.Scatter(x        = df_subject['Month of Period End'],
-           y            = df_subject['Average Sale To List (R)'],
-           name         = 'Average Sale To List',
+           y            = df_subject['Average Sale To List'],
+           name         = 'Average Sale To List (R)',
            mode         = 'lines',
            line = dict(color = bowery_black, dash = 'dash') 
           
