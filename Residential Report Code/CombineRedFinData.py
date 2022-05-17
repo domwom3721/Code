@@ -3,6 +3,7 @@
 #Summary: Combines multiple RedFin residential real estate data files togeteher
 
 import os
+from unicodedata import numeric
 import pandas as pd
 #Define file pre-paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
@@ -62,17 +63,37 @@ for condo_or_sf in ['condo', 'sf']:
         
 
         #The ppsf file has a column for each month, we need to convert this data so that each month has a row
-        df_ppsf = pd.melt(df_ppsf,  ['Type', 'Region'], value_name='Price Per Sqft', var_name='Month of Period End')
+        df_ppsf = pd.melt(df_ppsf,  ['Type', 'Region'], value_name='Median Price Per Sqft', var_name='Month of Period End')
         
+        #Format our Median Price Per Sqft variable
+        if df_ppsf['Median Price Per Sqft'].dtype == object:
+            df_ppsf['Median Price Per Sqft'] = df_ppsf['Median Price Per Sqft'].str.replace(',','',regex=False)
+            df_ppsf['Median Price Per Sqft'] = df_ppsf['Median Price Per Sqft'].astype(float)
+        
+        #Calculate the YoY % growth in median sale price/SF
+        df_ppsf['Year Ago Median Sale Price/SF'] = df_ppsf.groupby(['Type', 'Region'])['Median Price Per Sqft'].shift(12) 
+
+
+        df_ppsf['YoY Median Sale Price/SF Growth'] = (((df_ppsf['Median Price Per Sqft']/df_ppsf['Year Ago Median Sale Price/SF']) - 1) * 100)
+
+        #Drop the lagged median price/sf variable    
+        df_ppsf = df_ppsf.drop(columns=['Year Ago Median Sale Price/SF'])
 
         #Now we can merge the main data and the price per sqft data
         df = pd.merge(df, df_ppsf, on=(['Type','Month of Period End','Region']), how='left')
         df['Region Type'] = geographic_level.title()
         df_master = df_master.append(df)
 
+
+
+
 #Clean master df
 for col_name in df_master.columns[3:]:
-    if col_name == 'Region Type':
+    if col_name == ('Region Type') or col_name == ('YoY Median Sale Price/SF Growth'):
+        continue
+
+    #Dont need to clean the columns that are already numeric
+    if (df_master[col_name].dtype != str) and  (df_master[col_name].dtype != object):
         continue
     
     df_master[col_name] = df_master[col_name].str.replace('$','',regex=False)
