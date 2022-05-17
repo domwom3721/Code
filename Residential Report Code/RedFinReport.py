@@ -446,7 +446,7 @@ def CreateMedianSalePriceGraph():
                     )
     
     #Set y axis format
-    fig.update_yaxes(tickfont = dict(size=tickfont_size), secondary_y = False,)  #left axis
+    fig.update_yaxes(tickfont = dict(size=tickfont_size), secondary_y = False,tickprefix = '$')  #left axis
     fig.update_yaxes(tickfont = dict(size=tickfont_size), secondary_y = True, ticksuffix = '%')  #right
     
     #Export figure as PNG file
