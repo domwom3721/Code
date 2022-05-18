@@ -210,7 +210,9 @@ def SupplyDemandLanguage():
 
 def ValuesLanguage():
     try:
-        values_paragraph = ('The current median price/SF in ' + subject_name + ' is ' + "${:,.0f}".format(df_subject['Median Price/SF'].iloc[-1]) + '.'   )
+        values_paragraph = ('The current median price/SF in ' + subject_name + ' is ' + "${:,.0f}".format(df_subject['Median Price/SF'].iloc[-1]) + 
+                            '/SF compared to ' +  "${:,.0f}".format(df_comparison['Median Price/SF'].iloc[-1])  + '/SF in ' + comparison_name.strip() + '.'    
+                           )
          
         return([values_paragraph])
     except Exception as e:
