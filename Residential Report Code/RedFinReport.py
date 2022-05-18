@@ -30,8 +30,7 @@ def DetermineSubjectAndComp():
     #This function presents the user with options for what geographic level, area, and report type (Condo vs SF) they would like to create a report for as well as the comparison area \
     #Creates 2 pandas dataframes, 1 with data on the subject, and another with data on the comparsion area
     global df_subject, df_comparison
-    pass
-
+    
     #Import our clean RedFin data
     df = pd.read_csv(os.path.join(data_location, 'Clean RedFin Data.csv'), 
                 dtype={         'Type': str,
@@ -449,7 +448,6 @@ def CreateMedianSalePriceGraph():
     #Export figure as PNG file
     fig.write_image(os.path.join(report_folder,'sales_price.png'), engine = 'kaleido', scale = scale)
 
-
 #Document related functions
 def SetPageMargins(document, margin_size):
     sections = document.sections
@@ -480,7 +478,7 @@ def AddTitle(document):
     rFonts                              = title_style.element.rPr.rFonts
     rFonts.set(qn("w:asciiTheme"), "Avenir Next LT Pro Light")
 
-    above_map_paragraph = document.add_paragraph("""This report was created using data from Redfin, a national real estate brokerage. Data represents """ + "{property_type}".format(property_type = """Condos""" if subject_property_type == 'Condo' else 'Single Family Homes') + """ in """ + subject_name + """ with monthly data through """ +  subject_latest_period + """.""")
+    above_map_paragraph = document.add_paragraph("""This report was created using data from Redfin, a national real estate brokerage. Data represents """ + "{property_type}".format(property_type = """Condos""" if subject_property_type == 'Condo' else 'Single Family Homes') + """ in """ + subject_name + """ with monthly data through """ +  subject_latest_period.strftime('%m/%d/%Y') + """.""")
     above_map_style                                   = above_map_paragraph.style
     above_map_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
     above_map_style.font.size                         = Pt(9)
@@ -751,10 +749,10 @@ font_color        = '#262626'
 DetermineSubjectAndComp()
 
 #Use our 2 dataframes to create key variables 
-subject_name           = (df_subject['Region'].iloc[-1])
-subject_geo_level      = df_subject['Region Type'].iloc[-1]
-subject_property_type  = df_subject['Type'].iloc[-1]
-subject_latest_period  = df_subject['Month of Period End'].iloc[-1]
+subject_name             = (df_subject['Region'].iloc[-1])
+subject_geo_level        = df_subject['Region Type'].iloc[-1]
+subject_property_type    = df_subject['Type'].iloc[-1]
+subject_latest_period    = df_subject['Month of Period End'].iloc[-1]
 
 comparison_name          = df_comparison['Region'].iloc[-1]
 comparison_geo_level     = df_comparison['Region Type'].iloc[-1]

@@ -27,11 +27,12 @@ for condo_or_sf in ['condo', 'sf']:
         ppsf_file_path = os.path.join(raw_data_location, (condo_or_sf + '_' +geographic_level+ '_ppsf.csv'))
         
         if (os.path.exists(data_file_path) == False) or (os.path.exists(ppsf_file_path) == False ):
+            print('Skipping ',geographic_level, ' ', condo_or_sf )
             continue
 
         if condo_or_sf == 'condo':
             geo_type = 'Condo'
-        elif condo_or_sf == 'Single Family':
+        elif condo_or_sf == 'sf':
             geo_type = 'Single Family'
 
         #Read in the main data file
@@ -68,22 +69,16 @@ for condo_or_sf in ['condo', 'sf']:
         df_ppsf = pd.read_csv(ppsf_file_path, 
                              encoding='UTF-16 LE', 
                              sep="\t",
-                             header=1,             
+                             header=1,    
+                             thousands=','         
                             )
         
-
         #The ppsf file has a column for each month, we need to convert this data so that each month has a row
         df_ppsf['Type'] = geo_type
         df_ppsf = pd.melt(df_ppsf,  ['Type', 'Region'], value_name='Median Price Per Sqft', var_name='Month of Period End')
         
         #Format our Month variable
         df_ppsf['Month of Period End'] = df_ppsf['Month of Period End'].astype(datetime64) 
-        
-
-        #Format our Median Price Per Sqft variable
-        if df_ppsf['Median Price Per Sqft'].dtype == object:
-            df_ppsf['Median Price Per Sqft'] = df_ppsf['Median Price Per Sqft'].str.replace(',','',regex=False)
-            df_ppsf['Median Price Per Sqft'] = df_ppsf['Median Price Per Sqft'].astype(float)
         
         #Calculate the YoY % growth in median sale price/SF
         df_ppsf['Year Ago Median Sale Price/SF'] = df_ppsf.groupby(['Type', 'Region'])['Median Price Per Sqft'].shift(12) 
