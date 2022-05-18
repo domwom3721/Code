@@ -433,7 +433,8 @@ def CleanConstructionData(df_construction):
                                                         (df_construction['PropertyType'] == sector)].copy() 
     #Create a dummy variable for if a buidling exists or not
     df_submarkets_construction['Under Construction']  = 0
-    df_submarkets_construction.loc[df_submarkets_construction['Building Status']     == 'Under Construction', 'PropertyType'] = 1
+    df_submarkets_construction.loc[df_submarkets_construction['Building Status']     == 'Under Construction', 'Under Construction'] = 1
+    df_submarkets_construction.loc[df_submarkets_construction['Building Status']     == 'Existing', 'Building Status']    = 'Recently Completed'
 
     if sector == 'Multifamily':
         sort_var = 'Number of Units'
