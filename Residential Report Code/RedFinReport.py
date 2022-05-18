@@ -108,6 +108,11 @@ def DetermineSubjectAndComp():
     df_subject    = df.loc[df['Unique Subject Name']== selected_subject].copy()
     df_comparison = df.loc[df['Unique Subject Name']== selected_comparsion].copy()
 
+    #Restrict our 2 dataframes to the latest month they both have in common
+    df_subject    = df_subject.loc[df_subject['Month of Period End'] <= df_comparison['Month of Period End'].max()]
+    df_comparison = df_comparison.loc[df_comparison['Month of Period End'] <= df_subject['Month of Period End'].max()]
+
+
 def GetRowForOverviewTable(var, modifier):
     #This function takes a variable name as input and returns a list that will be used as as row in the overview table
     #The list wil be the following: [Variable name, value for subject area, yoy growth, mom growth, value for comparison area, yoy growth, and mom growth]
@@ -192,7 +197,7 @@ def CleanUpPNGs():
 #Language Related functions
 def OverviewLanguage():
     try:
-        overview_paragraph = ''
+        overview_paragraph = 'Overview language'
     except Exception as e:
         print(e, 'Unable to create overview language')
         overview_paragraph = ''
@@ -289,7 +294,7 @@ def CreateHomesSoldGraph():
 
     #Set formatting 
     fig.update_layout(
-        title_text    = "",    
+        title_text    = "Supply and Demand",    
         font_family   = font_family,
         font_color    = font_color,
         font_size     = font_size,
@@ -402,6 +407,17 @@ def CreateMedianSalePriceGraph():
     #Create figure with secondary y-axis
     fig = make_subplots(specs=[[{"secondary_y": True}]])
     
+    #Add bars with YoY Median Price/SF % Growth
+    fig.add_trace(
+        go.Bar(
+            x            = df_subject['Month of Period End'],
+            y            = df_subject['Median Price/SF YoY '],
+            name         = 'YoY Median Price/SF Growth',
+            marker_color = bowery_grey,
+            base         = dict(layer = 'Below')        
+               ),
+        secondary_y = False
+            )
     #Add Price Per Sqft for subject area
     fig.add_trace(
     go.Scatter(x        = df_subject['Month of Period End'],
@@ -411,7 +427,7 @@ def CreateMedianSalePriceGraph():
             line = dict(color = bowery_dark_blue, ) 
           
            ),
-           secondary_y=False,
+           secondary_y=True,
                 )
     
         
@@ -424,20 +440,9 @@ def CreateMedianSalePriceGraph():
            line = dict(color = bowery_light_blue,) 
           
            ),
-           secondary_y=False,
+           secondary_y=True,
                 )
     
-    #Add bars with YoY Median Price/SF % Growth
-    fig.add_trace(
-        go.Bar(
-            x            = df_subject['Month of Period End'],
-            y            = df_subject['Median Price/SF YoY '],
-            name         = 'YoY Median Price/SF Growth',
-            marker_color = bowery_grey,
-            base         = dict(layer = 'Below')        
-               ),
-        secondary_y = True
-            )
 
     #Set formatting 
     fig.update_layout(
@@ -475,8 +480,8 @@ def CreateMedianSalePriceGraph():
                     )
     
     #Set y axis format
-    fig.update_yaxes(tickfont = dict(size=tickfont_size), secondary_y = False,tickprefix = '$')  #left axis
-    fig.update_yaxes(tickfont = dict(size=tickfont_size), secondary_y = True, ticksuffix = '%')  #right
+    fig.update_yaxes(tickfont = dict(size=tickfont_size), secondary_y = True,tickprefix = '$')  #left axis
+    fig.update_yaxes(tickfont = dict(size=tickfont_size), secondary_y = False, ticksuffix = '%')  #right
     
     #Export figure as PNG file
     fig.write_image(os.path.join(report_folder,'sales_price.png'), engine = 'kaleido', scale = scale)
@@ -511,7 +516,7 @@ def AddTitle(document):
     rFonts                              = title_style.element.rPr.rFonts
     rFonts.set(qn("w:asciiTheme"), "Avenir Next LT Pro Light")
 
-    above_map_paragraph = document.add_paragraph("""This report was created using data from Redfin, a national real estate brokerage. Data represents """ + "{property_type}".format(property_type = """Condos""" if subject_property_type == 'Condo' else 'Single Family Homes') + """ in """ + subject_name + """ with monthly data through """ +  subject_latest_period.strftime('%m/%d/%Y') + """.""")
+    above_map_paragraph = document.add_paragraph("""This report was created using data from Redfin, a national real estate brokerage. Data represents """ + "{property_type}".format(property_type = """Condos""" if subject_property_type == 'Condo' else 'Single Family Homes') + """ in """ + subject_name + """ with monthly data through """ +  subject_latest_period.strftime('%B, %Y') + """.""")
     above_map_style                                   = above_map_paragraph.style
     above_map_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
     above_map_style.font.size                         = Pt(9)
