@@ -21,7 +21,7 @@ df_master = pd.DataFrame({'Type':[],
 #From RedFin, for the following geographic levels (State, Metro, County, and Cities (places), we download a main data file and a corresponding price per sqft file
 #We do this for condos only and Single-family total.
 for condo_or_sf in ['condo', 'sf']:
-    for geographic_level in ['state', 'metro', 'county', 'place']:
+    for geographic_level in ['national', 'state', 'metro', 'county', 'place']:
 
         data_file_path = os.path.join(raw_data_location, (condo_or_sf + '_' +geographic_level+ '_data.csv'))
         ppsf_file_path = os.path.join(raw_data_location, (condo_or_sf + '_' +geographic_level+ '_ppsf.csv'))
