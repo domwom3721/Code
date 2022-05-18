@@ -780,7 +780,7 @@ def AddConstructionTable(document, col_width, market_data_frame, sector):
     if sector == 'Multifamily':
         variables_of_interest = ['Property Address', 'Property Name','Building Status', 'Year Built', 'Building Class', 'Number of Units' ]
     else:
-        variables_of_interest = ['Property Address', 'Property Name', 'Building Status', 'Year Built', 'Building Class', 'RBA' ]
+        variables_of_interest = ['Property Address',                 'Building Status', 'Year Built', 'Building Class', 'RBA'             ]
 
     for var in variables_of_interest:
         market_data_frame[var] = market_data_frame[var].fillna('NA')
