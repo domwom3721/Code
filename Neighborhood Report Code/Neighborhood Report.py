@@ -4226,7 +4226,7 @@ def AddTable(document,data_for_table): #Function we use to insert our overview t
 
             #set column widths
             if current_column == 0:
-                cell.width = Inches(1.25)
+                cell.width = Inches(0.75)
 
             elif current_column == 1:
                 cell.width = Inches(1.25)
