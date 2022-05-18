@@ -12,7 +12,7 @@ for i in range(10):
     for (dirpath, dirnames, filenames) in os.walk(market_archive_root):
         if dirnames == [] and filenames == [] and dirpath != market_archive_root:
             print('Deleting ',dirpath)
-            os.rmdir(dirpath)
+            # os.rmdir(dirpath)
 
 #After we cleaned up the archive folders, we can delete the files in the main area and hood folders so we can preserve the folder structure
 market_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Market Analysis','Market') 
@@ -26,4 +26,4 @@ for (dirpath, dirnames, filenames) in os.walk(market_root):
         if ('2022 Q2' in file): #skip files that are for the most current quarter
             continue
         print('Deleting',os.path.join(dirpath,file))
-        os.remove(os.path.join(dirpath,file))
+        # os.remove(os.path.join(dirpath,file))
