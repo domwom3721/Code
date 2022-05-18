@@ -192,9 +192,11 @@ def CleanUpPNGs():
 #Language Related functions
 def OverviewLanguage():
     try:
-        return(['Overview language'])
+        overview_paragraph = ''
     except Exception as e:
         print(e, 'Unable to create overview language')
+        overview_paragraph = ''
+    return([overview_paragraph])
 
 def SupplyDemandLanguage():
     try:
@@ -214,15 +216,19 @@ def ValuesLanguage():
                             '/SF compared to ' +  "${:,.0f}".format(df_comparison['Median Price/SF'].iloc[-1])  + '/SF in ' + comparison_name.strip() + '.'    
                            )
          
-        return([values_paragraph])
     except Exception as e:
         print(e, 'Unable to create values language')
+        values_paragraph = ''
+    return([values_paragraph])
 
 def ConclusionLanguage():
     try:
-        return(['Outlook language'])
+        outlook_paragraph = ''
     except Exception as e:
         print(e, 'Unable to create conclusion language')
+        outlook_paragraph = ''
+
+    return([outlook_paragraph])
 
 def CreateLanguage():
     print('Creating Language')
