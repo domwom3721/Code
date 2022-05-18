@@ -75,19 +75,20 @@ for condo_or_sf in ['condo', 'sf']:
         
         #The ppsf file has a column for each month, we need to convert this data so that each month has a row
         df_ppsf['Type'] = geo_type
-        df_ppsf = pd.melt(df_ppsf,  ['Type', 'Region'], value_name='Median Price Per Sqft', var_name='Month of Period End')
+        df_ppsf = pd.melt(df_ppsf,  ['Type', 'Region'], value_name='Median Price/SF', var_name='Month of Period End')
         
         #Format our Month variable
         df_ppsf['Month of Period End'] = df_ppsf['Month of Period End'].astype(datetime64) 
         
         #Calculate the YoY % growth in median sale price/SF
-        df_ppsf['Year Ago Median Sale Price/SF'] = df_ppsf.groupby(['Type', 'Region'])['Median Price Per Sqft'].shift(12) 
+        df_ppsf['Year Ago Median Sale Price/SF']  = df_ppsf.groupby(['Type', 'Region'])['Median Price/SF'].shift(12) 
+        df_ppsf['Month Ago Median Sale Price/SF'] = df_ppsf.groupby(['Type', 'Region'])['Median Price/SF'].shift(1) 
 
-
-        df_ppsf['YoY Median Sale Price/SF Growth'] = (((df_ppsf['Median Price Per Sqft']/df_ppsf['Year Ago Median Sale Price/SF']) - 1) * 100)
+        df_ppsf['Median Price/SF YoY '] = (((df_ppsf['Median Price/SF']/df_ppsf['Year Ago Median Sale Price/SF']) - 1) * 100)
+        df_ppsf['Median Price/SF MoM '] = (((df_ppsf['Median Price/SF']/df_ppsf['Month Ago Median Sale Price/SF']) - 1) * 100)
 
         #Drop the lagged median price/sf variable    
-        df_ppsf = df_ppsf.drop(columns=['Year Ago Median Sale Price/SF'])
+        df_ppsf = df_ppsf.drop(columns=['Year Ago Median Sale Price/SF', 'Month Ago Median Sale Price/SF'])
 
         #Now we can merge the main data and the price per sqft data
         df = pd.merge(df, df_ppsf, on=(['Type','Month of Period End','Region']), how='left')
@@ -118,6 +119,12 @@ for col_name in df_master.columns[3:]:
         df_master[col_name] = df_master[col_name] * 1000
 
 df_master['Unique Subject Name'] = df_master['Type'] + ' - ' +  df_master['Region Type'] + ' - ' +  df_master['Region']
+
+#The variables have inconsistent formatting so we fix a few manually
+df_master                        = df_master.rename(columns={' Inventory YoY ': "Inventory YoY "})
+df_master                        = df_master.rename(columns={'Days on Market YoY': "Days on Market YoY "})
+df_master                        = df_master.rename(columns={'Days on Market MoM': "Days on Market MoM "})
+
 
 #Export the master df as csv file
 df_master.to_csv(os.path.join(clean_data_location,'Clean RedFin Data.csv'),index=False)

@@ -3,8 +3,6 @@
 #Summary: Injests RedFin residential real estate data and produces report documents on the selcted areas
 
 import os
-from turtle import fillcolor
-from numpy import True_
 import pandas as pd
 from docx import Document
 from docx.enum.table import WD_ALIGN_VERTICAL, WD_TABLE_ALIGNMENT
@@ -18,7 +16,6 @@ import us
 from datetime import date, datetime
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from validator_collection import none
 
 #Define file pre-paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
@@ -111,17 +108,37 @@ def DetermineSubjectAndComp():
     df_subject    = df.loc[df['Unique Subject Name']== selected_subject].copy()
     df_comparison = df.loc[df['Unique Subject Name']== selected_comparsion].copy()
 
+def GetRowForOverviewTable(var, modifier):
+    #This function takes a variable name as input and returns a list that will be used as as row in the overview table
+    #The list wil be the following: [Variable name, value for subject area, yoy growth, mom growth, value for comparison area, yoy growth, and mom growth]
+    subject_value         = df_subject[var].iloc[-1]
+    subject_yoy_growth    = df_subject[var + ' YoY '].iloc[-1]
+    subject_mom_growth    = df_subject[var + ' MoM '].iloc[-1]
+    
+    comparison_value      = df_comparison[var].iloc[-1]
+    comparison_yoy_growth = df_comparison[var + ' YoY '].iloc[-1]
+    comparison_mom_growth = df_comparison[var + ' MoM '].iloc[-1]
+    
+    if var == 'Average Sale To List':
+        return([var, "{:,.1f}".format(subject_value) + '%',   "{:,.1f}%".format(subject_yoy_growth) , "{:,.1f}%".format(subject_mom_growth), "{:,.1f}".format(comparison_value) + '%' , "{:,.1f}%".format(comparison_yoy_growth), "{:,.1f}%".format(comparison_mom_growth) ])
+    
+    #The YoY and MoM variables for days on market are absolute changes not percentage changes
+    elif var == 'Days on Market':
+        return([var, modifier + "{:,.0f}".format(subject_value),   "{:,.0f}".format(subject_yoy_growth) , "{:,.0f}".format(subject_mom_growth) ,modifier + "{:,.0f}".format(comparison_value) , "{:,.0f}".format(comparison_yoy_growth), "{:,.0f}".format(comparison_mom_growth) ])
+
+    else:
+        return([var, modifier + "{:,.0f}".format(subject_value),   "{:,.1f}%".format(subject_yoy_growth) , "{:,.1f}%".format(subject_mom_growth) ,modifier + "{:,.0f}".format(comparison_value) , "{:,.1f}%".format(comparison_yoy_growth), "{:,.1f}%".format(comparison_mom_growth) ])
+
 def GetDataForOverviewTable():
     #Each list in the list of lists is a row in the overivew table
-    row1  = ['',subject_name,'YoY','MoM',comparison_name,'YoY','MoM']
-    row2  = ['Median Sales Price', 2, 3, 4, 5, 6, 7]
-    row3  = ['Price Per Sqft', 2,3,4,5,6,7]
-    row4  = ['Homes Sold', 2,3,4,5,6,7]
-    row5  = ['Inventory', 2,3,4,5,6,7]
-    row6  = ['Days on Market',2,3,4,5,6,7]
-    row7  = ['Average Sale To List',2,3,4,5,6,7]
+    row1  = ['', subject_name, 'YoY', 'MoM', comparison_name,'YoY', 'MoM']
+    row2  = GetRowForOverviewTable('Median Sale Price', '$')  
+    row3  = GetRowForOverviewTable('Median Price/SF', '$')
+    row4  = GetRowForOverviewTable('Homes Sold','') 
+    row5  = GetRowForOverviewTable('Inventory','') 
+    row6  = GetRowForOverviewTable('Days on Market','') 
+    row7  = GetRowForOverviewTable('Average Sale To List','')
 
-    
     return([row1, row2, row3, row4, row5, row6, row7])
 
 def CreateDirectory():
@@ -181,13 +198,21 @@ def OverviewLanguage():
 
 def SupplyDemandLanguage():
     try:
-        return(['Supply and Demand language'])
+        supply_demand_paragraph =  ('The current inventory level in ' + subject_name + ' is ' + "{:,.0f}".format(df_subject['Inventory'].iloc[-1]) + '. ' +  
+                                    'There were ' + "{:,.0f}".format(df_subject['Homes Sold'].iloc[-1]) + ' homes sold in ' + subject_latest_period.strftime('%B') +
+                                    ' with an average sale to list price ratio of ' + "{:,.1f}".format(df_subject['Average Sale To List'].iloc[-1])  + '%.'
+                                    )
+
     except Exception as e:
         print(e, 'Unable to create supply and demand language')
+        supply_demand_paragraph = ''
+    return([supply_demand_paragraph])
 
 def ValuesLanguage():
     try:
-        return(['Values language'])
+        values_paragraph = ('The current median price/SF in ' + subject_name + ' is ' + "${:,.0f}".format(df_subject['Median Price/SF'].iloc[-1]) + '.'   )
+         
+        return([values_paragraph])
     except Exception as e:
         print(e, 'Unable to create values language')
 
@@ -251,7 +276,7 @@ def CreateHomesSoldGraph():
            line = dict(color = bowery_black, dash = 'dash') 
           
            ),
-           secondary_y=True_
+           secondary_y=True
                 )
 
     #Set formatting 
@@ -372,7 +397,7 @@ def CreateMedianSalePriceGraph():
     #Add Price Per Sqft for subject area
     fig.add_trace(
     go.Scatter(x        = df_subject['Month of Period End'],
-           y            = df_subject['Median Price Per Sqft'],
+           y            = df_subject['Median Price/SF'],
            name         = subject_name,
            mode         = 'lines',
             line = dict(color = bowery_dark_blue, ) 
@@ -385,7 +410,7 @@ def CreateMedianSalePriceGraph():
     #Add Price Per Sqft for comparison area
     fig.add_trace(
     go.Scatter(x        = df_comparison['Month of Period End'],
-           y            = df_comparison['Median Price Per Sqft'],
+           y            = df_comparison['Median Price/SF'],
            name         = comparison_name,
            mode         = 'lines',
            line = dict(color = bowery_light_blue,) 
@@ -398,8 +423,8 @@ def CreateMedianSalePriceGraph():
     fig.add_trace(
         go.Bar(
             x            = df_subject['Month of Period End'],
-            y            = df_subject['YoY Median Sale Price/SF Growth'],
-            name         = 'YoY Median Price Per Sqft Growth',
+            y            = df_subject['Median Price/SF YoY '],
+            name         = 'YoY Median Price/SF Growth',
             marker_color = bowery_grey,
             base         = dict(layer = 'Below')        
                ),
