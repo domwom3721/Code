@@ -440,7 +440,13 @@ def CleanConstructionData(df_construction):
         sort_var = 'Number of Units'
     else:
         sort_var = 'RBA'
-    df_submarkets_construction                   = df_submarkets_construction.sort_values(by=['Under Construction',sort_var], ascending=False, )
+    
+    # #Use this line if you want to consider the under construction buildings first when determining our 5 buildings
+    # df_submarkets_construction                   = df_submarkets_construction.sort_values(by=['Under Construction',sort_var], ascending=False, )
+
+    #Use this line if you want to only sort by size when determining our 5 buildings
+    df_submarkets_construction                   = df_submarkets_construction.sort_values(by=[sort_var], ascending=False, )
+
     df_submarkets_construction                   = df_submarkets_construction.iloc[0:5]
 
     return(df_submarkets_construction)
