@@ -7,6 +7,7 @@
     #The word document is a report that reports tables and graphs generated from the data files
 
 import os
+from turtle import right
 import pandas as pd
 import numpy as np
 from tkinter import *
@@ -297,7 +298,7 @@ def user_selects_sector():
             df_slices_list                = [df_industrial_slices]
         except:
             df_slices_list                = [0]
-            
+
 #Define functions used to handle the clean CoStar data and help write our repots
 def CreateMarketDictionary(df): 
     #Creates a dictionary where each key is a market and the items are lists of its submarkets
@@ -311,7 +312,7 @@ def CreateMarketDictionary(df):
      for market in unique_markets_list:
          submarkets = [submarket for submarket in unique_submarkets_list if market in submarket ] #list of sumarkets within current market
          market_dictionary.update({market:submarkets}) 
-
+     
      return(market_dictionary)
 
 def CleanMarketName(market_name):
@@ -1183,7 +1184,8 @@ def CreateMarketReport():
     
     #remove slashes from market names so we can save as folder name
     market_clean        = CleanMarketName(market)
-    market_title        = market_clean.replace(primary_market + ' -','').strip()
+    market_title        = market_clean.replace( CleanMarketName(primary_market) + ' -','').strip()
+    
     
     #Create output, map, and writeup folders for the market of submarket
     output_directory       = CreateOutputDirectory()
@@ -1512,12 +1514,25 @@ def CreateDirectoryCSV():
                     else:
                         file_status = 'Final'
 
+                    #Determine if market or submarket
+                    if 'Submarket_' in file:
+                        file_market_or_submarket = 'Submarket'
+                    else:
+                        file_market_or_submarket = 'Market'
+
 
                     #Get Market Name
-                    try:
-                        market     = file.split(' - ')[1].strip()
+                    try: 
+                        number_of_dashes = file.count(' - ')
+
+                        if number_of_dashes == 2:
+                            market     = file.split(' - ')[1].strip()
+                       
+                        #We have to do this for (sub)markets with a dash and space in them
+                        elif number_of_dashes > 2:
+                            market     = file[(file.find(' - ') + 3):(file.find(prop_type)-3)]
+
                         research_name = state_name + ' - ' + market + ' - ' + prop_type
-                    
                     except:
                         market         = 'FIX FILE FORMAT'
                         research_name  = 'FIX FILE FORMAT'
@@ -1529,7 +1544,7 @@ def CreateDirectoryCSV():
                     dropbox_versions.append(version)
                     dropbox_links.append(dropbox_link)
                     dropbox_document_names.append(file)
-                    dropbox_analysis_types.append('Market')
+                    dropbox_analysis_types.append(file_market_or_submarket)
                     dropbox_markets.append(market)
                     dropbox_research_names.append(research_name)
                     dropbox_states.append(state_name)
@@ -1564,6 +1579,22 @@ def CreateDirectoryCSV():
         #Merge the dataframe with a list of states and the inital of who is assigned to complete them
         assigned_to_df                          = pd.read_excel(os.path.join(general_data_location,'Administrative Data','Assigned To States.xlsx')) 
         dropbox_df                              = pd.merge(dropbox_df,assigned_to_df, on=['State'],how = 'left') 
+
+
+        #Export a "New CoStar Markets" CSV
+        new_markets_df                         = dropbox_df.copy()
+        new_markets_df['n']                    = 1
+        new_markets_df['Market Research Name'] = new_markets_df['Market Research Name'].str.replace(' SUB','')
+        new_markets_df['Market Research Name'] = new_markets_df['Market Research Name'].str.replace(r"\(.*\)","",regex=True)
+        
+        markets_summed      = new_markets_df.groupby(["Market Research Name"])[["n"]].sum()
+        new_markets_df      = new_markets_df.merge(right=markets_summed, on='Market Research Name').reset_index()
+        new_markets_df      = new_markets_df.loc[new_markets_df['n_y'] == 1]
+        new_markets_df      = new_markets_df.loc[new_markets_df['Version'] == latest_quarter]
+        new_markets_df      = new_markets_df.loc[(new_markets_df['Property Type'] == 'Multifamily') | (new_markets_df['Property Type'] == 'Office') | (new_markets_df['Property Type'] == 'Retail') | (new_markets_df['Property Type'] == 'Industrial')  ]
+        new_markets_df      = new_markets_df[new_markets_df['CBSA Code'].notna()]
+        new_markets_df      = new_markets_df[new_markets_df['Market'] != 'ID-Coeur dAlene']
+        new_markets_df.to_csv(os.path.join(output_location, 'New CoStar Markets.csv'), index=False)
 
         csv_name = 'CoStar Markets.csv'
         service_api_csv_name = f'CoStar Markets-{datetime.now().timestamp()}.csv'
