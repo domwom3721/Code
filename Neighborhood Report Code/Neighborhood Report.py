@@ -1591,61 +1591,64 @@ def GetOverviewTable(hood_geographic_level,comparison_geographic_level):
     global hood_pop_growth, comparsion_hh_growth      
     global comparsion_pop_growth, comparsion_hh_growth
 
-    #calculate table variables for hood
-    if hood_geographic_level != 'custom':
-        current_estimate_period = '2020 Census'
+    try:
+        #calculate table variables for hood
+        if hood_geographic_level != 'custom':
+            current_estimate_period = '2020 Census'
 
-    elif hood_geographic_level == 'custom':
-        current_estimate_period = 'Current Estimate'
+        elif hood_geographic_level == 'custom':
+            current_estimate_period = 'Current Estimate'
 
-    if hood_geographic_level == 'custom':
-        pop_growth_period = acs_5y_year - decennial_census_year
-        hh_growth_period  = acs_5y_year - decennial_census_year
-        assert pop_growth_period == hh_growth_period == 9
-    else:
-        pop_growth_period = (decennial_census_year + 10) - decennial_census_year
-        hh_growth_period  = (decennial_census_year + 10) - decennial_census_year
-        assert pop_growth_period == hh_growth_period == 10
+        if hood_geographic_level == 'custom':
+            pop_growth_period = acs_5y_year - decennial_census_year
+            hh_growth_period  = acs_5y_year - decennial_census_year
+            assert pop_growth_period == hh_growth_period == 9
+        else:
+            pop_growth_period = (decennial_census_year + 10) - decennial_census_year
+            hh_growth_period  = (decennial_census_year + 10) - decennial_census_year
+            assert pop_growth_period == hh_growth_period == 10
 
-    #Calculate growth rates
-    hood_pop_growth        = (((int(current_hood_pop)/int(_2010_hood_pop)) - 1) * 100 )/pop_growth_period
+        #Calculate growth rates
+        hood_pop_growth        = (((int(current_hood_pop)/int(_2010_hood_pop)) - 1) * 100 )/pop_growth_period
+        
+        #Total Households not available in american community survey
+        if hood_geographic_level != 'custom':
+            hood_hh_growth         = (((int(current_hood_hh)/int(_2010_hood_hh))   - 1) * 100)/hh_growth_period
+        else:
+            hood_hh_growth         = 0
+        hood_hh_growth          = "{:,.1f}%".format(hood_hh_growth)
+
     
-    #Total Households not available in american community survey
-    if hood_geographic_level != 'custom':
-        hood_hh_growth         = (((int(current_hood_hh)/int(_2010_hood_hh))   - 1) * 100)/hh_growth_period
-    else:
-        hood_hh_growth         = 0
-    hood_hh_growth          = "{:,.1f}%".format(hood_hh_growth)
-
-  
-    comparsion_pop_growth        =  ((int(current_comparison_pop)/int(_2010_comparison_pop) - 1) * 100)/pop_growth_period
-    comparsion_hh_growth         =  ((int(current_comparison_hh)/ int(_2010_comparison_hh)   - 1) * 100)/hh_growth_period
+        comparsion_pop_growth        =  ((int(current_comparison_pop)/int(_2010_comparison_pop) - 1) * 100)/pop_growth_period
+        comparsion_hh_growth         =  ((int(current_comparison_hh)/ int(_2010_comparison_hh)   - 1) * 100)/hh_growth_period
 
 
-    #each row represents a row of data for overview table
-    row1 = [''          , 'Area',             '2010 Census',                                                    current_estimate_period,                                                        'Annual % Change']
-    row2 = ['Population', neighborhood,        "{:,.0f}".format(int(_2010_hood_pop)),                             "{:,.0f}".format(int(current_hood_pop)) ,                                       "{:,.1f}%".format(hood_pop_growth) ]
-    row3 = [''          , comparison_area,    "{:,.0f}".format(int(_2010_comparison_pop)),                        "{:,.0f}".format(int(current_comparison_pop)),                            "{:,.1f}%".format(comparsion_pop_growth)]
-    row4 = ['Households', neighborhood,        "{:,.0f}".format(int(_2010_hood_hh)),                              "{:,.0f}".format(int(current_hood_hh)),                                     hood_hh_growth]
-    row5 = [''          , comparison_area,    "{:,.0f}".format(int(_2010_comparison_hh)),                         "{:,.0f}".format(int(current_comparison_hh)),                             "{:,.1f}%".format(comparsion_hh_growth) ]
-    
-    if neighborhood_level != 'custom': #Don't include household rows for custom neighborhoods
-        return( 
-                [ 
-                row1,
-                row2,
-                row3,
-                row4,
-                row5
-                    ])
-    else:
-        return(    
-                [ 
-                row1,
-                row2,
-                row3,
-                    ])
-
+        #each row represents a row of data for overview table
+        row1 = [''          , 'Area',             '2010 Census',                                                    current_estimate_period,                                                        'Annual % Change']
+        row2 = ['Population', neighborhood,        "{:,.0f}".format(int(_2010_hood_pop)),                             "{:,.0f}".format(int(current_hood_pop)) ,                                       "{:,.1f}%".format(hood_pop_growth) ]
+        row3 = [''          , comparison_area,    "{:,.0f}".format(int(_2010_comparison_pop)),                        "{:,.0f}".format(int(current_comparison_pop)),                            "{:,.1f}%".format(comparsion_pop_growth)]
+        row4 = ['Households', neighborhood,        "{:,.0f}".format(int(_2010_hood_hh)),                              "{:,.0f}".format(int(current_hood_hh)),                                     hood_hh_growth]
+        row5 = [''          , comparison_area,    "{:,.0f}".format(int(_2010_comparison_hh)),                         "{:,.0f}".format(int(current_comparison_hh)),                             "{:,.1f}%".format(comparsion_hh_growth) ]
+        
+        if neighborhood_level != 'custom': #Don't include household rows for custom neighborhoods
+            return( 
+                    [ 
+                    row1,
+                    row2,
+                    row3,
+                    row4,
+                    row5
+                        ])
+        else:
+            return(    
+                    [ 
+                    row1,
+                    row2,
+                    row3,
+                        ])
+    except Exception as e:
+        print(e, 'Unable to create overview table data')
+        return([['', 'Area',  '2010 Census',current_estimate_period, 'Annual % Change'],['x','x','x','x','x'],['x','x','x','x','x'],['x','x','x','x','x'],['x','x','x','x','x']])
 #####################################################Non Census Sources Data Functions####################################
 def GetWikipediaPage():
     global page
