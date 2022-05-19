@@ -516,7 +516,7 @@ def AddTitle(document):
     rFonts                              = title_style.element.rPr.rFonts
     rFonts.set(qn("w:asciiTheme"), "Avenir Next LT Pro Light")
 
-    above_map_paragraph = document.add_paragraph("""This report was created using data from Redfin, a national real estate brokerage. Data represents """ + "{property_type}".format(property_type = """Condos""" if subject_property_type == 'Condo' else 'Single Family Homes') + """ in """ + subject_name + """ with monthly data through """ +  subject_latest_period.strftime('%B, %Y') + """.""")
+    above_map_paragraph = document.add_paragraph("""This report was created using data from Redfin, a national real estate brokerage. Data represents """ + "{property_type}".format(property_type = """Condos""" if subject_property_type == 'Condo' else 'Single Family Homes') + """ in """ + subject_name + """ with monthly data through """ +  subject_latest_period.strftime('%B %Y') + """.""")
     above_map_style                                   = above_map_paragraph.style
     above_map_paragraph.alignment                     = WD_ALIGN_PARAGRAPH.JUSTIFY
     above_map_style.font.size                         = Pt(9)
