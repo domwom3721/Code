@@ -180,7 +180,7 @@ def CreateDirectory():
         report_folder = state_folder_path 
 
 
-    document_name =  ('2022 Q1' + ' - ' + state_code + ' - ' +  subject_name.split(', ')[0].replace('/','')  + ' - ' + subject_property_type + '_draft.docx')
+    document_name =  ('2022 Q1' + ' ' + state_code + ' - ' +  subject_name.split(', ')[0].replace('/','')  + ' - ' + subject_property_type + '_draft.docx')
     report_path = os.path.join(report_folder,document_name)
 
 def CleanUpPNGs():
