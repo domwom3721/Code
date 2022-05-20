@@ -165,8 +165,10 @@ section_list = ['Overview',
 for i in range(len(rent_control_df)):
     state            = rent_control_df['State'].iloc[i]
     muncipality_name = rent_control_df['Municipality'].iloc[i]
-    document_name    = rent_control_df['Document Title'].iloc[i]
-    document_name    = str(current_year) + ' ' + state + ' - ' +  muncipality_name + ' - ' +  'Rent Control_draft'
+    
+    document_name    = str(current_year) + ' ' + state + ' - ' +  muncipality_name + ' - ' +  ( rent_control_df['Document Title'].iloc[i]).split(':')[0] + '_draft'
+    
+
     document_title   = rent_control_df['Document Title'].iloc[i]
     phone_number     = rent_control_df['Phone Number of Rent Leveling Board:'].iloc[i]
     website          = rent_control_df['Source/Website:'].iloc[i]
