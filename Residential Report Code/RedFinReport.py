@@ -228,7 +228,7 @@ def ValuesLanguage():
 
 def ConclusionLanguage():
     try:
-        outlook_paragraph = ''
+        outlook_paragraph = 'Outlook language'
     except Exception as e:
         print(e, 'Unable to create conclusion language')
         outlook_paragraph = ''
