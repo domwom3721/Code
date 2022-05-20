@@ -4479,6 +4479,37 @@ def HousingSection(document):
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         Citation(document,'U.S. Census Bureau')
 
+def RentRegulationSection(document):
+    print('Writing Rent Regulation Section')
+    
+
+    if neighborhood_level != 'place' and neighborhood_level !='county subdivision':
+        return()
+    
+    if neighborhood_level == 'place':
+        rc_geo_id = hood_state_fips + hood_place_fips
+
+    elif neighborhood_level == 'county subdivision':
+        rc_geo_id = hood_state_fips + hood_county_fips + hood_suvdiv_fips
+
+    else:
+        assert False 
+    
+    rent_control_df = pd.read_excel(os.path.join(dropbox_root,'Research', 'Resources','Appraisers','Rent Control','Rent Control Template.xlsx'),dtype={'Geo Identifier':str})
+    rent_control_df = rent_control_df.loc[rent_control_df['Geo Identifier'] == rc_geo_id ]
+
+    if len(rent_control_df) == 0:
+        return()
+    
+    else:
+        suggested_paragraph = rent_control_df['Suggested Paragraph for Appraisal Report'].iloc[0]
+
+    #Employment and Transportation Section
+    AddHeading(document = document, title = 'Rent Regulation', heading_level = 1,heading_number='Heading 3',font_size=11)
+
+    AddDocumentParagraph(document = document, language_variable =  [suggested_paragraph])
+
+
 def DevelopmentSection(document):
     print('Writing Development Section')
     
@@ -4601,6 +4632,7 @@ def WriteReport():
     # SurroundingAreaAnalysisSection(document=document)
     PopulationSection(        document = document)
     HousingSection(           document = document)
+    RentRegulationSection(           document = document)
     CommunityAssetsSection(   document = document)
     TransportationSection(    document = document)
     OutlookSection(           document = document)
