@@ -7,7 +7,6 @@
     #The word document is a report that reports tables and graphs generated from the data files
 
 import os
-from turtle import right
 import pandas as pd
 import numpy as np
 from tkinter import *
