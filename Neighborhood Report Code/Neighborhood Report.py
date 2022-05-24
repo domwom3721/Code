@@ -3224,7 +3224,7 @@ def OutlookLanguage():
                             #Growth sentance
                             neighborhood + ' has experienced ' +
                             pop_growth_description +
-                            ' population growth over the past decade, a trend that will likley continue in the near-term.'
+                            ' population growth over the past decade, a trend that will likely continue in the near-term.'
                             
                             )
     except Exception as e:
