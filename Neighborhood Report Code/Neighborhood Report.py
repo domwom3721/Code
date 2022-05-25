@@ -24,10 +24,14 @@ import us
 import wikipedia
 from bs4 import BeautifulSoup
 from census import Census
-import pkg_resources
-pkg_resources.require("census_area==0.4.0")
-from census_area import Census as CensusArea
 
+try:
+    import pkg_resources
+    pkg_resources.require("census_area==0.4.0")
+    from census_area import Census as CensusArea
+except Exception as e:
+    print(e,'Dom still missing version of package he needs to do custom areas')
+    
 from docx import Document
 from docx.enum.table import WD_ALIGN_VERTICAL, WD_TABLE_ALIGNMENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK, WD_LINE_SPACING
