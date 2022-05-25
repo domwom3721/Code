@@ -31,7 +31,7 @@ try:
     from census_area import Census as CensusArea
 except Exception as e:
     print(e,'Dom still missing version of package he needs to do custom areas')
-    
+
 from docx import Document
 from docx.enum.table import WD_ALIGN_VERTICAL, WD_TABLE_ALIGNMENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK, WD_LINE_SPACING
@@ -835,7 +835,12 @@ def DeclareAPIKeys():
     zoneomics_api_key             = 'd69b3eee92f8d3cec8c71893b340faa8cb52e1b8'
 
     c                             = Census(census_api_key)     #Census API wrapper package
-    c_area                        = CensusArea(census_api_key) #Census API package, sepearete extension of main package that allows for custom boundries
+    try:
+        c_area                        = CensusArea(census_api_key) #Census API package, sepearete extension of main package that allows for custom boundries
+    
+    except:
+        print('Unable to declare census area object')
+
     yelp_api                      = YelpAPI(yelp_api_key)
     walkscore_api                 = WalkScoreAPI(api_key = walkscore_api_key)
 
