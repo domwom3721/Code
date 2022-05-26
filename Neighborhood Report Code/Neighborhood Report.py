@@ -427,6 +427,7 @@ def ProcessPlaceFIPS(place_fips):
     place_name                      = place_name.replace("""\\""",'-')
     place_name                      = place_name.replace("""/""",'-')
     place_name                      = place_name.replace(' Of ',' of ')
+    # place_name                      = 'Fake Name' #Use this line to force a different name for your area
 
 
     #Name of State
