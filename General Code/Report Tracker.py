@@ -3,6 +3,7 @@
 #Summary: Uses our 3 report csv summary files and produces a summary of jobs produced by each member of the research team
 
 import os
+from sre_parse import State
 import pandas as pd
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
