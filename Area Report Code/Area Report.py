@@ -6249,7 +6249,7 @@ def AddHeading(document, title, heading_level):
 
 def Citation(document, text):
     citation_paragraph                               = document.add_paragraph()
-    citation_paragraph.paragraph_format.space_after  = Pt(6)
+    citation_paragraph.paragraph_format.space_after  = Pt(0)
     citation_paragraph.paragraph_format.space_before = Pt(0)
     run                                              = citation_paragraph.add_run('Source: ' + text)
     font                                             = run.font
@@ -6866,7 +6866,7 @@ national_economy_summary = (
                                     )
 
 boiler_plate_housing_language = ("""Historically low mortgage rates, the desire for more space, and the ability to work from home have led to an increase in demand for housing. This, combined with """ +
-                                 """historically low inventory levels pushed values to record highs in most counties and metros across the Nation in 2021. """ )
+                                 """historically low inventory levels pushed values to record highs in most counties and metros across the Nation in 2021. The rise in interest rates has pushed mortgage rates to an elevated rate in the first quarter though and could slow demand and growth in values. """ )
 
 boiler_plate_econ_language = ('After accelerating to 6.9% in the fourth quarter of 2021, GDP growth fell to negative levels at a -1.4% annualized growth rate in the first quarter of 2022 due to a widening trade deficit and falling private inventory investment. '   +
                               'While historically high inflation, global supply chain issues, and Federal Reserve interest rate hikes pose threats to the recovery, '                     +
