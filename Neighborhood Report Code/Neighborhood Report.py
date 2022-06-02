@@ -5116,10 +5116,10 @@ def UpdateServiceDb(report_type, csv_name, csv_path, dropbox_dir):
         response.raise_for_status()
         print('Service successfully updated')
     except HTTPError as e:
-        print(f'Request failed with status code {response.status_code}')
+        print(f'Request FAILED FAILED FAILED FAILED with status code {response.status_code}')
         json_error = json.loads(response.content)
         print(json.dumps(json_error, indent=2))
-        print('Service DB did not successfully update. Please run the script again after fixing the error.')
+        print('FAILED FAILED FAILED FAILED Service DB did not successfully update. Please run the script again after fixing the error.')
     finally:
         print(f'Deleting temporary CSV: ', csv_path)
         os.remove(csv_path)           
@@ -5201,7 +5201,7 @@ if batch_mode == True:
             try:
                 Main()
             except Exception as e:
-                print(e,'REPORT CREATION FAILED')
+                print(e,'REPORT CREATION FAILED FAILED FAILED FAILED')
 
     #When we are doing a batch of different cities
     elif batch_type_number == 1:
@@ -5216,7 +5216,7 @@ if batch_mode == True:
                 try:
                     Main() #This is our main function that calls all other functions we will use
                 except Exception as e:
-                    print(e,'REORT CREATION FAILED for',place_fips)
+                    print(e,'REORT CREATION FAILED FAILED FAILED FAILED for',place_fips)
                 
     
     
@@ -5232,7 +5232,7 @@ if batch_mode == True:
             try:
                 Main() #This is our main function that calls all other functions we will use
             except Exception as e:
-                print(e,'REORT CREATION FAILED for',subdiv_fips)
+                print(e,'REORT CREATION FAILED FAILED FAILED FAILED for',subdiv_fips)
 
 
 #When we are doing single reports
