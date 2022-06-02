@@ -1,4 +1,4 @@
-#By Mike Leahy April 29, 2021:
+#By Research:
 #Summary:
     #Imports 4 clean csv files with summary statistics from CoStar.com on commerical real estate for the 4 main sectors
     #It also imports a coresponding "slices" csv/excel file for each sector which breaks down summary statistics by property sub-type

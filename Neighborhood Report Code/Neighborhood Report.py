@@ -1,4 +1,4 @@
-#By Mike Leahy
+#By Research
 #Started 06/30/2021
 #Summary: This script creates reports on neighborhoods/cities for Bowery
 

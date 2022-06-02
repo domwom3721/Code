@@ -1,5 +1,5 @@
 #Cleans the raw data we download from CoStar each quarter and exports clean data into csv files
-#By Mike Leahy 04/22/2021
+#By Research
 
 #Import packages we will be using
 import os
