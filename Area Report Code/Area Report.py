@@ -56,7 +56,7 @@ def DeclareAPIKeys():
 
     #Declare API Key for FRED and BLS
     fred                = Fred(api_key = choice(['7ab383546af7583fae8a058915edc868', '9875b149440961806f0df696105fe12c', '21843961fd781317a7674a5d23d2c7e8', ] ) )   
-    bls                = RequestBLS(key = choice(['2b8d15c77bda4527b101a2b1c98551cf', '9f0492293ac04ade8f2e72576d3822db', '708e9d690b604a7ebda9ff55fe634bc3', 'c993e3b3877845b3a60c8bce507acec6', ]))   
+    bls                = RequestBLS(key = choice(['2b8d15c77bda4527b101a2b1c98551cf', '9f0492293ac04ade8f2e72576d3822db', 'c993e3b3877845b3a60c8bce507acec6', ]))   
 
 def CreateEmptySalesforceLists():
     global  dropbox_counties, dropbox_links, dropbox_fips, dropbox_states, dropbox_analysistypes, dropbox_cbsa_codes
