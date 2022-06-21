@@ -1,8 +1,5 @@
 # Research-Report-Automation
-Author: Mike Leahy
-Summary: When I started at Bowerey, the research team's main method for producing our 3 main products (Market/Submarket, Area, and Neighborhood Reports), involved (and still does in some part) changing cells or importing data into an excel template, refreshing the excel template, opening a word document template that is linked to the excel template, and saving as a new document.  This process is a major pain point for us and requires many repetitive tasks. 
-
-To alleviate this, I set out to produce 3 scripts (1 for each of our 3 main report products) that would automate the production of our report documents. 
+3 scripts (1 for each of our 3 main report products) automate the production of our report documents. 
 
     Market Code - This code proceesses exported data from CoStar.com on real estate markets, loops through all the markets and submarkets, creates a directory for each, creates multiple graphs to dipslay the data (png images), and finally makes a word documents for the market/submarket where we insert langauge and the png images into the report document.
     
