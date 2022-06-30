@@ -6866,11 +6866,11 @@ national_economy_summary = (
                                     )
 
 boiler_plate_housing_language = ("""Historically low mortgage rates, the desire for more space, and the ability to work from home have led to an increase in demand for housing. This, combined with """ +
-                                 """historically low inventory levels pushed values to record highs in most counties and metros across the Nation in 2021. The rise in interest rates has pushed mortgage rates to an elevated rate in the first quarter though and could slow demand and growth in values. """ )
+                                 """historically low inventory levels pushed values to record highs in most counties and metros across the Nation in 2021. However, with persistent inflation in 2022, the Fed has expanded interest rates, pushing mortgage rates to an elevated rate in the first half of 2022. The sharp rise in mortgage rates has eroded housing affordability, resulting in a decrease in demand and slowing growth in values.  """ )
 
 boiler_plate_econ_language = ('After accelerating to 6.9% in the fourth quarter of 2021, GDP growth fell to negative levels at a -1.4% annualized growth rate in the first quarter of 2022 due to a widening trade deficit and falling private inventory investment. '   +
                               'While historically high inflation, global supply chain issues, and Federal Reserve interest rate hikes pose threats to the recovery, '                     +
-                               'many economic observers expect that the economy is well positioned for modest growth throughout the rest of 2022. '
+                               'many economic observers expect that the economy will slow considerably throughout the rest of 2022. '
                             )
 
 marginInches                  = 1/18
