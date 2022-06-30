@@ -15,7 +15,7 @@ from tkinter import E
 
 import numpy as np
 import pandas as pd
-import plotly.graph_objects as gosem
+import plotly.graph_objects as go
 import pyautogui
 import requests
 import shapefile
