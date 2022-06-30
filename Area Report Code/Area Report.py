@@ -1,4 +1,4 @@
-#By Mike Leahy, April 30 2021
+#By Research, April 30 2021
     #Summary: Takes a United States County and fips code as input, prepares economic report for it using data accessed from different APIs
 
 from glob import escape
@@ -15,7 +15,7 @@ from tkinter import E
 
 import numpy as np
 import pandas as pd
-import plotly.graph_objects as go
+import plotly.graph_objects as gosem
 import pyautogui
 import requests
 import shapefile
