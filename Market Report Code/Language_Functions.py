@@ -547,46 +547,46 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
  	    #Negative Rent Growth, positive vacancy growth
         if yoy_rent_growth < 0 and vacancy_change > 0:
             overview_sector_specific_language =  (sector_intro   + 
-                                                'Despite these macro trends, '  + sector.lower() + ' properties in the ' + market_or_submarket                                    +     
+                                                'Despite strong macro trends, '  + sector.lower() + ' properties in the ' + market_or_submarket                                    +     
                                                 ' have not felt the affects of these demand drivers, leading to softened levels of leasing activity and rent growth. ')
  	
 	    #Negative Rent Growth, Negative vacancy growth
         elif yoy_rent_growth < 0 and vacancy_change < 0:
             overview_sector_specific_language =  (sector_intro +
-                                                'Despite these macro trends leading to a decrease in vacancy rates, '  + sector.lower() + 'rents in the market_or_submarket have decreased ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + '.')
+                                                'Despite strong macro trends driving leasing demand, '  + sector.lower() + 'rents in the ' + market_or_submarket + 'have decreased ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + '.')
         
         #Negative rent growth, no vacancy growth
         elif  yoy_rent_growth < 0 and vacancy_change == 0:
             overview_sector_specific_language = (sector_intro +
-                                                'Unfortunately, these macro trends have had little affect on ' + sector.lower() + ' properties in the ' + market_or_submarket + '.' + 
-                                                ' Despite stable vacacny rates, rents have contracted, decreasing ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + ' over the past year.')
+                                                'Unfortunately, positive macro trends have had little affect on ' + sector.lower() + ' properties in the ' + market_or_submarket + '.' + 
+                                                ' Despite stable vacancy rates, rents have contracted, decreasing ' + "{:,.1f}%".format(abs(yoy_rent_growth)) + ' over the past year.')
                         
         #Positive rent growth, positive vacancy growth
         elif yoy_rent_growth > 0 and vacancy_change > 0:
             overview_sector_specific_language =  (sector_intro +
-                                                'Despite these strong macro trends, vacancy rates have increased over the past year, but rents have managed to grow, expanding '  + "{:,.1f}%".format(yoy_rent_growth) + '.')
+                                                'Despite strong macro trends, vacancy rates have increased over the past year, but rents have managed to grow, expanding '  + "{:,.1f}%".format(yoy_rent_growth) + '.')
 
         #Positive rent growth, negative vacancy growth
         elif  yoy_rent_growth > 0 and vacancy_change < 0:
             overview_sector_specific_language = (sector_intro + 
-                                                'These macro trends have positively affected ' + sector.lower() + ' properties in the ' + market_or_submarket + '. '              +
+                                                'Macro trends have positively affected ' + sector.lower() + ' properties in the ' + market_or_submarket + '. '              +
                                                 'With vacancy rates compressing over the past year, rents have increased ' + "{:,.1f}%".format(yoy_rent_growth) + '.')
                         
         #Positive rent growth, no vacancy growth
         elif  yoy_rent_growth > 0 and vacancy_change == 0:
             overview_sector_specific_language = (sector_intro +  
-                                                'These macro trends have positively affected ' + sector + ' properties in the ' + market_or_submarket + '. '                      + 
+                                                'Macro trends have positively affected ' + sector + ' properties in the ' + market_or_submarket + '. '                      + 
                                                 'While vacancy rates have remained stable, rents have continued to expand, increasing' + "{:,.1f}%".format(yoy_rent_growth)  + ' over the past year.')
                         
         #no rent growth, negative vacancy growth
         elif  yoy_rent_growth == 0 and vacancy_change < 0:
             overview_sector_specific_language = (sector_intro +
-                                                'These strong macro trends have led to vacancy rate compression, but industrial rents have seen no growth over the past year. ')
+                                                'Strong macro trends have led to vacancy rate compression, but industrial properties in the ' + market_or_submarket + ' have experienced no growth in rents over the past year. ')
                     
         #no rent growth, postive vacancy growth
         elif  yoy_rent_growth == 0 and vacancy_change > 0:
             overview_sector_specific_language = (sector_intro +
-                                                'Despite these macro trends, vacancy rates have increased over the past year. Fortunately, rents have managed to stay put, but at 0%, are close to moving into negative territory. ' )
+                                                'Despite strong macro trends, vacancy rates have increased for industrial properties in the ' market_or_submarket + ' over the past year. Fortunately, rents have managed to stay put, but at 0%, are close to moving into negative territory. ' )
 
         #no rent growth, no vacancy growth
         elif  yoy_rent_growth == 0 and vacancy_change == 0:
