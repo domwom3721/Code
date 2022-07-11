@@ -33,8 +33,8 @@ from Table_Functions import *
 #Define file pre-paths
 dropbox_root                   = os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
 project_location               = os.path.join(dropbox_root,'Research','Projects','Research Report Automation Project')                        #Main Folder that stores all output, code, and documentation
-# output_location                = os.path.join(project_location,'Output','Market')                                                             #The folder where we store our current reports, testing folder
-output_location                = os.path.join(dropbox_root,'Research','Market Analysis','Market')                                             #The folder where we store our current reports, production
+output_location                = os.path.join(project_location,'Output','Market')                                                             #The folder where we store our current reports, testing folder
+#output_location                = os.path.join(dropbox_root,'Research','Market Analysis','Market')                                             #The folder where we store our current reports, production
 map_location                   = os.path.join(project_location,'Data','Market Reports Data','CoStar Maps')                                    #Folders with maps png files  
 general_data_location          = os.path.join(project_location,'Data','General Data')                                                         #Folder with data for all report types
 costar_data_location           = os.path.join(project_location,'Data','Market Reports Data','CoStar Data')                                    #Folder with clean CoStar CSV files
@@ -309,7 +309,7 @@ def CreateMarketDictionary(df):
      #Now create dictionary to track which submarkets belong to each market
      market_dictionary = {}
      for market in unique_markets_list:
-         submarkets = [submarket for submarket in unique_submarkets_list if market in submarket ] #list of sumarkets within current market
+         submarkets = [submarket for submarket in unique_submarkets_list if market in submarket ] #list of submarkets within current market
          market_dictionary.update({market:submarkets}) 
      
      return(market_dictionary)
@@ -338,7 +338,7 @@ def UniqueZipCodes(zip_code_list):
     return(unique_list)
 
 def AppendAllExcelFilesInDirectory(directory):
-    #Takes a directory as input and appends all excel files in it togetehr into dataframe
+    #Takes a directory as input and appends all excel files in it together into dataframe
     #Returns the dataframe or None if no files exist
 
     i = 0
@@ -672,7 +672,10 @@ def MakeCoStarDisclaimer():
                                             sector                                                         + 
                                             """ Submarket ("Submarket") """                                +
                                             'located in the '                                              +
+                                            
                                             primary_market_title                                           + 
+                                            ' '                                                            +
+                                            sector                                                         +
                                             """ Market ("Market"). """
                                             )                
     
