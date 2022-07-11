@@ -421,9 +421,9 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
     #Create the sector sepecific language
     if sector == 'Multifamily':
            sector_intro = ("""Elevated demand for apartments, combined with the vacancy rate hitting a historic low, created record-breaking rent growth in 2021. """ + 
-                           'The sector remains healthy in Q1 though signs point to a deceleration in growth. ') 
+                           'Demand slowed in Q1 but the tight housing market, both single-family and rental apartment units, continues to keep rent growth well above the historical average. ') 
     elif sector == 'Retail': 
-        sector_intro = ("""The retail sector continues to improve due to a financially healthy and active consumer, pushing retail sales to record highs. Tenants and investors remain active, although selective by region, subtype, and tenant. """)
+        sector_intro = ("""The retail sector has improved over the last few quarters due to a financially healthy and active consumer, pushing retail sales to record highs despite inflation. Tenants and investors remain active, although selective by region, subtype, and tenant. """)
        
     elif sector == 'Industrial': 
             sector_intro = ("""After a record year for the industrial sector in 2021, strong demand for space continued over the first half of 2022. For the sixth consecutive quarter, demand has outpaced new supply, pushing rents and values higher across most Markets. While coastal markets with limited land have fared the best, growth has occured across nearly all geographic regions.   """)
