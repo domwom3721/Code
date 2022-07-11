@@ -338,7 +338,7 @@ def CreateRowDataForWideTable(data_frame, data_frame2, data_frame3, data_frame4,
     data_frame3['Period']                 = data_frame3['Period'].str.replace(r' Q4', '')
 
     if len(data_frame4) > 0:
-        tail_length                           =  int(len(data_frame4))/len(data_frame4['Slice'].unique()) - 2
+        tail_length                           =  int(len(data_frame4))/len(data_frame4['Slice'].unique()) - 3
         data_frame4                           = data_frame4.groupby(['Slice']).tail(tail_length)
         data_frame4                           = data_frame4[data_frame4['Period'].str.contains("Q4")]
         data_frame4['Period']                 = data_frame4['Period'].str.replace(r' Q4', '')
