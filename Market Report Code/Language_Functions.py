@@ -307,9 +307,9 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
             inventory_breakdown    = ''
 
 
-        #Make sure the total invetory from adding together the inventory from each slice addds up to our inventory total from the main data (or at least within 1%)
+        #Make sure the total invetory from adding together the inventory from each slice addds up to our inventory total from the main data (or at least within 5%)
         try:
-            assert (0.99 <= (total_slices_inventory/market_inventory) <= 1.01) 
+            assert (0.95 <= (total_slices_inventory/market_inventory) <= 1.05) 
         except Exception as e:
             print(e, 'Slices inventory does not add up to total, not including quality breakdown in overview language')
             inventory_breakdown = ''
@@ -426,7 +426,7 @@ def CreateOverviewLanguage(submarket_data_frame, market_data_frame, national_dat
         sector_intro = ("""The retail sector continues to improve due to a financially healthy and active consumer, pushing retail sales to record highs. Tenants and investors remain active, although selective by region, subtype, and tenant. """)
        
     elif sector == 'Industrial': 
-            sector_intro = ("""After a record year for the industrial sector in 2021, strong demand for space continued in 2022. U.S. Industrial production, consumer spending, and inventories all increased in 2022 Q1, driving warehouse space demand. """)
+            sector_intro = ("""After a record year for the industrial sector in 2021, strong demand for space continued over the first half of 2022. For the sixth consecutive quarter, demand has outpaced new supply, pushing rents and values higher across most Markets. While coastal markets with limited land have fared the best, growth has occured across nearly all geographic regions.   """)
   
     elif sector == 'Office':
         sector_intro = ("""On the back of continued office-using employment growth and positive absorption, the Office sector demonstrated signs of durability and resiliency since hitting a trough in late 2020. """ + 
