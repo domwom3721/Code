@@ -137,7 +137,6 @@ if os.path.exists(raw_industrial_slices_file):
                             }
                                         )
 
-print(df_multifamily_slices)
 print('Importing Raw CoStar Sliced Data')
 
 #Define data cleaning functions
