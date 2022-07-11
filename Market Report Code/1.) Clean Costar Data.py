@@ -16,10 +16,10 @@ raw_office_file                =  os.path.join(costar_data_location,'Raw Data','
 raw_retail_file                =  os.path.join(costar_data_location,'Raw Data','retail.csv') 
 raw_industrial_file            =  os.path.join(costar_data_location,'Raw Data','industrial.csv') 
 
-raw_multifamily_slices_file    =  os.path.join(costar_data_location,'Raw Data','mf_slices.csv') 
+raw_multifamily_slices_file    =  os.path.join(costar_data_location,'Raw Data','mf_slices.xlsx') 
 raw_office_slices_file         =  os.path.join(costar_data_location,'Raw Data','office_slices.xlsx') 
-raw_retail_slices_file         =  os.path.join(costar_data_location,'Raw Data','retail_slices.xlsx') 
-raw_industrial_slices_file     =  os.path.join(costar_data_location,'Raw Data','industrial_slices.csv') 
+raw_retail_slices_file         =  os.path.join(costar_data_location,'Raw Data','retail_slices.csv') 
+raw_industrial_slices_file     =  os.path.join(costar_data_location,'Raw Data','industrial_slices.xlsx') 
 
 
 #Import raw CoStar data as pandas dataframes
@@ -91,7 +91,7 @@ print('Importing Raw CoStar Data')
 
 #Import the raw slices data from Costar where the markets are broken down by the quality or type of the properties
 if os.path.exists(raw_multifamily_slices_file):
-    df_multifamily_slices  = pd.read_csv(raw_multifamily_slices_file,
+    df_multifamily_slices  = pd.read_excel(raw_multifamily_slices_file,
                     dtype={'Sales Volume Transactions': object,
                           'Market Effective Rent/Unit': float,
                           'Inventory Units': int64
@@ -110,7 +110,7 @@ if os.path.exists(raw_office_slices_file):
                                         )
 
 if os.path.exists(raw_retail_slices_file):
-    df_retail_slices       = pd.read_excel(raw_retail_slices_file,
+    df_retail_slices       = pd.read_csv(raw_retail_slices_file,
                     dtype={'Sales Volume Transactions':  object,
                         'Cap Rate Transactions':        object,
                         'Gross Delivered Buildings':    object,
@@ -126,7 +126,7 @@ if os.path.exists(raw_retail_slices_file):
                                         )
 
 if os.path.exists(raw_industrial_slices_file):
-    df_industrial_slices   = pd.read_csv(raw_industrial_slices_file,
+    df_industrial_slices   = pd.read_excel(raw_industrial_slices_file,
                     dtype={'Sales Volume Transactions':    object,
                             'Sold Building SF':             object,
                             'Total Sales Volume':           object,
@@ -137,6 +137,7 @@ if os.path.exists(raw_industrial_slices_file):
                             }
                                         )
 
+print(df_multifamily_slices)
 print('Importing Raw CoStar Sliced Data')
 
 #Define data cleaning functions
