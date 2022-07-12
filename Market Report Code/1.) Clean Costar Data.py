@@ -3,7 +3,7 @@
 
 #Import packages we will be using
 import os
-from numpy import int64
+from numpy import dtype, int64
 import pandas as pd
 
 #Define file location pre paths
@@ -16,10 +16,10 @@ raw_office_file                =  os.path.join(costar_data_location,'Raw Data','
 raw_retail_file                =  os.path.join(costar_data_location,'Raw Data','retail.csv') 
 raw_industrial_file            =  os.path.join(costar_data_location,'Raw Data','industrial.csv') 
 
-raw_multifamily_slices_file    =  os.path.join(costar_data_location,'Raw Data','mf_slices.xlsx') 
-raw_office_slices_file         =  os.path.join(costar_data_location,'Raw Data','office_slices.xlsx') 
+raw_multifamily_slices_file    =  os.path.join(costar_data_location,'Raw Data','mf_slices.csv') 
+raw_office_slices_file         =  os.path.join(costar_data_location,'Raw Data','office_slices.csv') 
 raw_retail_slices_file         =  os.path.join(costar_data_location,'Raw Data','retail_slices.csv') 
-raw_industrial_slices_file     =  os.path.join(costar_data_location,'Raw Data','industrial_slices.xlsx') 
+raw_industrial_slices_file     =  os.path.join(costar_data_location,'Raw Data','industrial_slices.csv') 
 
 
 #Import raw CoStar data as pandas dataframes
@@ -91,7 +91,7 @@ print('Importing Raw CoStar Data')
 
 #Import the raw slices data from Costar where the markets are broken down by the quality or type of the properties
 if os.path.exists(raw_multifamily_slices_file):
-    df_multifamily_slices  = pd.read_excel(raw_multifamily_slices_file,
+    df_multifamily_slices  = pd.read_csv(raw_multifamily_slices_file,
                     dtype={'Sales Volume Transactions': object,
                           'Market Effective Rent/Unit': float,
                           'Inventory Units': int64
@@ -99,7 +99,7 @@ if os.path.exists(raw_multifamily_slices_file):
                                         ) 
     
 if os.path.exists(raw_office_slices_file):
-    df_office_slices       = pd.read_excel(raw_office_slices_file,
+    df_office_slices       = pd.read_csv(raw_office_slices_file,
                     dtype={'Sales Volume Transactions':   object,
                             'Total Sales Volume':           object,
                             'Transaction Sale Price/SF':    object,
@@ -110,7 +110,7 @@ if os.path.exists(raw_office_slices_file):
                                         )
 
 if os.path.exists(raw_retail_slices_file):
-    df_retail_slices       = pd.read_csv(raw_retail_slices_file,
+    df_retail_slices       = pd.read.csv(raw_retail_slices_file,
                     dtype={'Sales Volume Transactions':  object,
                         'Cap Rate Transactions':        object,
                         'Gross Delivered Buildings':    object,
@@ -126,7 +126,7 @@ if os.path.exists(raw_retail_slices_file):
                                         )
 
 if os.path.exists(raw_industrial_slices_file):
-    df_industrial_slices   = pd.read_excel(raw_industrial_slices_file,
+    df_industrial_slices   = pd.read_csv(raw_industrial_slices_file,
                     dtype={'Sales Volume Transactions':    object,
                             'Sold Building SF':             object,
                             'Total Sales Volume':           object,
