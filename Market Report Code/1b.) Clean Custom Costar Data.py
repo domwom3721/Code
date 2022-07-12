@@ -1,7 +1,7 @@
 #Cleans the raw data we download from CoStar for custom jobs (eg: a county retail report for an area outside any markets)
-#By Mike Leahy 04/22/2021
 
 #Import packages we will be using
+from cProfile import run
 import os
 import shutil
 import pandas as pd
