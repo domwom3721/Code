@@ -5,6 +5,7 @@
 import os
 from numpy import dtype, int64
 import pandas as pd
+pd.options.mode.chained_assignment = None  # default='warn'
 
 #Define file location pre paths
 project_location               =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Projects','Research Report Automation Project')  
@@ -110,7 +111,7 @@ if os.path.exists(raw_office_slices_file):
                                         )
 
 if os.path.exists(raw_retail_slices_file):
-    df_retail_slices       = pd.read.csv(raw_retail_slices_file,
+    df_retail_slices       = pd.read_csv(raw_retail_slices_file,
                     dtype={'Sales Volume Transactions':  object,
                         'Cap Rate Transactions':        object,
                         'Gross Delivered Buildings':    object,
@@ -518,15 +519,21 @@ print('Keeping 10 Years of Data')
 
 #Export Cleaned Data Files
 df_multifamily.to_csv(os.path.join(costar_data_location,'Clean Data','mf_clean.csv'),index=False)
+print('exported mf df')
 df_office.to_csv(os.path.join(costar_data_location, 'Clean Data','office_clean.csv'),index=False)
+print('exported office df')
 df_retail.to_csv(os.path.join(costar_data_location,'Clean Data','retail_clean.csv',),index=False)
+print('exported retail df')
 df_industrial.to_csv(os.path.join(costar_data_location,'Clean Data','industrial_clean.csv'),index=False)
-
+print('exported industrial df')
 df_multifamily_slices.to_csv(os.path.join(costar_data_location,'Clean Data','mf_slices_clean.csv'),index=False)
+print('exported sliced mf df')
 df_office_slices.to_csv(os.path.join(costar_data_location,'Clean Data','office_slices_clean.csv'),index=False)
+print('exported sliced office df')
 df_retail_slices.to_csv(os.path.join(costar_data_location,'Clean Data','retail_slices_clean.csv',),index=False)
+print('exported sliced retail df')
 df_industrial_slices.to_csv(os.path.join(costar_data_location,'Clean Data','industrial_slices_clean.csv'),index=False)
+print('exported sliced industrial df')
+print('Exported Excel Files')
 
-print('Exporting Excel Files')
-
-print('Cleaning Complete')
+print('Cleaning Complete. Good Job. Bowery All The Way!!')
