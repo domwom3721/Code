@@ -38,10 +38,10 @@ def AddOverviewTable(document, number_rows, number_cols, row_data, col_width): #
 
             #set column widths
             if current_column == 0:
-                cell.width = Inches(1.25)
+                cell.width = Inches(1.23)
 
             elif current_column == 1:
-                cell.width = Inches(1.19)
+                cell.width = Inches(1.20)
 
             elif current_column == 2:
                 cell.width = Inches(0.8)
@@ -50,7 +50,7 @@ def AddOverviewTable(document, number_rows, number_cols, row_data, col_width): #
                 cell.width = Inches(0.8)
 
             elif current_column == 4:
-                cell.width = Inches(1.18)
+                cell.width = Inches(1.20)
 
             elif current_column == 5:
                 cell.width = Inches(0.8)
@@ -274,7 +274,7 @@ def CreateRowDataForTable(data_frame, data_frame2, data_frame3, var1, var2, var3
 
 def CreateRowDataForWideTable(data_frame, data_frame2, data_frame3, data_frame4, var1, modifier, sector): #Returns list of lists with data we use to fill rows in the wide table
     #This function takes a variable and returns a list of lists of that variables value over time in the market, submarket, and nation, 
-    #and if we are doing a market the different quality slices. Each list in the list represents a row in a table for either rent or vacancy
+    #and if we are doing a market the different quality slices. Each list in the list represents a row in a table for either rent or vacancy (ADD IN CAP RATES)
 
     level_1_name = data_frame['Geography Name'].iloc[0]
     level_2_name = data_frame2['Geography Name'].iloc[0]
@@ -338,7 +338,7 @@ def CreateRowDataForWideTable(data_frame, data_frame2, data_frame3, data_frame4,
     data_frame3['Period']                 = data_frame3['Period'].str.replace(r' Q4', '')
 
     if len(data_frame4) > 0:
-        tail_length                           =  int(len(data_frame4))/len(data_frame4['Slice'].unique()) - 3
+        tail_length                           =  int(len(data_frame4))/len(data_frame4['Slice'].unique()) - 2
         data_frame4                           = data_frame4.groupby(['Slice']).tail(tail_length)
         data_frame4                           = data_frame4[data_frame4['Period'].str.contains("Q4")]
         data_frame4['Period']                 = data_frame4['Period'].str.replace(r' Q4', '')
