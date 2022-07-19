@@ -197,6 +197,7 @@ def DestringVariablesConvertToNumeric(df,sector):
                 'Under Construction SF',
                 'Market Rent/SF',
                 ]
+    print(df)
 
     for var in vars_list_to_destring:
         #only do the following for string variables
