@@ -197,7 +197,7 @@ def CleanUpPNGs():
 #Language Related functions
 def OverviewLanguage():
     try:
-        overview_paragraph = 'Overview language'
+        overview_paragraph = 'Historically low mortgage rates, the desire for more space, and the ability to work from home have led to an increase in demand for housing. This, combined with historically low inventory levels pushed values to record highs in most counties and metros across the Nation in 2021. '
     except Exception as e:
         print(e, 'Unable to create overview language')
         overview_paragraph = ''
@@ -228,7 +228,7 @@ def ValuesLanguage():
 
 def ConclusionLanguage():
     try:
-        outlook_paragraph = 'Outlook language'
+        outlook_paragraph = 'While the county and state have experienced elevated growth in values over the past two years, it is likely that growth in values softens. Demand is expected to continue and inventory levels do remain low but the rise in interest rates have pushed mortgage rates to an elevated rate in the second quarter, eroding some housing affordability, which will likely soften demand and growth in values.'
     except Exception as e:
         print(e, 'Unable to create conclusion language')
         outlook_paragraph = ''
