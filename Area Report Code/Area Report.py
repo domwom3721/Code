@@ -14,6 +14,8 @@ from random import choice
 from tkinter import E
 
 import numpy as np
+import warnings
+warnings.filterwarnings('ignore')
 import pandas as pd
 import plotly.graph_objects as go
 import pyautogui
@@ -5423,6 +5425,7 @@ def CountyOutlookLanguage():
 
         assert len(county_gdp) == len(national_gdp_restricted)
         county_gdp_sentence = (#Sentence 1
+                            #production_language + ' ' +
                             'Between, '                       + 
                                 str(county_gdp_min_year)[6:]  +  
                                 ' and '                       +
@@ -6326,6 +6329,37 @@ def GetMap():
         except:
             pass
 
+def OpenEconomicDevelopment():
+    try:
+        print('Searching Economic Development Site for Area')
+        
+        #Step 1: Open a browser and open googlemaps.com
+        options = webdriver.ChromeOptions()
+        options.add_argument("--start-maximized")
+        browser = webdriver.Chrome(service=Service(executable_path=(os.path.join(os.environ['USERPROFILE'], 'Desktop', 'chromedriver.exe'))), options=options)
+        browser.get('https:google.com/')
+        
+        #Step 2: Write county name in box
+        Place = browser.find_element(By.CLASS_NAME, "A8SBwf emcav")
+        if county_or_msa_report == 'c':
+            search_term = (county + ', ' + state + ' economic development')
+        
+        elif county_or_msa_report == 'm':
+            search_term = (cbsa_name + ' ' + 'Metropolitan Area' + ' economic development')
+        
+        Place.send_keys(search_term)
+        
+        #Submit county name for search
+        Submit = browser.find_element(By.CLASS_NAME,'pzfvzf')
+        Submit.click()
+    #Upon failure, make sure we close the browser
+    except Exception as e:
+        print(e)
+        try:
+            browser.quit()
+        except:
+            pass
+
 def AddMap(document):
     #Add image of map if we already have one
     if os.path.exists(os.path.join(county_folder_map, 'map.png')):
@@ -6418,7 +6452,7 @@ def AddTableTitle(document, title):
 #Report Section Functions
 def OverviewSection(document):
     print('Writing Overview Section')
-    AddHeading(document = document, title = 'Overview', heading_level = 2)
+    AddHeading(document = document, title = county + 'At a Glance', heading_level = 2)
 
     #Add Overview langauge
     AddDocumentParagraph(document = document, language_variable = overview_language)

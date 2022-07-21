@@ -141,15 +141,21 @@ if os.path.exists(raw_industrial_slices_file):
 print('Importing Raw CoStar Sliced Data')
 
 #Define data cleaning functions
-def DropClusters(df): 
+def DropOfficeClusters(df): 
     #Drops rows that report data on the cluster geography type
-    df = df.loc[df['Geography Type'] != 'Cluster']
+    df = df_office.loc[df['Geography Type'] != 'Cluster']
     return(df)
-print('Dropping Clusters')
+print('Dropping Office Clusters')
+
+def DropRetailClusters(df): 
+    #Drops rows that report data on the cluster geography type
+    df = df_retail.loc[df['Geography Type'] != 'Cluster']
+    return(df)
+print('Dropping Retail Clusters')
 
 def DropUrban(df): 
     #Drops rows that report data on the urban geography type
-    df = df.loc[df['Geography Type'] != 'Location Type:Urban']
+    df = df_office.loc[df['Geography Type'] != 'Location Type:Urban']
     return(df)
 
 print('Dropping Urban')
