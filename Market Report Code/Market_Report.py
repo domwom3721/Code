@@ -601,6 +601,7 @@ def CreateReportFilePath():
     if market == primary_market:
         market_file_name = primary_market_name_for_file
         macro_or_sub     = 'Market'
+        #draft_or_final
     else:
         market_file_name = market_title
         macro_or_sub     = 'Submarket'
