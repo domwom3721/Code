@@ -8,6 +8,8 @@
 
 import os
 import pandas as pd
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 import numpy as np
 from tkinter import *
 from tkinter import ttk
@@ -910,42 +912,42 @@ def GetLanguage(writeup_directory):
     
     #Overview Language
     try:
-        overview_language    = CreateOverviewLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, national_data_frame= df_nation, slices_data_frame = df_slices, market_title = market_title, primary_market = primary_market_title, sector = sector, writeup_directory=writeup_directory)
+        overview_language    = CreateOverviewLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, national_data_frame= df_nation, slices_data_frame= df_slices, market_title = market_title, primary_market = primary_market_title, sector = sector, writeup_directory=writeup_directory)
     except Exception as e:
         print(e,'problem creating overview langauge')
         overview_language    = ['']
     
     #Demand Language
     try:
-        demand_language      = CreateDemandLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
+        demand_language      = CreateDemandLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, national_data_frame= df_nation, slices_data_frame= df_slices, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
     except Exception as e:
         print(e,'problem creating demand langauge')
         demand_language      = ['']
         
     #Rent Language
     try:
-        rent_language        = CreateRentLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
+        rent_language        = CreateRentLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, national_data_frame= df_nation, slices_data_frame= df_slices, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
     except Exception as e:
         print(e,'problem creating rent langauge')
         rent_language        = ['']
 
     #Construction Language
     try:
-        construction_languge = CreateConstructionLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
+        construction_languge = CreateConstructionLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, national_data_frame= df_nation, slices_data_frame= df_slices, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
     except Exception as e:
         print(e,'problem creating construction langauge')
         construction_languge = ['']
     
     #Sale Language
     try:
-        sale_language        = CreateSaleLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
+        sale_language        = CreateSaleLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, national_data_frame= df_nation, slices_data_frame= df_slices, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
     except Exception as e:
         print(e,'problem creating sale langauge')
         sale_language        = ['']
 
     #Outlook Language
     try:
-        outlook_language     = CreateOutlookLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, natioanl_data_frame= df_nation, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
+        outlook_language     = CreateOutlookLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, national_data_frame= df_nation, slices_data_frame= df_slices, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
     except Exception as e:
         print(e,'problem creating outlook langauge')
         outlook_language     = ['']

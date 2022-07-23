@@ -1184,13 +1184,12 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, national_data_
     market_vacancy                      = "{:,.1f}%".format(market_vacancy)
     national_vacancy                    = "{:,.1f}%".format(national_vacancy)
     market_submarket_differnce          = "{:,.0f}".format(market_submarket_differnce)
-    slice_vacancy                       = "{:,.1f}%".format(slice_vacancy)
-    print(slice_vacancy)
+    #slice_vacancy                       = "{:,.1f}%".format(slice_vacancy)
+    #print(slice_vacancy)
     #Section 4: Put together the variables we have created into the supply and demand language and return it
     demand_language = [
             (
             #Sentence 1 (Supply sentence)
-            #slice_vacancy                                               +
             'The '                                                      +
             market_or_submarket                                         +
             ' has '                                                     +

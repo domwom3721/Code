@@ -1,5 +1,7 @@
 #This file holds the functions used for producing tables in market and submarket reports
 import pandas as pd
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 from docx.enum.table import WD_ALIGN_VERTICAL, WD_TABLE_ALIGNMENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement
@@ -119,7 +121,7 @@ def AddTable(document, row_data, col_width): #Function we use to insert our wide
                 
                 #We do these replacements so the last 2 column titles dont spill over onto 2 lines
                 text_for_cell =  str(cell_data) 
-                text_for_cell =  re.sub('202[0-9] Q[0-9]', ("""’""" +  text_for_cell[2:]), text_for_cell) 
+                text_for_cell =  re.sub('202[0-9] Q[0-9]', (text_for_cell[2:]), text_for_cell) 
                 cell.text =  text_for_cell
         
                 if current_row == 0:
@@ -274,12 +276,12 @@ def CreateRowDataForTable(data_frame, data_frame2, data_frame3, var1, var2, var3
 
 def CreateRowDataForWideTable(data_frame, data_frame2, data_frame3, data_frame4, var1, modifier, sector): #Returns list of lists with data we use to fill rows in the wide table
     #This function takes a variable and returns a list of lists of that variables value over time in the market, submarket, and nation, 
-    #and if we are doing a market the different quality slices. Each list in the list represents a row in a table for either rent or vacancy (ADD IN CAP RATES)
+    #and if we are doing a market the different quality slices. Each list in the list represents a row in a table for either rent or vacancy
 
     level_1_name = data_frame['Geography Name'].iloc[0]
     level_2_name = data_frame2['Geography Name'].iloc[0]
     level_3_name = data_frame3['Geography Name'].iloc[0] #Typically will be United States, excpet for when doing NYC 
-
+    level_4_name = data_frame4['Geography Name'].iloc[0]
 
     if level_3_name == 'United States of America':
         level_3_name = 'National'
@@ -297,6 +299,7 @@ def CreateRowDataForWideTable(data_frame, data_frame2, data_frame3, data_frame4,
     data_frame2 = data_frame2.sort_values(by=['Period'],ascending = False) 
     data_frame3 = data_frame3.sort_values(by=['Period'],ascending = False) 
     data_frame4 = data_frame4.sort_values(by=['Slice','Period'],ascending = False) 
+    #data_frame5 = data_frame4.sort_values(
 
     if modifier == '$' and sector == 'Multifamily':
         data_frame[var1]  = data_frame[var1].map('${:,.0f}'.format)
@@ -386,7 +389,7 @@ def CreateRowDataForWideTable(data_frame, data_frame2, data_frame3, data_frame4,
  
     
     #If we are doing a market
-    if market_or_submarket == 'market' or len(data_frame4) > 0 :
+    if market_or_submarket == 'market' :
 
         try:
             list_of_lists = [data_frame['Period'].tolist(),
@@ -423,6 +426,7 @@ def CreateRowDataForWideTable(data_frame, data_frame2, data_frame3, data_frame4,
     else:
         try:
             list_of_lists = [data_frame['Period'].tolist(),
+                    #data_frame4[var1].tolist(),
                     data_frame3[var1].tolist(),
                     data_frame2[var1].tolist(),
                     data_frame[var1].tolist()]
