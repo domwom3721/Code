@@ -90,7 +90,7 @@ df_industrial   = pd.read_csv(raw_industrial_file,
 
 print('Importing Raw CoStar Data')
 
-#Import the raw slices data from Costar where the markets are broken down by the quality or type of the properties
+#Import the raw slices data from Costar where the markets and submarkets are broken down by the quality or type of the properties
 if os.path.exists(raw_multifamily_slices_file):
     df_multifamily_slices  = pd.read_csv(raw_multifamily_slices_file,
                     dtype={'Sales Volume Transactions': object,
@@ -321,9 +321,9 @@ def MainClean(df,sector): #Calls all cleaning functions and returns cleaned data
 
 def MainCleanSlices(df,sector): #Calls cleaning functions and returns cleaned dataframes for our sliced data
     if sector == 'Multifamily':
-        df = df[['Property Class Name','Period','Slice','As Of','Geography Name','Property Type','Vacancy Rate','Market Effective Rent/Unit','Market Effective Rent Growth','Market Effective Rent Growth 12 Mo','Inventory Units']]
+        df = df[['Property Class Name','Period','Slice','As Of','Geography Name','Geography Type','Property Type','Vacancy Rate','Market Effective Rent/Unit','Market Effective Rent Growth','Market Effective Rent Growth 12 Mo','Inventory Units']]
     else:
-        df = df[['Property Class Name','Period','Slice','As Of','Geography Name','Property Type','Vacancy Rate','Market Rent/SF','Market Rent Growth','Market Rent Growth 12 Mo','Inventory SF','Under Construction SF','Net Delivered SF 12 Mo','Availability Rate','Net Absorption SF 12 Mo']]
+        df = df[['Property Class Name','Period','Slice','As Of','Geography Name','Geography Type','Property Type','Vacancy Rate','Market Rent/SF','Market Rent Growth','Market Rent Growth 12 Mo','Inventory SF','Under Construction SF','Net Delivered SF 12 Mo','Availability Rate','Net Absorption SF 12 Mo']]
         df['Availability Rate'] = df['Availability Rate'] * 100
 
         #Replace NA with 0
@@ -364,11 +364,13 @@ def MainCleanSlices(df,sector): #Calls cleaning functions and returns cleaned da
 
     return(df)
 
-#Pass our 4 dataframes into our main cleaning function which calls all the other cleaning functions
+#Pass our 8 dataframes into our main cleaning function which calls all the other cleaning functions
 df_multifamily          =  MainClean(df_multifamily,'Multifamily')
 df_office               =  MainClean(df_office,'Office')
 df_retail               =  MainClean(df_retail,'Retail')
 df_industrial           =  MainClean(df_industrial,'Industrial')
+
+print('Cleaning Regular Data')
 
 df_multifamily_slices   =  MainCleanSlices(df_multifamily_slices,'Multifamily')
 df_office_slices        =  MainCleanSlices(df_office_slices,'Office')
@@ -376,6 +378,139 @@ df_retail_slices        =  MainCleanSlices(df_retail_slices,'Retail')
 df_industrial_slices    =  MainCleanSlices(df_industrial_slices,'Industrial')
 
 print('Cleaning Sliced Data')
+
+# #Loop through the 4 sliced dataframes: create variables we will use in our report/figures 
+# for df in [df_multifamily_slices,df_office_slices,df_retail_slices,df_industrial_slices]:
+
+#     #df['Geography Name'] = df['Geography Name'].str.replace('New York City', 'Manhattan', regex=False)
+
+#     #Clean the sqft and unit variables seperately
+#     if df.equals(df_multifamily_slices):
+
+#         #Create laggd variables
+#         df['Lagged Inventory Units']                      = df.groupby('Geography Name','Slice')['Inventory Units'].shift(1)
+      
+#         #Create variable for apt absorption rate
+#         df['Absorption Rate']                             = round(((df['Absorption Units']/df['Inventory Units']) * 100), 2) 
+
+#         #Create variable for inventory growth rates
+#         df['Inventory Units Growth']                      = df['Inventory Units'] - df['Lagged Inventory Units']
+#         df['Inventory Growth']                            = round(((df['Inventory Units'] / df['Lagged Inventory Units']) - 1)  * 100,2)
+
+#         #Create variable for percent under construction
+#         df['Under Construction %']                        = (df['Under Construction Units']/df['Inventory Units'] ) *100
+
+#         #Asset Value per unit
+#         df['Asset Value/Unit']                            = round((df['Asset Value']/df['Inventory Units']),2)
+#         df['Previous Quarter Asset Value/Unit']           = df.groupby('Geography Name','Slice')['Asset Value/Unit'].shift(1)
+#         df['4 Quarters Ago Asset Value/Unit']             = df.groupby('Geography Name','Slice')['Asset Value/Unit'].shift(4)
+
+#         df['QoQ Asset Value/Unit Growth']                 = round( (((df['Asset Value/Unit']  / df['Previous Quarter Asset Value/Unit']) - 1) * 100),                    1)
+#         df['YoY Asset Value/Unit Growth']                 = round( (((df['Asset Value/Unit']  / df['4 Quarters Ago Asset Value/Unit'])   - 1) * 100),                    1)
+
+#         #Market Rent
+#         df['Previous Quarter Market Effective Rent/Unit'] = df.groupby('Geography Name','Slice')['Market Effective Rent/Unit'].shift(1)
+#         df['4 Quarters Ago Market Effective Rent/Unit']   = df.groupby('Geography Name','Slice')['Market Effective Rent/Unit'].shift(4)
+
+#         df['QoQ Market Effective Rent/Unit Growth']       = round( (((df['Market Effective Rent/Unit']   / df['Previous Quarter Market Effective Rent/Unit']) - 1) * 100),                    1)
+#         df['YoY Market Effective Rent/Unit Growth']       = round( (((df['Market Effective Rent/Unit']  / df['4 Quarters Ago Market Effective Rent/Unit'])   - 1) * 100),                    1)
+        
+#         #Absorption Units
+#         df['Previous Quarter Absorption Units']           = df.groupby('Geography Name','Slice')['Absorption Units'].shift(1)
+#         df['4 Quarters Ago Absorption Units']             = df.groupby('Geography Name','Slice')['Absorption Units'].shift(4)
+
+#         df['QoQ Absorption Units Growth']                 = round((df['Absorption Units']   - df['Previous Quarter Absorption Units'])    / abs(df['Previous Quarter Absorption Units'])  * 100,1)              
+#         df['YoY Absorption Units Growth']                 = round((df['Absorption Units']   - df['4 Quarters Ago Absorption Units'])      /  abs(df['4 Quarters Ago Absorption Units'])   * 100 ,1)           
+           
+
+#     else:            
+#         #Create laggd variables
+#         df['Lagged Inventory SF']                         = df.groupby('Geography Name','Slice')['Inventory SF'].shift(1)
+
+#         #Create variable for absorption rate 
+#         df['Absorption Rate']                            = round((df['Net Absorption SF'] / df['Inventory SF']) * 100,2 )
+
+#         #Absorption SF
+#         df['Previous Quarter Net Absorption SF']         = df.groupby('Geography Name','Slice')['Net Absorption SF'].shift(1)
+#         df['4 Quarters Ago Net Absorption SF']           = df.groupby('Geography Name','Slice')['Net Absorption SF'].shift(4)
+
+#         df['QoQ Net Absorption SF Growth']               = round((df['Net Absorption SF']   - df['Previous Quarter Net Absorption SF'])    / abs(df['Previous Quarter Net Absorption SF'])  * 100,1)              
+#         df['YoY Net Absorption SF Growth']               = round((df['Net Absorption SF']   - df['4 Quarters Ago Net Absorption SF'])      /  abs(df['4 Quarters Ago Net Absorption SF'])   * 100 ,1)           
+           
+#         #Availability Rate 
+#         df['Previous Quarter Availability Rate']         = df.groupby('Geography Name','Slice')['Availability Rate'].shift(1)
+#         df['4 Quarters Ago Availability Rate']           = df.groupby('Geography Name','Slice')['Availability Rate'].shift(4)
+    
+#         df['QoQ Availability Rate Growth']               = round((df['Availability Rate'] - df['Previous Quarter Availability Rate']) * 100,0)
+#         df['YoY Availability Rate Growth']               = round((df['Availability Rate'] - df['4 Quarters Ago Availability Rate'])   * 100,0)
+
+#         df['Availability Rate']                          = round(df['Availability Rate'],1)
+
+#         #Market Rent
+#         df['Previous Quarter Market Rent/SF']            = df.groupby('Geography Name','Slice')['Market Rent/SF'].shift(1)
+#         df['4 Quarters Ago Market Rent/SF']              = df.groupby('Geography Name','Slice')['Market Rent/SF'].shift(4)
+
+#         df['QoQ Rent Growth']                            = round( (((df['Market Rent/SF']  / df['Previous Quarter Market Rent/SF']) - 1) * 100),                    1)
+#         df['YoY Rent Growth']                            = round( (((df['Market Rent/SF']  / df['4 Quarters Ago Market Rent/SF'])   - 1) * 100),                    1)
+
+#         #Create variable for inventory growth rate
+#         df['Inventory SF Growth']                        = df['Inventory SF'] - df['Lagged Inventory SF']  
+#         df['Inventory Growth']                           = round(((df['Inventory SF'] / df['Lagged Inventory SF']) - 1)  * 100,2)
+
+#         #Create variable for percent under construction
+#         df['Under Construction %']                       = (df['Under Construction SF']/df['Inventory SF'] ) *100
+
+#         #Asset Value per sqft
+#         df['Asset Value/Sqft']                           = round((df['Asset Value']/df['Inventory SF']),2)
+
+#         df['Previous Quarter Asset Value/Sqft']          = df.groupby('Geography Name','Slice')['Asset Value/Sqft'].shift(1)
+#         df['4 Quarters Ago Asset Value/Sqft']            = df.groupby('Geography Name','Slice')['Asset Value/Sqft'].shift(4)
+
+#         df['QoQ Asset Value/Sqft Growth']                = round( (((df['Asset Value/Sqft']  / df['Previous Quarter Asset Value/Sqft']) - 1) * 100),                    1)
+#         df['YoY Asset Value/Sqft Growth']                = round( (((df['Asset Value/Sqft']  / df['4 Quarters Ago Asset Value/Sqft'])   - 1) * 100),                    1)
+
+
+#     #Making Variables for all sectors
+#     df['Previous Quarter Vacancy']                       = df.groupby('Geography Name','Slice')['Vacancy Rate'].shift(1)
+#     df['4 Quarters Ago Vacancy']                         = df.groupby('Geography Name','Slice')['Vacancy Rate'].shift(4)
+    
+#     df['QoQ Vacancy Growth']                             = round((df['Vacancy Rate'] - df['Previous Quarter Vacancy']) * 100,0)
+#     df['YoY Vacancy Growth']                             = round((df['Vacancy Rate'] - df['4 Quarters Ago Vacancy'])   * 100,0)
+
+#     #Absorption
+#     df['Previous Quarter Absorption Rate']               =  df.groupby('Geography Name','Slice')['Absorption Rate'].shift(1)
+#     df['4 Quarters Ago Absorption Rate']                 =  df.groupby('Geography Name','Slice')['Absorption Rate'].shift(4)
+
+#     df['QoQ Absorption Growth']                          = round((df['Absorption Rate'] - df['Previous Quarter Absorption Rate']) * 100,0)
+#     df['YoY Absorption Growth']                          = round((df['Absorption Rate'] - df['4 Quarters Ago Absorption Rate'])   * 100,0)
+    
+#     #Sales Volume
+#     df['Previous Quarter Total Sales Volume']            = df.groupby('Geography Name','Slice')['Total Sales Volume'].shift(1)
+#     df['4 Quarters Ago Total Sales Volume']              = df.groupby('Geography Name','Slice')['Total Sales Volume'].shift(4)
+    
+#     df['QoQ Total Sales Volume Growth']                  = round( (((df['Total Sales Volume']  / df['Previous Quarter Total Sales Volume']) - 1) * 100),                    0)
+#     df['YoY Total Sales Volume Growth']                  = round( (((df['Total Sales Volume']  / df['4 Quarters Ago Total Sales Volume'])   - 1) * 100),                    0)
+
+#     #Transactions
+#     df['Previous Quarter Sales Volume Transactions']     = df.groupby('Geography Name','Slice')['Sales Volume Transactions'].shift(1)
+#     df['4 Quarters Ago Sales Volume Transactions']       = df.groupby('Geography Name','Slice')['Sales Volume Transactions'].shift(4)
+    
+#     df['QoQ Transactions Growth']                        = round(  (((df['Sales Volume Transactions']/df['Previous Quarter Sales Volume Transactions']) - 1)  * 100)            ,0)
+#     df['YoY Transactions Growth']                        = round(  (((df['Sales Volume Transactions']/df['4 Quarters Ago Sales Volume Transactions'])   - 1)  * 100)            ,0)
+
+#     #Market cap rate
+#     df['Previous Quarter Market Cap Rate']               = df.groupby('Geography Name','Slice')['Market Cap Rate'].shift(1)
+#     df['4 Quarters Ago Market Cap Rate']                 = df.groupby('Geography Name','Slice')['Market Cap Rate'].shift(4)
+    
+#     df['QoQ Market Cap Rate Growth']                     = round((df['Market Cap Rate'] - df['Previous Quarter Market Cap Rate']) * 100,0)
+#     df['YoY Market Cap Rate Growth']                     = round((df['Market Cap Rate'] - df['4 Quarters Ago Market Cap Rate'])   * 100,0)
+
+#     #Round 3 percentage variables we report in overview table
+#     df['Market Cap Rate']                                = round(df['Market Cap Rate'],2)
+#     df['Vacancy Rate']                                   = round(df['Vacancy Rate'],2)
+#     df['Absorption Rate']                                = round(df['Absorption Rate'],2)
+
+# print('Creating New Variables')
 
 #Loop through the 4 dataframes: create variables we will use in our report/figures 
 for df in [df_multifamily,df_office,df_retail,df_industrial]:
