@@ -1194,7 +1194,7 @@ def GetRentTable():
 
 def CreateMarketReport():
     global market_clean, market_title, output_directory, map_directory
-    global df_market_cut, df_primary_market, df_nation, df_submarkets , df_slices
+    global df_market_cut, df_primary_market, df_nation, df_submarkets, df_slices
     global latest_quarter, document, data_for_overview_table, data_for_vacancy_table, data_for_rent_table, report_path
     global primary_market, market, primary_market_title
     global df_submarkets_transactions, df_submarkets_construction
