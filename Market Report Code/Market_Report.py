@@ -609,17 +609,17 @@ def CreateReportFilePath():
         report_file_title =   latest_quarter  + ' ' +  state + ' - '   + market_file_name + ' - ' + sector + ' ' + macro_or_sub  + status + '.docx'
 
     elif market != primary_market:
-        if sector == 'Multifamily':
+        if sector != 'Multifamily':
             market_file_name = market_title
             macro_or_sub     = 'Submarket'
-            status           = '_draft'
+            status           = '_final'
 
             report_file_title =   latest_quarter  + ' ' +  state + ' - '   + market_file_name + ' - ' + sector + ' ' + macro_or_sub  + status + '.docx'
 
         else: 
             market_file_name = market_title
             macro_or_sub     = 'Submarket'
-            status           = '_Final'    
+            status           = '_draft'    
 
             report_file_title =   latest_quarter  + ' ' +  state + ' - '   + market_file_name + ' - ' + sector + ' ' + macro_or_sub  + status + '.docx'
 
@@ -650,9 +650,9 @@ def SetStyle():
 def MakeReportTitle():
     #Write title Heading
     if market == primary_market:
-        title = document.add_heading(market_title + ': ' + sector + ' Market Analysis_DRAFTDRAFTDRAFT'   ,level=1)
+        title = document.add_heading(market_title + ': ' + sector + ' Market Analysis'   ,level=1)
     else:
-        title = document.add_heading(market_title + ': ' + sector + ' Submarket Analysis_DRAFTDRAFTDRAFT' ,level=1)
+        title = document.add_heading(market_title + ': ' + sector + ' Submarket Analysis' ,level=1)
     
     title.style                           = document.styles['Heading 2']
     title.paragraph_format.space_after    = Pt(6)
