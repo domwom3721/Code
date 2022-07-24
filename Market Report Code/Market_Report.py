@@ -612,7 +612,7 @@ def CreateReportFilePath():
         if sector != 'Multifamily':
             market_file_name = market_title
             macro_or_sub     = 'Submarket'
-            status           = '_final'
+            status           = '_FINAL'
 
             report_file_title =   latest_quarter  + ' ' +  state + ' - '   + market_file_name + ' - ' + sector + ' ' + macro_or_sub  + status + '.docx'
 
