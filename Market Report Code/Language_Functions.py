@@ -777,7 +777,7 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, national_data_
         inventory_var_name              = 'Inventory Units'
         net_absorption                  =  submarket_data_frame['Absorption Units'].iloc[-1]
         previous_quarter_net_absorption =  submarket_data_frame['Absorption Units'].iloc[-2]
-        #slice_vacancy                   =  slices_data_frame.sort['Slice','Vacancy Rate'].iloc[-1]
+        slice_vacancy                   =  slices_data_frame['Vacancy Rate'].iloc[-1]
 
     else:
         unit_or_sqft                    = 'square feet'
@@ -785,7 +785,7 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, national_data_
         inventory_var_name              = 'Inventory SF'
         net_absorption                  =  submarket_data_frame['Net Absorption SF'].iloc[-1]
         previous_quarter_net_absorption =  submarket_data_frame['Net Absorption SF'].iloc[-2]
-        #slice_vacancy                   =  slices_data_frame['Vacancy Rate'].iloc[-1]
+        slice_vacancy                   =  slices_data_frame['Vacancy Rate'].iloc[-1]
 
     #Inventory levels
     submarket_inventory                 = submarket_data_frame[inventory_var_name].iloc[-1]
@@ -817,11 +817,11 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, national_data_
     #Calculate 10 year average, trough, and peak
     submarket_avg_vacancy               = submarket_data_frame['Vacancy Rate'].mean()
     market_avg_vacancy                  = market_data_frame['Vacancy Rate'].mean()
-    #slice1_avg_vacancy                 = slices_data_frame['Vacancy Rate'].mean()
-    #slice2_avg_vacancy                 = slices_data_frame['Vacancy Rate'].mean()
-    #slice3_avg_vacancy                 = slices_data_frame['Vacancy Rate'].mean()
-    #slice4_avg_vacancy                 = slices_data_frame['Vacancy Rate'].mean()
-    #slice5_avg_vacancy                 = slices_data_frame['Vacancy Rate'].mean()
+    #slice1_avg_vacancy
+    #slice2_avg_vacancy
+    #slice3_avg_vacancy
+    #slice4_avg_vacancy
+    #slice5_avg_vacancy
 
     #pandemic_trough_vacancy            = submarket_data_frame['Vacancy Rate'].tail[8]min()
     #pandemic_peak_vacancy              = submarket_data_frame['Vacancy Rate'].tail[8]max()
@@ -1114,7 +1114,7 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, national_data_
 
             #12m net absorption declined over past year
             elif  leasing_change < 0:
-                leasing_activity_intro_clause = 'Despite no inventory growth over the past year, vacancy rates have increased due to slowing demand. Vacancy rates have '
+                leasing_activity_intro_clause = 'With no inventory growth, but falling demand, vacancy rates have '
                
             #12m net absorption flat over past year
             elif leasing_change == 0:
@@ -1184,12 +1184,13 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, national_data_
     market_vacancy                      = "{:,.1f}%".format(market_vacancy)
     national_vacancy                    = "{:,.1f}%".format(national_vacancy)
     market_submarket_differnce          = "{:,.0f}".format(market_submarket_differnce)
-    #slice_vacancy                       = "{:,.1f}%".format(slice_vacancy)
-    #print(slice_vacancy)
+    slice_vacancy                       = "{:,.1f}%".format(slice_vacancy)
+    print(slice_vacancy)
     #Section 4: Put together the variables we have created into the supply and demand language and return it
     demand_language = [
             (
             #Sentence 1 (Supply sentence)
+            slice_vacancy                                               +
             'The '                                                      +
             market_or_submarket                                         +
             ' has '                                                     +
