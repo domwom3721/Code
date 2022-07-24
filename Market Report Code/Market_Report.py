@@ -7,6 +7,7 @@
     #The word document is a report that reports tables and graphs generated from the data files
 
 import os
+from telnetlib import STATUS
 import pandas as pd
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -603,12 +604,24 @@ def CreateReportFilePath():
     if market == primary_market:
         market_file_name = primary_market_name_for_file
         macro_or_sub     = 'Market'
-        #draft_or_final
-    else:
-        market_file_name = market_title
-        macro_or_sub     = 'Submarket'
-    
-    report_file_title =   latest_quarter  + ' ' +  state + ' - '   + market_file_name + ' - ' + sector + ' ' + macro_or_sub  + '_draft' + '.docx'
+        status           = '_draft'    
+
+        report_file_title =   latest_quarter  + ' ' +  state + ' - '   + market_file_name + ' - ' + sector + ' ' + macro_or_sub  + status + '.docx'
+
+    elif market != primary_market:
+        if sector == 'Multifamily':
+            market_file_name = market_title
+            macro_or_sub     = 'Submarket'
+            status           = '_draft'
+
+            report_file_title =   latest_quarter  + ' ' +  state + ' - '   + market_file_name + ' - ' + sector + ' ' + macro_or_sub  + status + '.docx'
+
+        else: 
+            market_file_name = market_title
+            macro_or_sub     = 'Submarket'
+            status           = '_Final'    
+
+            report_file_title =   latest_quarter  + ' ' +  state + ' - '   + market_file_name + ' - ' + sector + ' ' + macro_or_sub  + status + '.docx'
 
     #Make sure we don't hit the 255 max file path limit
     if len(os.path.join(output_directory,report_file_title)) <= 257:
