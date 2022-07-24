@@ -604,22 +604,28 @@ def CreateReportFilePath():
         market_file_name = primary_market_name_for_file
         macro_or_sub     = 'Market'
         status           = '_draft'    
-
         report_file_title =   latest_quarter  + ' ' +  state + ' - '   + market_file_name + ' - ' + sector + ' ' + macro_or_sub  + status + '.docx'
 #and os.path.exists(os.path.join(map_directory,'map.png'))
+
     elif market != primary_market :
-        if sector != 'Multifamily':
+        if sector != 'Multifamily' :
+            market_file_name = market_title
+            macro_or_sub     = 'Submarket'
+            status           = '_draft'
+
+            report_file_title =   latest_quarter  + ' ' +  state + ' - '   + market_file_name + ' - ' + sector + ' ' + macro_or_sub  + status + '.docx'
+
+        if os.path.exists(os.path.join(map_directory,'map.png')):
+            sector != 'Multifamily' 
             market_file_name = market_title
             macro_or_sub     = 'Submarket'
             status           = '_FINAL'
 
             report_file_title =   latest_quarter  + ' ' +  state + ' - '   + market_file_name + ' - ' + sector + ' ' + macro_or_sub  + status + '.docx'
-
     else:
         market_file_name = market_title
         macro_or_sub     = 'Submarket'
-    
-    report_file_title =   latest_quarter  + ' ' +  state + ' - '   + market_file_name + ' - ' + sector + ' ' + macro_or_sub  + '_draft' + '.docx'
+        report_file_title =   latest_quarter  + ' ' +  state + ' - '   + market_file_name + ' - ' + sector + ' ' + macro_or_sub  + '_draft' + '.docx'
 
     #Make sure we don't hit the 255 max file path limit
     if len(os.path.join(output_directory,report_file_title)) <= 257:
@@ -1696,9 +1702,9 @@ for df,df2,sector in zip(df_list, df_slices_list, sector_name_list):
 
         if   primary_market not in selected_market: 
             continue
-
+        
         print(primary_market)
-
+        
         primary_market_clean         = CleanMarketName(primary_market)
         primary_market_name_for_file = primary_market_clean.replace(' - ' + state,'' ).strip() #Make a string with just name of market (without the '- STATECODE' portion)
 
