@@ -133,7 +133,7 @@ def CreateSalesVolumeGraph(submarket_data_frame, folder):
     
     fig.write_image(os.path.join(folder,'sales_volume.png'), engine = 'kaleido', scale = scale)
 
-def CreateAssetValueGraph(submarket_data_frame, market_data_frame, natioanl_data_frame, folder, market_title, primary_market, sector):
+def CreateAssetValueGraph(submarket_data_frame, market_data_frame, national_data_frame, folder, market_title, primary_market, sector):
 
     #Define the MF variables and labels vs the non MF
     if sector == 'Multifamily':
@@ -169,7 +169,7 @@ def CreateAssetValueGraph(submarket_data_frame, market_data_frame, natioanl_data
     #If it's a submarket, add primary market cap rate. If it's a primary market, add national cap rate line
     if submarket_data_frame.equals(market_data_frame):
         
-        name = natioanl_data_frame['Geography Name'].iloc[0]
+        name = national_data_frame['Geography Name'].iloc[0]
         if name == 'United States of America':
             name = 'National'
 
@@ -177,8 +177,8 @@ def CreateAssetValueGraph(submarket_data_frame, market_data_frame, natioanl_data
             
             fig.add_trace(
                 go.Scatter(
-                        x    = natioanl_data_frame['Period'],
-                        y    = natioanl_data_frame['Market Cap Rate'],
+                        x    = national_data_frame['Period'],
+                        y    = national_data_frame['Market Cap Rate'],
                         name = name,
                         line = dict(color = bowery_light_blue)
                           ),
@@ -253,7 +253,7 @@ def CreateAssetValueGraph(submarket_data_frame, market_data_frame, natioanl_data
     #Export figure as PNG file
     fig.write_image(os.path.join(folder,'asset_values.png'), engine = 'kaleido', scale = scale)
 
-def CreateAbsorptionGraph(submarket_data_frame, market_data_frame, natioanl_data_frame, folder, market_title, primary_market, sector):
+def CreateAbsorptionGraph(submarket_data_frame, market_data_frame, national_data_frame, folder, market_title, primary_market, sector):
     
     #Determine relevant variable based on sector
     if sector == 'Multifamily':
@@ -302,7 +302,7 @@ def CreateAbsorptionGraph(submarket_data_frame, market_data_frame, natioanl_data
     #Market
     if submarket_data_frame.equals(market_data_frame):
         
-        name = natioanl_data_frame['Geography Name'].iloc[0]
+        name = national_data_frame['Geography Name'].iloc[0]
         
         if name == 'United States of America':
             name = 'National'
@@ -310,8 +310,8 @@ def CreateAbsorptionGraph(submarket_data_frame, market_data_frame, natioanl_data
         if  primary_market != 'United States of America':
             fig.add_trace(
                 go.Scatter(
-                    x = natioanl_data_frame['Period'],
-                    y = natioanl_data_frame['Vacancy Rate'],
+                    x = national_data_frame['Period'],
+                    y = national_data_frame['Vacancy Rate'],
                 name  = name,
                 line  = dict(color = bowery_light_blue)
                         ),
@@ -503,7 +503,7 @@ def CreateConstructionGraph(submarket_data_frame, folder, sector):
 
     fig.write_image(os.path.join(folder, 'construction_volume.png'), engine = 'kaleido', scale = scale)
 
-def CreateRentGrowthGraph(submarket_data_frame, market_data_frame, natioanl_data_frame, folder, market_title, primary_market, sector):
+def CreateRentGrowthGraph(submarket_data_frame, market_data_frame, national_data_frame, folder, market_title, primary_market, sector):
 
     #Define the MF variables and labels vs the non MF
     if sector == 'Multifamily':
@@ -584,15 +584,15 @@ def CreateRentGrowthGraph(submarket_data_frame, market_data_frame, natioanl_data
         extra_height = 70
         
         #Change USA --> National
-        name = natioanl_data_frame['Geography Name'].iloc[0]
+        name = national_data_frame['Geography Name'].iloc[0]
         if name == 'United States of America':
             name = 'National'
         
         if  primary_market != 'United States of America':
             fig.add_trace(
                 go.Scatter(
-                    x    = natioanl_data_frame['Period'],
-                    y    = natioanl_data_frame[rent_var],
+                    x    = national_data_frame['Period'],
+                    y    = national_data_frame[rent_var],
                     name = name,
                     line = dict(color = bowery_light_blue)
                           ),
@@ -673,12 +673,12 @@ def CreateRentGrowthGraph(submarket_data_frame, market_data_frame, natioanl_data
 
     fig.write_image(os.path.join(folder,'rent_growth.png'), engine = 'kaleido',scale = scale)
 
-def CreateAllGraphs(submarket_data_frame, market_data_frame, natioanl_data_frame, folder, market_title, primary_market, sector):
+def CreateAllGraphs(submarket_data_frame, market_data_frame, national_data_frame, folder, market_title, primary_market, sector):
     CreateSalesVolumeGraph( submarket_data_frame = submarket_data_frame,                                                                                   folder = folder)
-    CreateAssetValueGraph(  submarket_data_frame = submarket_data_frame, market_data_frame = market_data_frame, natioanl_data_frame = natioanl_data_frame, folder = folder, market_title = market_title, primary_market = primary_market, sector = sector)
-    CreateAbsorptionGraph(  submarket_data_frame = submarket_data_frame, market_data_frame = market_data_frame, natioanl_data_frame = natioanl_data_frame, folder = folder, market_title = market_title, primary_market = primary_market, sector = sector)
+    CreateAssetValueGraph(  submarket_data_frame = submarket_data_frame, market_data_frame = market_data_frame, national_data_frame = national_data_frame, folder = folder, market_title = market_title, primary_market = primary_market, sector = sector)
+    CreateAbsorptionGraph(  submarket_data_frame = submarket_data_frame, market_data_frame = market_data_frame, national_data_frame = national_data_frame, folder = folder, market_title = market_title, primary_market = primary_market, sector = sector)
     CreateConstructionGraph(submarket_data_frame = submarket_data_frame,                                                                                   folder = folder,                                                               sector = sector)
-    CreateRentGrowthGraph(  submarket_data_frame = submarket_data_frame, market_data_frame = market_data_frame, natioanl_data_frame = natioanl_data_frame, folder = folder, market_title = market_title, primary_market = primary_market, sector = sector)
+    CreateRentGrowthGraph(  submarket_data_frame = submarket_data_frame, market_data_frame = market_data_frame, national_data_frame = national_data_frame, folder = folder, market_title = market_title, primary_market = primary_market, sector = sector)
 
     #Wait till figure is saved before moving on, this avoids file path errors
     for png in ['asset_values.png', 'absorption_rate.png', 'sales_volume.png', 'construction_volume.png', 'rent_growth.png']:
