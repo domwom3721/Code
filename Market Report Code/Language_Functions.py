@@ -1114,7 +1114,7 @@ def CreateDemandLanguage(submarket_data_frame, market_data_frame, national_data_
 
             #12m net absorption declined over past year
             elif  leasing_change < 0:
-                leasing_activity_intro_clause = 'With no inventory growth, but falling demand, vacancy rates have '
+                leasing_activity_intro_clause = 'Despite no inventory growth over the past year, vacancy rates have increased due to slowing demand. Vacancy rates have '
                
             #12m net absorption flat over past year
             elif leasing_change == 0:
