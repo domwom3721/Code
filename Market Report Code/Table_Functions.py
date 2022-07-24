@@ -281,7 +281,7 @@ def CreateRowDataForWideTable(data_frame, data_frame2, data_frame3, data_frame4,
     level_1_name = data_frame['Geography Name'].iloc[0]
     level_2_name = data_frame2['Geography Name'].iloc[0]
     level_3_name = data_frame3['Geography Name'].iloc[0] #Typically will be United States, excpet for when doing NYC 
-    level_4_name = data_frame4['Geography Name'].iloc[0]
+    #level_4_name = data_frame4['Geography Name'].iloc[0]
 
     if level_3_name == 'United States of America':
         level_3_name = 'National'
