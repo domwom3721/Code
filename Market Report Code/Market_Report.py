@@ -606,8 +606,8 @@ def CreateReportFilePath():
         status           = '_draft'    
 
         report_file_title =   latest_quarter  + ' ' +  state + ' - '   + market_file_name + ' - ' + sector + ' ' + macro_or_sub  + status + '.docx'
-
-    elif market != primary_market:
+#and os.path.exists(os.path.join(map_directory,'map.png'))
+    elif market != primary_market :
         if sector != 'Multifamily':
             market_file_name = market_title
             macro_or_sub     = 'Submarket'
