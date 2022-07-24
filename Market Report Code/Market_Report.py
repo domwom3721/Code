@@ -7,7 +7,6 @@
     #The word document is a report that reports tables and graphs generated from the data files
 
 import os
-from telnetlib import STATUS
 import pandas as pd
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -312,7 +311,7 @@ def CreateMarketDictionary(df):
      #Now create dictionary to track which submarkets belong to each market
      market_dictionary = {}
      for market in unique_markets_list:
-         submarkets = [submarket for submarket in unique_submarkets_list if market in submarket ] #list of submarkets within current market
+         submarkets = [submarket for submarket in unique_submarkets_list if market in submarket ] #list of sumarkets within current market
          market_dictionary.update({market:submarkets}) 
      
      return(market_dictionary)
@@ -341,7 +340,7 @@ def UniqueZipCodes(zip_code_list):
     return(unique_list)
 
 def AppendAllExcelFilesInDirectory(directory):
-    #Takes a directory as input and appends all excel files in it together into dataframe
+    #Takes a directory as input and appends all excel files in it togetehr into dataframe
     #Returns the dataframe or None if no files exist
 
     i = 0
@@ -616,12 +615,11 @@ def CreateReportFilePath():
 
             report_file_title =   latest_quarter  + ' ' +  state + ' - '   + market_file_name + ' - ' + sector + ' ' + macro_or_sub  + status + '.docx'
 
-        else: 
-            market_file_name = market_title
-            macro_or_sub     = 'Submarket'
-            status           = '_draft'    
-
-            report_file_title =   latest_quarter  + ' ' +  state + ' - '   + market_file_name + ' - ' + sector + ' ' + macro_or_sub  + status + '.docx'
+    else:
+        market_file_name = market_title
+        macro_or_sub     = 'Submarket'
+    
+    report_file_title =   latest_quarter  + ' ' +  state + ' - '   + market_file_name + ' - ' + sector + ' ' + macro_or_sub  + '_draft' + '.docx'
 
     #Make sure we don't hit the 255 max file path limit
     if len(os.path.join(output_directory,report_file_title)) <= 257:
@@ -688,10 +686,7 @@ def MakeCoStarDisclaimer():
                                             sector                                                         + 
                                             """ Submarket ("Submarket") """                                +
                                             'located in the '                                              +
-                                            
                                             primary_market_title                                           + 
-                                            ' '                                                            +
-                                            sector                                                         +
                                             """ Market ("Market"). """
                                             )                
     
@@ -925,42 +920,42 @@ def GetLanguage(writeup_directory):
     
     #Overview Language
     try:
-        overview_language    = CreateOverviewLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, national_data_frame= df_nation, slices_data_frame= df_slices, market_title = market_title, primary_market = primary_market_title, sector = sector, writeup_directory=writeup_directory)
+        overview_language    = CreateOverviewLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, national_data_frame= df_nation, slices_data_frame = df_slices, market_title = market_title, primary_market = primary_market_title, sector = sector, writeup_directory=writeup_directory)
     except Exception as e:
         print(e,'problem creating overview langauge')
         overview_language    = ['']
     
     #Demand Language
     try:
-        demand_language      = CreateDemandLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, national_data_frame= df_nation, slices_data_frame= df_slices, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
+        demand_language      = CreateDemandLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, national_data_frame= df_nation, slices_data_frame = df_slices, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
     except Exception as e:
         print(e,'problem creating demand langauge')
         demand_language      = ['']
         
     #Rent Language
     try:
-        rent_language        = CreateRentLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, national_data_frame= df_nation, slices_data_frame= df_slices, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
+        rent_language        = CreateRentLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, national_data_frame= df_nation, slices_data_frame = df_slices, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
     except Exception as e:
         print(e,'problem creating rent langauge')
         rent_language        = ['']
 
     #Construction Language
     try:
-        construction_languge = CreateConstructionLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, national_data_frame= df_nation, slices_data_frame= df_slices, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
+        construction_languge = CreateConstructionLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, national_data_frame= df_nation, slices_data_frame = df_slices, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
     except Exception as e:
         print(e,'problem creating construction langauge')
         construction_languge = ['']
     
     #Sale Language
     try:
-        sale_language        = CreateSaleLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, national_data_frame= df_nation, slices_data_frame= df_slices, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
+        sale_language        = CreateSaleLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, national_data_frame= df_nation, slices_data_frame = df_slices,  market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
     except Exception as e:
         print(e,'problem creating sale langauge')
         sale_language        = ['']
 
     #Outlook Language
     try:
-        outlook_language     = CreateOutlookLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, national_data_frame= df_nation, slices_data_frame= df_slices, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
+        outlook_language     = CreateOutlookLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, national_data_frame= df_nation, slices_data_frame = df_slices, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
     except Exception as e:
         print(e,'problem creating outlook langauge')
         outlook_language     = ['']
@@ -1192,6 +1187,14 @@ def GetRentTable():
     else:
         return(CreateRowDataForWideTable(data_frame = df_market_cut, data_frame2 = df_primary_market, data_frame3 = df_nation, data_frame4 = df_slices, var1 = 'Market Rent/SF', modifier = '$', sector = sector))
 
+#def GetMarketCapRateTable
+    #create data for market cap rate table
+#    if sector == 'Multifamily':
+#            return(CreateRowDataForWideTable(data_frame = df_market_cut, data_frame2 = df_primary_market, data_frame3 = df_nation, data_frame4 = df_slices, var1 = 'Market Cap Rate', modifier = '%', sector = sector))
+#
+#    else:
+#        return(CreateRowDataForWideTable(data_frame = df_market_cut, data_frame2 = df_primary_market, data_frame3 = df_nation, data_frame4 = df_slices, var1 = 'Market Cap Rate', modifier = '%', sector = sector))
+
 def CreateMarketReport():
     global market_clean, market_title, output_directory, map_directory
     global df_market_cut, df_primary_market, df_nation, df_submarkets, df_slices
@@ -1275,7 +1278,7 @@ def CreateMarketReport():
         df_submarkets_construction  = CleanConstructionData(df_construction)
 
         #This function calls all the graph functions defined in the Graph_Functions.py file
-        CreateAllGraphs(submarket_data_frame = df_market_cut , market_data_frame = df_primary_market, natioanl_data_frame = df_nation , folder = output_directory, market_title = market_title, primary_market = primary_market_title, sector = sector)
+        CreateAllGraphs(submarket_data_frame = df_market_cut , market_data_frame = df_primary_market, national_data_frame = df_nation , folder = output_directory, market_title = market_title, primary_market = primary_market_title, sector = sector)
 
         #Create Data for overview table
         #There are 4 possible permuations for this table (market/apt, market/nonapt, submarket/apt, submakert/nonapt)
@@ -1286,6 +1289,9 @@ def CreateMarketReport():
         
         #Create data for rent Table
         data_for_rent_table    = GetRentTable()
+
+        #create data for market cap rate table
+        #data_for_market_cap_rate_table = GetMarketCapRateTable()
 
         #Get language for paragraphs 
         GetLanguage(writeup_directory = writeup_directory)
