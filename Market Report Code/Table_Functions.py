@@ -738,7 +738,7 @@ def AddTransactionTable(document, col_width, market_data_frame, sector):
 
             #set column widths
             if current_column == 0:
-                cell.width = Inches(1.35)
+                cell.width = Inches(2.2)
             else:
                 cell.width = Inches(col_width)
 
