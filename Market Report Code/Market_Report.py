@@ -872,7 +872,7 @@ def ConstructionSection():
     #Construction Section
     AddHeading(document,'Construction & Future Supply',2)
 
-    AddDocumentParagraph(document = document, language_variable = construction_languge)
+    AddDocumentParagraph(document = document, language_variable = construction_language)
     
     if 'df_submarkets_construction' in globals() and isinstance(df_submarkets_construction, pd.DataFrame):
         if len(df_submarkets_construction) > 0:
@@ -922,7 +922,7 @@ def AppendixSection():
             document.add_paragraph('')
 
 def GetLanguage(writeup_directory):
-    global overview_language, demand_language, sale_language, rent_language, construction_languge, outlook_language
+    global overview_language, demand_language, sale_language, rent_language, construction_language, outlook_language
     
     #Overview Language
     try:
@@ -947,10 +947,10 @@ def GetLanguage(writeup_directory):
 
     #Construction Language
     try:
-        construction_languge = CreateConstructionLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, national_data_frame= df_nation, slices_data_frame = df_slices, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
+        construction_language = CreateConstructionLanguage(submarket_data_frame = df_market_cut, market_data_frame = df_primary_market, national_data_frame= df_nation, slices_data_frame = df_slices, market_title = market_title, primary_market = primary_market, sector = sector, writeup_directory=writeup_directory)
     except Exception as e:
         print(e,'problem creating construction langauge')
-        construction_languge = ['']
+        construction_language = ['']
     
     #Sale Language
     try:
