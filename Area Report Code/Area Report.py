@@ -6452,7 +6452,7 @@ def AddTableTitle(document, title):
 #Report Section Functions
 def OverviewSection(document):
     print('Writing Overview Section')
-    AddHeading(document = document, title = county + 'At a Glance', heading_level = 2)
+    AddHeading(document = document, title = county + ' At a Glance', heading_level = 2)
 
     #Add Overview langauge
     AddDocumentParagraph(document = document, language_variable = overview_language)
