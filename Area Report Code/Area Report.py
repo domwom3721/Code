@@ -4747,7 +4747,10 @@ def CountyIncomeLanguage():
         national_3y_growth  = national_pci_restricted.iloc[-1]['Per Capita Personal Income_3year_growth'] 
         national_5y_growth  = national_pci_restricted.iloc[-1]['Per Capita Personal Income_5year_growth'] 
         
-        
+        #Sectors in Montgomery County, Texas with the highest average wages per worker are Management of Companies
+        #and Enterprises ($178,876), Mining, Quarrying, and Oil and Gas Extraction ($145,515), and Finance and Insurance
+        #($99,825). Regional sectors with the best job growth (or most moderate job losses) over the last 5 years are Health
+        #Care and Social Assistance (+5,953 jobs), Retail Trade (+3,252), and Educational Services (+3,017).
         
         #See if 3 year income growth rate was higher or lower than nation
         if county_3y_growth > national_3y_growth:
