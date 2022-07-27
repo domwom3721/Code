@@ -877,7 +877,7 @@ def ConstructionSection():
     if 'df_submarkets_construction' in globals() and isinstance(df_submarkets_construction, pd.DataFrame):
         if len(df_submarkets_construction) > 0:
             AddTableTitle(document = document,title = 'Current and Recently Completed Construction Projects')
-            AddConstructionTable(document = document, market_data_frame = df_submarkets_construction, col_width = 1.2, sector = sector)
+            AddConstructionTable(document = document, market_data_frame = df_submarkets_construction, col_width = 1, sector = sector)
 
     #Insert construction graph
     AddDocumentPicture(document=document, image_path = os.path.join(output_directory, 'construction_volume.png'))
@@ -899,7 +899,7 @@ def CapitalMarketsSection():
     if 'df_submarkets_transactions' in globals() and isinstance(df_submarkets_transactions, pd.DataFrame):
         if len(df_submarkets_transactions) > 0:
             AddTableTitle(document = document,title = 'Recent Transactions')
-            AddTransactionTable(document = document, market_data_frame = df_submarkets_transactions, col_width = 1.2, sector=sector)
+            AddTransactionTable(document = document, market_data_frame = df_submarkets_transactions, col_width = 1, sector=sector)
 
     #Asset Value Graph
     AddDocumentPicture(document = document, image_path=os.path.join(output_directory,'asset_values.png'))
