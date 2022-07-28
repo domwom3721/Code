@@ -782,9 +782,9 @@ def AddConstructionTable(document, col_width, market_data_frame, sector):
 
     #Start by declaring a list of variables we want to display
     if sector == 'Multifamily':
-        variables_of_interest = ['Property Address', 'Property Name','Building Status', 'Year Built', 'Building Class', 'Number of Units' ]
+        variables_of_interest = ['Property Address', 'Building Status', 'Year Built', 'Building Class', 'Number of Units' ]
     else:
-        variables_of_interest = ['Property Address',                 'Building Status', 'Year Built', 'Building Class', 'RBA'             ]
+        variables_of_interest = ['Property Address', 'Building Status', 'Year Built', 'Building Class', 'RBA'             ]
 
     for var in variables_of_interest:
         market_data_frame[var] = market_data_frame[var].fillna('NA')
@@ -831,7 +831,11 @@ def AddConstructionTable(document, col_width, market_data_frame, sector):
 
             #set column widths
             if current_column == 0:
-                cell.width = Inches(1.35)
+                cell.width = Inches(2.0)
+            elif current_column == 1:    
+                cell.width = Inches(1.2)
+            elif current_column == 4:    
+                cell.width = Inches(1.2)
             else:
                 cell.width = Inches(col_width)
 
