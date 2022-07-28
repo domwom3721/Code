@@ -15,6 +15,7 @@ from statistics import mean
 
 import googlemaps
 import mpu
+from numpy import append
 import pandas as pd
 import plotly.graph_objects as go
 import pyautogui
@@ -835,10 +836,11 @@ def DeclareAPIKeys():
     location_iq_api_key           = 'pk.8937271b8b15004065ca62552e7d06f7'
     zoneomics_api_key             = 'd69b3eee92f8d3cec8c71893b340faa8cb52e1b8'
 
-    c                             = Census(census_api_key)     #Census API wrapper package
+    c                             = Census(census_api_key) #print(c)     #Census API wrapper package
+                                    #census_api_keys_df.append(census_api_key,'Used')
     try:
-        c_area                        = CensusArea(census_api_key) #Census API package, sepearete extension of main package that allows for custom boundries
-    
+        c_area                        = CensusArea(census_api_key) #print(c_area) #Census API package, sepearete extension of main package that allows for custom boundries
+        
     except:
         print('Unable to declare census area object')
 
