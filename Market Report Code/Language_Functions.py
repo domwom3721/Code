@@ -2426,7 +2426,7 @@ def CreateOutlookLanguage(submarket_data_frame, market_data_frame, national_data
 
     if sector == "Multifamily":
         outlook_language = [sector_specific_outlook_language, general_outlook_language, outlook_conclusion_language]
-    else: outlook_language = sector_specific_outlook_language
+    else: outlook_language = [sector_specific_outlook_language, '']
     return(outlook_language)
 
 
