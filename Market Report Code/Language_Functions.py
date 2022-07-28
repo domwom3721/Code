@@ -2423,8 +2423,10 @@ def CreateOutlookLanguage(submarket_data_frame, market_data_frame, national_data
     #Though the pace of rent gains will likely slow, the outlook for rents here remains positive.
 
     #Section 5: Combine sentences and return the conclusion langage
-    outlook_language = [sector_specific_outlook_language, general_outlook_language, outlook_conclusion_language]
 
+    if sector == "Multifamily":
+        outlook_language = [sector_specific_outlook_language, general_outlook_language, outlook_conclusion_language]
+    else: outlook_language = sector_specific_outlook_language
     return(outlook_language)
 
 
