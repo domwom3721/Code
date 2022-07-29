@@ -602,26 +602,37 @@ def CreateReportFilePath():
 
     if market == primary_market:
         market_file_name = primary_market_name_for_file
-        macro_or_sub     = 'Market'
+        #macro_or_sub     = 'Market'
         status           = '_draft'    
-        report_file_title =   latest_quarter  + ' ' +  state + ' - '   + market_file_name + ' - ' + sector + ' ' + macro_or_sub  + status + '.docx'
-#and os.path.exists(os.path.join(map_directory,'map.png'))
+        report_file_title =   latest_quarter  + ' ' +  state + ' - '   + market_file_name + ' - ' + sector + ' ' + 'Market '  + status + '.docx'
 
-    elif market != primary_market :
-        if sector != 'Multifamily' :
+    elif market != primary_market and sector == 'Multifamily' :
             market_file_name = market_title
             macro_or_sub     = 'Submarket'
             status           = '_draft'
 
             report_file_title =   latest_quarter  + ' ' +  state + ' - '   + market_file_name + ' - ' + sector + ' ' + macro_or_sub  + status + '.docx'
 
-        if os.path.exists(os.path.join(map_directory,'map.png')):
-            sector != 'Multifamily' 
+    elif market != primary_market and sector != 'Multifamily' and os.path.exists(os.path.join(map_directory,'map.png')):
             market_file_name = market_title
             macro_or_sub     = 'Submarket'
             status           = '_FINAL'
 
             report_file_title =   latest_quarter  + ' ' +  state + ' - '   + market_file_name + ' - ' + sector + ' ' + macro_or_sub  + status + '.docx'
+
+    elif market != primary_market and sector != 'Multifamily' :
+            market_file_name = market_title
+            macro_or_sub     = 'Submarket'
+            status           = '_draft'
+
+            report_file_title =   latest_quarter  + ' ' +  state + ' - '   + market_file_name + ' - ' + sector + ' ' + macro_or_sub  + status + '.docx'
+
+    elif market == primary_market and os.path.exists(os.path.join(map_directory,'map.png')):
+        market_file_name = primary_market_name_for_file
+        #macro_or_sub     = 'Market'
+        status           = '_draft'    
+        report_file_title =   latest_quarter  + ' ' +  state + ' - '   + market_file_name + ' - ' + sector + ' ' + 'Market '  + status + '.docx'
+
     else:
         market_file_name = market_title
         macro_or_sub     = 'Submarket'
