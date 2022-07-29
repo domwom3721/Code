@@ -361,7 +361,7 @@ def MainCleanSlices(df,sector): #Calls cleaning functions and returns cleaned da
     df                         =   df.loc[df['Slice'] != 'All']
     df.loc[:,'Year']           =   df.loc[:,'Period'].str[:4]
     df.loc[:,'Quarter']        =   df.loc[:,'Period'].str[5:]
-
+    #df = df_retail_slices.loc[df['Geography Type'] != 'Cluster']
     return(df)
 
 #Pass our 8 dataframes into our main cleaning function which calls all the other cleaning functions
