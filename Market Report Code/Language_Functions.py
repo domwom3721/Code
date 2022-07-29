@@ -2007,9 +2007,9 @@ def CreateSaleLanguage(submarket_data_frame,market_data_frame, national_data_fra
                      sales_count_sale_or_sales                                          +
                      "{recorded}".format(recorded = " recorded" if current_transaction_count == 'no'  else "") +
                      for_a_sale_volume_of                                               +
-                     '.'                                             )]
+                     '.'                                             ),
                     
-    market_pricing_language = [
+
 
                     #Second paragraph
                     #Sentence 5
@@ -2032,27 +2032,37 @@ def CreateSaleLanguage(submarket_data_frame,market_data_frame, national_data_fra
                     cap_rate_change_description_to_or_at                                +
                     ' '                                                                 +
                     cap_rate                                                            +
-                    '.'                                                                 )]
+                    '.'                                                                 +
                     
                     #Sentence 6
-    
-    if sector == "Retail":
-        capital_markets_language=(""" While retail sales activity and pricing both held strong in the first quarter, the rise in interest rates experienced since the start of the second quarter increases the probability of a slowdown in retail capital markets activity in the third quarter. """ + """ Strong demand from investors and the ample amount of capital chasing deals should help mute the slowdown, properties with strong fundamentals in markets with elevated population growth will garner the most attention. """)
+                    ' The capital markets remain active throughout the country including ' + market_title + '. ' +
+                    ' However, the recent increases in interest rates will likely cause the pace of price growth and cap rate compression to slow this year. ')
+                ]
 
-    elif sector == "Multifamily": 
-        capital_markets_language=(""" With rent growth surging, investment capital once again poured into the multifamily sector during the second quarter. """ + """ While long-term interest rates have seen strong upward movement over the past quarter, fundamentals in the sector remain strong, especially compared to the office and retail sector. """)
-
-    elif sector == "Office":
-        capital_markets_language=(""" Higher interest rates, and subsequent cost of debt, could weigh on both activity and pricing going forward, """ + """ although the office sectors favorable yields, especially relative to other property sectors, should help to offset. """)
-
-    elif sector == "Industrial":
-        capital_markets_language=(""" Investment in U.S. industrial properties has held up quite well so far in 2022 despite increases in commercial mortgage rates that have continued through the year. """)
+    #sales_language = investors_active_or_inactive + 'Going back three years, investors have closed, on average, ' + three_year_avg_transaction_count + ' ' + three_year_avg_transaction_or_transactions + ' per year' + ' with an annual average sales volume of ' + three_year_avg_sale_volume  + '. '
+    #+ 'Over the past year, there ' + over_last_year_was_or_were + ' ' + over_last_year_transactions + ' closed ' + over_last_year_transactions_or_transaction + ' across ' + over_last_year_units + ' ' + unit_or_sqft + ', representing ' + over_last_year_sale_volume + ' in dollar volume.' +                     ' In ' + current_period + ', there ' + sales_count_was_or_were + ' ' + current_transaction_count + ' ' + sales_count_sale_or_sales + "{recorded}".format(recorded = " recorded" if current_transaction_count == 'no'  else "") + for_a_sale_volume_of + '.'                                           
+    #                
+    #market_pricing_language = 'Market pricing, based on the estimated price movement of all properties in the ' + submarket_or_market + ', sat at ' + asset_value + '/' + unit_or_sqft_singular + ' and has ' + asset_value_change_description + ' ' + "{asset_value_change}".format(asset_value_change = (asset_value_change + ' ') if asset_value_change_description != 'remained stable'  else "") + 'over the past year. ' + 'Capitalization rates have ' + cap_rate_change_description + ' ' + "{cap_rate_change}".format(cap_rate_change = (cap_rate_change + ' ') if cap_rate_change_description != 'remained stable'  else "") + 'over the past year ' + cap_rate_change_description_to_or_at + ' ' + cap_rate + '.'
+                    
+    #if sector == "Retail":
+    #        capital_markets_language=(' While retail sales activity and pricing both held strong in the first quarter, the rise in interest rates experienced since the start of the second quarter increases the probability of a slowdown in retail capital markets activity in the third quarter. ' + ' Strong demand from investors and the ample amount of capital chasing deals should help mute the slowdown, properties with strong fundamentals in markets with elevated population growth will garner the most attention. ')
+    #elif sector == "Multifamily": 
+    #        capital_markets_language=(' With rent growth surging, investment capital once again poured into the multifamily sector during the second quarter. ' + ' While long-term interest rates have seen strong upward movement over the past quarter, fundamentals in the sector remain strong, especially compared to the office and retail sector. ')
+    #elif sector == "Office":
+    #        capital_markets_language=(' Higher interest rates, and subsequent cost of debt, could weigh on both activity and pricing going forward, ' + ' although the office sectors favorable yields, especially relative to other property sectors, should help to offset. ')
+    #elif sector == "Industrial":
+    #        capital_markets_language=('Investment in U.S. industrial properties has held up quite well so far in 2022 despite increases in commercial mortgage rates that have continued through the year. ')
 
                             
     #Combine CoStar writeup with our generated langauge            
-    sales_language = CoStarWriteUp
-    capital_language = [sales_language, market_pricing_language, capital_markets_language]
-    return(capital_language)
+    #capital_language = sales_language + market_pricing_language 
+    #capitalmarkets_language = capital_markets_language
+    #return(sales_language, market_pricing_language)
+
+    #Combine CoStar writeup with our generated langauge            
+    sales_language = CoStarWriteUp + sales_language
+
+    return(sales_language)
 
 #Language for outlook section
 def CreateOutlookLanguage(submarket_data_frame, market_data_frame, national_data_frame, slices_data_frame, market_title, primary_market, sector, writeup_directory):
