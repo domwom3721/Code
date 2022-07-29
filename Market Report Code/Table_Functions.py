@@ -388,14 +388,14 @@ def CreateRowDataForWideTable(data_frame, data_frame2, data_frame3, data_frame4,
 
  
     
-    #If we are doing a market
+    #If we are doing a market (or len(data_frame4) > 0) 
     if market_or_submarket == 'market' :
 
         try:
             list_of_lists = [data_frame['Period'].tolist(),
                 data_frame3[var1].tolist(),
                 data_frame2[var1].tolist()]
-            
+                #data_frame[var1].tolist()]
             #Since it's a market, we are going to add a row for each slice we have in our slice data
             for slice in data_frame4['Slice'].unique():
                 data_frame_temp     = data_frame4.loc[(data_frame4['Slice'] == slice)]
@@ -430,7 +430,12 @@ def CreateRowDataForWideTable(data_frame, data_frame2, data_frame3, data_frame4,
                     data_frame3[var1].tolist(),
                     data_frame2[var1].tolist(),
                     data_frame[var1].tolist()]
-            
+            for slice in data_frame4['Slice'].unique():
+                data_frame_temp     = data_frame4.loc[(data_frame4['Slice'] == slice)]
+                data_frame_temp     = data_frame_temp.reset_index()
+                slice_list_to_add   = data_frame_temp[var1].tolist()
+                slice_list_to_add.insert(0,slice)
+                list_of_lists.append(slice_list_to_add)
             #make sure each list (row) in the list of lists (rows) have same number of items
             for list in list_of_lists:
                 for list2 in list_of_lists:
