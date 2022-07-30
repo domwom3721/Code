@@ -604,7 +604,7 @@ def CreateReportFilePath():
         market_file_name = primary_market_name_for_file
         #macro_or_sub     = 'Market'
         status           = '_draft'    
-        report_file_title =   latest_quarter  + ' ' +  state + ' - '   + market_file_name + ' - ' + sector + ' ' + 'Market '  + status + '.docx'
+        report_file_title =   latest_quarter  + ' ' +  state + ' - '   + market_file_name + ' - ' + sector + ' ' + 'Market'  + status + '.docx'
 
     elif market != primary_market and sector == 'Multifamily' :
             market_file_name = market_title
@@ -631,7 +631,7 @@ def CreateReportFilePath():
         market_file_name = primary_market_name_for_file
         #macro_or_sub     = 'Market'
         status           = '_draft'    
-        report_file_title =   latest_quarter  + ' ' +  state + ' - '   + market_file_name + ' - ' + sector + ' ' + 'Market '  + status + '.docx'
+        report_file_title =   latest_quarter  + ' ' +  state + ' - '   + market_file_name + ' - ' + sector + ' ' + 'Market'  + status + '.docx'
 
     else:
         market_file_name = market_title

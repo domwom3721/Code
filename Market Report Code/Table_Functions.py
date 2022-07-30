@@ -743,11 +743,17 @@ def AddTransactionTable(document, col_width, market_data_frame, sector):
 
             #set column widths
             if current_column == 0:
-                cell.width = Inches(2.2)
-            else:
-                cell.width = Inches(col_width)
-
-            
+                cell.width = Inches(2.5)
+            elif current_column == 1:    
+                cell.width = Inches(0.7)
+            elif current_column == 2:    
+                cell.width = Inches(0.7)
+            elif current_column == 3:    
+                cell.width = Inches(0.7)            
+            elif current_column == 4:
+                cell.width = Inches(0.9)
+            elif current_column == 5:    
+                cell.width = Inches(0.9)   
             #add border to top row
             if current_row == 1:
                 tcPr      = cell._element.tcPr
