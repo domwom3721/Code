@@ -445,23 +445,34 @@ def CreateRowDataForWideTable(data_frame, data_frame2, data_frame3, data_frame4,
         
 
         except:
-            #In some cases, the submarket does not have a full 10 years of data. To handle this, we make sure we display data for quarters we
-            #coverage and make the market and nation rows blank
-            submarket_period_list = data_frame['Period'].tolist()
-            submarket_list        =  data_frame[var1].tolist()
-            
-            #Create empty rows for market and nation
-            market_list           =  ['Market']
-            nation_list           =  ['-----National-----']
-            for i in range(len(submarket_list) -1):
-                market_list.append('') 
-                nation_list.append('')
 
-            #Make lists of the data and ensure they are all the same size
-            list_of_lists = [submarket_period_list,nation_list,market_list,submarket_list]
+            list_of_lists = [data_frame['Period'].tolist(),
+                    #data_frame4[var1].tolist(),
+                    data_frame3[var1].tolist(),
+                    data_frame2[var1].tolist(),
+                    data_frame[var1].tolist()]
+            #make sure each list (row) in the list of lists (rows) have same number of items
             for list in list_of_lists:
                 for list2 in list_of_lists:
                     assert len(list) == len(list2)
+
+            #In some cases, the submarket does not have a full 10 years of data. To handle this, we make sure we display data for quarters we
+            #coverage and make the market and nation rows blank
+            #submarket_period_list = data_frame['Period'].tolist()
+            #submarket_list        =  data_frame[var1].tolist()
+            
+            #Create empty rows for market and nation
+            #market_list           =  ['Market']
+            #nation_list           =  ['-----National-----']
+            #for i in range(len(submarket_list) -1):
+            #    market_list.append('') 
+            #    nation_list.append('')
+
+            #Make lists of the data and ensure they are all the same size
+            #list_of_lists = [submarket_period_list,nation_list,market_list,submarket_list]
+            #for list in list_of_lists:
+            #    for list2 in list_of_lists:
+            #        assert len(list) == len(list2)
 
             return(list_of_lists)
 
