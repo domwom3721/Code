@@ -6894,20 +6894,21 @@ bowery_black                  = "#404858"
 #National economy boiler plate
                                     
 national_economy_summary = (
-                                'The United States economy continues to recover from the aftermath of the Covid-19 pandemic.'                   + 
+                                'The United States economy continues to recover from the aftermath of the Covid-19 pandemic, although there are signs of softening.'                   + 
                                 ' The labor market has restored over 20 million of the 21 million jobs lost at the beginning of the pandemic, ' +
-                                'as measured by non-farm employment, bringing the unemployment rate to 3.6% as of March 2022. '                 +
-                                'Employment growth continued in leisure and hospitality, in professional and business services, in retail trade, and in transportation and warehousing. ' + 
+                                'as measured by non-farm employment, keeping the unemployment rate steady at 3.6% for the fourth month in a row. '                 +
+                                'Total nonfarm paryll employment rose by 372,000 in June, in line with the average monthly gain over the prior 3 months. In June, notable job growth occured in professional and business services, leisure and hospitality, and healthcare. ' + 
                                 'Supply-chain disruptions such as delays at U.S. ports and international manufacturing issues contributed to a sharp increase in inflation and pose a risk to the economic outlook. ' + 
-                                'Despite supply-side challenges, many economic observers expect growth to return to moderate levels in the final three quarters of 2022.' 
+                                'Interest rate hikes will continue to pose a threat to the recovery. '                     +
+                               'Many economic observers expect that the economy will soften further over the second half of 2022. '
                                     )
 
-boiler_plate_housing_language = ("""Historically low mortgage rates, the desire for more space, and the ability to work from home have led to an increase in demand for housing. This, combined with """ +
+boiler_plate_housing_language = ("""In 2021, historically low mortgage rates, the desire for more space, and the ability to work from home led to an increase in demand for housing. This, combined with """ +
                                  """historically low inventory levels pushed values to record highs in most counties and metros across the Nation in 2021. However, with persistent inflation in 2022, the Fed has expanded interest rates, pushing mortgage rates to an elevated rate in the first half of 2022. The sharp rise in mortgage rates has eroded housing affordability, resulting in a decrease in demand and slowing growth in values.  """ )
 
-boiler_plate_econ_language = ('After accelerating to 6.9% in the fourth quarter of 2021, GDP growth fell to negative levels at a -1.4% annualized growth rate in the first quarter of 2022 due to a widening trade deficit and falling private inventory investment. '   +
-                              'While historically high inflation, global supply chain issues, and Federal Reserve interest rate hikes pose threats to the recovery, '                     +
-                               'many economic observers expect that the economy will slow considerably throughout the rest of 2022. '
+boiler_plate_econ_language = ('After accelerating to 6.9% in the fourth quarter of 2021, GDP growth fell for the 2nd straight quarter, decreasing at an annualized rate of 0.9% in Q2. '   +
+                              'The Federal Reserve remains steadfast in curtailing high inflation rates, increasing the Federal Funds rate for the fourth time this year. Interest rate hikes will continue to pose a threat to the recovery, '                     +
+                               'many economic observers expect that the economy will soften further over the second half of 2022. '
                             )
 
 marginInches                  = 1/18
