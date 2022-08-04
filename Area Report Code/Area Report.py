@@ -6953,7 +6953,7 @@ observation_start_less2       = '01/01/' + str(start_year -3)   #For FRED for se
 
 #The QCEW is released at a lag, the following 2 variables need to be changed with each new release
 qcew_year                     = '2021'                          #for quarterly census of employment and wages
-qcew_qtr                      = '3'                             #for quarterly census of employment and wages
+qcew_qtr                      = '4'                             #for quarterly census of employment and wages
 
 county_or_msa_report = input('County report (c) or Metropolitan Statistical Area report (m)?').strip()
 assert ( county_or_msa_report == ('m') or county_or_msa_report == ('c')  )
