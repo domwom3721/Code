@@ -33,7 +33,7 @@ from Table_Functions import *
 
 
 #Define file pre-paths
-dropbox_root                   = os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
+dropbox_root                   = os.path.join(os.environ['USERPROFILE'],'Dropbox (Bowery)') 
 project_location               = os.path.join(dropbox_root,'Research','Projects','Research Report Automation Project')                        #Main Folder that stores all output, code, and documentation
 #output_location                = os.path.join(project_location,'Output','Market')                                                             #The folder where we store our current reports, testing folder
 output_location                = os.path.join(dropbox_root,'Research','Market Analysis','Market')                                             #The folder where we store our current reports, production
