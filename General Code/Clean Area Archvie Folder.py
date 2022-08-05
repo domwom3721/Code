@@ -1,5 +1,4 @@
-#We will use this to clear the area, neighborhood, and market archvie folders. NOT the legacy archive but the current archvies
-#Author: Mike Leahy
+#We will use this to clear the area archive folders. NOT the legacy archive but the current archvies
 #Date: 9/24/2021
 import os
 
