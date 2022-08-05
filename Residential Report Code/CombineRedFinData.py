@@ -1,5 +1,5 @@
 #Date: 5/2/2022
-#Author: Mike Leahy
+#Author: Research 2022 Q2
 #Summary: Combines multiple RedFin residential real estate data files togeteher
 
 import os
