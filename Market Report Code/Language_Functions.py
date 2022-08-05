@@ -2365,7 +2365,7 @@ def CreateOutlookLanguage(submarket_data_frame, market_data_frame, national_data
         sector_specific_outlook_language=('The retail sector has recovered relatively well from the pandemic. Retail sales and foot traffic have remained elevated despite high inflation. However, persistent inflation will likely shift consumer preferences, ultimately causing retailers to slow their leasing pace. ' +  
                                           ' Still, property performance continues to vary significantly by subtype, location, class, and tenant composition. Necessity based retailers and those in strong popualtion growth markets are best positioned.')
     elif sector == "Industrial":
-        sector_specific_outlook_language=("""Consumption and supply chain backlogs have powered record levels of U.S. industrial leasing over the past two years. With very tight vacanancy rates across many markets, the industrial sector will likely experience continued growth, although softening should be expected due to a slowing economy. """)
+        sector_specific_outlook_language=("""Consumption and supply chain backlogs have powered record levels of U.S. industrial leasing over the past two years. With very tight vacancy rates across many markets, the industrial sector will likely experience continued growth, although softening should be expected due to a slowing economy. """)
 
 
 
