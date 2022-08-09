@@ -6897,7 +6897,7 @@ national_economy_summary = (
                                 'The United States economy continues to recover from the aftermath of the Covid-19 pandemic, although there are signs of softening.'                   + 
                                 ' The labor market has restored over 20 million of the 21 million jobs lost at the beginning of the pandemic, ' +
                                 'as measured by non-farm employment, keeping the unemployment rate steady at 3.6% for the fourth month in a row. '                 +
-                                'Total nonfarm paryll employment rose by 372,000 in June, in line with the average monthly gain over the prior 3 months. In June, notable job growth occured in professional and business services, leisure and hospitality, and healthcare. ' + 
+                                'Total nonfarm payroll employment rose by 372,000 in June, in line with the average monthly gain over the prior 3 months. In June, notable job growth occurred in professional and business services, leisure and hospitality, and healthcare. ' + 
                                 'Supply-chain disruptions such as delays at U.S. ports and international manufacturing issues contributed to a sharp increase in inflation and pose a risk to the economic outlook. ' + 
                                 'Interest rate hikes will continue to pose a threat to the recovery. '                     +
                                'Many economic observers expect that the economy will soften further over the second half of 2022. '
