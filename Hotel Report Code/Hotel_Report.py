@@ -1,5 +1,3 @@
-#Author: Mike Leahy
-#Date: 01/19/2022
 #Summary: This script injests data on key metrics for different hotel markets across the country from CoStar.com.
           #It creates a report document for each market and saves it in a corresponding folder
 

@@ -1,9 +1,8 @@
-import os
-import pandas as pd
-#Author: Mike Leahy
-#Date: 01/19/2022
+
 #Summary: This script injests data on key metrics for different hotel markets across the country from CoStar.com.
           #It cleans the data and exports a clean file
+import os
+import pandas as pd
 
 #Define file pre paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
