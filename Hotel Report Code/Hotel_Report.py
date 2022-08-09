@@ -16,8 +16,8 @@ from docx.shared import Inches, Pt, RGBColor
 #Define file pre paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
 project_location               =  os.path.join(dropbox_root,'Research','Projects','Research Report Automation Project')      #Main Folder that stores all output, code, and documentation
-output_location                = os.path.join(dropbox_root,'Research','Market Analysis','Market','Other','Hotel')           #The folder where we store our current reports, production
-# output_location                = os.path.join(project_location,'Output','Hotel')                                              #The folder where we store our current reports, testing folder
+#output_location                = os.path.join(dropbox_root,'Research','Market Analysis','Market','Other','Hotel')           #The folder where we store our current reports, production
+output_location                = os.path.join(project_location,'Output','Hotel')                                              #The folder where we store our current reports, testing folder
 map_location                   = os.path.join(project_location,'Data','Hotel Reports Data','Hotel Maps')                     #Folders with maps png files  
 general_data_location          =  os.path.join(project_location,'Data','General Data')                                        #Folder with data used in multiple report types
 hotel_data_location            = os.path.join(project_location,'Data','Hotel Reports Data')                                   #Folder with data for hotel reports only
@@ -156,7 +156,7 @@ def CreateMarketReport():
     output_directory    = CreateOutputDirectory()
     map_directory       = CreateMapDirectory()
 
-    # WriteReport()
+    WriteReport()
 
 ###############################Report Related Functions###############################
 def SetPageMargins(document,margin_size):
@@ -293,6 +293,81 @@ def AddTableTitle(document,title):
                     font = run.font
                     font.name = 'Avenir Next LT Pro Medium'
 
+#Language Related functions
+def OverviewLanguage():
+    try:
+        overview_paragraph = ''
+    except Exception as e:
+        print(e, 'Unable to create overview language')
+        overview_paragraph = ''
+    return([overview_paragraph])
+
+def SupplyDemandLanguage():
+    try:
+        supply_demand_paragraph =  ('The current inventory level in ' + market_clean + ' is ' + "{:,.0f}".format(hotel_df['Inventory'].iloc[-1]) + '. ' +  
+                                    'There were ' + "{:,.0f}".format(hotel_df['Homes Sold'].iloc[-1]) + ' homes sold in ' + subject_latest_period.strftime('%B') +
+                                    ' with an average sale to list price ratio of ' + "{:,.1f}".format(hotel_df['Average Sale To List'].iloc[-1])  + '%.'
+                                    )
+
+    except Exception as e:
+        print(e, 'Unable to create supply and demand language')
+        supply_demand_paragraph = ''
+    return([supply_demand_paragraph])
+
+def ADRREVPARLanguage():
+    try:
+        ADRREVPAR_paragraph = ('The current median price/SF in ' + market_clean + ' is ' + "${:,.0f}".format(hotel_df['Median Price/SF'].iloc[-1]) + 
+                            '/SF compared to ' +  "${:,.0f}".format(df_comparison['Median Price/SF'].iloc[-1])  + '/SF in ' + comparison_name.strip() + '.'    
+                           )
+         
+    except Exception as e:
+        print(e, 'Unable to create values language')
+        ADRREVPAR_paragraph = ''
+    return([ADRREVPAR_paragraph])
+
+def ConstructionLanguage():
+    try:
+        Construction_paragraph = ('The current median price/SF in ' + market_clean + ' is ' + "${:,.0f}".format(hotel_df['Median Price/SF'].iloc[-1]) + 
+                            '/SF compared to ' +  "${:,.0f}".format(df_comparison['Median Price/SF'].iloc[-1])  + '/SF in ' + comparison_name.strip() + '.'    
+                           )
+         
+    except Exception as e:
+        print(e, 'Unable to create values language')
+        Construction_paragraph = ''
+    return([Construction_paragraph])
+
+def ValuesLanguage():
+    try:
+        values_paragraph = ('The current median price/SF in ' + market_clean + ' is ' + "${:,.0f}".format(hotel_df['Median Price/SF'].iloc[-1]) + 
+                            '/SF compared to ' +  "${:,.0f}".format(df_comparison['Median Price/SF'].iloc[-1])  + '/SF in ' + comparison_name.strip() + '.'    
+                           )
+         
+    except Exception as e:
+        print(e, 'Unable to create values language')
+        values_paragraph = ''
+    return([values_paragraph])
+
+def ConclusionLanguage():
+    try:
+        outlook_paragraph = ''
+    except Exception as e:
+        print(e, 'Unable to create conclusion language')
+        outlook_paragraph = ''
+
+    return([outlook_paragraph])
+
+def CreateLanguage():
+    print('Creating Language')
+    global overview_language, supply_and_demand_language, ADRREVPAR_language, Construction_language, values_language, conclusion_language
+    overview_language          = OverviewLanguage()
+    supply_and_demand_language = SupplyDemandLanguage()
+    ADRREVPAR_language         = ADRREVPARLanguage()
+    Construction_language      = ConstructionLanguage()
+    values_language            = ValuesLanguage()
+    conclusion_language        = ConclusionLanguage()
+
+
+
 def WriteReport():
     global document
     #Create Document
@@ -301,6 +376,8 @@ def WriteReport():
     SetDocumentStyle(document = document)
     AddTitle(document = document)
     AddMap()
+    AddDocumentParagraph
+    AddTableTitle
 
     #Save report
     document.save(report_path)  
@@ -317,7 +394,7 @@ def AddMap():
 
 
 #Set global paramaters
-current_quarter               = '2021 Q4'
+current_quarter               = '2022 Q2'
 primary_font                  = 'Avenir Next LT Pro Light' 
 primary_space_after_paragraph = 8
 
