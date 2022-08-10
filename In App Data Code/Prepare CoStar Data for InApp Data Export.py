@@ -3,7 +3,7 @@
 #         It appends them together and does some light manipulation as well as creating some new variables and exports a clean file.
 #         This clean file will then be pasted directly into a Google Sheet that is connected to the Bowery Appraisal WebApp. 
 #         This data can then be inserted into appraisal reports on the WebApp.
-#Author: Mike Leahy 04/15/2022
+
 
 #Import packages we will be using
 
