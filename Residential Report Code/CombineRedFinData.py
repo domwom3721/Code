@@ -20,11 +20,11 @@ df_master = pd.DataFrame({'Type':[],
 
 #From RedFin, for the following geographic levels (State, Metro, County, and Cities (places), we download a main data file and a corresponding price per sqft file
 #We do this for condos only and Single-family total.
-for condo_or_sf in ['condo', 'sf']:
+for condo_or_sf in ['condo', 'sfr', 'Townhouse']:
     for geographic_level in ['national', 'state', 'metro', 'county', 'place']:
 
-        data_file_path = os.path.join(raw_data_location, (condo_or_sf + '_' +geographic_level+ '_data.csv'))
-        ppsf_file_path = os.path.join(raw_data_location, (condo_or_sf + '_' +geographic_level+ '_ppsf.csv'))
+        data_file_path = os.path.join(raw_data_location, (geographic_level+'_'+condo_or_sf + '.csv'))
+        ppsf_file_path = os.path.join(raw_data_location, (geographic_level+'_'+condo_or_sf + '_ppsf.csv'))
         
         if (os.path.exists(data_file_path) == False) or (os.path.exists(ppsf_file_path) == False ):
             print('Skipping ',geographic_level, ' ', condo_or_sf )
@@ -32,13 +32,16 @@ for condo_or_sf in ['condo', 'sf']:
 
         if condo_or_sf == 'condo':
             geo_type = 'Condo'
-        elif condo_or_sf == 'sf':
+        elif condo_or_sf == 'sfr':
             geo_type = 'Single Family'
+        #elif condo_or_sf == 'Townhouse':    
+            #geo_type = 'Townhouse'
 
         #Read in the main data file
         df = pd.read_csv(data_file_path, 
-                           encoding='UTF-16 LE', 
+                           encoding='UTF-8', 
                           sep="\t",
+                          #engine = 'python',
                         
                            dtype={'Type': str,
                                 'Region':str,
@@ -61,13 +64,13 @@ for condo_or_sf in ['condo', 'sf']:
                                 'Average Sale To List MoM':str ,	
                                 'Average Sale To List YoY':str ,
                                 },           
-                                parse_dates=['Month of Period End'],              
+                                parse_dates=['Month of Period End'],
                             )
         df['Type'] = geo_type
 
         #Now Read in the price per square foot file
         df_ppsf = pd.read_csv(ppsf_file_path, 
-                             encoding='UTF-16 LE', 
+                             encoding='UTF-8', 
                              sep="\t",
                              header=1,    
                              thousands=','         
