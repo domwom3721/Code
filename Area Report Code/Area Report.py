@@ -1,5 +1,5 @@
-#By Research, April 30 2021
-    #Summary: Takes a United States County and fips code as input, prepares economic report for it using data accessed from different APIs
+#By Research
+#Summary: Takes a United States County and fips code as input, prepares economic report for it using data accessed from different APIs
 
 from glob import escape
 import json
