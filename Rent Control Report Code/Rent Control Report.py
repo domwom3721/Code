@@ -1,4 +1,4 @@
-#By Mike Leahy, April 4 2022
+
     #Summary: Loops through an excel file with information on rent control laws in different cities and towns across the United States
     #         For each row (town), we create a word document and write sections for each column where there is text stored
 
