@@ -23,8 +23,8 @@ df_master = pd.DataFrame({'Type':[],
 for condo_or_sf in ['condo', 'sfr', 'Townhouse']:
     for geographic_level in ['national', 'state', 'metro', 'county', 'place']:
 
-        data_file_path = os.path.join(raw_data_location, (geographic_level+'_'+condo_or_sf + '.csv'))
-        ppsf_file_path = os.path.join(raw_data_location, (geographic_level+'_'+condo_or_sf + '_ppsf.csv'))
+        data_file_path = os.path.join(raw_data_location, (geographic_level + '_' + condo_or_sf + '.csv'))
+        ppsf_file_path = os.path.join(raw_data_location, (geographic_level + '_' + condo_or_sf + '_ppsf.csv'))
         
         if (os.path.exists(data_file_path) == False) or (os.path.exists(ppsf_file_path) == False ):
             print('Skipping ',geographic_level, ' ', condo_or_sf )

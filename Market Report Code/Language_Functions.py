@@ -2354,7 +2354,7 @@ def CreateOutlookLanguage(submarket_data_frame, market_data_frame, national_data
     
     #Sector Specific language
     if sector == "Multifamily":
-        sector_specific_outlook_language=('The U.S. multifamily sector has experienced an uptick in vacancy rates over the first half of the year despite seasonal demand trends. In spite of this uptick in vacancy rates, rent growth remains inflated in many markets across the Nation. While markets and submarkets with elevated pipelines will face challenges, the overall strength of the sector will lead to continued growth over the second half of 2022. ' + 
+        sector_specific_outlook_language=('The U.S. multifamily sector has experienced an uptick in vacancy rates over the first half of the year despite seasonal demand trends. In spite of this uptick in vacancy rates, rent growth remains inflated in many markets across the Nation. While markets and submarkets with will face some upward pressure on vacancies, the overall strength of the sector will lead to continued growth over the second half of 2022, although a softened growth of rate should be expected. ' + 
                                         "{headwinds_description}".format(headwinds_description = "" if under_construction_share < large_supply_pipeline_threshold  else ('') ) )
           
     elif sector == "Office":
