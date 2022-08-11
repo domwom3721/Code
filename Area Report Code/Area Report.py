@@ -4,7 +4,6 @@
 from glob import escape
 import json
 import math
-import msvcrt
 import os
 import re
 import sys
@@ -23,7 +22,6 @@ import requests
 import shapefile
 import wikipedia
 from bls_datasets import qcew
-from blsconnect import RequestBLS
 from bs4 import BeautifulSoup
 from docx import Document
 from docx.enum.table import WD_ALIGN_VERTICAL, WD_TABLE_ALIGNMENT
@@ -6879,7 +6877,7 @@ def GetCBSAList():
 DeclareAPIKeys()
 
 #Decide if you want to export data in excel files in the county folder
-data_export                   = False
+data_export                   = True
 
 #Set formatting paramaters for reports
 primary_font                  = 'Avenir Next LT Pro Light' 
