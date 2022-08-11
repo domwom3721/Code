@@ -798,8 +798,8 @@ comparison_property_type = df_comparison['Type'].iloc[-1]
 comparison_latest_period = df_comparison['Month of Period End'].iloc[-1]
 
 #Declare output folder
-output_location                =  os.path.join(dropbox_root,'Research', 'Market Analysis', 'Market', subject_property_type) #Production Output
-#output_location                =  os.path.join(project_location,'Output\Residential Reports',subject_property_type)      #Testing Output
+#output_location                =  os.path.join(dropbox_root,'Research', 'Market Analysis', 'Market', subject_property_type) #Production Output
+output_location                =  os.path.join(project_location,'Output\Residential Reports',subject_property_type)      #Testing Output
 
 
 #Make sure the subject and comparison area have the same last period
