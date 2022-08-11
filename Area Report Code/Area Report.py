@@ -4679,7 +4679,7 @@ def MSAProductionLanguage(msa_data_frame, state_data_frame):
 
         production_language = ('For the five years prior to the pandemic, '                     +
                                 cbsa_name                                                       +
-                                ' experienced annual growth of '                                +
+                                ' experienced an average annual growth of '                                +
                                 "{:,.1f}%".format((pre_pandemic_msa_gdp_growth/5))              +
                                 ' compared to '                                                 +
                                 "{:,.1f}%".format((pre_pandemic_state_gdp_growth/5))            +
