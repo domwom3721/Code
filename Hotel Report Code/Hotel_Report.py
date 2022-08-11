@@ -293,10 +293,30 @@ def AddTableTitle(document,title):
                     font = run.font
                     font.name = 'Avenir Next LT Pro Medium'
 
+
+def OverviewSection():
+
+    #Overview Heading
+    AddHeading(document, 'Overview', 2)
+    
+    #Overview Paragraph
+    AddDocumentParagraph(document = document, language_variable = overview_language)
+
+    #Overview table title
+    AddTableTitle(document = document, title = 'Sector Fundamentals')
+    
+    #Overview table
+
+def SupplyDemandSection():
+    #Supply and Demand Section
+    AddHeading(document, 'Supply & Demand', 2)
+    
+    AddDocumentParagraph(document = document, language_variable = supply_and_demand_language)
+
 #Language Related functions
 def OverviewLanguage():
     try:
-        overview_paragraph = ''
+        overview_paragraph = 'The subject property is located in the ' + market_clean + '.'
     except Exception as e:
         print(e, 'Unable to create overview language')
         overview_paragraph = ''
