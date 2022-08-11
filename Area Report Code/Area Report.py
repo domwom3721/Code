@@ -4,6 +4,7 @@
 from glob import escape
 import json
 import math
+import msvcrt
 import os
 import re
 import sys
@@ -22,6 +23,7 @@ import requests
 import shapefile
 import wikipedia
 from bls_datasets import qcew
+from blsconnect import RequestBLS
 from bs4 import BeautifulSoup
 from docx import Document
 from docx.enum.table import WD_ALIGN_VERTICAL, WD_TABLE_ALIGNMENT
@@ -43,7 +45,7 @@ from shapely.geometry import LineString, Point, Polygon
 #Define file pre-paths
 dropbox_root                   =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)') 
 project_location               =  os.path.join(os.environ['USERPROFILE'], 'Dropbox (Bowery)','Research','Projects','Research Report Automation Project') 
-#main_output_location           =  os.path.join(project_location,'Output', 'Area')                  #Testing
+main_output_location           =  os.path.join(project_location,'Output', 'Area')                  #Testing
 main_output_location           =  os.path.join(dropbox_root,'Research', 'Market Analysis','Area') #Production
 national_folder                =  os.path.join(dropbox_root,'Research', 'Market Analysis','Area','US') #Production
 general_data_location          =  os.path.join(project_location,'Data', 'General Data')
@@ -365,7 +367,7 @@ def GetCountyIndustryBreakdown(fips, year, qtr):
     df_qcew                        = df_qcew.sort_values(by=['month3_emplvl'])
 
     #Export final data
-    if data_export == True:
+    if data_export == False:
         df_qcew.to_csv(os.path.join(county_folder, 'County Industry Breakdown.csv'))
 
     return(df_qcew)
@@ -1017,7 +1019,7 @@ def GetMSAIndustryBreakdown(cbsa, year, qtr):
     df_qcew_wages.columns = ['industry_code','avg_wkly_wage']
 
     #Create a seperate dataframe with just the location quotient by industry (averaged across sectors)
-    wtavg = lambda x: np.average(x.lq_month3_emplvl, weights = x.month3_emplvl,axis = 0) #define function to calcuate weighted average wage
+    wtavg = lambda x: np.average(x.lq_month3_emplvl, weights = x.month3_emplvl,axis = 0) #define function to calcuate weighted average industry
     df_qcew_lq           = df_qcew.groupby('industry_code').apply(wtavg).reset_index()
     df_qcew_lq.columns = ['industry_code','lq_month3_emplvl']
 
